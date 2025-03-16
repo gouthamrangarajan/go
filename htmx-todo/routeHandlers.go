@@ -35,14 +35,14 @@ func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 	id, IdErr := strconv.Atoi(r.FormValue("id"))
 	currentQuantity, QuantityErr := strconv.Atoi(r.FormValue("currentQuantity"))
 	if IdErr != nil || QuantityErr != nil {
-		components.ItemQuantityDisplay(id, 0, false).Render(r.Context(), w)
+		components.ItemQuantityDisplay(id, currentQuantity, false).Render(r.Context(), w)
 	} else {
 		currentQuantity += 1
 		rowsAffected := UpdateQuantity(databaseUrl, authToken, id, currentQuantity)
 		if rowsAffected != 0 {
 			components.ItemQuantityDisplay(id, currentQuantity, true).Render(r.Context(), w)
 		} else {
-			components.ItemQuantityDisplay(id, 0, false).Render(r.Context(), w)
+			components.ItemQuantityDisplay(id, currentQuantity, false).Render(r.Context(), w)
 		}
 	}
 }
@@ -52,7 +52,7 @@ func DecrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 	id, IdErr := strconv.Atoi(r.FormValue("id"))
 	currentQuantity, QuantityErr := strconv.Atoi(r.FormValue("currentQuantity"))
 	if IdErr != nil || QuantityErr != nil {
-		components.ItemQuantityDisplay(id, 0, false).Render(r.Context(), w)
+		components.ItemQuantityDisplay(id, currentQuantity, false).Render(r.Context(), w)
 	} else {
 		currentQuantity -= 1
 		if currentQuantity < 1 {
@@ -62,7 +62,7 @@ func DecrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 		if rowsAffected != 0 {
 			components.ItemQuantityDisplay(id, currentQuantity, true).Render(r.Context(), w)
 		} else {
-			components.ItemQuantityDisplay(id, 0, false).Render(r.Context(), w)
+			components.ItemQuantityDisplay(id, currentQuantity, false).Render(r.Context(), w)
 		}
 	}
 }
