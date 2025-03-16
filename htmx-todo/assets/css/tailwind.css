@@ -223,9 +223,6 @@
   .w-7 {
     width: calc(var(--spacing) * 7);
   }
-  .w-11\/12 {
-    width: calc(11/12 * 100%);
-  }
   .w-dvw {
     width: 100dvw;
   }
@@ -463,9 +460,9 @@
       opacity: 70%;
     }
   }
-  .md\:w-9\/12 {
+  .md\:w-10\/12 {
     @media (width >= 48rem) {
-      width: calc(9/12 * 100%);
+      width: calc(10/12 * 100%);
     }
   }
   .lg\:w-7\/12 {
