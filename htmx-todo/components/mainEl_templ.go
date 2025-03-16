@@ -49,7 +49,7 @@ func MainEl(items []Item) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"flex flex-col items-center w-dvw h-dvh py-5 lg:py-10 px-2 lg:px-6 overflow-auto\"><h1 class=\"text-xl text-green-700 font-semibold\">Groceries</h1><section style=\"view-transition-name:section\" class=\"mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 px-2 transition-all duration-300 flex flex-col gap-1 w-11/12 md:w-9/12 lg:w-7/12 xl:w-6/12\" x-data=\"{}\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"flex flex-col items-center w-dvw h-dvh  overflow-auto bg-gradient-to-br from-purple-300 to-fuchsia-300 via-fuchsia-200 py-5 lg:py-10 px-2 lg:px-6\"><h1 class=\"text-2xl text-green-700 font-semibold text-center\">Groceries</h1><section style=\"view-transition-name:section\" class=\"bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 px-2 transition-all duration-300 flex flex-col gap-1 w-11/12 md:w-9/12 lg:w-7/12 xl:w-6/12\" x-data=\"{}\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
