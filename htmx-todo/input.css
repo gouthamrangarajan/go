@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+.animate-slide-down {
+    animation: slide-down 2s var(--ease-spring-3);
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.send-icon,
+.delete-icon {
+    width: 0.5rem;
+    height: 0.5rem;
+}
