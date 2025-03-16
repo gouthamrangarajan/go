@@ -1,0 +1,66 @@
+package components
+
+import (
+	"fmt"
+	"strconv"
+)
+
+templ ItemsUl(items []Item) {
+	<ul class="flex flex-col gap-1">
+		for _, item := range items {
+			@itemLi(item)
+		}
+	</ul>
+}
+
+templ itemLi(item Item) {
+	<li
+		class={ "bg-slate-100 py-1 px-3 rounded flex gap-1 items-center w-full text-slate-800 ",item.AnimationClass }
+		style={ getLiTransitionName(item.Id) }
+	>
+		@itemCompletedToggleCheckbox(item)
+		@ItemNameDisplay(item)
+		@decreaseQuantityForm(item.Id, item.Quantity)
+		@ItemQuantityDisplay(item.Id, item.Quantity, false)
+		@increaseQuantityForm(item.Id, item.Quantity)
+		@deleteItemForm(item.Id)
+	</li>
+}
+
+templ ItemNameDisplay(item Item) {
+	if item.Completed {
+		<span class="flex-1 text-lg line-through" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
+	} else {
+		<span class="flex-1 text-lg" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
+	}
+}
+
+templ ItemQuantityDisplay(id int, quantity int, isOob bool) {
+	if !isOob {
+		<span class="w-5 text-right">{ strconv.Itoa(quantity) }</span>
+	} else {
+		<span class="w-5 text-right">{ strconv.Itoa(quantity) }</span>
+		<input
+			type="hidden"
+			value={ strconv.Itoa(quantity) }
+			name="currentQuantity"
+			id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
+			hx-swap-oob="true"
+		/>
+		<input
+			type="hidden"
+			value={ strconv.Itoa(quantity) }
+			name="currentQuantity"
+			id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
+			hx-swap-oob="true"
+		/>
+	}
+}
+
+func getLiTransitionName(id int) string {
+	return fmt.Sprintf("view-transition-name:item-%v", id)
+}
+
+func getDisplayNameTransitionName(id int) string {
+	return fmt.Sprintf("view-transition-name:item-name-%v", id)
+}

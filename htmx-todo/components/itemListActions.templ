@@ -1,0 +1,85 @@
+package components
+
+import "strconv"
+import "fmt"
+
+templ itemCompletedToggleCheckbox(item Item) {
+	<form
+		method="POST"
+		hx-post="/complete"
+		hx-trigger="toggleComplete"
+		hx-target="next span"
+		hx-swap="outerHTML transition:true"
+		class="pt-1 pr-1"
+	>
+		<input type="hidden" name="id" value={ strconv.Itoa(item.Id) }/>
+		if item.Completed {
+			<input
+				type="checkbox"
+				name="completed"
+				checked
+				x-on:change="(ev)=>{
+                    ev.currentTarget.dispatchEvent(new Event('toggleComplete',{ bubbles: true}))
+                }"
+				class="w-5 h-5 rounded-full transition duration-300 border border-slate-600 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none"
+			/>
+		} else {
+			<input
+				type="checkbox"
+				name="completed"
+				x-on:change="(ev)=>{
+                    ev.currentTarget.dispatchEvent(new Event('toggleComplete', {bubbles: true}))
+                }"
+				class="w-5 h-5 rounded-full transition duration-300 border border-slate-600 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50 focus:outline-none"
+			/>
+		}
+	</form>
+}
+
+templ increaseQuantityForm(id int, quantity int) {
+	<form method="POST" hx-post="/increment" hx-target="previous span" hx-swap="outerHTML transition:true" class="pt-1.5">
+		<input type="hidden" value={ strconv.Itoa(id) } name="id"/>
+		<input
+			type="hidden"
+			value={ strconv.Itoa(quantity) }
+			name="currentQuantity"
+			id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
+		/>
+		<button
+			class="appearance-none outline-none cursor-pointer w-7 h-5 rounded transition duration-300 text-green-600  hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600"
+			type="submit"
+		>
+			<i class="material-icons arrow_upward-icon -mt-0.5">arrow_upward</i>
+		</button>
+	</form>
+}
+
+templ decreaseQuantityForm(id int, quantity int) {
+	<form method="POST" hx-post="/decrement" hx-target="next span" hx-swap="outerHTML transition:true" class="pt-1.5">
+		<input type="hidden" value={ strconv.Itoa(id) } name="id"/>
+		<input
+			type="hidden"
+			value={ strconv.Itoa(quantity) }
+			name="currentQuantity"
+			id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
+		/>
+		<button
+			class="appearance-none outline-none cursor-pointer w-7 h-5 rounded transition duration-300 text-green-600  hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600"
+			type="submit"
+		>
+			<i class="material-icons arrow_upward-icon -mt-0.5">arrow_downward</i>
+		</button>
+	</form>
+}
+
+templ deleteItemForm(id int) {
+	<form method="POST" hx-post="/delete" hx-target="closest ul" hx-swap="outerHTML transition:true" class="pt-1.5">
+		<input type="hidden" value={ strconv.Itoa(id) } name="id"/>
+		<button
+			class="appearance-none outline-none cursor-pointer w-7 h-5 rounded transition duration-300  text-red-600 hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-red-600"
+			type="submit"
+		>
+			<i class="material-icons delete-icon -ml-3.5 -mt-0.5">delete</i>
+		</button>
+	</form>
+}
