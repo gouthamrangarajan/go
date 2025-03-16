@@ -278,9 +278,6 @@
   .border-slate-600 {
     border-color: var(--color-slate-600);
   }
-  .bg-green-600 {
-    background-color: var(--color-green-600);
-  }
   .bg-slate-100 {
     background-color: var(--color-slate-100);
   }
@@ -301,6 +298,9 @@
   }
   .py-2 {
     padding-block: calc(var(--spacing) * 2);
+  }
+  .py-5 {
+    padding-block: calc(var(--spacing) * 5);
   }
   .py-8 {
     padding-block: calc(var(--spacing) * 8);
@@ -450,6 +450,16 @@
   .lg\:w-7\/12 {
     @media (width >= 64rem) {
       width: calc(7/12 * 100%);
+    }
+  }
+  .lg\:px-6 {
+    @media (width >= 64rem) {
+      padding-inline: calc(var(--spacing) * 6);
+    }
+  }
+  .lg\:py-10 {
+    @media (width >= 64rem) {
+      padding-block: calc(var(--spacing) * 10);
     }
   }
   .xl\:w-6\/12 {
