@@ -15,9 +15,8 @@ import (
 )
 
 func MainPage(w http.ResponseWriter, r *http.Request) {
-	userIdFromConfig := os.Getenv("USER_ID")
-	userIdFromCookie := readUserIdCookie(r)
-	if userIdFromConfig != userIdFromCookie {
+	valid := validateUserIdInCookie(r)
+	if !valid {
 		components.MainElForLogin(false).Render(r.Context(), w)
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
@@ -72,17 +71,17 @@ func generateUserIdCookie() http.Cookie {
 	}
 	return cookie
 }
-func readUserIdCookie(r *http.Request) string {
+func validateUserIdInCookie(r *http.Request) bool {
 	cookieName := "id"
 	userIdFromConfig := os.Getenv("USER_ID")
 	cookie, err := r.Cookie(cookieName)
 	if err != nil {
-		return ""
+		return false
 	}
 	cookieValueBase64Encoded := cookie.Value
 	cookieValueSignedStr, err := base64.URLEncoding.DecodeString(cookieValueBase64Encoded)
 	if err != nil {
-		return ""
+		return false
 	}
 
 	cookieValueSignedBytes := []byte(cookieValueSignedStr)
@@ -97,10 +96,9 @@ func readUserIdCookie(r *http.Request) string {
 	expectedSignature := mac.Sum(nil)
 
 	if !hmac.Equal(signature, expectedSignature) {
-		return ""
+		return false
 	}
-
-	return string(userIdFromCookie)
+	return string(userIdFromCookie) == userIdFromConfig
 }
 func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
