@@ -37,9 +37,9 @@ templ ItemNameDisplay(item Item) {
 
 templ ItemQuantityDisplay(id int, quantity int, isOob bool) {
 	if !isOob {
-		<span class="w-5 text-right">{ strconv.Itoa(quantity) }</span>
+		<span class="w-5 text-center">{ strconv.Itoa(quantity) }</span>
 	} else {
-		<span class="w-5 text-right">{ strconv.Itoa(quantity) }</span>
+		<span class="w-5 text-center">{ strconv.Itoa(quantity) }</span>
 		<input
 			type="hidden"
 			value={ strconv.Itoa(quantity) }

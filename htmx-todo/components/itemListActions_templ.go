@@ -128,7 +128,7 @@ func increaseQuantityForm(id int, quantity int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"> <button class=\"appearance-none outline-none cursor-pointer w-7 h-5 rounded transition duration-300 text-green-600  hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600\" type=\"submit\"><i class=\"material-icons arrow_upward-icon -mt-0.5\">arrow_upward</i></button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"> <button class=\"appearance-none outline-none cursor-pointer rounded transition duration-300 text-green-600  hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600\" type=\"submit\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -164,7 +164,7 @@ func decreaseQuantityForm(id int, quantity int) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/itemListActions.templ`, Line: 59, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/itemListActions.templ`, Line: 61, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -177,7 +177,7 @@ func decreaseQuantityForm(id int, quantity int) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(quantity))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/itemListActions.templ`, Line: 62, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/itemListActions.templ`, Line: 64, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -190,13 +190,13 @@ func decreaseQuantityForm(id int, quantity int) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("inpQuantity_decrement_%v", id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/itemListActions.templ`, Line: 64, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/itemListActions.templ`, Line: 66, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <button class=\"appearance-none outline-none cursor-pointer w-7 h-5 rounded transition duration-300 text-green-600  hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600\" type=\"submit\"><i class=\"material-icons arrow_upward-icon -mt-0.5\">arrow_downward</i></button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <button class=\"appearance-none outline-none cursor-pointer rounded transition duration-300 text-green-600  hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600\" type=\"submit\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6 rotate-180\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -232,13 +232,13 @@ func deleteItemForm(id int) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/itemListActions.templ`, Line: 77, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/itemListActions.templ`, Line: 81, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" name=\"id\"> <button class=\"appearance-none outline-none cursor-pointer w-7 h-5 rounded transition duration-300  text-red-600 hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-red-600\" type=\"submit\"><i class=\"material-icons delete-icon -ml-3.5 -mt-0.5\">delete</i></button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" name=\"id\"> <button class=\"appearance-none outline-none cursor-pointer rounded transition duration-300  text-red-600 hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-red-600\" type=\"submit\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z\" clip-rule=\"evenodd\"></path></svg></button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

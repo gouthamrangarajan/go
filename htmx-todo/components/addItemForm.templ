@@ -25,11 +25,13 @@ templ addItemForm() {
 			x-model="$store.data.newItem"
 		/>
 		<button
-			class="appearance-none outline-none cursor-pointer w-7 h-5 rounded transition duration-300  text-green-600 hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600"
+			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-green-600 hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600"
 			type="submit"
 			x-bind:disabled="$store.data.processing"
 		>
-			<i class="material-icons send-icon -ml-3 -mt-0.5">send</i>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+				<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"></path>
+			</svg>
 		</button>
 	</form>
 }

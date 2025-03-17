@@ -29,7 +29,7 @@ func Layout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Go HTMX Grocery</title><meta name=\"description\" content=\"Simple grocery tracking app using golang, htmx &amp; tailwind css\"><link href=\"/assets/css/tailwind.css\" rel=\"stylesheet\"><link href=\"/assets/css/openprops.min.css\" rel=\"stylesheet\"><link href=\"https://fonts.googleapis.com/icon?family=Material+Icons\" rel=\"stylesheet\"><link href=\"/assets/favicon.ico\" rel=\"icon\" type=\"image/x-icon\"></head><body>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Go HTMX Grocery</title><meta name=\"description\" content=\"Simple grocery tracking app using golang, htmx &amp; tailwind css\"><link href=\"/assets/css/tailwind.css\" rel=\"stylesheet\"><link href=\"/assets/css/openprops.min.css\" rel=\"stylesheet\"><link href=\"/assets/favicon.ico\" rel=\"icon\" type=\"image/x-icon\"></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
