@@ -37,7 +37,7 @@ func Layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script src=\"/assets/js/htmx.min.js\" type=\"text/javascript\"></script><script src=\"/assets/js/alpine.min.js\" type=\"text/javascript\" defer></script><script>\n\t\t\t  document.addEventListener('alpine:init', () => {\n\t\t\t\t\tAlpine.store('data', {\n\t\t\t\t\t\tprocessing: false,\n\t\t\t\t\t\tnewItem:''\n\t\t\t\t\t})\n\t\t\t\t})\n\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(event) {\t\t\t\t\t\n\t\t\t\t\tAlpine.store('data').processing=false\n\t\t\t\t})\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script src=\"/assets/js/htmx.min.js\" type=\"text/javascript\"></script><script src=\"/assets/js/alpine.min.js\" type=\"text/javascript\" defer></script><script>\n\t\t\t  document.addEventListener('alpine:init', () => {\n\t\t\t\t\tAlpine.store('data', {\n\t\t\t\t\t\tprocessing: false,\n\t\t\t\t\t\tnewItem:'',\n\t\t\t\t\t\ttoken:''\n\t\t\t\t\t})\n\t\t\t\t})\n\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(event) {\t\t\t\t\t\n\t\t\t\t\tAlpine.store('data').processing=false\n\t\t\t\t})\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

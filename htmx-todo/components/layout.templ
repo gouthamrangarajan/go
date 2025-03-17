@@ -20,7 +20,8 @@ templ Layout() {
 			  document.addEventListener('alpine:init', () => {
 					Alpine.store('data', {
 						processing: false,
-						newItem:''
+						newItem:'',
+						token:''
 					})
 				})
 				document.body.addEventListener('htmx:afterSwap', function(event) {					

@@ -1,26 +1,112 @@
 package main
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"htmx-todo/components"
 	"htmx-todo/models"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func MainPage(w http.ResponseWriter, r *http.Request) {
-	authToken := os.Getenv("TURSO_AUTH_TOKEN")
-	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-	groceries := GetGroceryData(databaseUrl, authToken)
-	items, _ := tranformGroceries(groceries)
-	components.MainEl(items).Render(r.Context(), w)
+	userIdFromConfig := os.Getenv("USER_ID")
+	userIdFromCookie := readUserIdCookie(r)
+	if userIdFromConfig != userIdFromCookie {
+		components.MainElForLogin(false).Render(r.Context(), w)
+	} else {
+		authToken := os.Getenv("TURSO_AUTH_TOKEN")
+		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
+		groceries := GetGroceryData(databaseUrl, authToken)
+		items, _ := tranformGroceries(groceries, false)
+		components.MainEl(items).Render(r.Context(), w)
+	}
 }
 
+func Login(w http.ResponseWriter, r *http.Request) {
+	hashedTokenFromConfig := os.Getenv("TOKEN")
+	token := r.FormValue("token")
+	compareErr := bcrypt.CompareHashAndPassword([]byte(hashedTokenFromConfig), []byte(token))
+	if compareErr != nil {
+		components.SectionElForLogin(true).Render(r.Context(), w)
+	} else {
+		authToken := os.Getenv("TURSO_AUTH_TOKEN")
+		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
+		groceries := GetGroceryData(databaseUrl, authToken)
+		items, _ := tranformGroceries(groceries, true)
+		cookie := generateUserIdCookie()
+		http.SetCookie(w, &cookie)
+		components.SectionEl(items).Render(r.Context(), w)
+	}
+}
+func generateUserIdCookie() http.Cookie {
+	secure := true
+	if os.Getenv("ENV") == "Development" {
+		secure = false
+	}
+	cookieSecretKey := os.Getenv("COOKIE_SECRET")
+	cookieName := "id"
+	userId := os.Getenv("USER_ID")
+
+	mac := hmac.New(sha256.New, []byte(cookieSecretKey))
+	mac.Write([]byte(cookieName))
+	mac.Write([]byte(userId))
+	signature := mac.Sum(nil)
+
+	cookieValueSignedBytes := append(signature, []byte(userId)...)
+	cookieValueSignedStr := base64.URLEncoding.EncodeToString(cookieValueSignedBytes)
+
+	cookie := http.Cookie{
+		Name:     cookieName,
+		Value:    cookieValueSignedStr,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   secure,
+		Expires:  time.Now().Add(365 * 24 * time.Hour),
+		SameSite: http.SameSiteStrictMode,
+	}
+	return cookie
+}
+func readUserIdCookie(r *http.Request) string {
+	cookieName := "id"
+	userIdFromConfig := os.Getenv("USER_ID")
+	cookie, err := r.Cookie(cookieName)
+	if err != nil {
+		return ""
+	}
+	cookieValueBase64Encoded := cookie.Value
+	cookieValueSignedStr, err := base64.URLEncoding.DecodeString(cookieValueBase64Encoded)
+	if err != nil {
+		return ""
+	}
+
+	cookieValueSignedBytes := []byte(cookieValueSignedStr)
+	signature := cookieValueSignedBytes[:sha256.Size]
+
+	userIdFromCookie := cookieValueSignedBytes[sha256.Size:]
+
+	cookieSecretKey := os.Getenv("COOKIE_SECRET")
+	mac := hmac.New(sha256.New, []byte(cookieSecretKey))
+	mac.Write([]byte(cookieName))
+	mac.Write([]byte(userIdFromConfig))
+	expectedSignature := mac.Sum(nil)
+
+	if !hmac.Equal(signature, expectedSignature) {
+		return ""
+	}
+
+	return string(userIdFromCookie)
+}
 func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	groceries := GetGroceryData(databaseUrl, authToken)
-	items, _ := tranformGroceries(groceries)
+	items, _ := tranformGroceries(groceries, false)
 	newItem := components.Item{Name: r.FormValue("item"), Quantity: 1, AnimationClass: "animate-slide-down"}
 	newItem.Id = InsertGrocery(databaseUrl, authToken, newItem.Name, newItem.Quantity)
 	// newItem.Id = rand.Int()
@@ -70,7 +156,7 @@ func DeleteGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	groceries := GetGroceryData(databaseUrl, authToken)
-	items, idToIndexMap := tranformGroceries(groceries)
+	items, idToIndexMap := tranformGroceries(groceries, false)
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
 		rowsAffected := DeleteGrocery(databaseUrl, authToken, id)
@@ -114,11 +200,15 @@ func findAndRemoveItem(items []components.Item, id int, idToIndexMap map[int]int
 	return items
 }
 
-func tranformGroceries(list []models.Grocery) ([]components.Item, map[int]int) {
+func tranformGroceries(list []models.Grocery, animateAllItems bool) ([]components.Item, map[int]int) {
+	animationClass := ""
+	if animateAllItems {
+		animationClass = "animate-slide-down"
+	}
 	items := []components.Item{}
 	itemIdToIndexMap := make(map[int]int)
 	for _, grocery := range list {
-		item := components.Item{Id: grocery.Id, Name: grocery.Description, Quantity: grocery.Quantity, Completed: grocery.Completed, AnimationClass: ""}
+		item := components.Item{Id: grocery.Id, Name: grocery.Description, Quantity: grocery.Quantity, Completed: grocery.Completed, AnimationClass: animationClass}
 		items = append(items, item)
 		itemIdToIndexMap[grocery.Id] = len(items) - 1
 	}

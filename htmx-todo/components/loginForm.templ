@@ -1,0 +1,41 @@
+package components
+
+templ loginForm(isError bool) {
+	<form
+		class="flex flex-col animate-slide-down"
+		method="POST"
+		hx-post="/login"
+		hx-target="#section"
+		hx-swap="outerHTML transition:true"
+		hx-trigger="loginEvent"
+		x-on:submit="(ev)=>
+			{
+				ev.preventDefault();
+				if($store.data.token.trim()!=''){
+					ev.currentTarget.dispatchEvent(new Event('loginEvent'));
+					$store.data.processing=true;
+				}
+			}"
+		x-bind:disabled="$store.data.processing"
+	>
+		if isError {
+			<p
+				class="w-full bg-red-300 animate-slide-down p-1 pl-2 text-red-600 rounded font-semibold"
+			>*Please provide valid token.</p>
+		}
+		<label class="text-slate-700 font-semibold text-lg" style="view-transition-name:tokenLabel">Token:</label>
+		<input
+			type="password"
+			name="token"
+			x-model="$store.data.token"
+			style="view-transition-name:tokenInput"
+			class="mt-2 appearance-none outline-none rounded py-2 px-4 border border-slate-600 transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50"
+		/>
+		<button
+			type="submit"
+			style="view-transition-name:tokenSubmitBtn"
+			x-bind:disabled="$store.data.processing"
+			class="mt-4 apperance-none outline-none rounded py-2 px-4 bg-green-600 text-white transition duration-300 cursor-pointer text-lg hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+		>Enter</button>
+	</form>
+}
