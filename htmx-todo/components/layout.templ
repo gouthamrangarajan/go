@@ -19,6 +19,7 @@ templ Layout() {
 			<script>
 			  document.addEventListener('alpine:init', () => {
 					Alpine.store('data', {
+						newItemProcessing:false,
 						processing: false,
 						newItem:'',
 						token:''
@@ -26,6 +27,13 @@ templ Layout() {
 				})
 				document.body.addEventListener('htmx:afterSwap', function(event) {					
 					Alpine.store('data').processing=false
+					if(Alpine.store('data').newItemProcessing){
+						Alpine.store('data').newItemProcessing=false
+						let newItemAddedSplitArray=Alpine.store('data').newItem.trim().split(' ');
+						if(newItemAddedSplitArray.length>0){
+							Alpine.store('data').newItem=newItemAddedSplitArray[0];
+						}
+					}
 				})
 			</script>
 		</body>
