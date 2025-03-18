@@ -20,16 +20,14 @@ templ Layout() {
 			{ children... }
 			@onceHandle.Once() {
 				<script type="text/javascript">
-					var abortController=new AbortController();
-					document.addEventListener('alpine:init', () => {
-						if(!Alpine.store('data')){
-							Alpine.store('data', {
-								newItemProcessing:false,
-								processing: false,
-								newItem:'',
-								token:''
-							})
-						}
+					var abortController=new AbortController();					
+					document.addEventListener('alpine:init', () => {						
+						Alpine.store('data', {
+							newItemProcessing:false,
+							processing: false,
+							newItem:'',
+							token:''
+						})							
 					});
 					document.body.addEventListener('htmx:afterSwap', function(event) {	
 						Alpine.store('data').processing=false
@@ -40,7 +38,7 @@ templ Layout() {
 								Alpine.store('data').newItem=newItemAddedSplitArray[0];
 							}
 						}
-				    }, { signal: abortController.signal });
+					}, { signal: abortController.signal });
 				</script>
 			}
 		</body>
