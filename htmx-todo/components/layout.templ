@@ -13,32 +13,35 @@ templ Layout() {
 			<link href="/assets/css/tailwind.css" rel="stylesheet"/>
 			<link href="/assets/css/openprops.min.css" rel="stylesheet"/>
 			<link href="/assets/favicon.ico" rel="icon" type="image/x-icon"/>
+			<script src="/assets/js/htmx.min.js" type="text/javascript"></script>
+			<script src="/assets/js/alpine.min.js" type="text/javascript" defer></script>
 		</head>
 		<body>
 			{ children... }
 			@onceHandle.Once() {
-				<script src="/assets/js/htmx.min.js" type="text/javascript"></script>
-				<script src="/assets/js/alpine.min.js" type="text/javascript" defer></script>
-				<script>
-			  document.addEventListener('alpine:init', () => {
-					Alpine.store('data', {
-						newItemProcessing:false,
-						processing: false,
-						newItem:'',
-						token:''
-					})
-				})
-				document.body.addEventListener('htmx:afterSwap', function(event) {					
-					Alpine.store('data').processing=false
-					if(Alpine.store('data').newItemProcessing){
-						Alpine.store('data').newItemProcessing=false
-						let newItemAddedSplitArray=Alpine.store('data').newItem.trim().split(' ');
-						if(newItemAddedSplitArray.length>0){
-							Alpine.store('data').newItem=newItemAddedSplitArray[0];
+				<script type="text/javascript">
+					var abortController=new AbortController();
+					document.addEventListener('alpine:init', () => {
+						if(!Alpine.store('data')){
+							Alpine.store('data', {
+								newItemProcessing:false,
+								processing: false,
+								newItem:'',
+								token:''
+							})
 						}
-					}
-				})
-			</script>
+					});
+					document.body.addEventListener('htmx:afterSwap', function(event) {	
+						Alpine.store('data').processing=false
+						if(Alpine.store('data').newItemProcessing){
+							Alpine.store('data').newItemProcessing=false
+							let newItemAddedSplitArray=Alpine.store('data').newItem.trim().split(' ');
+							if(newItemAddedSplitArray.length>0){
+								Alpine.store('data').newItem=newItemAddedSplitArray[0];
+							}
+						}
+				    }, { signal: abortController.signal });
+				</script>
 			}
 		</body>
 	</html>
