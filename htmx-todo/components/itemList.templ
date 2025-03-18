@@ -37,9 +37,9 @@ templ ItemNameDisplay(item Item) {
 
 templ ItemQuantityDisplay(id int, quantity int, isOob bool) {
 	if !isOob {
-		<span class="w-5 text-center">{ strconv.Itoa(quantity) }</span>
+		<span class="w-5 text-center" style={ getDisplayQuantityTransitionName(id) }>{ strconv.Itoa(quantity) }</span>
 	} else {
-		<span class="w-5 text-center">{ strconv.Itoa(quantity) }</span>
+		<span class="w-5 text-center" style={ getDisplayQuantityTransitionName(id) }>{ strconv.Itoa(quantity) }</span>
 		<input
 			type="hidden"
 			value={ strconv.Itoa(quantity) }
@@ -63,4 +63,8 @@ func getLiTransitionName(id int) string {
 
 func getDisplayNameTransitionName(id int) string {
 	return fmt.Sprintf("view-transition-name:item-name-%v", id)
+}
+
+func getDisplayQuantityTransitionName(id int) string {
+	return fmt.Sprintf("view-transition-name:item-quantity-%v", id)
 }

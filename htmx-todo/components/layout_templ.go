@@ -8,6 +8,8 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+var onceHandle = templ.NewOnceHandle()
+
 func Layout() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -37,7 +39,29 @@ func Layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script src=\"/assets/js/htmx.min.js\" type=\"text/javascript\"></script><script src=\"/assets/js/alpine.min.js\" type=\"text/javascript\" defer></script><script>\n\t\t\t  document.addEventListener('alpine:init', () => {\n\t\t\t\t\tAlpine.store('data', {\n\t\t\t\t\t\tnewItemProcessing:false,\n\t\t\t\t\t\tprocessing: false,\n\t\t\t\t\t\tnewItem:'',\n\t\t\t\t\t\ttoken:''\n\t\t\t\t\t})\n\t\t\t\t})\n\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(event) {\t\t\t\t\t\n\t\t\t\t\tAlpine.store('data').processing=false\n\t\t\t\t\tif(Alpine.store('data').newItemProcessing){\n\t\t\t\t\t\tAlpine.store('data').newItemProcessing=false\n\t\t\t\t\t\tlet newItemAddedSplitArray=Alpine.store('data').newItem.trim().split(' ');\n\t\t\t\t\t\tif(newItemAddedSplitArray.length>0){\n\t\t\t\t\t\t\tAlpine.store('data').newItem=newItemAddedSplitArray[0];\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script src=\"/assets/js/htmx.min.js\" type=\"text/javascript\"></script> <script src=\"/assets/js/alpine.min.js\" type=\"text/javascript\" defer></script> <script>\n\t\t\t  document.addEventListener('alpine:init', () => {\n\t\t\t\t\tAlpine.store('data', {\n\t\t\t\t\t\tnewItemProcessing:false,\n\t\t\t\t\t\tprocessing: false,\n\t\t\t\t\t\tnewItem:'',\n\t\t\t\t\t\ttoken:''\n\t\t\t\t\t})\n\t\t\t\t})\n\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(event) {\t\t\t\t\t\n\t\t\t\t\tAlpine.store('data').processing=false\n\t\t\t\t\tif(Alpine.store('data').newItemProcessing){\n\t\t\t\t\t\tAlpine.store('data').newItemProcessing=false\n\t\t\t\t\t\tlet newItemAddedSplitArray=Alpine.store('data').newItem.trim().split(' ');\n\t\t\t\t\t\tif(newItemAddedSplitArray.length>0){\n\t\t\t\t\t\t\tAlpine.store('data').newItem=newItemAddedSplitArray[0];\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t</script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = onceHandle.Once().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

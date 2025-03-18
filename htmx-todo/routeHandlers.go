@@ -21,9 +21,10 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceries := GetGroceryData(databaseUrl, authToken)
+		sort := r.URL.Query().Get("sort")
+		groceries := GetGroceryData(databaseUrl, authToken, sort)
 		items, _ := tranformGroceries(groceries, false)
-		components.MainEl(items).Render(r.Context(), w)
+		components.MainEl(items, sort).Render(r.Context(), w)
 	}
 }
 
@@ -36,11 +37,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceries := GetGroceryData(databaseUrl, authToken)
+		groceries := GetGroceryData(databaseUrl, authToken, "")
 		items, _ := tranformGroceries(groceries, true)
 		cookie := generateUserIdCookie()
 		http.SetCookie(w, &cookie)
-		components.SectionEl(items).Render(r.Context(), w)
+		components.SectionEl(items, "").Render(r.Context(), w)
 	}
 }
 func generateUserIdCookie() http.Cookie {
@@ -103,14 +104,12 @@ func validateUserIdInCookie(r *http.Request) bool {
 func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-	groceries := GetGroceryData(databaseUrl, authToken)
-	items, _ := tranformGroceries(groceries, false)
 	newItem := components.Item{Name: r.FormValue("item"), Quantity: 1, AnimationClass: "animate-slide-down"}
 	newItem.Id = InsertGrocery(databaseUrl, authToken, newItem.Name, newItem.Quantity)
-	// newItem.Id = rand.Int()
-	if newItem.Id != 0 {
-		items = append([]components.Item{newItem}, items...)
-	}
+	sort := r.FormValue("sort")
+	groceries := GetGroceryData(databaseUrl, authToken, sort)
+	items, idToIndexMap := tranformGroceries(groceries, false)
+	items[idToIndexMap[newItem.Id]].AnimationClass = newItem.AnimationClass
 	components.ItemsUl(items).Render(r.Context(), w)
 }
 func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
@@ -153,7 +152,8 @@ func DecrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 func DeleteGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-	groceries := GetGroceryData(databaseUrl, authToken)
+	sort := r.FormValue("sort")
+	groceries := GetGroceryData(databaseUrl, authToken, sort)
 	items, idToIndexMap := tranformGroceries(groceries, false)
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {

@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strings"
 
 	"htmx-todo/models"
 
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
+	"golang.org/x/exp/slices"
 )
 
 func createDb(dbUrl string, authToken string) *sql.DB {
@@ -22,11 +24,18 @@ func createDb(dbUrl string, authToken string) *sql.DB {
 	return db
 }
 
-func GetGroceryData(dbUrl string, authToken string) []models.Grocery {
+func GetGroceryData(dbUrl string, authToken string, sort string) []models.Grocery {
+	sort = strings.Trim(strings.ToUpper(sort), "")
+	if !slices.Contains([]string{"ASC", "DESC"}, sort) {
+		sort = " ORDER BY id DESC"
+	} else {
+		sort = fmt.Sprintf(" ORDER BY description %v", sort)
+	}
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
 	var data []models.Grocery = []models.Grocery{}
-	rows, err := db.Query("SELECT id,description,quantity,completed FROM grocery WHERE active = true ORDER BY id desc")
+	query := "SELECT id,description,quantity,completed FROM grocery WHERE active = true" + sort
+	rows, err := db.Query(query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		return data
