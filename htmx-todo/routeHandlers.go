@@ -1,21 +1,17 @@
 package main
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
 	"htmx-todo/components"
 	"htmx-todo/models"
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func MainPage(w http.ResponseWriter, r *http.Request) {
-	valid := validateUserIdInCookie(r)
+	valid := ValidateUserIdInCookie(r)
 	if !valid {
 		components.MainElForLogin(false).Render(r.Context(), w)
 	} else {
@@ -40,68 +36,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		sort := r.FormValue("sort")
 		groceries := GetGroceryData(databaseUrl, authToken, sort)
 		items, _ := tranformGroceries(groceries, true)
-		cookie := generateUserIdCookie()
+		cookie := GenerateUserIdCookie()
 		http.SetCookie(w, &cookie)
 		components.SectionEl(items, sort).Render(r.Context(), w)
 	}
 }
-func generateUserIdCookie() http.Cookie {
-	secure := true
-	if os.Getenv("ENV") == "Development" {
-		secure = false
-	}
-	cookieSecretKey := os.Getenv("COOKIE_SECRET")
-	cookieName := "id"
-	userId := os.Getenv("USER_ID")
 
-	mac := hmac.New(sha256.New, []byte(cookieSecretKey))
-	mac.Write([]byte(cookieName))
-	mac.Write([]byte(userId))
-	signature := mac.Sum(nil)
-
-	cookieValueSignedBytes := append(signature, []byte(userId)...)
-	cookieValueSignedStr := base64.URLEncoding.EncodeToString(cookieValueSignedBytes)
-
-	cookie := http.Cookie{
-		Name:     cookieName,
-		Value:    cookieValueSignedStr,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   secure,
-		Expires:  time.Now().Add(365 * 24 * time.Hour),
-		SameSite: http.SameSiteStrictMode,
-	}
-	return cookie
-}
-func validateUserIdInCookie(r *http.Request) bool {
-	cookieName := "id"
-	userIdFromConfig := os.Getenv("USER_ID")
-	cookie, err := r.Cookie(cookieName)
-	if err != nil {
-		return false
-	}
-	cookieValueBase64Encoded := cookie.Value
-	cookieValueSignedStr, err := base64.URLEncoding.DecodeString(cookieValueBase64Encoded)
-	if err != nil {
-		return false
-	}
-
-	cookieValueSignedBytes := []byte(cookieValueSignedStr)
-	signature := cookieValueSignedBytes[:sha256.Size]
-
-	userIdFromCookie := cookieValueSignedBytes[sha256.Size:]
-
-	cookieSecretKey := os.Getenv("COOKIE_SECRET")
-	mac := hmac.New(sha256.New, []byte(cookieSecretKey))
-	mac.Write([]byte(cookieName))
-	mac.Write([]byte(userIdFromConfig))
-	expectedSignature := mac.Sum(nil)
-
-	if !hmac.Equal(signature, expectedSignature) {
-		return false
-	}
-	return string(userIdFromCookie) == userIdFromConfig
-}
 func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
