@@ -16,8 +16,8 @@ templ sortItemsForm(sort string) {
 	>
 		<select
 			x-on:change="(ev)=>{
-			    if(abortController){ 
-					abortController.abort();
+			    if(ABORT_CONTROLLER){ 
+					ABORT_CONTROLLER.abort();
 				}
 				ev.currentTarget.dispatchEvent(new Event('sortEvent',{bubbles:true}))
 			  }"
