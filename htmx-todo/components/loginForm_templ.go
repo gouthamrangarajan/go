@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func loginForm(isError bool) templ.Component {
+func loginForm(isError bool, sort string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -39,7 +39,20 @@ func loginForm(isError bool) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<label class=\"text-slate-700 font-semibold text-lg\" style=\"view-transition-name:tokenLabel\">Token:</label> <input type=\"password\" name=\"token\" x-model=\"$store.data.token\" style=\"view-transition-name:tokenInput\" class=\"mt-2 appearance-none outline-none rounded py-2 px-4 border border-slate-600 transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50\"> <button type=\"submit\" style=\"view-transition-name:tokenSubmitBtn\" x-bind:disabled=\"$store.data.processing\" class=\"mt-4 apperance-none outline-none rounded py-2 px-4 bg-green-600 text-white transition duration-300 cursor-pointer text-lg hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50\">Enter</button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<label class=\"text-slate-700 font-semibold text-lg\" style=\"view-transition-name:tokenLabel\">Token:</label> <input type=\"password\" name=\"token\" x-model=\"$store.data.token\" style=\"view-transition-name:tokenInput\" class=\"mt-2 appearance-none outline-none rounded py-2 px-4 border border-slate-600 transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50\"> <input type=\"hidden\" name=\"sort\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(sort)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/loginForm.templ`, Line: 34, Col: 47}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"> <button type=\"submit\" style=\"view-transition-name:tokenSubmitBtn\" x-bind:disabled=\"$store.data.processing\" class=\"mt-4 apperance-none outline-none rounded py-2 px-4 bg-green-600 text-white transition duration-300 cursor-pointer text-lg hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50\">Enter</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
