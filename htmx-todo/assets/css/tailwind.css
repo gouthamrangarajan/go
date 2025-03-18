@@ -194,6 +194,9 @@
   .visible {
     visibility: visible;
   }
+  .order-first {
+    order: -9999;
+  }
   .mx-auto {
     margin-inline: auto;
   }
@@ -257,6 +260,9 @@
   }
   .items-center {
     align-items: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
   }
   .gap-1 {
     gap: calc(var(--spacing) * 1);
@@ -504,6 +510,11 @@
       opacity: 70%;
     }
   }
+  .md\:order-last {
+    @media (width >= 48rem) {
+      order: 9999;
+    }
+  }
   .md\:w-8\/12 {
     @media (width >= 48rem) {
       width: calc(8/12 * 100%);
@@ -512,6 +523,16 @@
   .md\:w-10\/12 {
     @media (width >= 48rem) {
       width: calc(10/12 * 100%);
+    }
+  }
+  .md\:flex-row {
+    @media (width >= 48rem) {
+      flex-direction: row;
+    }
+  }
+  .md\:items-center {
+    @media (width >= 48rem) {
+      align-items: center;
     }
   }
   .lg\:w-5\/12 {

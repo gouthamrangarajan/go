@@ -32,28 +32,28 @@ func sortItemsForm(sort string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		sort = strings.Trim(strings.ToUpper(sort), "")
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form method=\"GET\" hx-get=\"/\" hx-push-url=\"true\" hx-trigger=\"sortEvent\" hx-include=\"[name=&#39;sort&#39;]\" hx-target=\"body\" hx-swap=\"outerHTML transition:true\"><select x-on:change=\"(ev)=&gt;{\n\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;sortEvent&#39;,{bubbles:true}))\n\t\t\t  }\" name=\"sort\" class=\"appearance-none outline-none py-2 px-4 border-2 rounded transition duration-300 border-slate-300 focus:border-slate-600\"><option value=\"\">No Sort</option> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form method=\"GET\" hx-get=\"/\" hx-push-url=\"true\" hx-trigger=\"sortEvent\" hx-include=\"[name=&#39;sort&#39;]\" hx-target=\"body\" hx-swap=\"outerHTML transition:true\" class=\"flex justify-end order-first md:order-last\"><select x-on:change=\"(ev)=&gt;{\n\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;sortEvent&#39;,{bubbles:true}))\n\t\t\t  }\" name=\"sort\" class=\"appearance-none outline-none py-2 px-4 border-2 rounded transition duration-300 border-slate-300 focus:border-slate-600\" style=\"view-transition-name:sort\"><option value=\"\">No Sort</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if sort == "ASC" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<option value=\"asc\" selected>Shop Name (A-Z)</option> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<option value=\"asc\" selected>Sort (A-Z)</option> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<option value=\"asc\">Shop Name (A-Z)</option> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<option value=\"asc\">Sort (A-Z)</option> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if sort == "DESC" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<option value=\"desc\" selected>Shop Name (Z-A)</option>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<option value=\"desc\" selected>Sort (Z-A)</option>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<option value=\"desc\">Shop Name (Z-A)</option>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<option value=\"desc\">Sort (Z-A)</option>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

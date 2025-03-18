@@ -37,11 +37,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceries := GetGroceryData(databaseUrl, authToken, "")
+		sort := r.FormValue("sort")
+		groceries := GetGroceryData(databaseUrl, authToken, sort)
 		items, _ := tranformGroceries(groceries, true)
 		cookie := generateUserIdCookie()
 		http.SetCookie(w, &cookie)
-		components.SectionEl(items, "").Render(r.Context(), w)
+		components.SectionEl(items, sort).Render(r.Context(), w)
 	}
 }
 func generateUserIdCookie() http.Cookie {

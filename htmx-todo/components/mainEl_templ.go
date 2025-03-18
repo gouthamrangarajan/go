@@ -92,7 +92,7 @@ func SectionEl(items []Item, sort string) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section style=\"view-transition-name:section\" class=\"bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12\" x-data=\"{}\" id=\"section\"><div class=\"flex items-center gap-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section style=\"view-transition-name:section\" class=\"bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12\" x-data=\"{}\" id=\"section\"><div class=\"flex flex-col gap-1 md:items-center md:flex-row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

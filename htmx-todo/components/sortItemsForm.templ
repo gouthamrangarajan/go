@@ -12,6 +12,7 @@ templ sortItemsForm(sort string) {
 		hx-include="[name='sort']"
 		hx-target="body"
 		hx-swap="outerHTML transition:true"
+		class="flex justify-end order-first md:order-last"
 	>
 		<select
 			x-on:change="(ev)=>{
@@ -19,17 +20,18 @@ templ sortItemsForm(sort string) {
 			  }"
 			name="sort"
 			class="appearance-none outline-none py-2 px-4 border-2 rounded transition duration-300 border-slate-300 focus:border-slate-600"
+			style="view-transition-name:sort"
 		>
 			<option value="">No Sort</option>
 			if sort== "ASC" {
-				<option value="asc" selected>Shop Name (A-Z)</option>
+				<option value="asc" selected>Sort (A-Z)</option>
 			} else {
-				<option value="asc">Shop Name (A-Z)</option>
+				<option value="asc">Sort (A-Z)</option>
 			}
 			if sort=="DESC" {
-				<option value="desc" selected>Shop Name (Z-A)</option>
+				<option value="desc" selected>Sort (Z-A)</option>
 			} else {
-				<option value="desc">Shop Name (Z-A)</option>
+				<option value="desc">Sort (Z-A)</option>
 			}
 		</select>
 	</form>
