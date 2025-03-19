@@ -26,7 +26,7 @@ templ addItemForm() {
 			x-model="$store.data.newItem"
 		/>
 		<button
-			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-green-600 hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600"
+			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-green-600 hover:opacity-80 disabled:opacity-70 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600"
 			type="submit"
 			x-bind:disabled="$store.data.newItemProcessing"
 		>
