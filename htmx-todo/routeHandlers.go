@@ -157,3 +157,13 @@ func tranformGroceries(list []models.Grocery, animateAllItems bool) ([]component
 func transformGrocery(grocery models.Grocery) components.Item {
 	return components.Item{Id: grocery.Id, Name: grocery.Description, Quantity: grocery.Quantity, Completed: grocery.Completed, AnimationClass: ""}
 }
+
+// func getGroceryListViaChannel(wg *sync.WaitGroup, databseUrl string, authToken string, sort string) *chan []models.Grocery {
+// 	wg.Add(1)
+// 	groceriesChan := make(chan []models.Grocery)
+// 	go func() {
+// 		groceriesChan <- GetGroceryData(databseUrl, authToken, sort)
+// 		defer wg.Done()
+// 	}()
+// 	return &groceriesChan
+// }

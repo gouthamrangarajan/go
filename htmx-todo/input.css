@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
+:root {
+    --animate-spin: spin 2s infinite var(--ease-spring-3)
+}
+
 .animate-slide-down {
     animation: slide-down 2s var(--ease-spring-3);
 }
+
 
 @keyframes slide-down {
     from {
@@ -15,6 +20,7 @@
         transform: translateY(0);
     }
 }
+
 
 .send-icon,
 .delete-icon {
