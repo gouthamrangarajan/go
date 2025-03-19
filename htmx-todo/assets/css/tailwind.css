@@ -598,11 +598,19 @@
     }
   }
 }
-:root {
-  --animate-spin: spin 2s infinite var(--ease-spring-3);
-}
 .animate-slide-down {
   animation: slide-down 2s var(--ease-spring-3);
+}
+.animate-spin-2 {
+  animation: spin-2 2s infinite var(--ease-spring-3);
+}
+@keyframes spin-2 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 @keyframes slide-down {
   from {
