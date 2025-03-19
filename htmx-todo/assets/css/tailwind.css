@@ -274,11 +274,17 @@
   .items-center {
     align-items: center;
   }
+  .justify-center {
+    justify-content: center;
+  }
   .justify-end {
     justify-content: flex-end;
   }
   .gap-1 {
     gap: calc(var(--spacing) * 1);
+  }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
   }
   .overflow-auto {
     overflow: auto;
@@ -312,6 +318,9 @@
   }
   .border-slate-600 {
     border-color: var(--color-slate-600);
+  }
+  .border-white {
+    border-color: var(--color-white);
   }
   .bg-green-600 {
     background-color: var(--color-green-600);
