@@ -18,6 +18,10 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
+		// wg := sync.WaitGroup{}
+		// groceriesChannel := getGroceryListViaChannel(&wg, databaseUrl, authToken, sort)
+		// wg.Wait()
+		// groceries := <-*groceriesChannel
 		groceries := GetGroceryData(databaseUrl, authToken, sort)
 		items, _ := tranformGroceries(groceries, false)
 		components.MainEl(items, sort).Render(r.Context(), w)
@@ -34,10 +38,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceries := GetGroceryData(databaseUrl, authToken, sort)
-		items, _ := tranformGroceries(groceries, true)
+		// wg := sync.WaitGroup{}
+		// groceriesChannel := getGroceryListViaChannel(&wg, databaseUrl, authToken, sort)
 		cookie := GenerateUserIdCookie()
 		http.SetCookie(w, &cookie)
+		// wg.Wait()
+		// groceries := <-*groceriesChannel
+		groceries := GetGroceryData(databaseUrl, authToken, sort)
+		items, _ := tranformGroceries(groceries, true)
 		components.SectionEl(items, sort).Render(r.Context(), w)
 	}
 }
