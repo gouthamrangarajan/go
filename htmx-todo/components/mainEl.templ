@@ -12,42 +12,54 @@ templ MainEl(items []Item, sort string) {
 	@Layout() {
 		<main class="flex flex-col items-center w-dvw h-dvh  overflow-auto bg-gradient-to-br from-purple-300 to-fuchsia-300 via-fuchsia-200 py-5 lg:py-10 px-2 lg:px-6">
 			<h1 class="text-2xl text-green-700 font-semibold text-center">Groceries</h1>
-			@SectionEl(items, sort)
+			@SectionEl(items, sort, false)
 		</main>
 	}
 }
 
-templ SectionEl(items []Item, sort string) {
-	<section
-		style="view-transition-name:section"
-		class="bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12"
-		x-data="{}"
-		id="section"
-	>
-		<div class="flex flex-col gap-1 md:items-center md:flex-row">
-			@addItemForm()
-			@sortItemsForm(sort)
-		</div>
-		@ItemsUl(items)
-	</section>
+templ SectionEl(items []Item, sort string, isOob bool) {
+	if isOob {
+		<section
+			style="view-transition-name:section"
+			class="bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12"
+			x-data="{}"
+			id="section"
+			hx-swap-oob="true"
+		>
+			<div class="flex flex-col gap-1 md:items-center md:flex-row">
+				@addItemForm()
+				@sortItemsForm(sort)
+			</div>
+			@ItemsUl(items)
+		</section>
+	} else {
+		<section
+			style="view-transition-name:section"
+			class="bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12"
+			x-data="{}"
+			id="section"
+		>
+			<div class="flex flex-col gap-1 md:items-center md:flex-row">
+				@addItemForm()
+				@sortItemsForm(sort)
+			</div>
+			@ItemsUl(items)
+		</section>
+	}
 }
 
-templ MainElForLogin(isError bool, sort string) {
+templ MainElForLogin(sort string) {
 	@Layout() {
 		<main class="flex flex-col items-center w-dvw h-dvh  overflow-auto bg-gradient-to-br from-purple-300 to-fuchsia-300 via-fuchsia-200 py-5 lg:py-10 px-2 lg:px-6">
 			<h1 class="text-2xl text-green-700 font-semibold text-center">Groceries</h1>
-			@SectionElForLogin(isError, sort)
+			<section
+				style="view-transition-name:section"
+				class="bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 mt-20 transition-all duration-300 flex flex-col gap-1 w-10/12 md:w-8/12 lg:w-5/12 xl:w-4/12"
+				x-data="{}"
+				id="section"
+			>
+				@loginForm(sort)
+			</section>
 		</main>
 	}
-}
-
-templ SectionElForLogin(isError bool, sort string) {
-	<section
-		style="view-transition-name:section"
-		class="bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 mt-20 transition-all duration-300 flex flex-col gap-1 w-10/12 md:w-8/12 lg:w-5/12 xl:w-4/12"
-		x-data="{}"
-		id="section"
-	>
-		@loginForm(isError, sort)
-	</section>
 }

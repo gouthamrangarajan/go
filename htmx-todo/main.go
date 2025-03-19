@@ -11,8 +11,9 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
+	} else {
+		fmt.Println("Loaded .env file")
 	}
-
 	http.HandleFunc("/", MainPage)
 	http.HandleFunc("/login", Login)
 	http.Handle("/add", Middleware(AddGroceryItem))

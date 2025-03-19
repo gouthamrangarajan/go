@@ -14,7 +14,7 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	sort := r.URL.Query().Get("sort")
 	valid := ValidateUserIdInCookie(r)
 	if !valid {
-		components.MainElForLogin(false, sort).Render(r.Context(), w)
+		components.MainElForLogin(sort).Render(r.Context(), w)
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
@@ -34,7 +34,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	sort := r.FormValue("sort")
 	compareErr := bcrypt.CompareHashAndPassword([]byte(hashedTokenFromConfig), []byte(token))
 	if compareErr != nil {
-		components.SectionElForLogin(true, sort).Render(r.Context(), w)
+		components.LoginFormErrMsg().Render(r.Context(), w)
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
@@ -46,7 +46,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		// groceries := <-*groceriesChannel
 		groceries := GetGroceryData(databaseUrl, authToken, sort)
 		items, _ := tranformGroceries(groceries, true)
-		components.SectionEl(items, sort).Render(r.Context(), w)
+		components.SectionEl(items, sort, true).Render(r.Context(), w)
 	}
 }
 
