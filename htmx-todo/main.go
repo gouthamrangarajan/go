@@ -17,7 +17,7 @@ func main() {
 	http.HandleFunc("/", MainPage)
 	http.HandleFunc("/login", Login)
 	http.Handle("/add", Middleware(AddGroceryItem))
-	http.Handle("/delete", Middleware(DeleteGroceryItem))
+	http.Handle("/delete", Middleware(RemoveGroceryItem))
 	http.Handle("/increment", Middleware(IncrementGroceryItemQuantity))
 	http.Handle("/decrement", Middleware(DecrementGroceryItemQuantity))
 	http.Handle("/complete", Middleware(ToggleCompleteGroceryItem))

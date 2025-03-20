@@ -24,7 +24,7 @@ func createDb(dbUrl string, authToken string) *sql.DB {
 	return db
 }
 
-func GetGroceryData(dbUrl string, authToken string, sort string) []models.Grocery {
+func GetGroceryList(dbUrl string, authToken string, sort string) []models.Grocery {
 	sort = strings.Trim(strings.ToUpper(sort), "")
 	if !slices.Contains([]string{"ASC", "DESC"}, sort) {
 		sort = " ORDER BY id DESC"
@@ -58,7 +58,7 @@ func GetGroceryData(dbUrl string, authToken string, sort string) []models.Grocer
 	return data
 }
 
-func GetGroceryItemData(dbUrl string, authToken string, id int) models.Grocery {
+func GetGroceryListItem(dbUrl string, authToken string, id int) models.Grocery {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
 	var data models.Grocery = models.Grocery{}
@@ -85,7 +85,7 @@ func GetGroceryItemData(dbUrl string, authToken string, id int) models.Grocery {
 	return data
 }
 
-func InsertGrocery(dbUrl string, authToken string, description string, quantity int) int {
+func InsertGroceryItem(dbUrl string, authToken string, description string, quantity int) int {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
 	result, err := db.Exec("INSERT INTO grocery (description, quantity) VALUES (?, ?)", description, quantity)
@@ -101,7 +101,7 @@ func InsertGrocery(dbUrl string, authToken string, description string, quantity 
 	return int(newId)
 }
 
-func DeleteGrocery(dbUrl string, authToken string, id int) int {
+func DeleteGroceryItem(dbUrl string, authToken string, id int) int {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
 	// result, err := db.Exec("UPDATE grocery SET active = false WHERE id = ?", id)
@@ -118,7 +118,7 @@ func DeleteGrocery(dbUrl string, authToken string, id int) int {
 	return int(rowsAffected)
 }
 
-func UpdateQuantity(dbUrl string, authToken string, id int, quantity int) int {
+func UpdateQuantityGroceryItem(dbUrl string, authToken string, id int, quantity int) int {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
 	result, err := db.Exec("UPDATE grocery SET quantity = ? WHERE id = ?", quantity, id)
@@ -134,7 +134,7 @@ func UpdateQuantity(dbUrl string, authToken string, id int, quantity int) int {
 	return int(rowsAffected)
 }
 
-func UpdateCompleted(dbUrl string, authToken string, id int, completed bool) int {
+func UpdateCompletedFieldGroceryItem(dbUrl string, authToken string, id int, completed bool) int {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
 	result, err := db.Exec("UPDATE grocery SET completed = ? WHERE id = ?", completed, id)
