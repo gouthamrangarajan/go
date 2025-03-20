@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"sync"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,9 +18,7 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		wg := sync.WaitGroup{}
-		groceries := <-*GetGroceryListViaChannel(&wg, databaseUrl, authToken, sort)
-		wg.Wait()
+		groceries := <-*GetGroceryListViaChannel(databaseUrl, authToken, sort)
 		// groceries := GetGroceryData(databaseUrl, authToken, sort)
 		items, _ := tranformGroceryList(groceries, false)
 		components.MainEl(items, sort).Render(r.Context(), w)
@@ -38,12 +35,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		wg := sync.WaitGroup{}
-		groceriesChannel := GetGroceryListViaChannel(&wg, databaseUrl, authToken, sort)
+		groceriesChannel := GetGroceryListViaChannel(databaseUrl, authToken, sort)
 		cookie := GenerateUserIdCookie()
 		http.SetCookie(w, &cookie)
 		groceries := <-*groceriesChannel
-		wg.Wait()
 		// groceries := GetGroceryList(databaseUrl, authToken, sort)
 		items, _ := tranformGroceryList(groceries, true)
 		components.SectionEl(items, sort, true).Render(r.Context(), w)
@@ -56,13 +51,10 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	sort := r.FormValue("sort")
 
 	// newItem := components.Item{Name: r.FormValue("item"), Quantity: 1, AnimationClass: "animate-slide-down"}
-	wg := sync.WaitGroup{}
-	newItemId := <-*InsertGroceryItemViaChannel(&wg, databaseUrl, authToken, r.FormValue("item"), 1)
-	wg.Wait()
+	newItemId := <-*InsertGroceryItemViaChannel(databaseUrl, authToken, r.FormValue("item"), 1)
 	// newItem.Id = InsertGroceryItem(databaseUrl, authToken, newItem.Name, newItem.Quantity)
 	// groceries := GetGroceryList(databaseUrl, authToken, sort)
-	groceries := <-*GetGroceryListViaChannel(&wg, databaseUrl, authToken, sort)
-	wg.Wait()
+	groceries := <-*GetGroceryListViaChannel(databaseUrl, authToken, sort)
 	items, idToIndexMap := tranformGroceryList(groceries, false)
 	if newItemId != 0 {
 		items[idToIndexMap[newItemId]].AnimationClass = "animate-slide-down"
@@ -73,14 +65,11 @@ func RemoveGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	sort := r.FormValue("sort")
-	wg := sync.WaitGroup{}
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
-		<-*DeleteGroceryItemViaChannel(&wg, databaseUrl, authToken, id)
-		wg.Wait()
+		<-*DeleteGroceryItemViaChannel(databaseUrl, authToken, id)
 	}
-	groceries := <-*GetGroceryListViaChannel(&wg, databaseUrl, authToken, sort)
-	wg.Wait()
+	groceries := <-*GetGroceryListViaChannel(databaseUrl, authToken, sort)
 	items, _ := tranformGroceryList(groceries, false)
 	// groceries := GetGroceryList(databaseUrl, authToken, sort)
 
@@ -102,9 +91,7 @@ func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 		components.ItemQuantityDisplay(id, currentQuantity, false).Render(r.Context(), w)
 	} else {
 		currentQuantity += 1
-		wg := sync.WaitGroup{}
-		rowsAffected := <-*UpdateQuantityGroceryItemViaChannel(&wg, databaseUrl, authToken, id, currentQuantity)
-		wg.Wait()
+		rowsAffected := <-*UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity)
 		// rowsAffected := UpdateQuantityGroceryItem(databaseUrl, authToken, id, currentQuantity)
 		if rowsAffected != 0 {
 			components.ItemQuantityDisplay(id, currentQuantity, true).Render(r.Context(), w)
@@ -125,9 +112,7 @@ func DecrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 		if currentQuantity < 1 {
 			currentQuantity = 1
 		}
-		wg := sync.WaitGroup{}
-		rowsAffected := <-*UpdateQuantityGroceryItemViaChannel(&wg, databaseUrl, authToken, id, currentQuantity)
-		wg.Wait()
+		rowsAffected := <-*UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity)
 		// rowsAffected := UpdateQuantityGroceryItem(databaseUrl, authToken, id, currentQuantity)
 		if rowsAffected != 0 {
 			components.ItemQuantityDisplay(id, currentQuantity, true).Render(r.Context(), w)
@@ -142,12 +127,9 @@ func ToggleCompleteGroceryItem(w http.ResponseWriter, r *http.Request) {
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
-		wg := sync.WaitGroup{}
-		groceryModelItem := <-*GetGroceryListItemViaChannel(&wg, databaseUrl, authToken, id)
-		wg.Wait()
+		groceryModelItem := <-*GetGroceryListItemViaChannel(databaseUrl, authToken, id)
 		item := transformGrocery(groceryModelItem)
-		rowsAffected := <-*UpdateCompletedFieldGroceryItemViaChannel(&wg, databaseUrl, authToken, id, !groceryModelItem.Completed)
-		wg.Wait()
+		rowsAffected := <-*UpdateCompletedFieldGroceryItemViaChannel(databaseUrl, authToken, id, !groceryModelItem.Completed)
 		// groceryModelItem := GetGroceryListItem(databaseUrl, authToken, id)
 		// item := transformGrocery(groceryModelItem)
 		// rowsAffected := UpdateCompletedFieldGroceryItem(databaseUrl, authToken, id, !groceryModelItem.Completed)
