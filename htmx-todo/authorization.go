@@ -33,7 +33,7 @@ func GenerateUserIdCookie() http.Cookie {
 		HttpOnly: true,
 		Secure:   secure,
 		Expires:  time.Now().Add(365 * 24 * time.Hour),
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	}
 	return cookie
 }
