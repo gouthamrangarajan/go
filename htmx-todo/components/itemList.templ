@@ -29,9 +29,9 @@ templ itemLi(item Item) {
 
 templ ItemNameDisplay(item Item) {
 	if item.Completed {
-		<span class="flex-1 text-lg line-through" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
+		<span class="flex-1 line-through text-2xl" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
 	} else {
-		<span class="flex-1 text-lg" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
+		<span class="flex-1 text-2xl" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
 	}
 }
 
