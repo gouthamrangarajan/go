@@ -467,10 +467,10 @@
       border-color: var(--color-slate-600);
     }
   }
-  .hover\:opacity-80 {
+  .hover\:opacity-90 {
     &:hover {
       @media (hover: hover) {
-        opacity: 80%;
+        opacity: 90%;
       }
     }
   }
@@ -537,9 +537,9 @@
       cursor: not-allowed;
     }
   }
-  .disabled\:opacity-70 {
+  .disabled\:opacity-80 {
     &:disabled {
-      opacity: 70%;
+      opacity: 80%;
     }
   }
   .md\:order-last {
