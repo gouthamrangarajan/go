@@ -19,6 +19,12 @@ templ Layout() {
 		<body class="font-(family-name:--font-handwritten) text-xl">
 			{ children... }
 			@onceHandle.Once() {
+				<script type="text/javascript">				
+					function setAlpineStoreNewItemValue(ev,val){
+						ev.preventDefault();
+						Alpine.store('data').newItem=val;
+					}
+				</script>
 				<script type="text/javascript">
 					var ABORT_CONTROLLER=new AbortController();					
 					document.addEventListener('alpine:init', () => {						
@@ -26,7 +32,7 @@ templ Layout() {
 							newItemProcessing:false,
 							processing: false,
 							newItem:'',
-							token:''
+							token:''							
 						})							
 					}, { signal: ABORT_CONTROLLER.signal });
 					document.body.addEventListener('htmx:afterSwap', function(event) {	

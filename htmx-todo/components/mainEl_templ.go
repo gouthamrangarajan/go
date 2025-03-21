@@ -16,7 +16,7 @@ type Item struct {
 	AnimationClass string
 }
 
-func MainEl(items []Item, sort string) templ.Component {
+func MainEl(items []Item, sort string, suggestions string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -53,7 +53,7 @@ func MainEl(items []Item, sort string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = SectionEl(items, sort, false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = SectionEl(items, sort, false, suggestions).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -71,7 +71,7 @@ func MainEl(items []Item, sort string) templ.Component {
 	})
 }
 
-func SectionEl(items []Item, sort string, isOob bool) templ.Component {
+func SectionEl(items []Item, sort string, isOob bool, suggestions string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -109,7 +109,7 @@ func SectionEl(items []Item, sort string, isOob bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ItemsUl(items).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = OpenAiSuggestionsAndItemsUl(items, suggestions, false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -134,7 +134,7 @@ func SectionEl(items []Item, sort string, isOob bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ItemsUl(items).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = OpenAiSuggestionsAndItemsUl(items, suggestions, false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

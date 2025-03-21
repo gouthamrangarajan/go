@@ -24,6 +24,8 @@
     --color-slate-800: oklch(0.279 0.041 260.031);
     --color-white: #fff;
     --spacing: 0.25rem;
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
@@ -405,6 +407,10 @@
     font-size: var(--text-4xl);
     line-height: var(--tw-leading, var(--text-4xl--line-height));
   }
+  .text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--tw-leading, var(--text-lg--line-height));
+  }
   .text-xl {
     font-size: var(--text-xl);
     line-height: var(--tw-leading, var(--text-xl--line-height));
@@ -422,6 +428,9 @@
   .text-red-600 {
     color: var(--color-red-600);
   }
+  .text-slate-600 {
+    color: var(--color-slate-600);
+  }
   .text-slate-700 {
     color: var(--color-slate-700);
   }
@@ -430,6 +439,9 @@
   }
   .text-white {
     color: var(--color-white);
+  }
+  .italic {
+    font-style: italic;
   }
   .line-through {
     text-decoration-line: line-through;
@@ -483,6 +495,16 @@
   .focus\:border-slate-600 {
     &:focus {
       border-color: var(--color-slate-600);
+    }
+  }
+  .focus\:underline {
+    &:focus {
+      text-decoration-line: underline;
+    }
+  }
+  .focus\:underline-offset-4 {
+    &:focus {
+      text-underline-offset: 4px;
     }
   }
   .focus\:ring-2 {

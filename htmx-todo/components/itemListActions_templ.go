@@ -225,7 +225,7 @@ func deleteItemForm(id int) templ.Component {
 			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<form method=\"POST\" hx-post=\"/delete\" hx-target=\"closest ul\" hx-swap=\"outerHTML transition:true\" hx-include=\"[name=&#39;sort&#39;]\" class=\"pt-1.5\"><input type=\"hidden\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<form method=\"POST\" hx-post=\"/delete\" hx-target=\"closest ul\" hx-swap=\"outerHTML transition:true\" hx-include=\"[name=&#39;sort&#39;], [name=&#39;suggestions&#39;]\" class=\"pt-1.5\"><input type=\"hidden\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

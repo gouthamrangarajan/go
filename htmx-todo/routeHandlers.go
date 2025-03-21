@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"htmx-todo/components"
 	"htmx-todo/models"
+	"htmx-todo/services"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,16 +14,16 @@ import (
 
 func MainPage(w http.ResponseWriter, r *http.Request) {
 	sort := r.URL.Query().Get("sort")
-	valid := ValidateUserIdInCookie(r)
+	suggestions := r.URL.Query().Get("suggestions")
+	valid := services.ValidateUserIdInCookie(r)
 	if !valid {
 		components.MainElForLogin(sort).Render(r.Context(), w)
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceries := <-*GetGroceryListViaChannel(databaseUrl, authToken, sort)
-		// groceries := GetGroceryData(databaseUrl, authToken, sort)
+		groceries := <-*services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
 		items, _ := tranformGroceryList(groceries, false)
-		components.MainEl(items, sort).Render(r.Context(), w)
+		components.MainEl(items, sort, suggestions).Render(r.Context(), w)
 	}
 }
 
@@ -35,13 +37,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceriesChannel := GetGroceryListViaChannel(databaseUrl, authToken, sort)
-		cookie := GenerateUserIdCookie()
+		groceriesChannel := services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
+		cookie := services.GenerateUserIdCookie()
 		http.SetCookie(w, &cookie)
 		groceries := <-*groceriesChannel
-		// groceries := GetGroceryList(databaseUrl, authToken, sort)
 		items, _ := tranformGroceryList(groceries, true)
-		components.SectionEl(items, sort, true).Render(r.Context(), w)
+		components.SectionEl(items, sort, true, "").Render(r.Context(), w)
 	}
 }
 
@@ -50,37 +51,29 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	sort := r.FormValue("sort")
 
-	// newItem := components.Item{Name: r.FormValue("item"), Quantity: 1, AnimationClass: "animate-slide-down"}
-	newItemId := <-*InsertGroceryItemViaChannel(databaseUrl, authToken, r.FormValue("item"), 1)
-	// newItem.Id = InsertGroceryItem(databaseUrl, authToken, newItem.Name, newItem.Quantity)
-	// groceries := GetGroceryList(databaseUrl, authToken, sort)
-	groceries := <-*GetGroceryListViaChannel(databaseUrl, authToken, sort)
+	openaiChannel := callOpenAI(r.FormValue("item"))
+	newItemId := <-*services.InsertGroceryItemViaChannel(databaseUrl, authToken, r.FormValue("item"), 1)
+	groceries := <-*services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
 	items, idToIndexMap := tranformGroceryList(groceries, false)
 	if newItemId != 0 {
 		items[idToIndexMap[newItemId]].AnimationClass = "animate-slide-down"
 	}
-	components.ItemsUl(items).Render(r.Context(), w)
+
+	openAiResult := <-openaiChannel
+	components.OpenAiSuggestionsAndItemsUl(items, openAiResult, true).Render(r.Context(), w)
 }
 func RemoveGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	sort := r.FormValue("sort")
+	suggestions := r.FormValue("suggestions")
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
-		<-*DeleteGroceryItemViaChannel(databaseUrl, authToken, id)
+		<-*services.DeleteGroceryItemViaChannel(databaseUrl, authToken, id)
 	}
-	groceries := <-*GetGroceryListViaChannel(databaseUrl, authToken, sort)
+	groceries := <-*services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
 	items, _ := tranformGroceryList(groceries, false)
-	// groceries := GetGroceryList(databaseUrl, authToken, sort)
-
-	// id, err := strconv.Atoi(r.FormValue("id"))
-	// if err == nil {
-	// 	rowsAffected := DeleteGroceryItem(databaseUrl, authToken, id)
-	// 	if rowsAffected != 0 {
-	// 		items = findAndRemoveItem(items, id, idToIndexMap)
-	// 	}
-	// }
-	components.ItemsUl(items).Render(r.Context(), w)
+	components.OpenAiSuggestionsAndItemsUl(items, suggestions, true).Render(r.Context(), w)
 }
 func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
@@ -91,8 +84,7 @@ func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 		components.ItemQuantityDisplay(id, currentQuantity, false).Render(r.Context(), w)
 	} else {
 		currentQuantity += 1
-		rowsAffected := <-*UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity)
-		// rowsAffected := UpdateQuantityGroceryItem(databaseUrl, authToken, id, currentQuantity)
+		rowsAffected := <-*services.UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity)
 		if rowsAffected != 0 {
 			components.ItemQuantityDisplay(id, currentQuantity, true).Render(r.Context(), w)
 		} else {
@@ -112,8 +104,7 @@ func DecrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 		if currentQuantity < 1 {
 			currentQuantity = 1
 		}
-		rowsAffected := <-*UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity)
-		// rowsAffected := UpdateQuantityGroceryItem(databaseUrl, authToken, id, currentQuantity)
+		rowsAffected := <-*services.UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity)
 		if rowsAffected != 0 {
 			components.ItemQuantityDisplay(id, currentQuantity, true).Render(r.Context(), w)
 		} else {
@@ -127,12 +118,9 @@ func ToggleCompleteGroceryItem(w http.ResponseWriter, r *http.Request) {
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
-		groceryModelItem := <-*GetGroceryListItemViaChannel(databaseUrl, authToken, id)
+		groceryModelItem := <-*services.GetGroceryListItemViaChannel(databaseUrl, authToken, id)
 		item := transformGrocery(groceryModelItem)
-		rowsAffected := <-*UpdateCompletedFieldGroceryItemViaChannel(databaseUrl, authToken, id, !groceryModelItem.Completed)
-		// groceryModelItem := GetGroceryListItem(databaseUrl, authToken, id)
-		// item := transformGrocery(groceryModelItem)
-		// rowsAffected := UpdateCompletedFieldGroceryItem(databaseUrl, authToken, id, !groceryModelItem.Completed)
+		rowsAffected := <-*services.UpdateCompletedFieldGroceryItemViaChannel(databaseUrl, authToken, id, !groceryModelItem.Completed)
 		if rowsAffected != 0 {
 			groceryModelItem.Completed = !groceryModelItem.Completed
 			item.Completed = !item.Completed
@@ -159,4 +147,20 @@ func tranformGroceryList(list []models.Grocery, animateAllItems bool) ([]compone
 
 func transformGrocery(grocery models.Grocery) components.Item {
 	return components.Item{Id: grocery.Id, Name: grocery.Description, Quantity: grocery.Quantity, Completed: grocery.Completed, AnimationClass: ""}
+}
+
+func callOpenAI(item string) <-chan string {
+	url := os.Getenv("OPENAI_API_URL")
+	key := os.Getenv("OPENAI_API_KEY")
+	model := os.Getenv("OPENAI_API_MODEL")
+	noOfItemsToSuggest := os.Getenv("OPENAI_API_NUMBER_OF_ITEMS_TO_SUGGEST")
+
+	prompt := fmt.Sprintf("Give %v items for grocery similar to %v in the format: 'item 1, item 2, item 3'", noOfItemsToSuggest, item)
+
+	request := services.OpenAIAPIRequest{
+		Model: model,
+		Messages: append([]services.OpenAIAPIRequestMessageField{},
+			services.OpenAIAPIRequestMessageField{Role: "user", Content: prompt}),
+	}
+	return services.CallOpenAIViaChannel(url, key, request)
 }

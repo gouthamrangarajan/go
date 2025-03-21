@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"htmx-todo/services"
+
 	"github.com/lpernett/godotenv"
 )
 
@@ -16,11 +18,11 @@ func main() {
 	}
 	http.HandleFunc("/", MainPage)
 	http.HandleFunc("/login", Login)
-	http.Handle("/add", Middleware(AddGroceryItem))
-	http.Handle("/delete", Middleware(RemoveGroceryItem))
-	http.Handle("/increment", Middleware(IncrementGroceryItemQuantity))
-	http.Handle("/decrement", Middleware(DecrementGroceryItemQuantity))
-	http.Handle("/complete", Middleware(ToggleCompleteGroceryItem))
+	http.Handle("/add", services.Middleware(AddGroceryItem))
+	http.Handle("/delete", services.Middleware(RemoveGroceryItem))
+	http.Handle("/increment", services.Middleware(IncrementGroceryItemQuantity))
+	http.Handle("/decrement", services.Middleware(DecrementGroceryItemQuantity))
+	http.Handle("/complete", services.Middleware(ToggleCompleteGroceryItem))
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 	fmt.Println("Listening on :3000")
 	http.ListenAndServe(":3000", nil)

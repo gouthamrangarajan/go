@@ -82,7 +82,7 @@ templ deleteItemForm(id int) {
 		hx-post="/delete"
 		hx-target="closest ul"
 		hx-swap="outerHTML transition:true"
-		hx-include="[name='sort']"
+		hx-include="[name='sort'], [name='suggestions']"
 		class="pt-1.5"
 	>
 		<input type="hidden" value={ strconv.Itoa(id) } name="id"/>

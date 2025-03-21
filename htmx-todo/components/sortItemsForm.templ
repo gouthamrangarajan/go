@@ -9,7 +9,7 @@ templ sortItemsForm(sort string) {
 		hx-get="/"
 		hx-push-url="true"
 		hx-trigger="sortEvent"
-		hx-include="[name='sort']"
+		hx-include="[name='sort'], [name='suggestions']"
 		hx-target="body"
 		hx-swap="outerHTML transition:true"
 		class="flex justify-end order-first md:order-last"

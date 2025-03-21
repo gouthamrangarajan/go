@@ -3,14 +3,73 @@ package components
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
-templ ItemsUl(items []Item) {
+templ itemsUL(items []Item) {
 	<ul class="flex flex-col gap-1">
 		for _, item := range items {
 			@itemLi(item)
 		}
 	</ul>
+}
+
+templ openAiSuggestions(concatenatedSuggestion string, isOob bool) {
+	{{ suggestions := strings.Split(concatenatedSuggestion, ",") }}
+	if isOob {
+		<p
+			id="openaiSuggestion"
+			style="view-transition-name:openaiSuggestion"
+			class="py-2 px-4 flex flex-col text-lg"
+			hx-swap-oob="true"
+		>
+			<span class="italic text-slate-600">* Open AI suggestions click on the item to populate</span>
+			<span class="flex gap-1">
+				for idx,suggestion := range suggestions {
+					<a
+						href="#"
+						class="apperance-none outline-none cursor-pointer text-slate-800 hover:opacity-90 focus:underline focus:underline-offset-4"
+						onclick={ templ.JSFuncCall("setAlpineStoreNewItemValue", templ.JSExpression("event"), suggestion) }
+					>{ strings.Trim(suggestion,"") }</a>
+					if idx+1<len(suggestions) {
+						<span>,</span>
+					}
+				}
+			</span>
+			<input type="hidden" name="suggestions" value={ concatenatedSuggestion }/>
+		</p>
+	} else {
+		<p
+			id="openaiSuggestion"
+			style="view-transition-name:openaiSuggestion"
+			class="py-2 px-4 flex flex-col text-lg"
+		>
+			<span class="italic text-slate-600">* Open AI suggestions click on the item to populate</span>
+			<span class="flex gap-1">
+				for idx,suggestion := range suggestions {
+					<a
+						href="#"
+						class="apperance-none outline-none cursor-pointer text-slate-800 hover:opacity-90 focus:underline focus:underline-offset-4"
+						onclick={ templ.JSFuncCall("setAlpineStoreNewItemValue", templ.JSExpression("event"), suggestion) }
+					>{ strings.Trim(suggestion,"") }</a>
+					if idx+1<len(suggestions) {
+						<span>,</span>
+					}
+				}
+			</span>
+			<input type="hidden" name="suggestions" value={ concatenatedSuggestion }/>
+		</p>
+	}
+}
+
+templ OpenAiSuggestionsAndItemsUl(items []Item, concatenatedSuggestion string, isSuggestionOob bool) {
+	if strings.Trim(concatenatedSuggestion,"")!="" {
+		@openAiSuggestions(concatenatedSuggestion, isSuggestionOob)
+		@itemsUL(items)
+	} else {
+		<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion"></p>
+		@itemsUL(items)
+	}
 }
 
 templ itemLi(item Item) {
@@ -27,12 +86,20 @@ templ itemLi(item Item) {
 	</li>
 }
 
+func getLiTransitionName(id int) string {
+	return fmt.Sprintf("view-transition-name:item-%v", id)
+}
+
 templ ItemNameDisplay(item Item) {
 	if item.Completed {
 		<span class="flex-1 line-through text-2xl" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
 	} else {
 		<span class="flex-1 text-2xl" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
 	}
+}
+
+func getDisplayNameTransitionName(id int) string {
+	return fmt.Sprintf("view-transition-name:item-name-%v", id)
 }
 
 templ ItemQuantityDisplay(id int, quantity int, isOob bool) {
@@ -55,14 +122,6 @@ templ ItemQuantityDisplay(id int, quantity int, isOob bool) {
 			hx-swap-oob="true"
 		/>
 	}
-}
-
-func getLiTransitionName(id int) string {
-	return fmt.Sprintf("view-transition-name:item-%v", id)
-}
-
-func getDisplayNameTransitionName(id int) string {
-	return fmt.Sprintf("view-transition-name:item-name-%v", id)
 }
 
 func getDisplayQuantityTransitionName(id int) string {
