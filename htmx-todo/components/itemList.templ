@@ -67,7 +67,11 @@ templ OpenAiSuggestionsAndItemsUl(items []Item, concatenatedSuggestion string, i
 		@openAiSuggestions(concatenatedSuggestion, isSuggestionOob)
 		@itemsUL(items)
 	} else {
-		<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion"></p>
+		if isSuggestionOob {
+			<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion" hx-swap-oob="true"></p>
+		} else {
+			<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion"></p>
+		}
 		@itemsUL(items)
 	}
 }
