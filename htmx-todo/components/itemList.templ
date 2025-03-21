@@ -65,15 +65,14 @@ templ openAiSuggestions(concatenatedSuggestion string, isOob bool) {
 templ OpenAiSuggestionsAndItemsUl(items []Item, concatenatedSuggestion string, isSuggestionOob bool) {
 	if strings.Trim(concatenatedSuggestion,"")!="" {
 		@openAiSuggestions(concatenatedSuggestion, isSuggestionOob)
-		@itemsUL(items)
 	} else {
 		if isSuggestionOob {
 			<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion" hx-swap-oob="true"></p>
 		} else {
 			<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion"></p>
 		}
-		@itemsUL(items)
 	}
+	@itemsUL(items)
 }
 
 templ itemLi(item Item) {
