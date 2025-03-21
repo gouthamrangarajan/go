@@ -1,6 +1,6 @@
 package components
 
-templ loginForm(sort string) {
+templ loginForm(sort string, suggestions string) {
 	<form
 		class="flex flex-col animate-slide-down"
 		method="POST"
@@ -28,6 +28,7 @@ templ loginForm(sort string) {
 			class="mt-2 appearance-none outline-none rounded py-2 px-4 border border-slate-600 transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50"
 		/>
 		<input type="hidden" name="sort" value={ sort }/>
+		<input type="hidden" name="suggestions" value={ suggestions }/>
 		<button
 			type="submit"
 			style="view-transition-name:tokenSubmitBtn"
