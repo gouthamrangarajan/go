@@ -13,21 +13,22 @@ templ sortItemsForm(sort string) {
 		hx-target="body"
 		hx-swap="outerHTML transition:true"
 		class="flex justify-end order-first md:order-last"
-		x-bind:disabled="$store.data.sortProcessing"
+		x-bind:disabled="$store.data.sortProcessing || $store.data.processing"
 	>
 		<div class="relative">
 			<select
 				x-on:change="(ev)=>{
 			    if(ABORT_CONTROLLER){ 
 					ABORT_CONTROLLER.abort();
-				}
-				ev.currentTarget.dispatchEvent(new Event('sortEvent',{bubbles:true}))
-				$store.data.sortProcessing=true
+				}				
+				$store.data.sortProcessing=true;
+				$store.data.processing=true;
+				ev.currentTarget.dispatchEvent(new Event('sortEvent',{bubbles:true}));
 			  }"
 				name="sort"
 				class="appearance-none outline-none py-2 px-4 border-2 w-38 rounded transition duration-300 border-slate-300 focus:border-slate-600 disabled:opacity-50"
 				style="view-transition-name:sort"
-				x-bind:disabled="$store.data.sortProcessing"
+				x-bind:disabled="$store.data.sortProcessing || $store.data.processing"
 			>
 				<option value="">No Sort</option>
 				if sort== "ASC" {
