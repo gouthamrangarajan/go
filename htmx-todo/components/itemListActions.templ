@@ -90,8 +90,9 @@ templ deleteItemForm(id int) {
 			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-red-600 hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-red-600"
 			type="submit"
 			x-on:click="(ev)=>{
-				ev.preventDefault();
+				ev.preventDefault();								
 				ev.currentTarget.dispatchEvent(new Event('deleteEvent',{bubbles:'true'}));
+				ev.currentTarget.disabled=true;
 			}"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
