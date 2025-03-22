@@ -66,15 +66,11 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 func RemoveGroceryItem(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-	sort := r.FormValue("sort")
-	suggestions := r.FormValue("suggestions")
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
 		<-*services.DeleteGroceryItemViaChannel(databaseUrl, authToken, id)
 	}
-	groceries := <-*services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
-	items, _ := tranformGroceryList(groceries, false)
-	components.OpenAiSuggestionsAndItemsUl(items, suggestions, true).Render(r.Context(), w)
+	w.WriteHeader(http.StatusOK)
 }
 func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")

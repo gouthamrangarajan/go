@@ -80,9 +80,8 @@ templ deleteItemForm(id int) {
 	<form
 		method="POST"
 		hx-post="/delete"
-		hx-target="closest ul"
+		hx-target="closest li"
 		hx-swap="outerHTML transition:true"
-		hx-include="[name='sort'], [name='suggestions']"
 		hx-trigger="deleteEvent"
 		class="pt-1.5"
 	>
@@ -90,10 +89,8 @@ templ deleteItemForm(id int) {
 		<button
 			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-red-600 hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-red-600"
 			type="submit"
-			x-bind:disabled="$store.data.processing"
 			x-on:click="(ev)=>{
 				ev.preventDefault();
-				$store.data.processing=true;
 				ev.currentTarget.dispatchEvent(new Event('deleteEvent',{bubbles:'true'}));
 			}"
 		>
