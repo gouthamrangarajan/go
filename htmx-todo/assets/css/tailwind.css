@@ -198,6 +198,21 @@
   .visible {
     visibility: visible;
   }
+  .absolute {
+    position: absolute;
+  }
+  .relative {
+    position: relative;
+  }
+  .top-3 {
+    top: calc(var(--spacing) * 3);
+  }
+  .right-2 {
+    right: calc(var(--spacing) * 2);
+  }
+  .-z-10 {
+    z-index: calc(10 * -1);
+  }
   .order-first {
     order: -9999;
   }
@@ -246,6 +261,9 @@
   }
   .w-10\/12 {
     width: calc(10/12 * 100%);
+  }
+  .w-38 {
+    width: calc(var(--spacing) * 38);
   }
   .w-dvw {
     width: 100dvw;
@@ -563,6 +581,11 @@
   .disabled\:cursor-not-allowed {
     &:disabled {
       cursor: not-allowed;
+    }
+  }
+  .disabled\:opacity-50 {
+    &:disabled {
+      opacity: 50%;
     }
   }
   .disabled\:opacity-80 {

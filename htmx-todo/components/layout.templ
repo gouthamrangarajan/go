@@ -32,17 +32,23 @@ templ Layout() {
 							newItemProcessing:false,
 							processing: false,
 							newItem:'',
-							token:''							
+							token:'',
+							sortProcessing:false							
 						})							
 					}, { signal: ABORT_CONTROLLER.signal });
 					document.body.addEventListener('htmx:afterSwap', function(event) {	
-						Alpine.store('data').processing=false
+						if(Alpine.store('data').processing){
+							Alpine.store('data').processing=false
+						}
 						if(Alpine.store('data').newItemProcessing){
 							Alpine.store('data').newItemProcessing=false
 							let newItemAddedSplitArray=Alpine.store('data').newItem.trim().split(' ');
 							if(newItemAddedSplitArray.length>0){
 								Alpine.store('data').newItem=newItemAddedSplitArray[0];
 							}
+						}
+						if(Alpine.store('data').sortProcessing){
+							Alpine.store('data').sortProcessing=false
 						}
 					}, { signal: ABORT_CONTROLLER.signal });
 				</script>
