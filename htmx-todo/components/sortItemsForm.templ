@@ -54,10 +54,7 @@ templ sortItemsForm(sort string) {
 				</svg>
 			</template>
 			<template x-if="$store.data.sortProcessing">
-				<span
-					style="view-transition-name:sortItemsSelectIcon"
-					class="w-6 h-6 absolute top-3 right-2 -z-10 block border-2 border-dashed border-slate-600 rounded-full animate-spin-2"
-				></span>
+				@loader("border-slate-600 absolute top-3 right-2 -z-10 block", "view-transition-name:sortItemsSelectIcon")
 			</template>
 		</div>
 	</form>

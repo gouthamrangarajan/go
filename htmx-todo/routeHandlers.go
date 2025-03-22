@@ -24,6 +24,8 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 		groceries := <-*services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
 		items, _ := tranformGroceryList(groceries, false)
 		components.MainEl(items, sort, suggestions).Render(r.Context(), w)
+		// comp := components.MainEl(items, sort, suggestions)
+		// templ.Handler(comp).ServeHTTP(w, r)
 	}
 }
 
@@ -59,7 +61,6 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	if newItemId != 0 {
 		items[idToIndexMap[newItemId]].AnimationClass = "animate-slide-down"
 	}
-
 	openAiResult := <-openaiChannel
 	components.OpenAiSuggestionsAndItemsUl(items, openAiResult, true).Render(r.Context(), w)
 }
@@ -70,6 +71,7 @@ func RemoveGroceryItem(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		<-*services.DeleteGroceryItemViaChannel(databaseUrl, authToken, id)
 	}
+	//handle errror
 	w.WriteHeader(http.StatusOK)
 }
 func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {

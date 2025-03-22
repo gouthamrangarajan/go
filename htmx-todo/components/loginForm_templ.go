@@ -55,7 +55,23 @@ func loginForm(sort string, suggestions string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"> <button type=\"submit\" style=\"view-transition-name:tokenSubmitBtn\" x-bind:disabled=\"$store.data.processing\" class=\"mt-4 apperance-none outline-none flex justify-center items-center gap-3 rounded py-2 px-4 bg-green-600 text-white transition duration-300 cursor-pointer hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50\"><span>Enter</span><template x-if=\"!$store.data.processing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:loginFormSubmitIcon\"><path d=\"M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z\"></path></svg></template><template x-if=\"$store.data.processing\"><span style=\"view-transition-name:loginFormSubmitIcon\" class=\"w-6 h-6 block border-2 border-dashed border-white rounded-full animate-spin-2\"></span></template></button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"> <button type=\"submit\" style=\"view-transition-name:tokenSubmitBtn\" x-bind:disabled=\"$store.data.processing\" class=\"mt-4 apperance-none outline-none flex justify-center items-center gap-3 rounded py-2 px-4 bg-green-600 text-white transition duration-300 cursor-pointer hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50\"><span>Enter</span><template x-if=\"!$store.data.processing\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = submitIcon("view-transition-name:loginFormSubmitIcon").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</template><template x-if=\"$store.data.processing\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = loader("block border-white", "view-transition-name:loginFormSubmitIcon").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</template></button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -84,7 +100,7 @@ func LoginFormErrMsg() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<p class=\"error__msg w-full bg-red-300 animate-slide-down p-1 pl-2 text-red-600 rounded font-semibold\">*Please provide valid token.</p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p class=\"error__msg w-full bg-red-300 animate-slide-down p-1 pl-2 text-red-600 rounded font-semibold\">*Please provide valid token.</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

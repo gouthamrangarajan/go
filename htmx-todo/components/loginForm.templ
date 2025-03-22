@@ -37,21 +37,10 @@ templ loginForm(sort string, suggestions string) {
 		>
 			<span>Enter</span>
 			<template x-if="!$store.data.processing">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					class="size-6"
-					style="view-transition-name:loginFormSubmitIcon"
-				>
-					<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"></path>
-				</svg>
+				@submitIcon("view-transition-name:loginFormSubmitIcon")
 			</template>
 			<template x-if="$store.data.processing">
-				<span
-					style="view-transition-name:loginFormSubmitIcon"
-					class="w-6 h-6 block border-2 border-dashed border-white rounded-full animate-spin-2"
-				></span>
+				@loader("block border-white", "view-transition-name:loginFormSubmitIcon")
 			</template>
 		</button>
 	</form>
