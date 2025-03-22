@@ -29,7 +29,7 @@ func GetGroceryList(dbUrl string, authToken string, sort string) []models.Grocer
 	if !slices.Contains([]string{"ASC", "DESC"}, sort) {
 		sort = " ORDER BY id DESC"
 	} else {
-		sort = fmt.Sprintf(" ORDER BY description %v", sort)
+		sort = fmt.Sprintf(" ORDER BY description COLLATE NOCASE %v", sort)
 	}
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
