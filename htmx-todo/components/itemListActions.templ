@@ -46,7 +46,7 @@ templ increaseQuantityForm(id int, quantity int) {
 			id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
 		/>
 		<button
-			class="appearance-none outline-none cursor-pointer rounded transition duration-300 bg-green-600 text-white  hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+			class="appearance-none outline-none cursor-pointer rounded transition duration-300 bg-green-600 text-white  hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
 			type="submit"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -66,7 +66,7 @@ templ decreaseQuantityForm(id int, quantity int) {
 			id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
 		/>
 		<button
-			class="appearance-none outline-none cursor-pointer rounded transition duration-300 bg-red-600 text-white hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
+			class="appearance-none outline-none cursor-pointer rounded transition duration-300 bg-red-600 text-white hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
 			type="submit"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -88,7 +88,7 @@ templ deleteItemForm(id int) {
 	>
 		<input type="hidden" value={ strconv.Itoa(id) } name="id"/>
 		<button
-			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-red-600 hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed disabled:animate-pulse focus:ring-2 focus:ring-red-600"
+			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-red-600 hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-red-600"
 			type="submit"
 			x-bind:disabled="$store.data.processing"
 			x-on:click="(ev)=>{
