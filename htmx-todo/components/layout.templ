@@ -25,6 +25,9 @@ templ Layout() {
 						ev.preventDefault();
 						Alpine.store('data').newItem=val;
 					}
+					function alpineStorePushDeletedId(val){
+						Alpine.store('data').deletedIds.push(val);
+					}
 				</script>
 				<script type="text/javascript">
 					var ABORT_CONTROLLER=new AbortController();					
@@ -34,7 +37,8 @@ templ Layout() {
 							processing: false,
 							newItem:'',
 							token:'',
-							sortProcessing:false							
+							sortProcessing:false,
+							deletedIds:[]							
 						})							
 					}, { signal: ABORT_CONTROLLER.signal });
 					document.body.addEventListener('htmx:afterSwap', function(event) {	

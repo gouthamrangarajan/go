@@ -330,6 +330,9 @@
   .border-green-700 {
     border-color: var(--color-green-700);
   }
+  .border-red-600 {
+    border-color: var(--color-red-600);
+  }
   .border-slate-300 {
     border-color: var(--color-slate-300);
   }
