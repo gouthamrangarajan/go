@@ -15,63 +15,63 @@ templ itemsUL(items []Item) {
 }
 
 templ openAiSuggestions(concatenatedSuggestion string, isOob bool) {
-	{{ suggestions := strings.Split(concatenatedSuggestion, ",") }}
-	if isOob {
-		<p
-			id="openaiSuggestion"
-			style="view-transition-name:openaiSuggestion"
-			class="py-2 px-4 flex flex-col text-lg"
-			hx-swap-oob="true"
-		>
-			<span class="italic text-slate-600">* Open AI suggestions click on the item to populate</span>
-			<span class="flex gap-1">
-				for idx,suggestion := range suggestions {
-					<a
-						href="#"
-						class="apperance-none outline-none cursor-pointer text-slate-800 hover:opacity-90 focus:underline focus:underline-offset-4"
-						onclick={ templ.JSFuncCall("setAlpineStoreNewItemValue", templ.JSExpression("event"), suggestion) }
-					>{ strings.Trim(suggestion,"") }</a>
-					if idx+1<len(suggestions) {
-						<span>,</span>
-					}
-				}
-			</span>
-			<input type="hidden" name="suggestions" value={ concatenatedSuggestion }/>
-		</p>
-	} else {
-		<p
-			id="openaiSuggestion"
-			style="view-transition-name:openaiSuggestion"
-			class="py-2 px-4 flex flex-col text-lg"
-		>
-			<span class="italic text-slate-600">* Open AI suggestions click on the item to populate</span>
-			<span class="flex gap-1">
-				for idx,suggestion := range suggestions {
-					<a
-						href="#"
-						class="apperance-none outline-none cursor-pointer text-slate-800 hover:opacity-90 focus:underline focus:underline-offset-4"
-						onclick={ templ.JSFuncCall("setAlpineStoreNewItemValue", templ.JSExpression("event"), suggestion) }
-					>{ strings.Trim(suggestion,"") }</a>
-					if idx+1<len(suggestions) {
-						<span>,</span>
-					}
-				}
-			</span>
-			<input type="hidden" name="suggestions" value={ concatenatedSuggestion }/>
-		</p>
-	}
-}
-
-templ OpenAiSuggestionsAndItemsUl(items []Item, concatenatedSuggestion string, isSuggestionOob bool) {
-	if strings.Trim(concatenatedSuggestion,"")!="" {
-		@openAiSuggestions(concatenatedSuggestion, isSuggestionOob)
-	} else {
-		if isSuggestionOob {
+	if strings.Trim(concatenatedSuggestion,"")=="" {
+		if isOob {
 			<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion" hx-swap-oob="true"></p>
 		} else {
 			<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion"></p>
 		}
+	} else {
+		{{ suggestions := strings.Split(concatenatedSuggestion, ",") }}
+		if isOob {
+			<p
+				id="openaiSuggestion"
+				style="view-transition-name:openaiSuggestion"
+				class="py-2 px-4 flex flex-col text-lg"
+				hx-swap-oob="true"
+			>
+				<span class="italic text-slate-600">* Open AI suggestions click on the item to populate</span>
+				<span class="flex gap-1">
+					for idx,suggestion := range suggestions {
+						<a
+							href="#"
+							class="apperance-none outline-none cursor-pointer text-slate-800 hover:opacity-90 focus:underline focus:underline-offset-4"
+							onclick={ templ.JSFuncCall("setAlpineStoreNewItemValue", templ.JSExpression("event"), suggestion) }
+						>{ strings.Trim(suggestion,"") }</a>
+						if idx+1<len(suggestions) {
+							<span>,</span>
+						}
+					}
+				</span>
+				<input type="hidden" name="suggestions" value={ concatenatedSuggestion }/>
+			</p>
+		} else {
+			<p
+				id="openaiSuggestion"
+				style="view-transition-name:openaiSuggestion"
+				class="py-2 px-4 flex flex-col text-lg"
+			>
+				<span class="italic text-slate-600">* Open AI suggestions click on the item to populate</span>
+				<span class="flex gap-1">
+					for idx,suggestion := range suggestions {
+						<a
+							href="#"
+							class="apperance-none outline-none cursor-pointer text-slate-800 hover:opacity-90 focus:underline focus:underline-offset-4"
+							onclick={ templ.JSFuncCall("setAlpineStoreNewItemValue", templ.JSExpression("event"), suggestion) }
+						>{ strings.Trim(suggestion,"") }</a>
+						if idx+1<len(suggestions) {
+							<span>,</span>
+						}
+					}
+				</span>
+				<input type="hidden" name="suggestions" value={ concatenatedSuggestion }/>
+			</p>
+		}
 	}
+}
+
+templ OpenAiSuggestionsAndItemsUl(items []Item, concatenatedSuggestion string, isSuggestionOob bool) {
+	@openAiSuggestions(concatenatedSuggestion, isSuggestionOob)
 	@itemsUL(items)
 }
 
