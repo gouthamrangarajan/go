@@ -2,11 +2,11 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 )
 
 type OpenAIAPIRequestMessageField struct {
@@ -42,7 +42,7 @@ func CallOpenAI(url string, key string, request OpenAIAPIRequest) string {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+key)
 	client := &http.Client{
-		Timeout: 10 * time.Second,
+		// Timeout: 10 * time.Second,
 	}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -67,10 +67,25 @@ func CallOpenAI(url string, key string, request OpenAIAPIRequest) string {
 	return parsedResponse.Choices[0].Message.Content
 }
 
-func CallOpenAIViaChannel(url string, key string, request OpenAIAPIRequest) <-chan string {
-	channel := make(chan string)
+func CallOpenAIViaChannel(url string, key string, request OpenAIAPIRequest, channel chan<- string) {
+	channel <- CallOpenAI(url, key, request)
+}
+
+func CallOpenAIViaChannelTillContext(url string, key string, request OpenAIAPIRequest, channel chan<- string, ctx context.Context) {
+	newChannel := make(chan string)
+	defer close(newChannel)
 	go func() {
-		channel <- CallOpenAI(url, key, request)
+		newChannel <- CallOpenAI(url, key, request)
 	}()
-	return channel
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("Open AI API call ignore due to context done")
+			channel <- ""
+			return
+		case valueInNewChannel := <-newChannel:
+			channel <- valueInNewChannel
+			return
+		}
+	}
 }

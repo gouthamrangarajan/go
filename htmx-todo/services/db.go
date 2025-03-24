@@ -58,6 +58,10 @@ func GetGroceryList(dbUrl string, authToken string, sort string) []models.Grocer
 	return data
 }
 
+func GetGroceryListViaChannel(databaseUrl string, authToken string, sort string, channel chan<- []models.Grocery) {
+	channel <- GetGroceryList(databaseUrl, authToken, sort)
+}
+
 func GetGroceryListItem(dbUrl string, authToken string, id int) models.Grocery {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
@@ -85,6 +89,10 @@ func GetGroceryListItem(dbUrl string, authToken string, id int) models.Grocery {
 	return data
 }
 
+func GetGroceryListItemViaChannel(databaseUrl string, authToken string, id int, channel chan<- models.Grocery) {
+	channel <- GetGroceryListItem(databaseUrl, authToken, id)
+}
+
 func InsertGroceryItem(dbUrl string, authToken string, description string, quantity int) int {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
@@ -99,6 +107,10 @@ func InsertGroceryItem(dbUrl string, authToken string, description string, quant
 		return 0
 	}
 	return int(newId)
+}
+
+func InsertGroceryItemViaChannel(databaseUrl string, authToken string, name string, quantity int, channel chan<- int) {
+	channel <- InsertGroceryItem(databaseUrl, authToken, name, quantity)
 }
 
 func DeleteGroceryItem(dbUrl string, authToken string, id int) int {
@@ -118,6 +130,10 @@ func DeleteGroceryItem(dbUrl string, authToken string, id int) int {
 	return int(rowsAffected)
 }
 
+func DeleteGroceryItemViaChannel(databaseUrl string, authToken string, id int, channel chan<- int) {
+	channel <- DeleteGroceryItem(databaseUrl, authToken, id)
+}
+
 func UpdateQuantityGroceryItem(dbUrl string, authToken string, id int, quantity int) int {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
@@ -134,6 +150,10 @@ func UpdateQuantityGroceryItem(dbUrl string, authToken string, id int, quantity 
 	return int(rowsAffected)
 }
 
+func UpdateQuantityGroceryItemViaChannel(databaseUrl string, authToken string, id int, quantity int, channel chan<- int) {
+	channel <- UpdateQuantityGroceryItem(databaseUrl, authToken, id, quantity)
+}
+
 func UpdateCompletedFieldGroceryItem(dbUrl string, authToken string, id int, completed bool) int {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
@@ -148,4 +168,8 @@ func UpdateCompletedFieldGroceryItem(dbUrl string, authToken string, id int, com
 		return 0
 	}
 	return int(rowsAffected)
+}
+
+func UpdateCompletedFieldGroceryItemViaChannel(databaseUrl string, authToken string, id int, completed bool, channel chan<- int) {
+	channel <- UpdateCompletedFieldGroceryItem(databaseUrl, authToken, id, completed)
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"htmx-todo/components"
 	"htmx-todo/models"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -21,7 +23,10 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceries := <-*services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
+		groceriesChannel := make(chan []models.Grocery)
+		defer close(groceriesChannel)
+		go services.GetGroceryListViaChannel(databaseUrl, authToken, sort, groceriesChannel)
+		groceries := <-groceriesChannel
 		items, _ := tranformGroceryList(groceries, false)
 		components.MainEl(items, sort, suggestions).Render(r.Context(), w)
 		// comp := components.MainEl(items, sort, suggestions)
@@ -40,10 +45,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		authToken := os.Getenv("TURSO_AUTH_TOKEN")
 		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceriesChannel := services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
+		groceriesChannel := make(chan []models.Grocery)
+		defer close(groceriesChannel)
+		go services.GetGroceryListViaChannel(databaseUrl, authToken, sort, groceriesChannel)
 		cookie := services.GenerateUserIdCookie()
 		http.SetCookie(w, &cookie)
-		groceries := <-*groceriesChannel
+		groceries := <-groceriesChannel
 		items, _ := tranformGroceryList(groceries, true)
 		components.SectionEl(items, sort, true, suggestions).Render(r.Context(), w)
 	}
@@ -54,9 +61,19 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	sort := r.FormValue("sort")
 
-	openaiChannel := callOpenAI(r.FormValue("item"))
-	newItemId := <-*services.InsertGroceryItemViaChannel(databaseUrl, authToken, r.FormValue("item"), 1)
-	groceries := <-*services.GetGroceryListViaChannel(databaseUrl, authToken, sort)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	defer cancel()
+	openaiChannel := make(chan string)
+	defer close(openaiChannel)
+	callOpenAI(r.FormValue("item"), openaiChannel, ctx)
+	newItemChannel := make(chan int)
+	defer close(newItemChannel)
+	go services.InsertGroceryItemViaChannel(databaseUrl, authToken, r.FormValue("item"), 1, newItemChannel)
+	newItemId := <-newItemChannel
+	groceriesChannel := make(chan []models.Grocery)
+	defer close(groceriesChannel)
+	go services.GetGroceryListViaChannel(databaseUrl, authToken, sort, groceriesChannel)
+	groceries := <-groceriesChannel
 	items, idToIndexMap := tranformGroceryList(groceries, false)
 	if newItemId != 0 {
 		items[idToIndexMap[newItemId]].AnimationClass = "animate-slide-down"
@@ -69,7 +86,10 @@ func RemoveGroceryItem(w http.ResponseWriter, r *http.Request) {
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
-		<-*services.DeleteGroceryItemViaChannel(databaseUrl, authToken, id)
+		channel := make(chan int)
+		defer close(channel)
+		go services.DeleteGroceryItemViaChannel(databaseUrl, authToken, id, channel)
+		<-channel
 	}
 	//handle errror
 	w.WriteHeader(http.StatusOK)
@@ -83,7 +103,10 @@ func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 		components.ItemQuantityDisplay(id, currentQuantity, false).Render(r.Context(), w)
 	} else {
 		currentQuantity += 1
-		rowsAffected := <-*services.UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity)
+		channel := make(chan int)
+		defer close(channel)
+		go services.UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity, channel)
+		rowsAffected := <-channel
 		if rowsAffected != 0 {
 			components.ItemQuantityDisplay(id, currentQuantity, true).Render(r.Context(), w)
 		} else {
@@ -103,7 +126,10 @@ func DecrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 		if currentQuantity < 1 {
 			currentQuantity = 1
 		}
-		rowsAffected := <-*services.UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity)
+		channel := make(chan int)
+		defer close(channel)
+		go services.UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity, channel)
+		rowsAffected := <-channel
 		if rowsAffected != 0 {
 			components.ItemQuantityDisplay(id, currentQuantity, true).Render(r.Context(), w)
 		} else {
@@ -117,9 +143,15 @@ func ToggleCompleteGroceryItem(w http.ResponseWriter, r *http.Request) {
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
-		groceryModelItem := <-*services.GetGroceryListItemViaChannel(databaseUrl, authToken, id)
+		groceryItemChannel := make(chan models.Grocery)
+		defer close(groceryItemChannel)
+		go services.GetGroceryListItemViaChannel(databaseUrl, authToken, id, groceryItemChannel)
+		groceryModelItem := <-groceryItemChannel
 		item := transformGrocery(groceryModelItem)
-		rowsAffected := <-*services.UpdateCompletedFieldGroceryItemViaChannel(databaseUrl, authToken, id, !groceryModelItem.Completed)
+		updateChannel := make(chan int)
+		defer close(updateChannel)
+		go services.UpdateCompletedFieldGroceryItemViaChannel(databaseUrl, authToken, id, !groceryModelItem.Completed, updateChannel)
+		rowsAffected := <-updateChannel
 		if rowsAffected != 0 {
 			groceryModelItem.Completed = !groceryModelItem.Completed
 			item.Completed = !item.Completed
@@ -148,7 +180,7 @@ func transformGrocery(grocery models.Grocery) components.Item {
 	return components.Item{Id: grocery.Id, Name: grocery.Description, Quantity: grocery.Quantity, Completed: grocery.Completed, AnimationClass: ""}
 }
 
-func callOpenAI(item string) <-chan string {
+func callOpenAI(item string, channel chan<- string, ctx context.Context) {
 	url := os.Getenv("OPENAI_API_URL")
 	key := os.Getenv("OPENAI_API_KEY")
 	model := os.Getenv("OPENAI_API_MODEL")
@@ -161,5 +193,5 @@ func callOpenAI(item string) <-chan string {
 		Messages: append([]services.OpenAIAPIRequestMessageField{},
 			services.OpenAIAPIRequestMessageField{Role: "user", Content: prompt}),
 	}
-	return services.CallOpenAIViaChannel(url, key, request)
+	go services.CallOpenAIViaChannelTillContext(url, key, request, channel, ctx)
 }
