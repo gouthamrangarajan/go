@@ -98,7 +98,7 @@ func openAiSuggestions(concatenatedSuggestion string, isOob bool) templ.Componen
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<a href=\"#\" class=\"apperance-none outline-none cursor-pointer text-slate-800 hover:opacity-90 focus:underline focus:underline-offset-4\" onclick=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<a href=\"#\" class=\"apperance-none outline-none cursor-pointer transition duration-300 text-slate-800 hover:opacity-90 focus:underline focus:underline-offset-4\" onclick=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
