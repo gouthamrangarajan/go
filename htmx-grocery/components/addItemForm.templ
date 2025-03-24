@@ -1,0 +1,42 @@
+package components
+
+templ addItemForm() {
+	<form
+		method="POST"
+		hx-post="/add"
+		hx-target="next ul"
+		hx-swap="outerHTML transition:true"
+		hx-trigger="addEvent"
+		hx-include="[name='sort']"
+		x-on:submit="(ev)=>
+			{
+				ev.preventDefault();
+				if($store.data.newItem.trim()!=''){										
+					$store.data.newItemProcessing=true;
+					$store.data.processing=true;
+					ev.currentTarget.dispatchEvent(new Event('addEvent'));
+				}
+			}"
+		x-bind:disabled="$store.data.newItemProcessing || $store.data.processing"
+		class="flex-1 flex items-center py-2 px-4 rounded border-2 border-slate-300 transition duration-300 focus-within:border-slate-600 "
+	>
+		<input
+			class="appearance-none outline-none flex-1 placeholder:text-slate-500"
+			placeholder="e.g. Costco Apples"
+			name="item"
+			x-model="$store.data.newItem"
+		/>
+		<button
+			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-green-600 hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600"
+			type="submit"
+			x-bind:disabled="$store.data.newItemProcessing || $store.data.processing"
+		>
+			<template x-if="!$store.data.newItemProcessing">
+				@submitIcon("view-transition-name:addFormSubmitIcon")
+			</template>
+			<template x-if="$store.data.newItemProcessing">
+				@loader("border-green-700", "view-transition-name:addFormSubmitIcon")
+			</template>
+		</button>
+	</form>
+}

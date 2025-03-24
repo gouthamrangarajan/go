@@ -1,0 +1,53 @@
+package components
+
+templ loginForm(sort string, suggestions string) {
+	<form
+		class="flex flex-col animate-slide-down"
+		method="POST"
+		hx-post="/login"
+		hx-target=".error__msg"
+		hx-swap="outerHTML transition:true"
+		hx-trigger="loginEvent"
+		x-on:submit="(ev)=>
+			{
+				ev.preventDefault();
+				if($store.data.token.trim()!=''){
+					ev.currentTarget.dispatchEvent(new Event('loginEvent'));
+					$store.data.processing=true;
+				}
+			}"
+		x-bind:disabled="$store.data.processing"
+	>
+		<p class="error__msg w-full p-1 pl-2"></p>
+		<label class="text-slate-700 font-semibold text-2xl mt-2" style="view-transition-name:tokenLabel">Token:</label>
+		<input
+			type="password"
+			name="token"
+			x-model="$store.data.token"
+			style="view-transition-name:tokenInput"
+			class="mt-2 appearance-none outline-none rounded py-2 px-4 border border-slate-600 transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50"
+		/>
+		<input type="hidden" name="sort" value={ sort }/>
+		<input type="hidden" name="suggestions" value={ suggestions }/>
+		<button
+			type="submit"
+			style="view-transition-name:tokenSubmitBtn"
+			x-bind:disabled="$store.data.processing"
+			class="mt-4 apperance-none outline-none flex justify-center items-center gap-3 rounded py-2 px-4 bg-green-600 text-white transition duration-300 cursor-pointer hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+		>
+			<span>Enter</span>
+			<template x-if="!$store.data.processing">
+				@submitIcon("view-transition-name:loginFormSubmitIcon")
+			</template>
+			<template x-if="$store.data.processing">
+				@loader("block border-white", "view-transition-name:loginFormSubmitIcon")
+			</template>
+		</button>
+	</form>
+}
+
+templ LoginFormErrMsg() {
+	<p
+		class="error__msg w-full bg-red-300 animate-slide-down p-1 pl-2 text-red-600 rounded font-semibold"
+	>*Please provide valid token.</p>
+}

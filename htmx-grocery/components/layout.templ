@@ -1,0 +1,63 @@
+package components
+
+var onceHandle = templ.NewOnceHandle()
+
+templ Layout() {
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Go HTMX Grocery</title>
+			<meta name="description" content="Simple grocery tracking app using golang, htmx & tailwind css"/>
+			<link href="/assets/css/tailwind.css" rel="stylesheet"/>
+			<link href="/assets/css/openprops.min.css" rel="stylesheet"/>
+			<link href="/assets/favicon.ico" rel="icon" type="image/x-icon"/>
+			<script src="/assets/js/htmx.min.js" type="text/javascript"></script>
+			// <script src="/assets/js/htmx_sse.min.js" type="text/javascript"></script>
+			<script src="/assets/js/alpine.min.js" type="text/javascript" defer></script>
+		</head>
+		<body class="font-(family-name:--font-handwritten) text-xl">
+			{ children... }
+			@onceHandle.Once() {
+				<script type="text/javascript">				
+					function setAlpineStoreNewItemValue(ev,val){
+						ev.preventDefault();
+						Alpine.store('data').newItem=val;
+					}
+					function alpineStorePushDeletedId(val){
+						Alpine.store('data').deletedIds.push(val);
+					}
+				</script>
+				<script type="text/javascript">
+					var ABORT_CONTROLLER=new AbortController();					
+					document.addEventListener('alpine:init', () => {						
+						Alpine.store('data', {
+							newItemProcessing:false,
+							processing: false,
+							newItem:'',
+							token:'',
+							sortProcessing:false,
+							deletedIds:[]							
+						})							
+					}, { signal: ABORT_CONTROLLER.signal });
+					document.body.addEventListener('htmx:afterSwap', function(event) {	
+						if(Alpine.store('data').processing){
+							Alpine.store('data').processing=false
+						}
+						if(Alpine.store('data').newItemProcessing){
+							Alpine.store('data').newItemProcessing=false
+							let newItemAddedSplitArray=Alpine.store('data').newItem.trim().split(' ');
+							if(newItemAddedSplitArray.length>0){
+								Alpine.store('data').newItem=newItemAddedSplitArray[0];
+							}
+						}
+						if(Alpine.store('data').sortProcessing){
+							Alpine.store('data').sortProcessing=false
+						}
+					}, { signal: ABORT_CONTROLLER.signal });
+				</script>
+			}
+		</body>
+	</html>
+}
