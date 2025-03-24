@@ -261,8 +261,8 @@
   .w-10\/12 {
     width: calc(10/12 * 100%);
   }
-  .w-38 {
-    width: calc(var(--spacing) * 38);
+  .w-39 {
+    width: calc(var(--spacing) * 39);
   }
   .w-dvw {
     width: 100dvw;
