@@ -116,8 +116,8 @@ func InsertGroceryItemViaChannel(databaseUrl string, authToken string, name stri
 func DeleteGroceryItem(dbUrl string, authToken string, id int) int {
 	db := createDb(dbUrl, authToken)
 	defer db.Close()
-	// result, err := db.Exec("UPDATE grocery SET active = false WHERE id = ?", id)
-	result, err := db.Exec("DELETE FROM grocery WHERE id = ?", id)
+	result, err := db.Exec("UPDATE grocery SET active = false WHERE id = ?", id)
+	// result, err := db.Exec("DELETE FROM grocery WHERE id = ?", id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
 		return 0

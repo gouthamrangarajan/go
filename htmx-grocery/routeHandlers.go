@@ -186,7 +186,7 @@ func callOpenAI(item string, channel chan<- string, ctx context.Context) {
 	model := os.Getenv("OPENAI_API_MODEL")
 	noOfItemsToSuggest := os.Getenv("OPENAI_API_NUMBER_OF_ITEMS_TO_SUGGEST")
 
-	prompt := fmt.Sprintf("Give %v items for grocery similar to %v in the format: 'item 1, item 2, item 3'", noOfItemsToSuggest, item)
+	prompt := fmt.Sprintf("Give %v items for grocery similar to %v in the format: 'item 1, item 2, item 3'. Do not give me the same item in different variations.If the item provided is not grocery do not suggest any items.", noOfItemsToSuggest, item)
 
 	request := services.OpenAIAPIRequest{
 		Model: model,
