@@ -1,0 +1,134 @@
+package components
+
+import "time"
+import "strconv"
+import "strings"
+
+templ Main(data [][7]time.Time, currentMonthAndYear time.Time, from string) {
+	@layout() {
+		<main class="h-dvh w-dvw bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100">
+			<section class="w-full h-full flex flex-col gap-1" style="view-transtion-name:section">
+				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
+					@prevLink(currentMonthAndYear, strings.ToLower(from) == "prev")
+					<span class="text-xl text-indigo-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
+					@nextLink(currentMonthAndYear, strings.ToLower(from) == "next")
+				</div>
+				@calendar(data, currentMonthAndYear)
+			</section>
+		</main>
+	}
+}
+
+templ prevLink(currentMonthAndYear time.Time, autoFocus bool) {
+	{{ url := "/?from=prev&month=" + strconv.Itoa(int(currentMonthAndYear.Month())-1) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) }}
+	if int(currentMonthAndYear.Month())-1 < 1 {
+		{{ url = "/?from=prev&month=12" + "&year=" + strconv.Itoa(currentMonthAndYear.Year()-1) }}
+	}
+	if autoFocus {
+		<a
+			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			href={ templ.SafeURL(url) }
+			hx-get={ url }
+			hx-boost="true"
+			hx-swap="outerHTML transition:true"
+			hx-target="body"
+			hx-push-url="true"
+			autofocus
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+				<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
+			</svg>
+		</a>
+	} else {
+		<a
+			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			href={ templ.SafeURL(url) }
+			hx-get={ url }
+			hx-boost="true"
+			hx-swap="outerHTML transition:true"
+			hx-target="body"
+			hx-push-url="true"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+				<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
+			</svg>
+		</a>
+	}
+}
+
+templ nextLink(currentMonthAndYear time.Time, autoFocus bool) {
+	{{ url := "/?from=next&month=" + strconv.Itoa(int(currentMonthAndYear.Month())+1) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) }}
+	if int(currentMonthAndYear.Month())+1 > 12 {
+		{{ url = "/?from=next&month=1" + "&year=" + strconv.Itoa(currentMonthAndYear.Year()+1) }}
+	}
+	if autoFocus {
+		<a
+			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			href={ templ.SafeURL(url) }
+			hx-get={ url }
+			hx-boost="true"
+			hx-swap="outerHTML transition:true"
+			hx-target="body"
+			hx-push-url="true"
+			autofocus
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+				<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
+			</svg>
+		</a>
+	} else {
+		<a
+			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			href={ templ.SafeURL(url) }
+			hx-get={ url }
+			hx-boost="true"
+			hx-swap="outerHTML transition:true"
+			hx-target="body"
+			hx-push-url="true"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+				<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
+			</svg>
+		</a>
+	}
+}
+
+templ calendar(data [][7]time.Time, currentMonthAndYear time.Time) {
+	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
+	<table class="w-full h-full table-fixed" style="view-transition-name:monthTable">
+		<thead>
+			for idx,day := range days {
+				{{ class := "border-y-2 border-gray-300" }}
+				if idx+1!=len(days) {
+					{{ class = "border-y-2 border-r-2 border-gray-300" }}
+				}
+				<th class={ class }>{ day }</th>
+			}
+		</thead>
+		<tbody>
+			for row := 0; row < len(data); row++ {
+				<tr>
+					for col := 0;col < len(data[row]);col++ {
+						{{ tdClass := "border-b-2 border-r-2 border-gray-300" }}
+						if col +1 == len(days) && row +1 == len(data) {
+							{{ tdClass = "" }}
+						} else if col + 1 == len(days) {
+							{{ tdClass = "border-b-2 border-gray-300" }}
+						} else if row +1 == len(data) {
+							{{ tdClass = "border-r-3 border-gray-300" }}
+						}
+						<td class={ tdClass }>
+							<div class="py-2 px-4 flex flex-col w-full h-full justify-start">
+								{{ spanClass := "text-slate-600" }}
+								if data[row][col].Month() != currentMonthAndYear.Month() || data[row][col].Year()!=currentMonthAndYear.Year() {
+									{{ spanClass = "text-slate-400" }}
+								}
+								<span class={ spanClass }>{ strconv.Itoa(data[row][col].Day()) }</span>
+							</div>
+						</td>
+					}
+				</tr>
+			}
+		</tbody>
+	</table>
+}
