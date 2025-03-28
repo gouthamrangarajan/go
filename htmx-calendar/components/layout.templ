@@ -1,5 +1,7 @@
 package components
 
+var onceHandle = templ.NewOnceHandle()
+
 templ layout() {
 	<!DOCTYPE html>
 	<html>
@@ -9,9 +11,25 @@ templ layout() {
 			<link href="/assets/css/output.css" rel="stylesheet"/>
 			<link href="/assets/css/openprops.min.css" rel="stylesheet"/>
 			<script type="text/javascript" src="/assets/js/htmx.min.js"></script>
+			<script type="text/javascript" defer src="/assets/js/alpine.min.js"></script>
 		</head>
-		<body>
+		<body x-data="{}">
 			{ children... }
+			@onceHandle.Once() {
+				<script type="text/javascript">
+					var ABORT_CONTROLLER=new AbortController();					
+					document.addEventListener('alpine:init', () => {						
+						Alpine.store('data', {
+							processing: false,											
+						})							
+					}, { signal: ABORT_CONTROLLER.signal });
+					document.body.addEventListener('htmx:afterSwap', function(event) {	
+						if(Alpine.store('data').processing){
+							Alpine.store('data').processing=false
+						}						
+					}, { signal: ABORT_CONTROLLER.signal });
+				</script>
+			}
 		</body>
 	</html>
 }

@@ -10,6 +10,11 @@ import (
 	"github.com/a-h/templ"
 )
 
+func LoginPage(responseWriter http.ResponseWriter, request *http.Request) {
+	component := components.LoginPage()
+	templ.Handler(component).Component.Render(request.Context(), responseWriter)
+}
+
 func MainPage(responseWriter http.ResponseWriter, request *http.Request) {
 	nextMonth := request.URL.Query().Get("month")
 	nextYear := request.URL.Query().Get("year")
@@ -47,6 +52,6 @@ func MainPage(responseWriter http.ResponseWriter, request *http.Request) {
 			number++
 		}
 	}
-	component := components.Main(data, startDate, from)
+	component := components.MainPage(data, startDate, from)
 	templ.Handler(component).Component.Render(request.Context(), responseWriter)
 }

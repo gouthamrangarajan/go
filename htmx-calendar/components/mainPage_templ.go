@@ -12,7 +12,7 @@ import "time"
 import "strconv"
 import "strings"
 
-func Main(data [][7]time.Time, currentMonthAndYear time.Time, from string) templ.Component {
+func MainPage(data [][7]time.Time, currentMonthAndYear time.Time, from string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -45,7 +45,7 @@ func Main(data [][7]time.Time, currentMonthAndYear time.Time, from string) templ
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transtion-name:section\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"relative h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:section\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -53,14 +53,14 @@ func Main(data [][7]time.Time, currentMonthAndYear time.Time, from string) templ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"text-xl text-indigo-600 font-semibold text-center\" style=\"view-transition-name:monthAndYearName\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"text-xl text-purple-600 font-semibold text-center\" style=\"view-transition-name:monthAndYearName\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 13, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 13, Col: 153}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -73,7 +73,7 @@ func Main(data [][7]time.Time, currentMonthAndYear time.Time, from string) templ
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentMonthAndYear.Year()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 13, Col: 198}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 13, Col: 198}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -91,11 +91,11 @@ func Main(data [][7]time.Time, currentMonthAndYear time.Time, from string) templ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = calendar(data, currentMonthAndYear).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = calendar(data, currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</section></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</section><template x-if=\"$store.data.processing\"><div class=\"animate-loader w-full h-1 absolute top-0 left-0 bg-orange-600\"></div></template></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -151,13 +151,13 @@ func prevLink(currentMonthAndYear time.Time, autoFocus bool) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 31, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 34, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" autofocus><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" autofocus hx-trigger=\"prevMonthEvent\" x-on:click=\"(ev)=&gt;{\n\t\t\t\tev.preventDefault()\n\t\t\t\t$store.data.processing=true;\n\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;prevMonthEvent&#39;));\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -178,13 +178,13 @@ func prevLink(currentMonthAndYear time.Time, autoFocus bool) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 46, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 55, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" hx-trigger=\"prevMonthEvent\" x-on:click=\"(ev)=&gt;{\n\t\t\t\tev.preventDefault()\n\t\t\t\t$store.data.processing=true;\n\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;prevMonthEvent&#39;));\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -235,13 +235,13 @@ func nextLink(currentMonthAndYear time.Time, autoFocus bool) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 68, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 83, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" autofocus><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" autofocus hx-trigger=\"nextMonthEvent\" x-on:click=\"(ev)=&gt;{\n\t\t\t\tev.preventDefault()\n\t\t\t\t$store.data.processing=true;\n\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;nextMonthEvent&#39;));\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -262,13 +262,13 @@ func nextLink(currentMonthAndYear time.Time, autoFocus bool) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 83, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 104, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" hx-trigger=\"nextMonthEvent\" x-on:click=\"(ev)=&gt;{\n\t\t\t\tev.preventDefault()\n\t\t\t\t$store.data.processing=true;\n\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;nextMonthEvent&#39;));\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -277,7 +277,7 @@ func nextLink(currentMonthAndYear time.Time, autoFocus bool) templ.Component {
 	})
 }
 
-func calendar(data [][7]time.Time, currentMonthAndYear time.Time) templ.Component {
+func calendar(data [][7]time.Time, currentMonthAndYear time.Time, from string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -324,7 +324,7 @@ func calendar(data [][7]time.Time, currentMonthAndYear time.Time) templ.Componen
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var16).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 1, Col: 0}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 1, Col: 0}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -337,7 +337,7 @@ func calendar(data [][7]time.Time, currentMonthAndYear time.Time) templ.Componen
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(day)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 105, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 132, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -352,19 +352,25 @@ func calendar(data [][7]time.Time, currentMonthAndYear time.Time) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		animationClass := ""
+		if strings.ToLower(from) == "prev" {
+			animationClass = "animate-slide-right"
+		} else if strings.ToLower(from) == "next" {
+			animationClass = "animate-slide-left"
+		}
 		for row := 0; row < len(data); row++ {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for col := 0; col < len(data[row]); col++ {
-				tdClass := "border-b-2 border-r-2 border-gray-300"
+				tdClass := "border-b-2 border-r-2 border-gray-300 " + animationClass
 				if col+1 == len(days) && row+1 == len(data) {
-					tdClass = ""
+					tdClass = "" + animationClass
 				} else if col+1 == len(days) {
-					tdClass = "border-b-2 border-gray-300"
+					tdClass = "border-b-2 border-gray-300 " + animationClass
 				} else if row+1 == len(data) {
-					tdClass = "border-r-3 border-gray-300"
+					tdClass = "border-r-3 border-gray-300 " + animationClass
 				}
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, " ")
 				if templ_7745c5c3_Err != nil {
@@ -382,7 +388,7 @@ func calendar(data [][7]time.Time, currentMonthAndYear time.Time) templ.Componen
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var19).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 1, Col: 0}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 1, Col: 0}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -408,7 +414,7 @@ func calendar(data [][7]time.Time, currentMonthAndYear time.Time) templ.Componen
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var21).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 1, Col: 0}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 1, Col: 0}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -421,7 +427,7 @@ func calendar(data [][7]time.Time, currentMonthAndYear time.Time) templ.Componen
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(data[row][col].Day()))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 126, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 159, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
