@@ -48,7 +48,7 @@ func GetData(accessToken string, dateRange []string, channel chan<- []models.Cal
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	response := []models.CalendarData{}
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
-		Headers: map[string]string{"Authorization": "Bearer " + accessToken, "apiKey": anonKey},
+		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
 	})
 	if err != nil {
 		fmt.Printf("Error connecting to supabase %v\n", err.Error())
