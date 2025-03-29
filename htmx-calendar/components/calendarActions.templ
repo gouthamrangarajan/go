@@ -20,11 +20,8 @@ templ prevLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-target="body"
 			hx-push-url="true"
 			autofocus
-			hx-trigger="prevMonthEvent"
 			x-on:click="(ev)=>{
-				ev.preventDefault()
 				$store.data.processing=true;
-				ev.currentTarget.dispatchEvent(new Event('prevMonthEvent'));
 			}"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
@@ -40,11 +37,8 @@ templ prevLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-swap="outerHTML transition:true"
 			hx-target="body"
 			hx-push-url="true"
-			hx-trigger="prevMonthEvent"
 			x-on:click="(ev)=>{
-				ev.preventDefault()
 				$store.data.processing=true;
-				ev.currentTarget.dispatchEvent(new Event('prevMonthEvent'));
 			}"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
