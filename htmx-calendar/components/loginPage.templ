@@ -1,11 +1,66 @@
 package components
 
-templ LoginPage() {
+templ LoginPage(animate bool) {
 	@layout() {
-		<main class="h-dvh w-dvw overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100">
-			<section class="w-full h-full flex flex-col gap-1 items-center justify-center" style="view-transition-name:section">
-				Login
+		{{ animationClass := "" }}
+		if animate {
+			{{ animationClass = "animate-slide-down" }}
+		}
+		<main
+			id="main"
+			class="h-dvh w-dvw overflow-x-hidden flex flex-col gap-1 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
+		>
+			<section
+				class={ " w-11/12 py-2 px-4 rounded-lg shadow shadow-teal-600 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12",animationClass }
+				style="view-transition-name:section"
+			>
+				<h1 class="text-xl text-purple-600 font-semibold">Login</h1>
+				<p class="err__msg w-full py-1 px-3" style="view-transition-name:loginError"></p>
+				<form
+					class="w-full flex flex-col gap-3"
+					method="post"
+					hx-post="/login"
+					hx-target=".err__msg"
+					hx-swap="outerHTML transition:true"
+					x-on:submit="(ev)=>{
+						$store.data.processing=true
+					}"
+					x-bind:disabled="$store.data.processing"
+				>
+					<fieldset class="flex flex-col gap-1">
+						<label class="text-slate-600 text-lg" for="email">Email:</label>
+						<input
+							type="email"
+							id="email"
+							class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600"
+							name="email"
+							required
+						/>
+					</fieldset>
+					<fieldset class="flex flex-col gap-1">
+						<label class="text-slate-600 text-lg" for="password">Password:</label>
+						<input
+							type="password"
+							id="password"
+							class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600"
+							name="password"
+							required
+						/>
+					</fieldset>
+					<button
+						type="submit"
+						x-bind:disabled="$store.data.processing"
+						class="appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-600 text-white text-lg transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70"
+					>Submit</button>
+				</form>
 			</section>
 		</main>
 	}
+}
+
+templ LoginError() {
+	<p
+		class="err__msg animate-error-message w-full py-1 px-3 bg-red-200 text-red-600 font-semibold rounded"
+		style="view-transition-name:loginError"
+	>* Please provide valid credentials</p>
 }

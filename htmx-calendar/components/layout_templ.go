@@ -31,11 +31,15 @@ func layout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link href=\"/assets/css/output.css\" rel=\"stylesheet\"><link href=\"/assets/css/openprops.min.css\" rel=\"stylesheet\"><script type=\"text/javascript\" src=\"/assets/js/htmx.min.js\"></script><script type=\"text/javascript\" defer src=\"/assets/js/alpine.min.js\"></script></head><body x-data=\"{}\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html class=\"w-full h-full\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link href=\"/assets/css/output.css\" rel=\"stylesheet\"><link href=\"/assets/css/openprops.min.css\" rel=\"stylesheet\"><script type=\"text/javascript\" src=\"/assets/js/htmx.min.js\"></script><script type=\"text/javascript\" defer src=\"/assets/js/alpine.min.js\"></script></head><body x-data=\"{}\" class=\"relative w-full h-full font-(family-name:--font-neo-grotesque)\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = templ_7745c5c3_Var1.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<template x-if=\"$store.data.processing\"><div class=\"animate-loader w-full h-1 absolute top-0 left-0 bg-orange-600\"></div></template>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -51,7 +55,7 @@ func layout() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script type=\"text/javascript\">\n\t\t\t\t\tvar ABORT_CONTROLLER=new AbortController();\t\t\t\t\t\n\t\t\t\t\tdocument.addEventListener('alpine:init', () => {\t\t\t\t\t\t\n\t\t\t\t\t\tAlpine.store('data', {\n\t\t\t\t\t\t\tprocessing: false,\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t})\t\t\t\t\t\t\t\n\t\t\t\t\t}, { signal: ABORT_CONTROLLER.signal });\n\t\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(event) {\t\n\t\t\t\t\t\tif(Alpine.store('data').processing){\n\t\t\t\t\t\t\tAlpine.store('data').processing=false\n\t\t\t\t\t\t}\t\t\t\t\t\t\n\t\t\t\t\t}, { signal: ABORT_CONTROLLER.signal });\n\t\t\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"text/javascript\">\n\t\t\t\t\tvar ABORT_CONTROLLER=new AbortController();\t\t\t\t\t\n\t\t\t\t\tdocument.addEventListener('alpine:init', () => {\t\t\t\t\t\t\n\t\t\t\t\t\tAlpine.store('data', {\n\t\t\t\t\t\t\tprocessing: false,\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t})\t\t\t\t\t\t\t\n\t\t\t\t\t}, { signal: ABORT_CONTROLLER.signal });\n\t\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(event) {\t\n\t\t\t\t\t\tif(Alpine.store('data').processing){\n\t\t\t\t\t\t\tAlpine.store('data').processing=false\n\t\t\t\t\t\t}\t\t\t\t\t\t\n\t\t\t\t\t}, { signal: ABORT_CONTROLLER.signal });\n\t\t\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -61,7 +65,7 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

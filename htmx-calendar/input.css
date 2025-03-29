@@ -8,8 +8,16 @@
     animation: slide-right 2s var(--ease-spring-3);
 }
 
+.animate-slide-down {
+    animation: slide-down 2s var(--ease-spring-3);
+}
+
 .animate-loader {
     animation: loader 2s infinite var(--ease-elastic-in-5);
+}
+
+.animate-error-message {
+    animation: error-message 2s var(--ease-spring-3);
 }
 
 @keyframes slide-left {
@@ -36,6 +44,18 @@
     }
 }
 
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-10%)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes loader {
     from {
         transform: translateX(-100%)
@@ -45,4 +65,16 @@
         transform: translateX(0);
     }
 
+}
+
+@keyframes error-message {
+    from {
+        opacity: 0;
+        transform: translateY(100%)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

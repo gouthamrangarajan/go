@@ -4,7 +4,7 @@ var onceHandle = templ.NewOnceHandle()
 
 templ layout() {
 	<!DOCTYPE html>
-	<html>
+	<html class="w-full h-full">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -13,8 +13,11 @@ templ layout() {
 			<script type="text/javascript" src="/assets/js/htmx.min.js"></script>
 			<script type="text/javascript" defer src="/assets/js/alpine.min.js"></script>
 		</head>
-		<body x-data="{}">
+		<body x-data="{}" class="relative w-full h-full font-(family-name:--font-neo-grotesque)">
 			{ children... }
+			<template x-if="$store.data.processing">
+				<div class="animate-loader w-full h-1 absolute top-0 left-0 bg-orange-600"></div>
+			</template>
 			@onceHandle.Once() {
 				<script type="text/javascript">
 					var ABORT_CONTROLLER=new AbortController();					
