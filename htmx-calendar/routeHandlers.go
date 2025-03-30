@@ -12,6 +12,15 @@ import (
 	"time"
 )
 
+type calendarDataType struct {
+	data                  [][7]time.Time
+	monthStartDate        time.Time
+	monthEndDate          time.Time
+	calendarStartDate     time.Time
+	calendarEndDate       time.Time
+	calendarDaysStrFormat []string
+}
+
 func Login(responseWriter http.ResponseWriter, request *http.Request) {
 	email := request.FormValue("email")
 	password := request.FormValue("password")
@@ -46,7 +55,7 @@ func MainPage(responseWriter http.ResponseWriter, request *http.Request, token s
 	year := request.URL.Query().Get("year")
 	mainPage(responseWriter, request, token, month, year, false)
 }
-func mainPage(responseWriter http.ResponseWriter, request *http.Request, accessToken string, toMonth string, toYear string, isOob bool) {
+func mainPage(responseWriter http.ResponseWriter, request *http.Request, token string, toMonth string, toYear string, isOob bool) {
 	from := request.URL.Query().Get("from")
 	today := time.Now()
 	year := today.Year()
@@ -63,31 +72,41 @@ func mainPage(responseWriter http.ResponseWriter, request *http.Request, accessT
 			year = yearFromUrl
 		}
 	}
-	startDate := time.Date(year, month, 1, 0, 0, 0, 0, today.Location())
+	calendarData := generateCalendarData(year, month, today.Location())
+	channel := make(chan []models.EventData)
+	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
+	eventsData := <-channel
+	if isOob {
+		components.MainPageWithoutLayout(calendarData.data, eventsData, calendarData.monthStartDate, from, true).Render(request.Context(), responseWriter)
+	} else {
+		components.MainPage(calendarData.data, eventsData, calendarData.monthStartDate, from).Render(request.Context(), responseWriter)
+	}
+}
+func generateCalendarData(year int, month time.Month, location *time.Location) calendarDataType {
+	ret := calendarDataType{}
+	startDate := time.Date(year, month, 1, 0, 0, 0, 0, location)
 	startDateForCalendar := startDate.AddDate(0, 0, -int(startDate.Weekday()))
-	endDate := time.Date(year, month+1, 0, 23, 59, 0, 0, today.Location())
+	endDate := time.Date(year, month+1, 0, 23, 59, 0, 0, location)
 	endDateForCalendar := endDate.AddDate(0, 0, 6-int(endDate.Weekday()))
 	numberOfDays := math.Round(endDateForCalendar.Sub(startDateForCalendar).Hours() / 24)
 	rows := int(numberOfDays / 7)
-	calendarData := make([][7]time.Time, rows)
+	data := make([][7]time.Time, rows)
 	number := 0
 	for row := range rows {
 		for col := range 7 {
-			calendarData[row][col] = startDateForCalendar.AddDate(0, 0, number)
+			data[row][col] = startDateForCalendar.AddDate(0, 0, number)
 			number++
 		}
 	}
 	allDatesToFilter := generateAllDatesStringFromStartToEnd(startDateForCalendar, endDateForCalendar)
-	channel := make(chan []models.EventData)
-	go services.GetData(accessToken, allDatesToFilter, channel)
-	eventsData := <-channel
-	if isOob {
-		components.MainPageWithoutLayout(calendarData, eventsData, startDate, from, true).Render(request.Context(), responseWriter)
-	} else {
-		components.MainPage(calendarData, eventsData, startDate, from).Render(request.Context(), responseWriter)
-	}
+	ret.data = data
+	ret.calendarStartDate = startDateForCalendar
+	ret.calendarEndDate = endDateForCalendar
+	ret.monthStartDate = startDate
+	ret.monthEndDate = endDate
+	ret.calendarDaysStrFormat = allDatesToFilter
+	return ret
 }
-
 func generateAllDatesStringFromStartToEnd(start time.Time, end time.Time) []string {
 	ret := []string{}
 	loopDt := start
@@ -124,7 +143,26 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token
 }
 
 func Add(responseWriter http.ResponseWriter, request *http.Request, token string) {
-	// month := request.URL.Query().Get("month")
-	// year := request.URL.Query().Get("year")
-	// components.AddPage(calendarData, eventsData, startDate).Render(request.Context(), responseWriter)
+	fromMonth := request.URL.Query().Get("month")
+	fromYear := request.URL.Query().Get("year")
+	today := time.Now()
+	year := today.Year()
+	month := today.Month()
+	if fromMonth != "" {
+		monthFromUrl, err := strconv.Atoi(fromMonth)
+		if err == nil {
+			month = time.Month(monthFromUrl)
+		}
+	}
+	if fromYear != "" {
+		yearFromUrl, err := strconv.Atoi(fromYear)
+		if err == nil {
+			year = yearFromUrl
+		}
+	}
+	calendarData := generateCalendarData(year, month, today.Location())
+	channel := make(chan []models.EventData)
+	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
+	eventsData := <-channel
+	components.AddEventPage(calendarData.data, eventsData, calendarData.monthStartDate).Render(request.Context(), responseWriter)
 }

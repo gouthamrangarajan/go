@@ -39,7 +39,7 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<template x-if=\"$store.data.processing\"><div class=\"animate-loader w-full h-1.5 absolute top-0 left-0 bg-purple-600\"></div></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div x-show=\"$store.data.processing\" class=\"animate-loader w-full h-1.5 absolute top-0 left-0 bg-purple-600\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

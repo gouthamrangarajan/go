@@ -18,9 +18,7 @@ templ layout() {
 		</head>
 		<body x-data="{}" class="relative w-full h-full font-(family-name:--font-neo-grotesque)">
 			{ children... }
-			<template x-if="$store.data.processing">
-				<div class="animate-loader w-full h-1.5 absolute top-0 left-0 bg-purple-600"></div>
-			</template>
+			<div x-show="$store.data.processing" class="animate-loader w-full h-1.5 absolute top-0 left-0 bg-purple-600"></div>
 			@onceHandle.Once() {
 				<script type="text/javascript">
 					var ABORT_CONTROLLER=new AbortController();		

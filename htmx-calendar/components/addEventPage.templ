@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-templ AddPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) {
+templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) {
 	@layout() {
 		<main
 			class="relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
@@ -14,9 +14,9 @@ templ AddPage(calendarData [][7]time.Time, eventsData []models.EventData, curren
 		>
 			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:main-section">
 				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
-					@prevLink(currentMonthAndYear, false)
+					@prevMonthLink(currentMonthAndYear, false)
 					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
-					@nextLink(currentMonthAndYear, false)
+					@nextMonthLink(currentMonthAndYear, false)
 				</div>
 				@calendar(calendarData, eventsData, currentMonthAndYear, "")
 			</section>

@@ -82,11 +82,11 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Even
 		}
 		ctx = templ.ClearChildren(ctx)
 		if !isOob {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\" id=\"main\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:main-section\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\" id=\"main\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:main-section\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = prevLink(currentMonthAndYear, strings.ToLower(from) == "prev").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = prevMonthLink(currentMonthAndYear, strings.ToLower(from) == "prev").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -120,7 +120,7 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Even
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = nextLink(currentMonthAndYear, strings.ToLower(from) == "next").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = nextMonthLink(currentMonthAndYear, strings.ToLower(from) == "next").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -137,11 +137,11 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Even
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<main class=\"h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\" hx-swap-oob=\"true\" id=\"main\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:main-section\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<main class=\"h-dvh w-dvw overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\" hx-swap-oob=\"true\" id=\"main\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:main-section\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = prevLink(currentMonthAndYear, strings.ToLower(from) == "prev").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = prevMonthLink(currentMonthAndYear, strings.ToLower(from) == "prev").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -175,7 +175,7 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Even
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = nextLink(currentMonthAndYear, strings.ToLower(from) == "next").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = nextMonthLink(currentMonthAndYear, strings.ToLower(from) == "next").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func AddPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) templ.Component {
+func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -51,7 +51,7 @@ func AddPage(calendarData [][7]time.Time, eventsData []models.EventData, current
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = prevLink(currentMonthAndYear, false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = prevMonthLink(currentMonthAndYear, false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -62,7 +62,7 @@ func AddPage(calendarData [][7]time.Time, eventsData []models.EventData, current
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addPage.templ`, Line: 18, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 18, Col: 153}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -75,7 +75,7 @@ func AddPage(calendarData [][7]time.Time, eventsData []models.EventData, current
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentMonthAndYear.Year()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addPage.templ`, Line: 18, Col: 198}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 18, Col: 198}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -85,7 +85,7 @@ func AddPage(calendarData [][7]time.Time, eventsData []models.EventData, current
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = nextLink(currentMonthAndYear, false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = nextMonthLink(currentMonthAndYear, false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -26,9 +26,9 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.EventData, curre
 			} else if strings.ToLower(from) == "next" {
 				{{ animationClass = "animate-slide-left" }}
 			}
-			{{ heightClass := "h-12 lg:h-20" }}
+			{{ heightClass := "h-10 lg:h-18" }}
 			if len(calendarData) < 6 {
-				{{ heightClass = "h-12 lg:h-26" }}
+				{{ heightClass = "h-10 lg:h-24" }}
 			}
 			for row := 0; row < len(calendarData); row++ {
 				<tr>
@@ -44,19 +44,19 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.EventData, curre
 						<td class={ tdClass }>
 							{{ classBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-teal-600':'border-transparent'" }}
 							<div
-								class="p-1 flex flex-col w-full h-full justify-start border-3 border-dashed"
+								class="p-1 flex flex-col w-full h-full justify-start items-start gap-1 border-3 border-dashed"
 								x-bind:class={ classBindExpression }
 								ondragover={ templ.JSFuncCall("setAlpineStoreDnDRowCol", templ.JSExpression("event"), row, col) }
 								ondragleave={ templ.JSFuncCall("removeAlpineStoreDnDRowCol", row, col) }
 								ondrop={ templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[row][col].Format("2006-01-02")) }
 							>
-								{{ spanClass := "text-slate-600" }}
+								{{ active := true }}
 								if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year()!=currentMonthAndYear.Year() {
-									{{ spanClass = "text-slate-400" }}
+									{{ active = false }}
 								}
-								<span class={ spanClass }>{ strconv.Itoa(calendarData[row][col].Day()) }</span>
+								@addEventLink(calendarData[row][col], active)
 								<div
-									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600",heightClass }
+									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",heightClass }
 									style={ "view-transition-name:items-" + calendarData[row][col].Format("2006-01-02") }
 								>
 									for _,event := range filterDateEvents(eventsData,calendarData[row][col]) {

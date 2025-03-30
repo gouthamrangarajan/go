@@ -14,29 +14,29 @@ templ MainPage(calendarData [][7]time.Time, eventsData []models.EventData, curre
 templ MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) {
 	if !isOob {
 		<main
-			class="h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
+			class="h-dvh w-dvw overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
 			id="main"
 		>
 			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:main-section">
 				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
-					@prevLink(currentMonthAndYear, strings.ToLower(from) == "prev")
+					@prevMonthLink(currentMonthAndYear, strings.ToLower(from) == "prev")
 					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
-					@nextLink(currentMonthAndYear, strings.ToLower(from) == "next")
+					@nextMonthLink(currentMonthAndYear, strings.ToLower(from) == "next")
 				</div>
 				@calendar(calendarData, eventsData, currentMonthAndYear, from)
 			</section>
 		</main>
 	} else {
 		<main
-			class="h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
+			class="h-dvh w-dvw overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
 			hx-swap-oob="true"
 			id="main"
 		>
 			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:main-section">
 				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
-					@prevLink(currentMonthAndYear, strings.ToLower(from) == "prev")
+					@prevMonthLink(currentMonthAndYear, strings.ToLower(from) == "prev")
 					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
-					@nextLink(currentMonthAndYear, strings.ToLower(from) == "next")
+					@nextMonthLink(currentMonthAndYear, strings.ToLower(from) == "next")
 				</div>
 				@calendar(calendarData, eventsData, currentMonthAndYear, from)
 			</section>
