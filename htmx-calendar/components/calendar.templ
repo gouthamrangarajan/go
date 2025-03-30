@@ -26,9 +26,9 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.CalendarData, cu
 			} else if strings.ToLower(from) == "next" {
 				{{ animationClass = "animate-slide-left" }}
 			}
-			{{ heightClass := "h-22" }}
+			{{ heightClass := "h-12 lg:h-20" }}
 			if len(calendarData) < 6 {
-				{{ heightClass = "h-28" }}
+				{{ heightClass = "h-12 lg:h-26" }}
 			}
 			for row := 0; row < len(calendarData); row++ {
 				<tr>
@@ -42,15 +42,31 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.CalendarData, cu
 							{{ tdClass = "border-r-3 border-gray-300 " + animationClass }}
 						}
 						<td class={ tdClass }>
-							<div class="py-2 px-4 flex flex-col w-full h-full justify-start">
+							{{ classBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-teal-600':'border-transparent'" }}
+							<div
+								class="p-1 flex flex-col w-full h-full justify-start border-3 border-dashed"
+								x-bind:class={ classBindExpression }
+								ondragover={ templ.JSFuncCall("setAlpineStoreDnDRowCol", templ.JSExpression("event"), row, col) }
+								ondragleave={ templ.JSFuncCall("removeAlpineStoreDnDRowCol", row, col) }
+								ondrop={ templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[row][col].Format("2006-01-02")) }
+							>
 								{{ spanClass := "text-slate-600" }}
 								if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year()!=currentMonthAndYear.Year() {
 									{{ spanClass = "text-slate-400" }}
 								}
 								<span class={ spanClass }>{ strconv.Itoa(calendarData[row][col].Day()) }</span>
-								<div class={ " w-full overflow-y-auto flex flex-col gap-1",heightClass }>
+								<div
+									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600",heightClass }
+									style={ "view-transition-name:items-" + calendarData[row][col].Format("2006-01-02") }
+								>
 									for _,event := range filterDateEvents(eventsData,calendarData[row][col]) {
-										<div class="bg-orange-600 text-white text-sm cursor-pointer py-1 px-3 rounded w-full truncate shrink-0 ">
+										<div
+											draggable="true"
+											data-id={ event.Id }
+											ondragstart={ templ.JSFuncCall("dragStarted", templ.JSExpression("event"), event.Id) }
+											class="bg-orange-600 text-white text-xs cursor-pointer py-1 px-3 rounded w-full truncate shrink-0 lg:text-sm"
+										>
+											// { "task " + strconv.Itoa(idx+1) }
 											{ event.Task }
 										</div>
 									}

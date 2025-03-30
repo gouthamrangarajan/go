@@ -26,14 +26,14 @@ func Login(request LoginRequest, channel chan<- LoginResponse) {
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{})
 	if err != nil {
-		fmt.Printf("Error connecting to supabase %v+\n", err)
+		fmt.Printf("Error connecting to supabase %v\n", err)
 		response.ErrorCode = fmt.Sprintf("Error connecting to supabase %v+\n", err)
 		channel <- response
 		return
 	}
 	resp, err := client.SignInWithEmailPassword(request.Email, request.Password)
 	if err != nil {
-		fmt.Printf("Error signing in with credentials %v+\n", err)
+		fmt.Printf("Error signing in with credentials %v\n", err)
 		response.ErrorCode = fmt.Sprintf("Error signing in with credentials %v+\n", err)
 		channel <- response
 		return
@@ -65,6 +65,32 @@ func GetData(accessToken string, dateRange []string, channel chan<- []models.Cal
 		fmt.Printf("Error unmarshalling results %v\n", err.Error())
 	}
 	channel <- response
+}
+
+func UpdateDate(accessToken string, id string, date string, channel chan<- bool) {
+	anonKey := os.Getenv("SUPABASE_ANON_KEY")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
+		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
+	})
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- false
+		return
+	}
+	_, count, err := client.From("calendar").Update(map[string]string{"date": date}, "", "exact").Eq("id", id).Execute()
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- false
+		return
+	}
+	if count == 0 {
+		fmt.Printf("No records affected\n")
+		channel <- false
+		return
+	}
+	// fmt.Println(string(data))
+	channel <- true
 }
 
 // func LoginUsingHttpClient(request LoginRequest, channel chan<- LoginResponse) {

@@ -97,7 +97,7 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Cale
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 20, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 23, Col: 153}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -110,7 +110,7 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Cale
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentMonthAndYear.Year()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 20, Col: 198}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 23, Col: 198}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -137,7 +137,7 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Cale
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<main class=\"h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\" id=\"main\" hx-swap-oob=\"true\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:section\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<main class=\"h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\" hx-swap-oob=\"true\" id=\"main\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:section\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -152,7 +152,7 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Cale
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 31, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 38, Col: 153}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -165,7 +165,7 @@ func MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Cale
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentMonthAndYear.Year()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 31, Col: 198}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainPage.templ`, Line: 38, Col: 198}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {

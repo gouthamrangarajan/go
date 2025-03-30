@@ -1,6 +1,6 @@
 package components
 
-templ LoginPage(animate bool) {
+templ LoginPage(animate bool, month string, year string) {
 	@layout() {
 		{{ animationClass := "" }}
 		if animate {
@@ -22,8 +22,8 @@ templ LoginPage(animate bool) {
 					hx-post="/login"
 					hx-target=".err__msg"
 					hx-swap="outerHTML transition:true"
-					x-on:submit="(ev)=>{
-						$store.data.processing=true
+					x-on:submit="(ev)=>{						
+						$store.data.processing=true;						
 					}"
 					x-bind:disabled="$store.data.processing"
 				>
@@ -47,6 +47,8 @@ templ LoginPage(animate bool) {
 							required
 						/>
 					</fieldset>
+					<input type="hidden" name="month" value={ month }/>
+					<input type="hidden" name="year" value={ year }/>
 					<button
 						type="submit"
 						x-bind:disabled="$store.data.processing"

@@ -19,14 +19,71 @@ templ layout() {
 		<body x-data="{}" class="relative w-full h-full font-(family-name:--font-neo-grotesque)">
 			{ children... }
 			<template x-if="$store.data.processing">
-				<div class="animate-loader w-full h-1 absolute top-0 left-0 bg-orange-600"></div>
+				<div class="animate-loader w-full h-1.5 absolute top-0 left-0 bg-purple-600"></div>
 			</template>
 			@onceHandle.Once() {
 				<script type="text/javascript">
-					var ABORT_CONTROLLER=new AbortController();					
+					var ABORT_CONTROLLER=new AbortController();		
+					function dragStarted(event,dataId){
+						event.dataTransfer.clearData();
+                        event.dataTransfer.setData('text/plain',dataId); 						
+					}
+					function eventDropped(event,date){
+						Alpine.store('data').processing=true;
+						const dataId=event.dataTransfer.getData('text/plain');	
+						fetch('/dnd',{
+							method:"POST",
+							body:JSON.stringify({id:dataId,date}),
+							headers:{
+								'content-type':'application/json'
+							},
+						}).then(resp=>{
+							Alpine.store('data').processing=false;
+						}).catch(err=>{
+							console.log(err);
+							Alpine.store('data').processing=false;
+						});																	
+						const elToRemove=document.querySelector("[data-id='"+dataId+"']");											
+						const targetElToAppend=event.currentTarget;
+						if(document.startViewTransition){
+							document.startViewTransition(()=>{		
+								elToRemove.remove();
+								elToRemove.classList.add("animate-slide-down-item");
+								targetElToAppend.children[1].appendChild(elToRemove);
+								Alpine.store('data').dnDRowCol=[];
+							});
+						}
+						else{				
+							elToRemove.remove();			
+							elToRemove.classList.add("animate-slide-down-item");
+							targetElToAppend.children[1].appendChild(elToRemove);
+							Alpine.store('data').dnDRowCol=[];
+						}
+					}
+					function setAlpineStoreDnDRowCol(event,row,col){
+						Alpine.store('data').dnDRowCol=[row,col]
+						event.preventDefault()
+					}
+					function removeAlpineStoreDnDRowCol(row,col){
+						if(Alpine.store('data').dnDRowCol.length==2
+							&& Alpine.store('data').dnDRowCol[0]==row 
+							&& Alpine.store('data').dnDRowCol[1]==col){
+								Alpine.store('data').dnDRowCol=[]
+							}
+					}								
 					document.addEventListener('alpine:init', () => {						
 						Alpine.store('data', {
-							processing: false,											
+							processing: false,			
+							dnDRowCol:[],							
+							checkDnDRowCol(row,col){
+								if(this.dnDRowCol.length<2){
+									return false;
+								}
+								if(this.dnDRowCol[0]==row && this.dnDRowCol[1]==col){
+									return true;
+								}
+								return false;
+							}								
 						})							
 					}, { signal: ABORT_CONTROLLER.signal });
 					document.body.addEventListener('htmx:afterSwap', function(event) {	

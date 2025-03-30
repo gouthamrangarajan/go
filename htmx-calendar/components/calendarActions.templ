@@ -21,6 +21,9 @@ templ prevLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-push-url="true"
 			autofocus
 			x-on:click="(ev)=>{
+				if(ABORT_CONTROLLER){
+					ABORT_CONTROLLER.abort();
+				}
 				$store.data.processing=true;
 			}"
 		>
@@ -38,6 +41,9 @@ templ prevLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-target="body"
 			hx-push-url="true"
 			x-on:click="(ev)=>{
+				if(ABORT_CONTROLLER){
+					ABORT_CONTROLLER.abort();
+				}
 				$store.data.processing=true;
 			}"
 		>

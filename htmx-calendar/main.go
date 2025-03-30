@@ -16,6 +16,7 @@ func main() {
 	}
 	http.HandleFunc("/", MainOrLoginPage)
 	http.HandleFunc("/login", Login)
+	http.HandleFunc("/dnd", UpdateDate)
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 	fmt.Println("Listening on :3000")
 	http.ListenAndServe(":3000", nil)

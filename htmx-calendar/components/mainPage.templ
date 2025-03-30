@@ -13,7 +13,10 @@ templ MainPage(calendarData [][7]time.Time, eventsData []models.CalendarData, cu
 
 templ MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.CalendarData, currentMonthAndYear time.Time, from string, isOob bool) {
 	if !isOob {
-		<main class="h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100" id="main">
+		<main
+			class="h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
+			id="main"
+		>
 			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:section">
 				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
 					@prevLink(currentMonthAndYear, strings.ToLower(from) == "prev")
@@ -24,7 +27,11 @@ templ MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Cal
 			</section>
 		</main>
 	} else {
-		<main class="h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100" id="main" hx-swap-oob="true">
+		<main
+			class="h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
+			hx-swap-oob="true"
+			id="main"
+		>
 			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:section">
 				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
 					@prevLink(currentMonthAndYear, strings.ToLower(from) == "prev")
