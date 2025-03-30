@@ -1,6 +1,6 @@
 package models
 
-type CalendarData struct {
+type EventData struct {
 	Id        string `json:"id"`
 	Task      string `json:"task"`
 	Frequency string `json:"frequency"`

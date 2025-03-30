@@ -78,7 +78,7 @@ func mainPage(responseWriter http.ResponseWriter, request *http.Request, accessT
 		}
 	}
 	allDatesToFilter := generateAllDatesStringFromStartToEnd(startDateForCalendar, endDateForCalendar)
-	channel := make(chan []models.CalendarData)
+	channel := make(chan []models.EventData)
 	go services.GetData(accessToken, allDatesToFilter, channel)
 	eventsData := <-channel
 	if isOob {
@@ -126,5 +126,5 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token
 func Add(responseWriter http.ResponseWriter, request *http.Request, token string) {
 	// month := request.URL.Query().Get("month")
 	// year := request.URL.Query().Get("year")
-
+	// components.AddPage(calendarData, eventsData, startDate).Render(request.Context(), responseWriter)
 }

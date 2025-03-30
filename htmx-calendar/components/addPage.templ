@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-templ AddPage(calendarData [][7]time.Time, eventsData []models.CalendarData, currentMonthAndYear time.Time) {
+templ AddPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) {
 	@layout() {
 		<main
 			class="relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"

@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func calendar(calendarData [][7]time.Time, eventsData []models.CalendarData, currentMonthAndYear time.Time, from string) templ.Component {
+func calendar(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -326,9 +326,9 @@ func calendar(calendarData [][7]time.Time, eventsData []models.CalendarData, cur
 	})
 }
 
-func filterDateEvents(eventsData []models.CalendarData, date time.Time) []models.CalendarData {
+func filterDateEvents(eventsData []models.EventData, date time.Time) []models.EventData {
 	dateStr := date.Format("2006-01-02")
-	var retValue []models.CalendarData
+	var retValue []models.EventData
 
 	for _, data := range eventsData {
 		if data.Date == dateStr {

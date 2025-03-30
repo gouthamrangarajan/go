@@ -43,10 +43,10 @@ func Login(request LoginRequest, channel chan<- LoginResponse) {
 	channel <- response
 }
 
-func GetData(accessToken string, dateRange []string, channel chan<- []models.CalendarData) {
+func GetData(accessToken string, dateRange []string, channel chan<- []models.EventData) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
-	response := []models.CalendarData{}
+	response := []models.EventData{}
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
 		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
 	})

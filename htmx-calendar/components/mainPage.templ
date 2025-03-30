@@ -5,13 +5,13 @@ import "strconv"
 import "strings"
 import "htmx-calendar/models"
 
-templ MainPage(calendarData [][7]time.Time, eventsData []models.CalendarData, currentMonthAndYear time.Time, from string) {
+templ MainPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
 	@layout() {
 		@MainPageWithoutLayout(calendarData, eventsData, currentMonthAndYear, from, false)
 	}
 }
 
-templ MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.CalendarData, currentMonthAndYear time.Time, from string, isOob bool) {
+templ MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) {
 	if !isOob {
 		<main
 			class="h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"

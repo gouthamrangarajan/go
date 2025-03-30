@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-templ calendar(calendarData [][7]time.Time, eventsData []models.CalendarData, currentMonthAndYear time.Time, from string) {
+templ calendar(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
 	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
 	<table class="w-full h-full table-fixed" style="view-transition-name:monthTable">
 		<thead>
@@ -80,9 +80,9 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.CalendarData, cu
 	</table>
 }
 
-func filterDateEvents(eventsData []models.CalendarData, date time.Time) []models.CalendarData {
+func filterDateEvents(eventsData []models.EventData, date time.Time) []models.EventData {
 	dateStr := date.Format("2006-01-02")
-	var retValue []models.CalendarData
+	var retValue []models.EventData
 
 	for _, data := range eventsData {
 		if data.Date == dateStr {
