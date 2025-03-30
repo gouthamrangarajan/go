@@ -21,18 +21,27 @@ templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, d
 				@calendar(calendarData, eventsData, date, "")
 			</section>
 			<div class="absolute top-0 left-0 w-full h-full bg-gray-300/50 flex items-center justify-center">
-				<section class="animate-slide-down w-11/12 py-2 px-4 pb-4 rounded-lg bg-white flex flex-col gap-4 md:w-9/12 lg:w-6/12 xl:w-5/12">
+				<dialog class="animate-slide-down w-11/12 mx-auto py-2 px-4 pb-4 rounded-lg bg-white flex flex-col gap-4 md:w-9/12 lg:w-6/12 xl:w-5/12" open x-trap="true">
 					<h1 class="text-xl text-purple-600 font-semibold">Add</h1>
+					<p class="add__result py-1 px-3 w-full" style="view-transition-name:addResult"></p>
 					<form
 						method="POST"
 						action="/add"
 						hx-post="/add"
-						hx-trigger="addEvent"
 						class="flex flex-col gap-4 "
+						hx-trigger="addEvent"
+						hx-target=".add__result"
+						hx-swap="outerHTML"
 						x-on:submit="(ev)=>{
 							ev.preventDefault();
-							console.log('enter');
+							$store.data.processing=true;
+							const fm=new FormData(ev.currentTarget);
+							const task = fm.get('task');
+							if(task.trim()!=''){
+								ev.currentTarget.dispatchEvent(new Event('addEvent'))
+							}
 						}"
+						x-bind:disabled="$store.data.processing"
 					>
 						<fieldset class="flex flex-col gap-1">
 							<label for="date" class="text-slate-600 text-lg">Date:</label>
@@ -62,8 +71,20 @@ templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, d
 							class="appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-600 text-white text-lg transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70"
 						>Submit</button>
 					</form>
-				</section>
+				</dialog>
 			</div>
 		</main>
+	}
+}
+
+templ AddEventResult(success bool, task string) {
+	if success {
+		<p class="add__result animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded" style="view-transition-name:addResult">
+			{ "Succesfully added task "+task }
+		</p>
+	} else {
+		<p class="add__result animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded" style="view-transition-name:addResult">
+			{ "Error adding task "+task+". Please try again later." }
+		</p>
 	}
 }

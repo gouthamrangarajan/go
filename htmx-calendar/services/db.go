@@ -89,7 +89,6 @@ func UpdateDate(accessToken string, id string, date string, channel chan<- bool)
 		channel <- false
 		return
 	}
-	// fmt.Println(string(data))
 	channel <- true
 }
 

@@ -14,6 +14,7 @@ templ layout() {
 			<link href="/assets/css/openprops.min.css" rel="stylesheet"/>
 			<link href="/assets/favicon.ico" rel="icon"/>
 			<script type="text/javascript" src="/assets/js/htmx.min.js"></script>
+			<script type="text/javascript" defer src="/assets/js/alpine_focus_trap.min.js"></script>
 			<script type="text/javascript" defer src="/assets/js/alpine.min.js"></script>
 		</head>
 		<body x-data="{}" class="relative w-full h-full font-(family-name:--font-neo-grotesque)">
@@ -24,7 +25,8 @@ templ layout() {
 					var ABORT_CONTROLLER=new AbortController();		
 					function dragStarted(event,dataId){
 						event.dataTransfer.clearData();
-                        event.dataTransfer.setData('text/plain',dataId); 						
+                        event.dataTransfer.setData('text/plain',dataId); 	
+						Alpine.store('data').dragging=true;					
 					}
 					function eventDropped(event,date){
 						Alpine.store('data').processing=true;
@@ -42,13 +44,14 @@ templ layout() {
 							Alpine.store('data').processing=false;
 						});																	
 						const elToRemove=document.querySelector("[data-id='"+dataId+"']");											
-						const targetElToAppend=event.currentTarget;
+						const targetElToAppend=event.currentTarget;						
 						if(document.startViewTransition){
 							document.startViewTransition(()=>{		
 								elToRemove.remove();
 								elToRemove.classList.add("animate-slide-down-item");
 								targetElToAppend.children[1].appendChild(elToRemove);
 								Alpine.store('data').dnDRowCol=[];
+								Alpine.store('data').dragging=false;
 							});
 						}
 						else{				
@@ -56,11 +59,14 @@ templ layout() {
 							elToRemove.classList.add("animate-slide-down-item");
 							targetElToAppend.children[1].appendChild(elToRemove);
 							Alpine.store('data').dnDRowCol=[];
-						}
+							Alpine.store('data').dragging=false;
+						}						
 					}
 					function setAlpineStoreDnDRowCol(event,row,col){
-						Alpine.store('data').dnDRowCol=[row,col]
-						event.preventDefault()
+						if(Alpine.store('data').dragging){
+							Alpine.store('data').dnDRowCol=[row,col];
+							event.preventDefault();
+						}
 					}
 					function removeAlpineStoreDnDRowCol(row,col){
 						if(Alpine.store('data').dnDRowCol.length==2
@@ -72,9 +78,10 @@ templ layout() {
 					document.addEventListener('alpine:init', () => {						
 						Alpine.store('data', {
 							processing: false,								
-							dnDRowCol:[],							
+							dnDRowCol:[],		
+							dragging:false,					
 							checkDnDRowCol(row,col){
-								if(this.dnDRowCol.length<2){
+								if(this.dnDRowCol.length<2 || !this.dragging){
 									return false;
 								}
 								if(this.dnDRowCol[0]==row && this.dnDRowCol[1]==col){

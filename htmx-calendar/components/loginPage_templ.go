@@ -102,7 +102,7 @@ func LoginError() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<p class=\"err__msg animate-error-message w-full py-1 px-3 bg-red-200 text-red-600 font-semibold rounded\" style=\"view-transition-name:loginError\">* Please provide valid credentials</p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<p class=\"err__msg animate-result w-full py-1 px-3 bg-red-200 text-red-600 font-semibold rounded\" style=\"view-transition-name:loginError\">* Please provide valid credentials</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

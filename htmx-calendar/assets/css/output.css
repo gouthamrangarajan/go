@@ -6,6 +6,7 @@
     --color-red-600: oklch(0.577 0.245 27.325);
     --color-orange-50: oklch(0.98 0.016 73.684);
     --color-orange-600: oklch(0.646 0.222 41.116);
+    --color-teal-200: oklch(0.91 0.096 180.426);
     --color-teal-600: oklch(0.6 0.118 184.704);
     --color-purple-600: oklch(0.558 0.288 302.321);
     --color-slate-50: oklch(0.984 0.003 247.858);
@@ -193,6 +194,27 @@
   .left-0 {
     left: calc(var(--spacing) * 0);
   }
+  .container {
+    width: 100%;
+    @media (width >= 40rem) {
+      max-width: 40rem;
+    }
+    @media (width >= 48rem) {
+      max-width: 48rem;
+    }
+    @media (width >= 64rem) {
+      max-width: 64rem;
+    }
+    @media (width >= 80rem) {
+      max-width: 80rem;
+    }
+    @media (width >= 96rem) {
+      max-width: 96rem;
+    }
+  }
+  .mx-auto {
+    margin-inline: auto;
+  }
   .scrollbar-thin {
     &::-webkit-scrollbar-track {
       background-color: var(--scrollbar-track);
@@ -365,6 +387,9 @@
   .bg-red-200 {
     background-color: var(--color-red-200);
   }
+  .bg-teal-200 {
+    background-color: var(--color-teal-200);
+  }
   .bg-white {
     background-color: var(--color-white);
   }
@@ -436,6 +461,9 @@
   }
   .text-slate-600 {
     color: var(--color-slate-600);
+  }
+  .text-teal-600 {
+    color: var(--color-teal-600);
   }
   .text-white {
     color: var(--color-white);
@@ -573,8 +601,8 @@
 .animate-loader {
   animation: loader 2s infinite var(--ease-elastic-in-5);
 }
-.animate-error-message {
-  animation: error-message 2s var(--ease-spring-3);
+.animate-result {
+  animation: result 2s var(--ease-spring-3);
 }
 @keyframes slide-left {
   from {
@@ -624,14 +652,16 @@
     transform: translateX(0);
   }
 }
-@keyframes error-message {
+@keyframes result {
   from {
     opacity: 0;
-    transform: translateY(100%);
+    transform: scaleY(0);
+    transform-origin: top;
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: scaleY(1);
+    transform-origin: top;
   }
 }
 @layer base {

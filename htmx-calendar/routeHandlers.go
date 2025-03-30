@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -29,7 +30,6 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 	go services.Login(services.LoginRequest{Email: email, Password: password}, channel)
 	resp := <-channel
 	if resp.ErrorCode != "" {
-		// fmt.Printf("%v\n", time.Now().Add(86400*time.Second))
 		components.LoginError().Render(request.Context(), responseWriter)
 	} else {
 		secure := true
@@ -39,7 +39,7 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 		cookie := http.Cookie{
 			Name:     "token",
 			Value:    resp.AccessToken,
-			Expires:  time.Now().Add(time.Duration(resp.ExpiresIn-120) * time.Second),
+			Expires:  time.Now().Add(time.Duration(resp.ExpiresIn-120) * time.Second), //RG add expiry 2 mins lesser , expiresin is seconds
 			HttpOnly: true,
 			Secure:   secure,
 			SameSite: http.SameSiteLaxMode,
@@ -143,40 +143,44 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token
 }
 
 func Add(responseWriter http.ResponseWriter, request *http.Request, token string) {
-	// if strings.ToUpper(request.Method) == "GET" {
-	fromMonth := request.URL.Query().Get("month")
-	fromYear := request.URL.Query().Get("year")
-	fromDay := request.URL.Query().Get("day")
+	if strings.ToUpper(request.Method) == "GET" {
+		fromMonth := request.URL.Query().Get("month")
+		fromYear := request.URL.Query().Get("year")
+		fromDay := request.URL.Query().Get("day")
 
-	today := time.Now()
-	year := today.Year()
-	month := today.Month()
-	day := today.Day()
-	if fromMonth != "" {
-		monthFromUrl, err := strconv.Atoi(fromMonth)
-		if err == nil {
-			month = time.Month(monthFromUrl)
+		today := time.Now()
+		year := today.Year()
+		month := today.Month()
+		day := today.Day()
+		if fromMonth != "" {
+			monthFromUrl, err := strconv.Atoi(fromMonth)
+			if err == nil {
+				month = time.Month(monthFromUrl)
+			}
 		}
-	}
-	if fromYear != "" {
-		yearFromUrl, err := strconv.Atoi(fromYear)
-		if err == nil {
-			year = yearFromUrl
+		if fromYear != "" {
+			yearFromUrl, err := strconv.Atoi(fromYear)
+			if err == nil {
+				year = yearFromUrl
+			}
 		}
-	}
-	if fromDay != "" {
-		dayFromUrl, err := strconv.Atoi(fromDay)
-		if err == nil {
-			day = dayFromUrl
+		if fromDay != "" {
+			dayFromUrl, err := strconv.Atoi(fromDay)
+			if err == nil {
+				day = dayFromUrl
+			}
 		}
+		calendarData := generateCalendarData(year, month, today.Location())
+		channel := make(chan []models.EventData)
+		go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
+		eventsData := <-channel
+		addEventDate := time.Date(year, month, day, 0, 0, 0, 0, today.Location())
+		components.AddEventPage(calendarData.data, eventsData, addEventDate).Render(request.Context(), responseWriter)
+	} else if strings.ToUpper(request.Method) == "POST" {
+		task := request.FormValue("task")
+		components.AddEventResult(false, task).Render(request.Context(), responseWriter)
+	} else {
+		responseWriter.WriteHeader(405)
+		responseWriter.Write([]byte("Method Not Allowed"))
 	}
-	calendarData := generateCalendarData(year, month, today.Location())
-	channel := make(chan []models.EventData)
-	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
-	eventsData := <-channel
-	addEventDate := time.Date(year, month, day, 0, 0, 0, 0, today.Location())
-	components.AddEventPage(calendarData.data, eventsData, addEventDate).Render(request.Context(), responseWriter)
-	// } else {
-	//POST method
-	// }
 }
