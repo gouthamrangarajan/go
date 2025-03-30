@@ -233,6 +233,9 @@
   .h-12 {
     height: calc(var(--spacing) * 12);
   }
+  .h-96 {
+    height: calc(var(--spacing) * 96);
+  }
   .h-dvh {
     height: 100dvh;
   }
@@ -301,6 +304,9 @@
   .overflow-y-auto {
     overflow-y: auto;
   }
+  .overflow-y-hidden {
+    overflow-y: hidden;
+  }
   .rounded {
     border-radius: 0.25rem;
   }
@@ -344,6 +350,9 @@
   .border-transparent {
     border-color: transparent;
   }
+  .bg-gray-600\/50 {
+    background-color: color-mix(in oklab, var(--color-gray-600) 50%, transparent);
+  }
   .bg-orange-600 {
     background-color: var(--color-orange-600);
   }
@@ -352,6 +361,9 @@
   }
   .bg-red-200 {
     background-color: var(--color-red-200);
+  }
+  .bg-white {
+    background-color: var(--color-white);
   }
   .bg-gradient-to-br {
     --tw-gradient-position: to bottom right in oklab;

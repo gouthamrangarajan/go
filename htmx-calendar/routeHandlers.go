@@ -12,23 +12,6 @@ import (
 	"time"
 )
 
-func MainOrLoginPage(responseWriter http.ResponseWriter, request *http.Request) {
-	month := request.URL.Query().Get("month")
-	year := request.URL.Query().Get("year")
-	// cookie check
-	cookie, err := request.Cookie("token")
-	if err != nil {
-		components.LoginPage(true, month, year).Render(request.Context(), responseWriter)
-	} else {
-		token := cookie.Value
-		if token == "" {
-			components.LoginPage(true, month, year).Render(request.Context(), responseWriter)
-		} else {
-			mainPage(responseWriter, request, token, month, year, false)
-		}
-	}
-}
-
 func Login(responseWriter http.ResponseWriter, request *http.Request) {
 	email := request.FormValue("email")
 	password := request.FormValue("password")
@@ -58,7 +41,11 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 		mainPage(responseWriter, request, resp.AccessToken, month, year, true)
 	}
 }
-
+func MainPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
+	month := request.URL.Query().Get("month")
+	year := request.URL.Query().Get("year")
+	mainPage(responseWriter, request, token, month, year, false)
+}
 func mainPage(responseWriter http.ResponseWriter, request *http.Request, accessToken string, toMonth string, toYear string, isOob bool) {
 	from := request.URL.Query().Get("from")
 	today := time.Now()
@@ -115,18 +102,7 @@ func generateAllDatesStringFromStartToEnd(start time.Time, end time.Time) []stri
 	return ret
 }
 
-func UpdateDate(responseWriter http.ResponseWriter, request *http.Request) {
-	//check cookies & send unauthorized
-	cookie, err := request.Cookie("token")
-	token := ""
-	if err == nil {
-		token = cookie.Value
-	}
-	if err != nil || token == "" {
-		responseWriter.WriteHeader(401)
-		responseWriter.Write([]byte("UnAuthorized"))
-		return
-	}
+func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token string) {
 	var dnd models.DnD
 	jsonErr := json.NewDecoder(request.Body).Decode(&dnd)
 	if jsonErr != nil {
@@ -145,4 +121,10 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	responseWriter.WriteHeader(500)
 	responseWriter.Write([]byte("Internal Server Error"))
+}
+
+func Add(responseWriter http.ResponseWriter, request *http.Request, token string) {
+	// month := request.URL.Query().Get("month")
+	// year := request.URL.Query().Get("year")
+
 }

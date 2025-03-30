@@ -1,0 +1,30 @@
+package components
+
+import (
+	"htmx-calendar/models"
+	"strconv"
+	"time"
+)
+
+templ AddPage(calendarData [][7]time.Time, eventsData []models.CalendarData, currentMonthAndYear time.Time) {
+	@layout() {
+		<main
+			class="relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
+			id="main"
+		>
+			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:main-section">
+				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
+					@prevLink(currentMonthAndYear, false)
+					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
+					@nextLink(currentMonthAndYear, false)
+				</div>
+				@calendar(calendarData, eventsData, currentMonthAndYear, "")
+			</section>
+			<div class="absolute top-0 left-0 w-full h-full bg-gray-600/50 flex items-center justify-center">
+				<section class="animate-slide-down w-11/12 py-2 px-4 rounded-lg bg-white h-96 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12">
+					<h1 class="text-xl text-purple-600 font-semibold">Add</h1>
+				</section>
+			</div>
+		</main>
+	}
+}

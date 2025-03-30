@@ -17,7 +17,7 @@ templ MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Cal
 			class="h-dvh w-dvw  overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
 			id="main"
 		>
-			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:section">
+			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:main-section">
 				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
 					@prevLink(currentMonthAndYear, strings.ToLower(from) == "prev")
 					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
@@ -32,7 +32,7 @@ templ MainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Cal
 			hx-swap-oob="true"
 			id="main"
 		>
-			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:section">
+			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:main-section">
 				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
 					@prevLink(currentMonthAndYear, strings.ToLower(from) == "prev")
 					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>

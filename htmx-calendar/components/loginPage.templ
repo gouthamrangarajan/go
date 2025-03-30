@@ -1,18 +1,14 @@
 package components
 
-templ LoginPage(animate bool, month string, year string) {
+templ LoginPage(month string, year string) {
 	@layout() {
-		{{ animationClass := "" }}
-		if animate {
-			{{ animationClass = "animate-slide-down" }}
-		}
 		<main
 			id="main"
 			class="h-dvh w-dvw overflow-x-hidden flex flex-col gap-1 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
 		>
 			<section
-				class={ " w-11/12 py-2 px-4 rounded-lg shadow shadow-teal-600 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12",animationClass }
-				style="view-transition-name:section"
+				class="animate-slide-down w-11/12 py-2 px-4 rounded-lg shadow shadow-teal-600 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12"
+				style="view-transition-name:main-section"
 			>
 				<h1 class="text-xl text-purple-600 font-semibold">Login</h1>
 				<p class="err__msg w-full py-1 px-3" style="view-transition-name:loginError"></p>
