@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) {
+templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, date time.Time) {
 	@layout() {
 		<main
 			class="relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
@@ -14,15 +14,54 @@ templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, c
 		>
 			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:main-section">
 				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
-					@prevMonthLink(currentMonthAndYear, false)
-					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
-					@nextMonthLink(currentMonthAndYear, false)
+					@prevMonthLink(date, false)
+					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ date.Month().String() } { strconv.Itoa(date.Year()) }</span>
+					@nextMonthLink(date, false)
 				</div>
-				@calendar(calendarData, eventsData, currentMonthAndYear, "")
+				@calendar(calendarData, eventsData, date, "")
 			</section>
-			<div class="absolute top-0 left-0 w-full h-full bg-gray-600/50 flex items-center justify-center">
-				<section class="animate-slide-down w-11/12 py-2 px-4 rounded-lg bg-white h-96 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12">
+			<div class="absolute top-0 left-0 w-full h-full bg-gray-300/50 flex items-center justify-center">
+				<section class="animate-slide-down w-11/12 py-2 px-4 pb-4 rounded-lg bg-white flex flex-col gap-4 md:w-9/12 lg:w-6/12 xl:w-5/12">
 					<h1 class="text-xl text-purple-600 font-semibold">Add</h1>
+					<form
+						method="POST"
+						action="/add"
+						hx-post="/add"
+						hx-trigger="addEvent"
+						class="flex flex-col gap-4 "
+						x-on:submit="(ev)=>{
+							ev.preventDefault();
+							console.log('enter');
+						}"
+					>
+						<fieldset class="flex flex-col gap-1">
+							<label for="date" class="text-slate-600 text-lg">Date:</label>
+							<input
+								type="date"
+								id="date"
+								class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600"
+								name="date"
+								readonly
+								required
+								value={ date.Format("2006-01-02") }
+							/>
+						</fieldset>
+						<fieldset class="flex flex-col gap-1">
+							<label for="task" class="text-slate-600 text-lg">Task:</label>
+							<input
+								type="text"
+								id="task"
+								class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600"
+								name="task"
+								required
+							/>
+						</fieldset>
+						<button
+							type="submit"
+							x-bind:disabled="$store.data.processing"
+							class="appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-600 text-white text-lg transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70"
+						>Submit</button>
+					</form>
 				</section>
 			</div>
 		</main>

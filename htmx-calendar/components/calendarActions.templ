@@ -104,7 +104,7 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 }
 
 templ addEventLink(date time.Time, active bool) {
-	{{ url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) }}
+	{{ url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) }}
 	if active {
 		<a
 			class="appearance-none outline-none text-slate-600 py-1 px-3 rounded transition duration-300 focus:ring-2 focus:ring-teal-600"

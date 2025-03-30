@@ -143,11 +143,15 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token
 }
 
 func Add(responseWriter http.ResponseWriter, request *http.Request, token string) {
+	// if strings.ToUpper(request.Method) == "GET" {
 	fromMonth := request.URL.Query().Get("month")
 	fromYear := request.URL.Query().Get("year")
+	fromDay := request.URL.Query().Get("day")
+
 	today := time.Now()
 	year := today.Year()
 	month := today.Month()
+	day := today.Day()
 	if fromMonth != "" {
 		monthFromUrl, err := strconv.Atoi(fromMonth)
 		if err == nil {
@@ -160,9 +164,19 @@ func Add(responseWriter http.ResponseWriter, request *http.Request, token string
 			year = yearFromUrl
 		}
 	}
+	if fromDay != "" {
+		dayFromUrl, err := strconv.Atoi(fromDay)
+		if err == nil {
+			day = dayFromUrl
+		}
+	}
 	calendarData := generateCalendarData(year, month, today.Location())
 	channel := make(chan []models.EventData)
 	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
 	eventsData := <-channel
-	components.AddEventPage(calendarData.data, eventsData, calendarData.monthStartDate).Render(request.Context(), responseWriter)
+	addEventDate := time.Date(year, month, day, 0, 0, 0, 0, today.Location())
+	components.AddEventPage(calendarData.data, eventsData, addEventDate).Render(request.Context(), responseWriter)
+	// } else {
+	//POST method
+	// }
 }

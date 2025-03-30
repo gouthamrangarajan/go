@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) templ.Component {
+func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, date time.Time) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -51,7 +51,7 @@ func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, cu
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = prevMonthLink(currentMonthAndYear, false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = prevMonthLink(date, false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -60,9 +60,9 @@ func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, cu
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(date.Month().String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 18, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 18, Col: 138}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -73,9 +73,9 @@ func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, cu
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentMonthAndYear.Year()))
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(date.Year()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 18, Col: 198}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 18, Col: 168}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -85,7 +85,7 @@ func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, cu
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = nextMonthLink(currentMonthAndYear, false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = nextMonthLink(date, false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -93,11 +93,24 @@ func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, cu
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = calendar(calendarData, eventsData, currentMonthAndYear, "").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = calendar(calendarData, eventsData, date, "").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</section><div class=\"absolute top-0 left-0 w-full h-full bg-gray-600/50 flex items-center justify-center\"><section class=\"animate-slide-down w-11/12 py-2 px-4 rounded-lg bg-white h-96 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12\"><h1 class=\"text-xl text-purple-600 font-semibold\">Add</h1></section></div></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</section><div class=\"absolute top-0 left-0 w-full h-full bg-gray-300/50 flex items-center justify-center\"><section class=\"animate-slide-down w-11/12 py-2 px-4 pb-4 rounded-lg bg-white flex flex-col gap-4 md:w-9/12 lg:w-6/12 xl:w-5/12\"><h1 class=\"text-xl text-purple-600 font-semibold\">Add</h1><form method=\"POST\" action=\"/add\" hx-post=\"/add\" hx-trigger=\"addEvent\" class=\"flex flex-col gap-4 \" x-on:submit=\"(ev)=&gt;{\n\t\t\t\t\t\t\tev.preventDefault();\n\t\t\t\t\t\t\tconsole.log(&#39;enter&#39;);\n\t\t\t\t\t\t}\"><fieldset class=\"flex flex-col gap-1\"><label for=\"date\" class=\"text-slate-600 text-lg\">Date:</label> <input type=\"date\" id=\"date\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"date\" readonly required value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format("2006-01-02"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 46, Col: 41}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"></fieldset><fieldset class=\"flex flex-col gap-1\"><label for=\"task\" class=\"text-slate-600 text-lg\">Task:</label> <input type=\"text\" id=\"task\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"task\" required></fieldset><button type=\"submit\" x-bind:disabled=\"$store.data.processing\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-600 text-white text-lg transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Submit</button></form></section></div></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

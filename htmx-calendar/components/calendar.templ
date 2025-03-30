@@ -42,9 +42,9 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.EventData, curre
 							{{ tdClass = "border-r-3 border-gray-300 " + animationClass }}
 						}
 						<td class={ tdClass }>
-							{{ classBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-teal-600':'border-transparent'" }}
+							{{ classBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-3 border-teal-600':'border-3 border-transparent'" }}
 							<div
-								class="p-1 flex flex-col w-full h-full justify-start items-start gap-1 border-3 border-dashed"
+								class="p-1 flex flex-col w-full h-full justify-start items-start gap-1 border-dashed"
 								x-bind:class={ classBindExpression }
 								ondragover={ templ.JSFuncCall("setAlpineStoreDnDRowCol", templ.JSExpression("event"), row, col) }
 								ondragleave={ templ.JSFuncCall("removeAlpineStoreDnDRowCol", row, col) }

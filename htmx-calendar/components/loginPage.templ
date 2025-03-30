@@ -14,7 +14,8 @@ templ LoginPage(month string, year string) {
 				<p class="err__msg w-full py-1 px-3" style="view-transition-name:loginError"></p>
 				<form
 					class="w-full flex flex-col gap-3"
-					method="post"
+					method="POST"
+					action="/login"
 					hx-post="/login"
 					hx-target=".err__msg"
 					hx-swap="outerHTML transition:true"

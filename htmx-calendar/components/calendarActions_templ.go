@@ -202,7 +202,7 @@ func addEventLink(date time.Time, active bool) templ.Component {
 			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year())
+		url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day())
 		if active {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<a class=\"appearance-none outline-none text-slate-600 py-1 px-3 rounded transition duration-300 focus:ring-2 focus:ring-teal-600\" href=\"")
 			if templ_7745c5c3_Err != nil {
