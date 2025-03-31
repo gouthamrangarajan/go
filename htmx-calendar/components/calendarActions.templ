@@ -12,7 +12,7 @@ templ prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 	}
 	if autoFocus {
 		<a
-			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
 			autoFocus
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
@@ -39,7 +39,7 @@ templ prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 		</a>
 	} else {
 		<a
-			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
@@ -73,7 +73,7 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 	}
 	if autoFocus {
 		<a
-			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300  hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
 			autoFocus
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
@@ -100,7 +100,7 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 		</a>
 	} else {
 		<a
-			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300  hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
@@ -131,7 +131,7 @@ templ addEventLink(date time.Time, active bool) {
 	{{ url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) }}
 	if active {
 		<a
-			class="appearance-none outline-none text-slate-600 py-1 px-3 rounded transition duration-300 focus:ring-2 focus:ring-teal-600"
+			class="appearance-none outline-none text-slate-600 py-1 px-2 rounded transition duration-300 focus:ring-2 focus:ring-teal-600"
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
@@ -146,6 +146,68 @@ templ addEventLink(date time.Time, active bool) {
 			}"
 		>{ strconv.Itoa(date.Day()) }</a>
 	} else {
-		<span class="text-slate-400 py-1 px-3">{ strconv.Itoa(date.Day()) }</span>
+		<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>
 	}
+}
+
+templ monthViewLink(currentMonthAndYear time.Time, active bool) {
+	{{ url := "/?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) }}
+	{{ activeClass := "bg-teal-700" }}
+	if !active {
+		{{ activeClass = "bg-teal-500" }}
+	}
+	<a
+		class={ "appearance-none outline-none text-white transition duration-300 py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10",activeClass }
+		href={ templ.SafeURL(url) }
+		hx-get={ url }
+		hx-boost="true"
+		hx-swap="outerHTML transition:true"
+		hx-target="body"
+		hx-trigger="monthViewEvent"
+		hx-push-url="true"
+		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''"
+		x-on:click="(ev)=>{		
+				ev.preventDefault();		
+				if(!$store.data.processing){
+					if(ABORT_CONTROLLER){
+						ABORT_CONTROLLER.abort();
+					}
+					$store.data.processing=true;
+					ev.currentTarget.dispatchEvent(new Event('monthViewEvent'))
+				}			
+			}"
+	>
+		Month
+	</a>
+}
+
+templ weekViewLink(currentMonthAndYear time.Time, active bool) {
+	{{ url := "/week?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) }}
+	{{ activeClass := "bg-teal-700" }}
+	if !active {
+		{{ activeClass = "bg-teal-500" }}
+	}
+	<a
+		class={ "appearance-none outline-none text-white transition duration-300  py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
+		href={ templ.SafeURL(url) }
+		hx-get={ url }
+		hx-boost="true"
+		hx-swap="outerHTML transition:true"
+		hx-target="body"
+		hx-trigger="weekViewEvent"
+		hx-push-url="true"
+		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''"
+		x-on:click="(ev)=>{		
+				ev.preventDefault();		
+				if(!$store.data.processing){
+					if(ABORT_CONTROLLER){
+						ABORT_CONTROLLER.abort();
+					}
+					$store.data.processing=true;
+					ev.currentTarget.dispatchEvent(new Event('weekViewEvent'))
+				}			
+			}"
+	>
+		Week
+	</a>
 }

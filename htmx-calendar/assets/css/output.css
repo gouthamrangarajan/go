@@ -7,8 +7,11 @@
     --color-orange-50: oklch(0.98 0.016 73.684);
     --color-orange-500: oklch(0.705 0.213 47.604);
     --color-orange-600: oklch(0.646 0.222 41.116);
+    --color-teal-50: oklch(0.984 0.014 180.72);
     --color-teal-200: oklch(0.91 0.096 180.426);
+    --color-teal-500: oklch(0.704 0.14 182.503);
     --color-teal-600: oklch(0.6 0.118 184.704);
+    --color-teal-700: oklch(0.511 0.096 186.391);
     --color-purple-600: oklch(0.558 0.288 302.321);
     --color-slate-400: oklch(0.704 0.04 256.788);
     --color-slate-600: oklch(0.446 0.043 257.281);
@@ -282,6 +285,9 @@
   .w-full {
     width: 100%;
   }
+  .flex-1 {
+    flex: 1;
+  }
   .shrink-0 {
     flex-shrink: 0;
   }
@@ -318,20 +324,23 @@
   .justify-center {
     justify-content: center;
   }
+  .justify-end {
+    justify-content: flex-end;
+  }
   .justify-start {
     justify-content: flex-start;
   }
   .gap-1 {
     gap: calc(var(--spacing) * 1);
   }
-  .gap-2 {
-    gap: calc(var(--spacing) * 2);
-  }
   .gap-3 {
     gap: calc(var(--spacing) * 3);
   }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
+  }
+  .gap-7 {
+    gap: calc(var(--spacing) * 7);
   }
   .truncate {
     overflow: hidden;
@@ -411,11 +420,20 @@
   .bg-teal-200 {
     background-color: var(--color-teal-200);
   }
+  .bg-teal-500 {
+    background-color: var(--color-teal-500);
+  }
+  .bg-teal-700 {
+    background-color: var(--color-teal-700);
+  }
   .bg-white {
     background-color: var(--color-white);
   }
   .p-1 {
     padding: calc(var(--spacing) * 1);
+  }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
   }
   .px-3 {
     padding-inline: calc(var(--spacing) * 3);
@@ -508,6 +526,11 @@
       }
     }
   }
+  .focus\:z-10 {
+    &:focus {
+      z-index: 10;
+    }
+  }
   .focus\:border-gray-600 {
     &:focus {
       border-color: var(--color-gray-600);
@@ -543,6 +566,11 @@
   .focus\:ring-offset-orange-50 {
     &:focus {
       --tw-ring-offset-color: var(--color-orange-50);
+    }
+  }
+  .focus\:ring-offset-teal-50 {
+    &:focus {
+      --tw-ring-offset-color: var(--color-teal-50);
     }
   }
   .focus\:outline-2 {
@@ -697,7 +725,7 @@
   }
 }
 ::view-transition-old(modal) {
-  animation: slide-up 300ms var(--ease-spring-3);
+  animation: slide-up 600ms var(--ease-spring-3);
 }
 ::view-transition-new(modal) {
   height: 100%;

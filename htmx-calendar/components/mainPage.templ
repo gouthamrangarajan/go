@@ -1,8 +1,7 @@
 package components
 
 import "time"
-import "strconv"
-import "strings"
+
 import "htmx-calendar/models"
 
 templ MainPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) {
@@ -21,29 +20,15 @@ templ mainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Eve
 			class="h-dvh w-dvw overflow-x-hidden"
 			id="main"
 		>
-			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
-				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
-					@prevMonthLink(currentMonthAndYear, strings.ToLower(from) == "prev")
-					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
-					@nextMonthLink(currentMonthAndYear, strings.ToLower(from) == "next")
-				</div>
-				@calendar(calendarData, eventsData, currentMonthAndYear, from)
-			</section>
+			@calendar(calendarData, eventsData, currentMonthAndYear, from)
 		</main>
 	} else {
 		<main
-			class="h-dvh w-dvw overflow-x-hidden"
+			class="h-dvh w-dvw overflow-x-hidden "
 			hx-swap-oob="true"
 			id="main"
 		>
-			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
-				<div class="w-full flex justify-between items-center gap-2 py-2 px-4">
-					@prevMonthLink(currentMonthAndYear, strings.ToLower(from) == "prev")
-					<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
-					@nextMonthLink(currentMonthAndYear, strings.ToLower(from) == "next")
-				</div>
-				@calendar(calendarData, eventsData, currentMonthAndYear, from)
-			</section>
+			@calendar(calendarData, eventsData, currentMonthAndYear, from)
 		</main>
 	}
 }

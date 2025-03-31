@@ -111,7 +111,7 @@
 }
 
 ::view-transition-old(modal) {
-    animation: slide-up 300ms var(--ease-spring-3);
+    animation: slide-up 600ms var(--ease-spring-3);
 }
 
 ::view-transition-new(modal) {
