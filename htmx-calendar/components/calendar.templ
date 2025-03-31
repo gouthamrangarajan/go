@@ -26,9 +26,9 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.EventData, curre
 			} else if strings.ToLower(from) == "next" {
 				{{ animationClass = "animate-slide-left" }}
 			}
-			{{ heightClass := "h-10 lg:h-18" }}
+			{{ heightClass := "h-10 lg:h-18 xl:h-20" }}
 			if len(calendarData) < 6 {
-				{{ heightClass = "h-10 lg:h-24" }}
+				{{ heightClass = "h-10 lg:h-24 xl:h-26" }}
 			}
 			for row := 0; row < len(calendarData); row++ {
 				<tr>
@@ -51,7 +51,7 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.EventData, curre
 								ondrop={ templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[row][col].Format("2006-01-02")) }
 							>
 								{{ active := true }}
-								if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year()!=currentMonthAndYear.Year() {
+								if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year()!=currentMonthAndYear.Year() || calendarData[row][col].Sub(time.Now()).Hours()< -24 {
 									{{ active = false }}
 								}
 								@addEventLink(calendarData[row][col], active)
@@ -65,6 +65,7 @@ templ calendar(calendarData [][7]time.Time, eventsData []models.EventData, curre
 											data-id={ event.Id }
 											ondragstart={ templ.JSFuncCall("dragStarted", templ.JSExpression("event"), event.Id) }
 											class="bg-orange-600 text-white text-xs cursor-pointer py-1 px-3 rounded w-full truncate shrink-0 lg:text-sm"
+											style="view-transition-name:none"
 										>
 											// { "task " + strconv.Itoa(idx+1) }
 											{ event.Task }

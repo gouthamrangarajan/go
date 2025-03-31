@@ -249,6 +249,10 @@
     width: calc(var(--spacing) * 5);
     height: calc(var(--spacing) * 5);
   }
+  .size-6 {
+    width: calc(var(--spacing) * 6);
+    height: calc(var(--spacing) * 6);
+  }
   .h-1\.5 {
     height: calc(var(--spacing) * 1.5);
   }
@@ -334,6 +338,9 @@
   }
   .rounded {
     border-radius: 0.25rem;
+  }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
   }
   .rounded-lg {
     border-radius: var(--radius-lg);
@@ -517,6 +524,11 @@
       --tw-ring-color: var(--color-orange-600);
     }
   }
+  .focus\:ring-red-600 {
+    &:focus {
+      --tw-ring-color: var(--color-red-600);
+    }
+  }
   .focus\:ring-teal-600 {
     &:focus {
       --tw-ring-color: var(--color-teal-600);
@@ -580,6 +592,16 @@
       line-height: var(--tw-leading, var(--text-sm--line-height));
     }
   }
+  .xl\:h-20 {
+    @media (width >= 80rem) {
+      height: calc(var(--spacing) * 20);
+    }
+  }
+  .xl\:h-26 {
+    @media (width >= 80rem) {
+      height: calc(var(--spacing) * 26);
+    }
+  }
   .xl\:w-5\/12 {
     @media (width >= 80rem) {
       width: calc(5/12 * 100%);
@@ -634,6 +656,16 @@
     transform: translateY(0);
   }
 }
+@keyframes slide-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
+}
 @keyframes slide-down-item {
   from {
     opacity: 0;
@@ -663,6 +695,17 @@
     transform: scaleY(1);
     transform-origin: top;
   }
+}
+::view-transition-old(modal) {
+  animation: slide-up 300ms var(--ease-spring-3);
+}
+::view-transition-new(modal) {
+  height: 100%;
+  transition: height 200ms var(--ease-spring-3);
+}
+::view-transition-old(mainSection), ::view-transition-new(mainSection) {
+  height: 100%;
+  transition: height 200ms var(--ease-spring-3);
 }
 @layer base {
   * {

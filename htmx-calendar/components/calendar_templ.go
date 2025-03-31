@@ -96,9 +96,9 @@ func calendar(calendarData [][7]time.Time, eventsData []models.EventData, curren
 		} else if strings.ToLower(from) == "next" {
 			animationClass = "animate-slide-left"
 		}
-		heightClass := "h-10 lg:h-18"
+		heightClass := "h-10 lg:h-18 xl:h-20"
 		if len(calendarData) < 6 {
-			heightClass = "h-10 lg:h-24"
+			heightClass = "h-10 lg:h-24 xl:h-26"
 		}
 		for row := 0; row < len(calendarData); row++ {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<tr>")
@@ -190,7 +190,7 @@ func calendar(calendarData [][7]time.Time, eventsData []models.EventData, curren
 					return templ_7745c5c3_Err
 				}
 				active := true
-				if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year() != currentMonthAndYear.Year() {
+				if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year() != currentMonthAndYear.Year() || calendarData[row][col].Sub(time.Now()).Hours() < -24 {
 					active = false
 				}
 				templ_7745c5c3_Err = addEventLink(calendarData[row][col], active).Render(ctx, templ_7745c5c3_Buffer)
@@ -259,14 +259,14 @@ func calendar(calendarData [][7]time.Time, eventsData []models.EventData, curren
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"bg-orange-600 text-white text-xs cursor-pointer py-1 px-3 rounded w-full truncate shrink-0 lg:text-sm\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"bg-orange-600 text-white text-xs cursor-pointer py-1 px-3 rounded w-full truncate shrink-0 lg:text-sm\" style=\"view-transition-name:none\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(event.Task)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendar.templ`, Line: 70, Col: 23}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendar.templ`, Line: 71, Col: 23}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {

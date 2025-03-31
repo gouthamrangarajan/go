@@ -1,6 +1,6 @@
 package components
 
-templ LoginPage(month string, year string) {
+templ LoginPage(path string, query string) {
 	@layout() {
 		<main
 			id="main"
@@ -8,7 +8,7 @@ templ LoginPage(month string, year string) {
 		>
 			<section
 				class="animate-slide-down w-11/12 py-2 px-4 rounded-lg shadow shadow-teal-600 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12"
-				style="view-transition-name:main-section"
+				style="view-transition-name:mainSection"
 			>
 				<h1 class="text-xl text-purple-600 font-semibold">Login</h1>
 				<p class="err__msg w-full py-1 px-3" style="view-transition-name:loginError"></p>
@@ -44,8 +44,8 @@ templ LoginPage(month string, year string) {
 							required
 						/>
 					</fieldset>
-					<input type="hidden" name="month" value={ month }/>
-					<input type="hidden" name="year" value={ year }/>
+					<input type="hidden" name="path" value={ path }/>
+					<input type="hidden" name="query" value={ query }/>
 					<button
 						type="submit"
 						x-bind:disabled="$store.data.processing"

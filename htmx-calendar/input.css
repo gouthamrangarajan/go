@@ -61,6 +61,18 @@
     }
 }
 
+@keyframes slide-up {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-10%);
+    }
+}
+
 @keyframes slide-down-item {
     from {
         opacity: 0;
@@ -96,4 +108,19 @@
         transform: scaleY(1);
         transform-origin: top;
     }
+}
+
+::view-transition-old(modal) {
+    animation: slide-up 300ms var(--ease-spring-3);
+}
+
+::view-transition-new(modal) {
+    height: 100%;
+    transition: height 200ms var(--ease-spring-3);
+}
+
+::view-transition-old(mainSection),
+::view-transition-new(mainSection) {
+    height: 100%;
+    transition: height 200ms var(--ease-spring-3);
 }

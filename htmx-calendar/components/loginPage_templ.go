@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func LoginPage(month string, year string) templ.Component {
+func LoginPage(path string, query string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -41,27 +41,27 @@ func LoginPage(month string, year string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main id=\"main\" class=\"h-dvh w-dvw overflow-x-hidden flex flex-col gap-1 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\"><section class=\"animate-slide-down w-11/12 py-2 px-4 rounded-lg shadow shadow-teal-600 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12\" style=\"view-transition-name:main-section\"><h1 class=\"text-xl text-purple-600 font-semibold\">Login</h1><p class=\"err__msg w-full py-1 px-3\" style=\"view-transition-name:loginError\"></p><form class=\"w-full flex flex-col gap-3\" method=\"POST\" action=\"/login\" hx-post=\"/login\" hx-target=\".err__msg\" hx-swap=\"outerHTML transition:true\" x-on:submit=\"(ev)=&gt;{\t\t\t\t\t\t\n\t\t\t\t\t\t$store.data.processing=true;\t\t\t\t\t\t\n\t\t\t\t\t}\" x-bind:disabled=\"$store.data.processing\"><fieldset class=\"flex flex-col gap-1\"><label class=\"text-slate-600 text-lg\" for=\"email\">Email:</label> <input type=\"email\" id=\"email\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"email\" required></fieldset><fieldset class=\"flex flex-col gap-1\"><label class=\"text-slate-600 text-lg\" for=\"password\">Password:</label> <input type=\"password\" id=\"password\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"password\" required></fieldset><input type=\"hidden\" name=\"month\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main id=\"main\" class=\"h-dvh w-dvw overflow-x-hidden flex flex-col gap-1 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\"><section class=\"animate-slide-down w-11/12 py-2 px-4 rounded-lg shadow shadow-teal-600 flex flex-col gap-3 md:w-9/12 lg:w-6/12 xl:w-5/12\" style=\"view-transition-name:mainSection\"><h1 class=\"text-xl text-purple-600 font-semibold\">Login</h1><p class=\"err__msg w-full py-1 px-3\" style=\"view-transition-name:loginError\"></p><form class=\"w-full flex flex-col gap-3\" method=\"POST\" action=\"/login\" hx-post=\"/login\" hx-target=\".err__msg\" hx-swap=\"outerHTML transition:true\" x-on:submit=\"(ev)=&gt;{\t\t\t\t\t\t\n\t\t\t\t\t\t$store.data.processing=true;\t\t\t\t\t\t\n\t\t\t\t\t}\" x-bind:disabled=\"$store.data.processing\"><fieldset class=\"flex flex-col gap-1\"><label class=\"text-slate-600 text-lg\" for=\"email\">Email:</label> <input type=\"email\" id=\"email\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"email\" required></fieldset><fieldset class=\"flex flex-col gap-1\"><label class=\"text-slate-600 text-lg\" for=\"password\">Password:</label> <input type=\"password\" id=\"password\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"password\" required></fieldset><input type=\"hidden\" name=\"path\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(month)
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(path)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/loginPage.templ`, Line: 47, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/loginPage.templ`, Line: 47, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <input type=\"hidden\" name=\"year\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <input type=\"hidden\" name=\"query\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(year)
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(query)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/loginPage.templ`, Line: 48, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/loginPage.templ`, Line: 48, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
