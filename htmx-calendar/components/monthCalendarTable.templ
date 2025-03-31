@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-templ calendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
+templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
 	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
-	<table class="w-full h-full table-fixed" style="view-transition-name:monthTable">
+	<table class="w-full h-full table-fixed" style="view-transition-name:calendarTable">
 		<thead>
 			for idx,day := range days {
 				{{ class := "border-y-2 border-gray-300" }}

@@ -10,7 +10,7 @@ import (
 )
 
 var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, token string, month string, year string, day string, isOob bool){
-	"/":    MainPageWithOob,
+	"/":    MonthPageWithOob,
 	"/add": AddPageWithOob,
 }
 

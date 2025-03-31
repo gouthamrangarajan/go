@@ -12,7 +12,7 @@ import "time"
 
 import "htmx-calendar/models"
 
-func MainPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) templ.Component {
+func MonthPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -46,7 +46,7 @@ func MainPage(calendarData [][7]time.Time, eventsData []models.EventData, curren
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = mainPageWithoutLayout(calendarData, eventsData, currentMonthAndYear, from, isOob).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = monthPageWithoutLayout(calendarData, eventsData, currentMonthAndYear, from, isOob).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -57,7 +57,7 @@ func MainPage(calendarData [][7]time.Time, eventsData []models.EventData, curren
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = mainPageWithoutLayout(calendarData, eventsData, currentMonthAndYear, from, isOob).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = monthPageWithoutLayout(calendarData, eventsData, currentMonthAndYear, from, isOob).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -66,7 +66,7 @@ func MainPage(calendarData [][7]time.Time, eventsData []models.EventData, curren
 	})
 }
 
-func mainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) templ.Component {
+func monthPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -92,7 +92,7 @@ func mainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Even
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = calendar(calendarData, eventsData, currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = monthCalendar(calendarData, eventsData, currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -105,7 +105,7 @@ func mainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Even
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = calendar(calendarData, eventsData, currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = monthCalendar(calendarData, eventsData, currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

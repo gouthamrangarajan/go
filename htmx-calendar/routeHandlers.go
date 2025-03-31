@@ -24,12 +24,12 @@ type calendarDataType struct {
 	calendarDaysStrFormat []string
 }
 
-func MainPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
+func MonthPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
 	month := request.URL.Query().Get("month")
 	year := request.URL.Query().Get("year")
-	MainPageWithOob(responseWriter, request, token, month, year, "", false)
+	MonthPageWithOob(responseWriter, request, token, month, year, "", false)
 }
-func MainPageWithOob(responseWriter http.ResponseWriter, request *http.Request, token string, toMonth string, toYear string, toDay string, isOob bool) {
+func MonthPageWithOob(responseWriter http.ResponseWriter, request *http.Request, token string, toMonth string, toYear string, toDay string, isOob bool) {
 	from := request.URL.Query().Get("from")
 	today := time.Now()
 	year := today.Year()
@@ -50,7 +50,7 @@ func MainPageWithOob(responseWriter http.ResponseWriter, request *http.Request, 
 	channel := make(chan []models.EventData)
 	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
 	eventsData := <-channel
-	components.MainPage(calendarData.data, eventsData, calendarData.monthStartDate, from, isOob).Render(request.Context(), responseWriter)
+	components.MonthPage(calendarData.data, eventsData, calendarData.monthStartDate, from, isOob).Render(request.Context(), responseWriter)
 }
 func generateCalendarData(year int, month time.Month, location *time.Location) calendarDataType {
 	ret := calendarDataType{}
@@ -182,4 +182,10 @@ func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, t
 	eventsData := <-channel
 	addEventDate := time.Date(year, month, day, 0, 0, 0, 0, today.Location())
 	components.AddEventPage(calendarData.data, eventsData, addEventDate, isOob).Render(request.Context(), responseWriter)
+}
+
+func WeekPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
+	// month := request.URL.Query().Get("month")
+	// year := request.URL.Query().Get("year")
+	components.WeekPage(false).Render(request.Context(), responseWriter)
 }

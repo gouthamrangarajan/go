@@ -13,7 +13,7 @@ templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, d
 				class="relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden"
 				id="main"
 			>
-				@calendar(calendarData, eventsData, date, "")
+				@monthCalendar(calendarData, eventsData, date, "")
 				@addEventPageModal(date)
 			</main>
 		}
@@ -23,7 +23,7 @@ templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, d
 			id="main"
 			hx-swap-oob="true"
 		>
-			@calendar(calendarData, eventsData, date, "")
+			@monthCalendar(calendarData, eventsData, date, "")
 			@addEventPageModal(date)
 		</main>
 	}

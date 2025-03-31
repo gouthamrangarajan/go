@@ -1,0 +1,39 @@
+package components
+
+templ WeekPage(isOob bool) {
+	if !isOob {
+		@layout() {
+			<main
+				class="h-dvh w-dvw overflow-x-hidden"
+				id="main"
+			>
+				<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
+					@weekPageTable()
+				</section>
+			</main>
+		}
+	} else {
+		<main
+			class="h-dvh w-dvw overflow-x-hidden"
+			id="main"
+		>
+			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
+				@weekPageTable()
+			</section>
+		</main>
+	}
+}
+
+templ weekPageTable() {
+	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
+	<table class="w-full h-full table-fixed" style="view-transition-name:calendarTable">
+		<tbody>
+			for _,day:= range days {
+				<tr>
+					<td><span style={ "view-transition-name:headerDay-" + day }>{ day }</span></td>
+					<td>day</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

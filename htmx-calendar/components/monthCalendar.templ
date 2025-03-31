@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-templ calendar(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
+templ monthCalendar(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
 	<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
 		@header(currentMonthAndYear, from)
-		@calendarTable(calendarData, eventsData, currentMonthAndYear, from)
+		@monthCalendarTable(calendarData, eventsData, currentMonthAndYear, from)
 	</section>
 }
 
