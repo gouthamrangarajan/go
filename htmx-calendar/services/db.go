@@ -78,7 +78,7 @@ func UpdateDate(accessToken string, id string, date string, channel chan<- bool)
 		channel <- false
 		return
 	}
-	_, count, err := client.From("calendar").Update(map[string]string{"date": date}, "", "exact").Eq("id", id).Execute()
+	_, count, err := client.From("calendar").Update(map[string]string{"date": date}, "minimal", "exact").Eq("id", id).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- false
@@ -90,6 +90,26 @@ func UpdateDate(accessToken string, id string, date string, channel chan<- bool)
 		return
 	}
 	channel <- true
+}
+
+func AddData(accessToken string, data models.EventData, channel chan<- int16) {
+	anonKey := os.Getenv("SUPABASE_ANON_KEY")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
+		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
+	})
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	_, count, err := client.From("calendar").Insert(map[string]string{"date": data.Date, "task": data.Task, "frequency": data.Frequency, "user_id": data.UserId}, false, "", "minimal", "exact").Execute()
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	channel <- int16(count)
 }
 
 // func LoginUsingHttpClient(request LoginRequest, channel chan<- LoginResponse) {

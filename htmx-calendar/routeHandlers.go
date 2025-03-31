@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"htmx-calendar/components"
 	"htmx-calendar/models"
 	"htmx-calendar/services"
@@ -10,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type calendarDataType struct {
@@ -117,6 +120,32 @@ func AddPage(responseWriter http.ResponseWriter, request *http.Request, token st
 		AddPageWithOob(responseWriter, request, token, fromMonth, fromYear, fromDay, false)
 	} else if strings.ToUpper(request.Method) == "POST" {
 		task := request.FormValue("task")
+		task = strings.Trim(task, "")
+		date := request.FormValue("date")
+		frequency := request.FormValue("frequency")
+		parsedToken, _, err := jwt.NewParser().ParseUnverified(token, jwt.MapClaims{})
+		if err != nil {
+			fmt.Printf("Error parsing accesstoken %v\n", err)
+		}
+		if err == nil && len(task) > 3 {
+			sub, err := parsedToken.Claims.GetSubject()
+			if err != nil {
+				fmt.Printf("Error get subject from claims %v\n", err)
+			} else {
+				channel := make(chan int16)
+				go services.AddData(token, models.EventData{
+					Task:      task,
+					Frequency: frequency,
+					Date:      date,
+					UserId:    sub,
+				}, channel)
+				rowsAffected := <-channel
+				if rowsAffected > 0 {
+					components.AddEventResult(true, task).Render(request.Context(), responseWriter)
+					return
+				}
+			}
+		}
 		components.AddEventResult(false, task).Render(request.Context(), responseWriter)
 	} else {
 		responseWriter.WriteHeader(405)

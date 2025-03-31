@@ -118,8 +118,10 @@ templ addEventPageModal(date time.Time) {
 						name="task"
 						required
 						autofocus
+						minlength="3"
 					/>
 				</fieldset>
+				<input type="hidden" name="frequency" value="Only once"/>
 				<button
 					type="submit"
 					x-bind:disabled="$store.data.processing"

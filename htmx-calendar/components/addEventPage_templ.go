@@ -241,7 +241,7 @@ func addEventPageModal(date time.Time) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"></fieldset><fieldset class=\"flex flex-col gap-1\"><label for=\"task\" class=\"text-slate-600 text-lg\">Task:</label> <input type=\"text\" id=\"task\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"task\" required autofocus></fieldset><button type=\"submit\" x-bind:disabled=\"$store.data.processing\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-600 text-white text-lg transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Submit</button></form></dialog></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"></fieldset><fieldset class=\"flex flex-col gap-1\"><label for=\"task\" class=\"text-slate-600 text-lg\">Task:</label> <input type=\"text\" id=\"task\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"task\" required autofocus minlength=\"3\"></fieldset><input type=\"hidden\" name=\"frequency\" value=\"Only once\"> <button type=\"submit\" x-bind:disabled=\"$store.data.processing\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-600 text-white text-lg transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Submit</button></form></dialog></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -278,7 +278,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully added task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 136, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 138, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -296,7 +296,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("Error adding task " + task + ". Please try again later.")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 140, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 142, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {

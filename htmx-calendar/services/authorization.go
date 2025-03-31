@@ -3,44 +3,60 @@ package services
 import (
 	"htmx-calendar/components"
 	"net/http"
+	"os"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func MiddlewareUI(next func(w http.ResponseWriter, r *http.Request, token string)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// month := r.URL.Query().Get("month")
-		// year := r.URL.Query().Get("year")
 		path := r.URL.Path
 		query := r.URL.RawQuery
-		// cookie check
 		cookie, err := r.Cookie("token")
 		if err != nil {
 			components.LoginPage(path, query).Render(r.Context(), w)
 		} else {
 			token := cookie.Value
-			if token == "" {
+			parsedToken, _, err := jwt.NewParser().ParseUnverified(token, jwt.MapClaims{})
+			//to do validate signature
+			if err != nil {
 				components.LoginPage(path, query).Render(r.Context(), w)
+				return
 			} else {
-				next(w, r, token)
+				issuer, err := parsedToken.Claims.GetIssuer()
+				if err != nil || os.Getenv("SUPABASE_AUTH_ISSUER") != issuer {
+					components.LoginPage(path, query).Render(r.Context(), w)
+					return
+				}
 			}
+			next(w, r, token)
 		}
 	})
 }
 
 func MiddlewareJSON(next func(w http.ResponseWriter, r *http.Request, token string)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// cookie check
 		cookie, err := r.Cookie("token")
 		if err != nil {
 			w.WriteHeader(401)
 			w.Write([]byte("UnAuthorized"))
 		} else {
 			token := cookie.Value
-			if token == "" {
+			parsedToken, _, err := jwt.NewParser().ParseUnverified(token, jwt.MapClaims{})
+			//to do validate signature
+			if err != nil {
 				w.WriteHeader(401)
 				w.Write([]byte("UnAuthorized"))
+				return
 			} else {
-				next(w, r, token)
+				issuer, err := parsedToken.Claims.GetIssuer()
+				if err != nil || os.Getenv("SUPABASE_AUTH_ISSUER") != issuer {
+					w.WriteHeader(401)
+					w.Write([]byte("UnAuthorized"))
+					return
+				}
 			}
+			next(w, r, token)
 		}
 	})
 }

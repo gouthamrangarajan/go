@@ -9,11 +9,7 @@ import (
 	"time"
 )
 
-type httpHandler func(w http.ResponseWriter, r *http.Request, token string, month string, year string, day string, isOob bool)
-
-type routeConfig map[string]httpHandler
-
-var loginRedirectRoutes = routeConfig{
+var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, token string, month string, year string, day string, isOob bool){
 	"/":    MainPageWithOob,
 	"/add": AddPageWithOob,
 }

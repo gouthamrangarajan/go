@@ -5,4 +5,5 @@ type EventData struct {
 	Task      string `json:"task"`
 	Frequency string `json:"frequency"`
 	Date      string `json:"date"`
+	UserId    string `json:"user_id"`
 }
