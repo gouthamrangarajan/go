@@ -25,7 +25,7 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 		components.LoginError().Render(request.Context(), responseWriter)
 	} else {
 		secure := true
-		if os.Getenv("Env") == "Development" {
+		if os.Getenv("ENV") == "Development" {
 			secure = false
 		}
 		cookie := http.Cookie{
