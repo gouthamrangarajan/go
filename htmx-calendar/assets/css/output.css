@@ -5,6 +5,7 @@
     --color-red-200: oklch(0.885 0.062 18.334);
     --color-red-600: oklch(0.577 0.245 27.325);
     --color-orange-50: oklch(0.98 0.016 73.684);
+    --color-orange-500: oklch(0.705 0.213 47.604);
     --color-orange-600: oklch(0.646 0.222 41.116);
     --color-teal-200: oklch(0.91 0.096 180.426);
     --color-teal-600: oklch(0.6 0.118 184.704);
@@ -394,6 +395,9 @@
   }
   .bg-gray-300\/50 {
     background-color: color-mix(in oklab, var(--color-gray-300) 50%, transparent);
+  }
+  .bg-orange-500 {
+    background-color: var(--color-orange-500);
   }
   .bg-orange-600 {
     background-color: var(--color-orange-600);
