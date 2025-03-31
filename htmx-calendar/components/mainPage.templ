@@ -18,7 +18,7 @@ templ MainPage(calendarData [][7]time.Time, eventsData []models.EventData, curre
 templ mainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) {
 	if !isOob {
 		<main
-			class="h-dvh w-dvw overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
+			class="h-dvh w-dvw overflow-x-hidden"
 			id="main"
 		>
 			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
@@ -32,7 +32,7 @@ templ mainPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Eve
 		</main>
 	} else {
 		<main
-			class="h-dvh w-dvw overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100"
+			class="h-dvh w-dvw overflow-x-hidden"
 			hx-swap-oob="true"
 			id="main"
 		>

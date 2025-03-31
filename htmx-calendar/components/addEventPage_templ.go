@@ -48,7 +48,7 @@ func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, da
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\" id=\"main\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:mainSection\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden\" id=\"main\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:mainSection\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -117,7 +117,7 @@ func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, da
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<main class=\"relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden bg-gradient-to-br from-slate-100 to-slate-50 via-slate-100\" id=\"main\" hx-swap-oob=\"true\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:mainSection\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<main class=\"relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden\" id=\"main\" hx-swap-oob=\"true\"><section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:mainSection\"><div class=\"w-full flex justify-between items-center gap-2 py-2 px-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
