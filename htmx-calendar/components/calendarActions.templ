@@ -13,18 +13,24 @@ templ prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 	if autoFocus {
 		<a
 			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			autoFocus
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
 			hx-swap="outerHTML transition:true"
 			hx-target="body"
+			hx-trigger="prevMonthEvent"
 			hx-push-url="true"
-			autofocus
-			x-on:click="(ev)=>{
-				if(ABORT_CONTROLLER){
-					ABORT_CONTROLLER.abort();
-				}
-				$store.data.processing=true;
+			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''"
+			x-on:click="(ev)=>{		
+				ev.preventDefault();		
+				if(!$store.data.processing){
+					if(ABORT_CONTROLLER){
+						ABORT_CONTROLLER.abort();
+					}
+					$store.data.processing=true;
+					ev.currentTarget.dispatchEvent(new Event('prevMonthEvent'))
+				}			
 			}"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
@@ -39,12 +45,18 @@ templ prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-boost="true"
 			hx-swap="outerHTML transition:true"
 			hx-target="body"
+			hx-trigger="prevMonthEvent"
 			hx-push-url="true"
-			x-on:click="(ev)=>{
-				if(ABORT_CONTROLLER){
-					ABORT_CONTROLLER.abort();
-				}
-				$store.data.processing=true;
+			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''"
+			x-on:click="(ev)=>{		
+				ev.preventDefault();		
+				if(!$store.data.processing){
+					if(ABORT_CONTROLLER){
+						ABORT_CONTROLLER.abort();
+					}
+					$store.data.processing=true;
+					ev.currentTarget.dispatchEvent(new Event('prevMonthEvent'))
+				}			
 			}"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
@@ -62,18 +74,24 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 	if autoFocus {
 		<a
 			class="appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+			autoFocus
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
 			hx-swap="outerHTML transition:true"
 			hx-target="body"
+			hx-trigger="nextMonthEvent"
 			hx-push-url="true"
-			autofocus
-			x-on:click="(ev)=>{
-				if(ABORT_CONTROLLER){
-					ABORT_CONTROLLER.abort();
-				}
-				$store.data.processing=true;
+			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''"
+			x-on:click="(ev)=>{		
+				ev.preventDefault();		
+				if(!$store.data.processing){
+					if(ABORT_CONTROLLER){
+						ABORT_CONTROLLER.abort();
+					}
+					$store.data.processing=true;
+					ev.currentTarget.dispatchEvent(new Event('nextMonthEvent'))
+				}			
 			}"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
@@ -88,12 +106,18 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-boost="true"
 			hx-swap="outerHTML transition:true"
 			hx-target="body"
+			hx-trigger="nextMonthEvent"
 			hx-push-url="true"
-			x-on:click="(ev)=>{
-				if(ABORT_CONTROLLER){
-					ABORT_CONTROLLER.abort();
-				}
-				$store.data.processing=true;				
+			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''"
+			x-on:click="(ev)=>{		
+				ev.preventDefault();		
+				if(!$store.data.processing){
+					if(ABORT_CONTROLLER){
+						ABORT_CONTROLLER.abort();
+					}
+					$store.data.processing=true;
+					ev.currentTarget.dispatchEvent(new Event('nextMonthEvent'))
+				}			
 			}"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">

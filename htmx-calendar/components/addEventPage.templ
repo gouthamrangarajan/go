@@ -121,7 +121,23 @@ templ addEventPageModal(date time.Time) {
 						minlength="3"
 					/>
 				</fieldset>
-				<input type="hidden" name="frequency" value="Only once"/>
+				<fieldset class="flex flex-col gap-1">
+					<label for="frequency" class="text-slate-600 text-lg">Frequency:</label>
+					<div class="relative w-full">
+						<select
+							id="frequency"
+							class="appearance-none outline-none w-full py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600"
+							name="frequency"
+						>
+							for _,item:= range []string{"Only once", "Daily", "Weekly", "Every two weeks", "Monthly", "Quarterly", "Half yearly","Yearly"} {
+								<option>{ item }</option>
+							}
+						</select>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute top-3 right-3 -z-10">
+							<path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd"></path>
+						</svg>
+					</div>
+				</fieldset>
 				<button
 					type="submit"
 					x-bind:disabled="$store.data.processing"
@@ -137,6 +153,15 @@ templ AddEventResult(success bool, task string) {
 		<p class="add__result animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded" style="view-transition-name:addResult">
 			{ "Succesfully added task "+task }
 		</p>
+		<input
+			type="text"
+			id="task"
+			class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600"
+			name="task"
+			required
+			minlength="3"
+			hx-swap-oob="true"
+		/>
 	} else {
 		<p class="add__result animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded" style="view-transition-name:addResult">
 			{ "Error adding task "+task+". Please try again later." }

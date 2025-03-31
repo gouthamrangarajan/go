@@ -39,7 +39,7 @@ func prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			url = "/?from=prev&month=12" + "&year=" + strconv.Itoa(currentMonthAndYear.Year()-1)
 		}
 		if autoFocus {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50\" href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50\" autoFocus href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -55,13 +55,13 @@ func prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 17, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 18, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" autofocus x-on:click=\"(ev)=&gt;{\n\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t}\n\t\t\t\t$store.data.processing=true;\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"prevMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;&#39;\" x-on:click=\"(ev)=&gt;{\t\t\n\t\t\t\tev.preventDefault();\t\t\n\t\t\t\tif(!$store.data.processing){\n\t\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t\t}\n\t\t\t\t\t$store.data.processing=true;\n\t\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;prevMonthEvent&#39;))\n\t\t\t\t}\t\t\t\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -82,13 +82,13 @@ func prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 38, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 44, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" x-on:click=\"(ev)=&gt;{\n\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t}\n\t\t\t\t$store.data.processing=true;\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"prevMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;&#39;\" x-on:click=\"(ev)=&gt;{\t\t\n\t\t\t\tev.preventDefault();\t\t\n\t\t\t\tif(!$store.data.processing){\n\t\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t\t}\n\t\t\t\t\t$store.data.processing=true;\n\t\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;prevMonthEvent&#39;))\n\t\t\t\t}\t\t\t\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -123,7 +123,7 @@ func nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			url = "/?from=next&month=1" + "&year=" + strconv.Itoa(currentMonthAndYear.Year()+1)
 		}
 		if autoFocus {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<a class=\"appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50\" href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<a class=\"appearance-none outline-none bg-orange-600 text-white py-1 px-3 rounded hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50\" autoFocus href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -139,13 +139,13 @@ func nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 66, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 79, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" autofocus x-on:click=\"(ev)=&gt;{\n\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t}\n\t\t\t\t$store.data.processing=true;\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"nextMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;&#39;\" x-on:click=\"(ev)=&gt;{\t\t\n\t\t\t\tev.preventDefault();\t\t\n\t\t\t\tif(!$store.data.processing){\n\t\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t\t}\n\t\t\t\t\t$store.data.processing=true;\n\t\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;nextMonthEvent&#39;))\n\t\t\t\t}\t\t\t\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -166,13 +166,13 @@ func nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 87, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 105, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" x-on:click=\"(ev)=&gt;{\n\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t}\n\t\t\t\t$store.data.processing=true;\t\t\t\t\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"nextMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;&#39;\" x-on:click=\"(ev)=&gt;{\t\t\n\t\t\t\tev.preventDefault();\t\t\n\t\t\t\tif(!$store.data.processing){\n\t\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t\t}\n\t\t\t\t\t$store.data.processing=true;\n\t\t\t\t\tev.currentTarget.dispatchEvent(new Event(&#39;nextMonthEvent&#39;))\n\t\t\t\t}\t\t\t\n\t\t\t}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -220,7 +220,7 @@ func addEventLink(date time.Time, active bool) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 112, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 136, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -233,7 +233,7 @@ func addEventLink(date time.Time, active bool) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(date.Day()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 123, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 147, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -251,7 +251,7 @@ func addEventLink(date time.Time, active bool) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(date.Day()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 125, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/calendarActions.templ`, Line: 149, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
