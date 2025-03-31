@@ -7,8 +7,6 @@ import (
 	"htmx-calendar/services"
 	"math"
 	"net/http"
-	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -23,56 +21,12 @@ type calendarDataType struct {
 	calendarDaysStrFormat []string
 }
 
-func Login(responseWriter http.ResponseWriter, request *http.Request) {
-	email := request.FormValue("email")
-	password := request.FormValue("password")
-	channel := make(chan services.LoginResponse)
-	defer close(channel)
-	go services.Login(services.LoginRequest{Email: email, Password: password}, channel)
-	resp := <-channel
-	if resp.ErrorCode != "" {
-		components.LoginError().Render(request.Context(), responseWriter)
-	} else {
-		secure := true
-		if os.Getenv("Env") == "Development" {
-			secure = false
-		}
-		cookie := http.Cookie{
-			Name:     "token",
-			Value:    resp.AccessToken,
-			Expires:  time.Now().Add(time.Duration(resp.ExpiresIn-120) * time.Second), //RG add expiry 2 mins lesser , expiresin is seconds
-			HttpOnly: true,
-			Secure:   secure,
-			SameSite: http.SameSiteLaxMode,
-		}
-		http.SetCookie(responseWriter, &cookie)
-		path := request.FormValue("path")
-		query := request.FormValue("query")
-		values, err := url.ParseQuery(query)
-		month := ""
-		year := ""
-		day := ""
-		if err == nil {
-			month = values.Get("month")
-			year = values.Get("year")
-			day = values.Get("day")
-		}
-		if path == "/" {
-			mainPage(responseWriter, request, resp.AccessToken, month, year, true)
-		} else if path == "/add" {
-			addPage(responseWriter, request, resp.AccessToken, month, year, day, true)
-		} else {
-			responseWriter.WriteHeader(404)
-			responseWriter.Write([]byte("Not Found"))
-		}
-	}
-}
 func MainPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
 	month := request.URL.Query().Get("month")
 	year := request.URL.Query().Get("year")
-	mainPage(responseWriter, request, token, month, year, false)
+	MainPageWithOob(responseWriter, request, token, month, year, "", false)
 }
-func mainPage(responseWriter http.ResponseWriter, request *http.Request, token string, toMonth string, toYear string, isOob bool) {
+func MainPageWithOob(responseWriter http.ResponseWriter, request *http.Request, token string, toMonth string, toYear string, toDay string, isOob bool) {
 	from := request.URL.Query().Get("from")
 	today := time.Now()
 	year := today.Year()
@@ -155,12 +109,12 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token
 	responseWriter.Write([]byte("Internal Server Error"))
 }
 
-func Add(responseWriter http.ResponseWriter, request *http.Request, token string) {
+func AddPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
 	if strings.ToUpper(request.Method) == "GET" {
 		fromMonth := request.URL.Query().Get("month")
 		fromYear := request.URL.Query().Get("year")
 		fromDay := request.URL.Query().Get("day")
-		addPage(responseWriter, request, token, fromMonth, fromYear, fromDay, false)
+		AddPageWithOob(responseWriter, request, token, fromMonth, fromYear, fromDay, false)
 	} else if strings.ToUpper(request.Method) == "POST" {
 		task := request.FormValue("task")
 		components.AddEventResult(false, task).Render(request.Context(), responseWriter)
@@ -170,7 +124,7 @@ func Add(responseWriter http.ResponseWriter, request *http.Request, token string
 	}
 }
 
-func addPage(responseWriter http.ResponseWriter, request *http.Request, token string, fromMonth string, fromYear string, fromDay string, isOob bool) {
+func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, token string, fromMonth string, fromYear string, fromDay string, isOob bool) {
 	today := time.Now()
 	year := today.Year()
 	month := today.Month()

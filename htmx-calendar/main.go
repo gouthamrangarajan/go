@@ -16,7 +16,7 @@ func main() {
 		fmt.Println("Loaded .env file")
 	}
 	http.Handle("/", services.MiddlewareUI(MainPage))
-	http.Handle("/add", services.MiddlewareUI(Add))
+	http.Handle("/add", services.MiddlewareUI(AddPage))
 	http.HandleFunc("/login", Login)
 	http.Handle("/dnd", services.MiddlewareJSON(UpdateDate))
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
