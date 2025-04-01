@@ -17,14 +17,14 @@ templ MonthPage(calendarData [][7]time.Time, eventsData []models.EventData, curr
 templ monthPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) {
 	if !isOob {
 		<main
-			class="h-dvh w-dvw overflow-x-hidden"
+			class="h-dvh w-dvw overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600"
 			id="main"
 		>
 			@monthCalendar(calendarData, eventsData, currentMonthAndYear, from)
 		</main>
 	} else {
 		<main
-			class="h-dvh w-dvw overflow-x-hidden "
+			class="h-dvh w-dvw overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600"
 			hx-swap-oob="true"
 			id="main"
 		>

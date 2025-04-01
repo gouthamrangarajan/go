@@ -88,7 +88,7 @@ func monthPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Eve
 		}
 		ctx = templ.ClearChildren(ctx)
 		if !isOob {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw overflow-x-hidden\" id=\"main\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600\" id=\"main\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -101,7 +101,7 @@ func monthPageWithoutLayout(calendarData [][7]time.Time, eventsData []models.Eve
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<main class=\"h-dvh w-dvw overflow-x-hidden \" hx-swap-oob=\"true\" id=\"main\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<main class=\"h-dvh w-dvw overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600\" hx-swap-oob=\"true\" id=\"main\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
