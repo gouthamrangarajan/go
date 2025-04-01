@@ -6,6 +6,7 @@ import (
 	"htmx-calendar/models"
 	"os"
 
+	"github.com/supabase-community/postgrest-go"
 	"github.com/supabase-community/supabase-go"
 )
 
@@ -55,7 +56,7 @@ func GetData(accessToken string, dateRange []string, channel chan<- []models.Eve
 		channel <- response
 		return
 	}
-	data, _, err := client.From("calendar").Select("id, task, frequency, date", "exact", false).In("date", dateRange).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date", "exact", false).In("date", dateRange).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- response

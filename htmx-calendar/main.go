@@ -17,7 +17,7 @@ func main() {
 	}
 	http.Handle("/", services.MiddlewareUI(MonthPage))
 	http.Handle("/add", services.MiddlewareUI(AddPage))
-	http.Handle("/week", services.MiddlewareUI(WeekPage))
+	// http.Handle("/week", services.MiddlewareUI(WeekPage))
 	http.HandleFunc("/login", Login)
 	http.Handle("/dnd", services.MiddlewareJSON(UpdateDate))
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))

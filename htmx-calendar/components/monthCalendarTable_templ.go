@@ -125,7 +125,7 @@ func monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 				} else if col+1 == len(days) {
 					tdClass = "border-b-2 border-gray-300 " + animationClass
 				} else if row+1 == len(calendarData) {
-					tdClass = "border-r-3 border-gray-300 " + animationClass
+					tdClass = "border-r-2 border-gray-300 " + animationClass
 				}
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " ")
 				if templ_7745c5c3_Err != nil {

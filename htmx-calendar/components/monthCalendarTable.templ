@@ -39,7 +39,7 @@ templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventD
 						} else if col + 1 == len(days) {
 							{{ tdClass = "border-b-2 border-gray-300 " + animationClass }}
 						} else if row +1 == len(calendarData) {
-							{{ tdClass = "border-r-3 border-gray-300 " + animationClass }}
+							{{ tdClass = "border-r-2 border-gray-300 " + animationClass }}
 						}
 						<td class={ tdClass }>
 							{{ classBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-3 border-teal-600':'border-3 border-transparent'" }}

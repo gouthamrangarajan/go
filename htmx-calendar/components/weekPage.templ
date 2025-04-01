@@ -28,10 +28,14 @@ templ weekPageTable() {
 	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
 	<table class="w-full h-full table-fixed" style="view-transition-name:calendarTable">
 		<tbody>
-			for _,day:= range days {
+			for idx,day:= range days {
+				{{ borderBottomClass := "border-b-2" }}
+				if idx==6 {
+					{{ borderBottomClass = "" }}
+				}
 				<tr>
-					<td><span style={ "view-transition-name:headerDay-" + day }>{ day }</span></td>
-					<td>day</td>
+					<td class={ "border-r-2 border-gray-300 font-semibold",borderBottomClass }><span style={ "view-transition-name:headerDay-" + day }>{ day }</span></td>
+					<td class={ "w-11/12 border-r-2 border-gray-300",borderBottomClass }><span>day</span></td>
 				</tr>
 			}
 		</tbody>

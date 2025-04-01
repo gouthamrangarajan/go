@@ -381,10 +381,6 @@
     border-right-style: var(--tw-border-style);
     border-right-width: 2px;
   }
-  .border-r-3 {
-    border-right-style: var(--tw-border-style);
-    border-right-width: 3px;
-  }
   .border-b-2 {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 2px;
