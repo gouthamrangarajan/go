@@ -22,16 +22,7 @@ templ prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-trigger="prevMonthEvent"
 			hx-push-url="true"
 			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="(ev)=>{		
-				ev.preventDefault();		
-				if(!$store.data.processing){
-					if(ABORT_CONTROLLER){
-						ABORT_CONTROLLER.abort();
-					}
-					$store.data.processing=true;
-					ev.currentTarget.dispatchEvent(new Event('prevMonthEvent'))
-				}			
-			}"
+			x-on:click="$store.data.setProcessingForFetch($event,'prevMonthEvent')"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
 				<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
@@ -48,16 +39,7 @@ templ prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-trigger="prevMonthEvent"
 			hx-push-url="true"
 			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="(ev)=>{		
-				ev.preventDefault();		
-				if(!$store.data.processing){
-					if(ABORT_CONTROLLER){
-						ABORT_CONTROLLER.abort();
-					}
-					$store.data.processing=true;
-					ev.currentTarget.dispatchEvent(new Event('prevMonthEvent'))
-				}			
-			}"
+			x-on:click="$store.data.setProcessingForFetch($event,'prevMonthEvent')"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
 				<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
@@ -83,16 +65,7 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-trigger="nextMonthEvent"
 			hx-push-url="true"
 			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="(ev)=>{		
-				ev.preventDefault();		
-				if(!$store.data.processing){
-					if(ABORT_CONTROLLER){
-						ABORT_CONTROLLER.abort();
-					}
-					$store.data.processing=true;
-					ev.currentTarget.dispatchEvent(new Event('nextMonthEvent'))
-				}			
-			}"
+			x-on:click="$store.data.setProcessingForFetch($event,'nextMonthEvent')"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
 				<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
@@ -109,16 +82,7 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-trigger="nextMonthEvent"
 			hx-push-url="true"
 			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="(ev)=>{		
-				ev.preventDefault();		
-				if(!$store.data.processing){
-					if(ABORT_CONTROLLER){
-						ABORT_CONTROLLER.abort();
-					}
-					$store.data.processing=true;
-					ev.currentTarget.dispatchEvent(new Event('nextMonthEvent'))
-				}			
-			}"
+			x-on:click="$store.data.setProcessingForFetch($event,'nextMonthEvent')"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
 				<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
@@ -138,12 +102,7 @@ templ addEventLink(date time.Time, active bool) {
 			hx-swap="outerHTML transition:true"
 			hx-target="body"
 			hx-push-url="true"
-			x-on:click="(ev)=>{
-				if(ABORT_CONTROLLER){
-					ABORT_CONTROLLER.abort();
-				}
-				$store.data.processing=true;
-			}"
+			x-on:click="$store.data.setProcessingForFetch($event,'')"
 		>{ strconv.Itoa(date.Day()) }</a>
 	} else {
 		<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>
@@ -165,17 +124,8 @@ templ monthViewLink(currentMonthAndYear time.Time, active bool) {
 		hx-target="body"
 		hx-trigger="monthViewEvent"
 		hx-push-url="true"
-		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''"
-		x-on:click="(ev)=>{		
-				ev.preventDefault();		
-				if(!$store.data.processing){
-					if(ABORT_CONTROLLER){
-						ABORT_CONTROLLER.abort();
-					}
-					$store.data.processing=true;
-					ev.currentTarget.dispatchEvent(new Event('monthViewEvent'))
-				}			
-			}"
+		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
+		x-on:click="$store.data.setProcessingForFetch($event,'monthViewEvent')"
 	>
 		Month
 	</a>
@@ -196,17 +146,8 @@ templ weekViewLink(currentMonthAndYear time.Time, active bool) {
 		hx-target="body"
 		hx-trigger="weekViewEvent"
 		hx-push-url="true"
-		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''"
-		x-on:click="(ev)=>{		
-				ev.preventDefault();		
-				if(!$store.data.processing){
-					if(ABORT_CONTROLLER){
-						ABORT_CONTROLLER.abort();
-					}
-					$store.data.processing=true;
-					ev.currentTarget.dispatchEvent(new Event('weekViewEvent'))
-				}			
-			}"
+		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':''opacity-100 cursor-pointer"
+		x-on:click="$store.data.setProcessingForFetch($event,'weekViewEvent')"
 	>
 		Week
 	</a>

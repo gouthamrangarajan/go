@@ -19,9 +19,7 @@ templ LoginPage(path string, query string) {
 					hx-post="/login"
 					hx-target=".err__msg"
 					hx-swap="outerHTML transition:true"
-					x-on:submit="(ev)=>{						
-						$store.data.processing=true;						
-					}"
+					x-on:submit="$store.data.setProcessingForSubmit($event,'')"
 					x-bind:disabled="$store.data.processing"
 				>
 					<fieldset class="flex flex-col gap-1">
