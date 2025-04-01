@@ -42,20 +42,26 @@ templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventD
 							{{ tdClass = "border-r-2 border-gray-300 " + animationClass }}
 						}
 						<td class={ tdClass }>
-							{{ classBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-3 border-teal-600':'border-3 border-transparent'" }}
+							{{ active := true }}
+							{{ activeClass := "bg-orange-600" }}
+							{{ allowDnD := true }}
+							if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year()!=currentMonthAndYear.Year() {
+								{{ active = false }}
+								{{ activeClass = "bg-orange-500" }}
+							}
+							if calendarData[row][col].Sub(time.Now()).Hours()< -24 {
+								{{ active = false }}
+								{{ activeClass = "bg-orange-500" }}
+								{{ allowDnD = false }}
+							}
+							{{ dndClassBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-3 border-teal-600':'border-3 border-transparent'" }}
 							<div
 								class="p-1 flex flex-col w-full h-full justify-start items-start gap-1 border-dashed"
-								x-bind:class={ classBindExpression }
-								ondragover={ templ.JSFuncCall("setAlpineStoreDnDRowCol", templ.JSExpression("event"), row, col) }
+								x-bind:class={ dndClassBindExpression }
+								ondragover={ templ.JSFuncCall("setAlpineStoreDnDRowCol", templ.JSExpression("event"), row, col, allowDnD) }
 								ondragleave={ templ.JSFuncCall("removeAlpineStoreDnDRowCol", row, col) }
-								ondrop={ templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[row][col].Format("2006-01-02")) }
+								ondrop={ templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[row][col].Format("2006-01-02"), allowDnD) }
 							>
-								{{ active := true }}
-								{{ activeClass := "bg-orange-600" }}
-								if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year()!=currentMonthAndYear.Year() || calendarData[row][col].Sub(time.Now()).Hours()< -24 {
-									{{ active = false }}
-									{{ activeClass = "bg-orange-500" }}
-								}
 								@addEventLink(calendarData[row][col], active)
 								<div
 									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",heightClass }

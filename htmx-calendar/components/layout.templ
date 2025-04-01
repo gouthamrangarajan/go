@@ -73,8 +73,8 @@ templ layout() {
 						Alpine.store('data').dragging=true;					
 					}					
 
-					function setAlpineStoreDnDRowCol(event,row,col){
-						if(Alpine.store('data').dragging){
+					function setAlpineStoreDnDRowCol(event,row,col,allowDnD){
+						if(Alpine.store('data').dragging && allowDnD){
 							Alpine.store('data').dnDRowCol=[row,col];
 							event.preventDefault();
 						}
@@ -88,7 +88,10 @@ templ layout() {
 							}
 					}	
 
-					function eventDropped(event,date){
+					function eventDropped(event,date,allowDnD){
+						if(!allowDnD){
+							return;
+						}
 						Alpine.store('data').processing=true;
 						const dataId=event.dataTransfer.getData('text/plain');	
 						fetch('/dnd',{
