@@ -11,10 +11,11 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"htmx-calendar/models"
 	"strconv"
+	"strings"
 	"time"
 )
 
-func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) templ.Component {
+func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -46,8 +47,9 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			tdClass := generateWeekTdClass(idx)
-			var templ_7745c5c3_Var2 = []any{"border-r-2 border-gray-300 font-semibold", tdClass}
+			td1Class := generateWeekTdClass(idx, 0, from)
+			td2Class := generateWeekTdClass(idx, 1, from)
+			var templ_7745c5c3_Var2 = []any{"border-r-2 border-gray-300 font-semibold", td1Class}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -72,7 +74,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:headerDay-" + day)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 18, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 20, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -85,7 +87,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(day)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 18, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 20, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -95,7 +97,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 = []any{"w-11/12 border-r-2 border-gray-300", tdClass}
+			var templ_7745c5c3_Var6 = []any{"w-11/12 border-r-2 border-gray-300", td2Class}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -131,7 +133,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(dndClassBindExpression)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 26, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 28, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -171,7 +173,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(calendarData[0][idx].Day()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 31, Col: 88}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 33, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -206,7 +208,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:items-" + calendarData[0][idx].Format("2006-01-02"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 34, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 36, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -233,7 +235,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs("true")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 38, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 40, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -246,7 +248,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(event.Id)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 39, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 41, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -281,7 +283,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(event.Task)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 44, Col: 22}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 46, Col: 22}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
@@ -305,12 +307,21 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 	})
 }
 
-func generateWeekTdClass(row int) string {
-	borderBottomClass := "border-b-2"
+func generateWeekTdClass(row int, col int, from string) string {
+	animationClass := ""
+	if strings.ToLower(from) == "prev" {
+		animationClass = "animate-slide-right"
+	} else if strings.ToLower(from) == "next" {
+		animationClass = "animate-slide-left"
+	}
+	borderBottomClass := "border-b-2 "
 	if row == 6 {
 		borderBottomClass = ""
 	} else if row == 0 {
-		borderBottomClass = "border-y-2"
+		borderBottomClass = "border-y-2 "
+	}
+	if col != 0 {
+		borderBottomClass += animationClass
 	}
 	return borderBottomClass
 }

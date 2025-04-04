@@ -3,21 +3,23 @@ package components
 import (
 	"htmx-calendar/models"
 	"strconv"
+	"strings"
 	"time"
 )
 
-templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) {
+templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
 	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
 	{{ heightClass := "h-8 lg:h-14 xl:h-16" }}
 	<table class="w-full h-full table-fixed" style="view-transition-name:none">
 		<tbody style="view-transition-name:none">
 			for idx,day:= range days {
 				<tr>
-					{{ tdClass := generateWeekTdClass(idx) }}
-					<td class={ "border-r-2 border-gray-300 font-semibold",tdClass }>
+					{{ td1Class := generateWeekTdClass(idx, 0, from) }}
+					{{ td2Class := generateWeekTdClass(idx, 1, from) }}
+					<td class={ "border-r-2 border-gray-300 font-semibold",td1Class }>
 						<span style={ "view-transition-name:headerDay-" + day }>{ day }</span>
 					</td>
-					<td class={ "w-11/12 border-r-2 border-gray-300",tdClass }>
+					<td class={ "w-11/12 border-r-2 border-gray-300",td2Class }>
 						{{ _, activeClass := getActiveFlagAndActiveClassWeekTd(0, idx, calendarData, currentMonthAndYear) }}
 						{{ dndClassBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(idx) + "," + strconv.Itoa(1) + ")?'border-3 border-teal-600':'border-3 border-transparent'" }}
 						{{ allowDnD := calendarData[0][idx].Sub(time.Now()).Hours() >= -24 }}
@@ -53,12 +55,21 @@ templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 	</table>
 }
 
-func generateWeekTdClass(row int) string {
-	borderBottomClass := "border-b-2"
+func generateWeekTdClass(row int, col int, from string) string {
+	animationClass := ""
+	if strings.ToLower(from) == "prev" {
+		animationClass = "animate-slide-right"
+	} else if strings.ToLower(from) == "next" {
+		animationClass = "animate-slide-left"
+	}
+	borderBottomClass := "border-b-2 "
 	if row == 6 {
 		borderBottomClass = ""
 	} else if row == 0 {
-		borderBottomClass = "border-y-2"
+		borderBottomClass = "border-y-2 "
+	}
+	if col != 0 {
+		borderBottomClass += animationClass
 	}
 	return borderBottomClass
 }

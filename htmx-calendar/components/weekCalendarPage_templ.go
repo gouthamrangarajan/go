@@ -57,7 +57,7 @@ func WeekCalendarPage(calendarData [][7]time.Time, eventsData []models.EventData
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = weekCalendarTable(calendarData, eventsData, currentMonthAndYear).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = weekCalendarTable(calendarData, eventsData, currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -80,7 +80,7 @@ func WeekCalendarPage(calendarData [][7]time.Time, eventsData []models.EventData
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = weekCalendarTable(calendarData, eventsData, currentMonthAndYear).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = weekCalendarTable(calendarData, eventsData, currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
