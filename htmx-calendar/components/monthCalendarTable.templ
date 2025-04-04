@@ -9,8 +9,8 @@ import (
 
 templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
 	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
-	<table class="w-full h-full table-fixed" style="view-transition-name:calendarTable">
-		<thead>
+	<table class="w-full h-full table-fixed" style="view-transition-name:none">
+		<thead style="view-transition-name:none">
 			for idx,day := range days {
 				{{ class := "border-y-2 border-gray-300" }}
 				if idx+1!=len(days) {
@@ -19,41 +19,13 @@ templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventD
 				<th class={ class }><span style={ "view-transition-name:headerDay-" + day }>{ day }</span></th>
 			}
 		</thead>
-		<tbody>
-			{{ animationClass := "" }}
-			if  strings.ToLower(from) == "prev" {
-				{{ animationClass = "animate-slide-right" }}
-			} else if strings.ToLower(from) == "next" {
-				{{ animationClass = "animate-slide-left" }}
-			}
-			{{ heightClass := "h-10 lg:h-18 xl:h-20" }}
-			if len(calendarData) < 6 {
-				{{ heightClass = "h-10 lg:h-24 xl:h-26" }}
-			}
+		<tbody style="view-transition-name:none">
 			for row := 0; row < len(calendarData); row++ {
-				<tr>
-					for col := 0;col < len(calendarData[row]);col++ {
-						{{ tdClass := "border-b-2 border-r-2 border-gray-300 " + animationClass }}
-						if col +1 == len(days) && row +1 == len(calendarData) {
-							{{ tdClass = "" + animationClass }}
-						} else if col + 1 == len(days) {
-							{{ tdClass = "border-b-2 border-gray-300 " + animationClass }}
-						} else if row +1 == len(calendarData) {
-							{{ tdClass = "border-r-2 border-gray-300 " + animationClass }}
-						}
-						<td class={ tdClass }>
-							{{ active := true }}
-							{{ activeClass := "bg-orange-600" }}
-							{{ allowDnD := true }}
-							if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year()!=currentMonthAndYear.Year() {
-								{{ active = false }}
-								{{ activeClass = "bg-orange-500" }}
-							}
-							if calendarData[row][col].Sub(time.Now()).Hours()< -24 {
-								{{ active = false }}
-								{{ activeClass = "bg-orange-500" }}
-								{{ allowDnD = false }}
-							}
+				<tr style="view-transition-name:none">
+					for col:=0;col<len(calendarData[row]);col++ {
+						<td class={ generateMonthTdClass(row, col, from, len(days), len(calendarData)) } style="view-transition-name:none">
+							{{ active, activeClass := getActiveFlagAndActiveClassMonthTd(row, col, calendarData, currentMonthAndYear) }}
+							{{ allowDnD := calendarData[row][col].Sub(time.Now()).Hours() >= -24 }}
 							{{ dndClassBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-3 border-teal-600':'border-3 border-transparent'" }}
 							<div
 								class="p-1 flex flex-col w-full h-full justify-start items-start gap-1 border-dashed"
@@ -64,7 +36,7 @@ templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventD
 							>
 								@addEventLink(calendarData[row][col], active)
 								<div
-									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",heightClass }
+									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",generateMonthTdHeightClass(len(calendarData)) }
 									style={ "view-transition-name:items-" + calendarData[row][col].Format("2006-01-02") }
 								>
 									for _,event := range filterDateEvents(eventsData,calendarData[row][col]) {
@@ -98,4 +70,46 @@ func filterDateEvents(eventsData []models.EventData, date time.Time) []models.Ev
 		}
 	}
 	return retValue
+}
+
+func generateMonthTdClass(row int, col int, from string, daysLen int, dataLen int) string {
+	animationClass := ""
+	if strings.ToLower(from) == "prev" {
+		animationClass = "animate-slide-right"
+	} else if strings.ToLower(from) == "next" {
+		animationClass = "animate-slide-left"
+	}
+	tdClass := "border-b-2 border-r-2 border-gray-300 " + animationClass
+	if col+1 == daysLen && row+1 == dataLen {
+		tdClass = "" + animationClass
+	} else if col+1 == daysLen {
+		tdClass = "border-b-2 border-gray-300 " + animationClass
+	} else if row+1 == dataLen {
+		tdClass = "border-r-2 border-gray-300 " + animationClass
+	}
+	return tdClass
+}
+
+func generateMonthTdHeightClass(calendarDataLen int) string {
+	heightClass := "h-10 lg:h-18 xl:h-20"
+	if calendarDataLen < 6 {
+		{
+			heightClass = "h-10 lg:h-24 xl:h-26"
+		}
+	}
+	return heightClass
+}
+
+func getActiveFlagAndActiveClassMonthTd(row int, col int, calendarData [][7]time.Time, currentMonthAndYear time.Time) (bool, string) {
+	active := true
+	activeClass := "bg-orange-600"
+	if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year() != currentMonthAndYear.Year() {
+		active = false
+		activeClass = "bg-orange-500"
+
+	} else if calendarData[row][col].Sub(time.Now()).Hours() < -24 {
+		active = false
+		activeClass = "bg-orange-500"
+	}
+	return active, activeClass
 }

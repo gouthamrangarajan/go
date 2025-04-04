@@ -1,0 +1,76 @@
+package components
+
+import (
+	"htmx-calendar/models"
+	"strconv"
+	"time"
+)
+
+templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time) {
+	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
+	{{ heightClass := "h-8 lg:h-14 xl:h-16" }}
+	<table class="w-full h-full table-fixed" style="view-transition-name:none">
+		<tbody style="view-transition-name:none">
+			for idx,day:= range days {
+				<tr>
+					{{ tdClass := generateWeekTdClass(idx) }}
+					<td class={ "border-r-2 border-gray-300 font-semibold",tdClass }>
+						<span style={ "view-transition-name:headerDay-" + day }>{ day }</span>
+					</td>
+					<td class={ "w-11/12 border-r-2 border-gray-300",tdClass }>
+						{{ _, activeClass := getActiveFlagAndActiveClassWeekTd(0, idx, calendarData, currentMonthAndYear) }}
+						{{ dndClassBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(idx) + "," + strconv.Itoa(1) + ")?'border-3 border-teal-600':'border-3 border-transparent'" }}
+						{{ allowDnD := calendarData[0][idx].Sub(time.Now()).Hours() >= -24 }}
+						<div
+							class="p-1 flex flex-col w-full h-full justify-start items-start gap-1 border-dashed"
+							x-bind:class={ dndClassBindExpression }
+							ondragover={ templ.JSFuncCall("setAlpineStoreDnDRowCol", templ.JSExpression("event"), idx, 1, allowDnD) }
+							ondragleave={ templ.JSFuncCall("removeAlpineStoreDnDRowCol", idx, 1) }
+							ondrop={ templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[0][idx].Format("2006-01-02"), allowDnD) }
+						>
+							<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(calendarData[0][idx].Day()) }</span>
+							<div
+								class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",heightClass }
+								style={ "view-transition-name:items-" + calendarData[0][idx].Format("2006-01-02") }
+							>
+								for _,event := range filterDateEvents(eventsData,calendarData[0][idx]) {
+									<div
+										draggable={ "true" }
+										data-id={ event.Id }
+										ondragstart={ templ.JSFuncCall("dragStarted", templ.JSExpression("event"), event.Id) }
+										class={ " text-white text-xs cursor-pointer py-1 px-3 rounded w-full truncate shrink-0 lg:text-sm",activeClass }
+										style="view-transition-name:none"
+									>
+										{ event.Task }
+									</div>
+								}
+							</div>
+						</div>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+func generateWeekTdClass(row int) string {
+	borderBottomClass := "border-b-2"
+	if row == 6 {
+		borderBottomClass = ""
+	} else if row == 0 {
+		borderBottomClass = "border-y-2"
+	}
+	return borderBottomClass
+}
+
+func getActiveFlagAndActiveClassWeekTd(row int, col int, calendarData [][7]time.Time, currentMonthAndYear time.Time) (bool, string) {
+	active := true
+	activeClass := "bg-orange-600"
+	if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year() != currentMonthAndYear.Year() {
+		activeClass = "bg-orange-500"
+	}
+	if calendarData[row][col].Sub(time.Now()).Hours() < -24 {
+		activeClass = "bg-orange-500"
+	}
+	return active, activeClass
+}

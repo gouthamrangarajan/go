@@ -9,9 +9,10 @@ import (
 	"time"
 )
 
-var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, token string, month string, year string, day string, isOob bool){
-	"/":    MonthPageWithOob,
-	"/add": AddPageWithOob,
+var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, token string, month string, year string, dayOrWeek string, isOob bool){
+	"/":     MonthPageWithOob,
+	"/add":  AddPageWithOob,
+	"/week": WeekPageWithOob,
 }
 
 func Login(responseWriter http.ResponseWriter, request *http.Request) {
@@ -43,10 +44,15 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 		month := ""
 		year := ""
 		day := ""
+		week := ""
 		if err == nil {
 			month = values.Get("month")
 			year = values.Get("year")
 			day = values.Get("day")
+			week = values.Get("week")
+			if day == "" {
+				day = week
+			}
 		}
 		if loginRedirectRoutes[path] != nil {
 			loginRedirectRoutes[path](responseWriter, request, resp.AccessToken, month, year, day, true)

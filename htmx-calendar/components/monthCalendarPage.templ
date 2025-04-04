@@ -1,0 +1,51 @@
+package components
+
+import (
+	"htmx-calendar/components/shared"
+	"htmx-calendar/models"
+	"strconv"
+	"strings"
+	"time"
+)
+
+templ MonthCalendarPage(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, isOob bool) {
+	if !isOob {
+		@layout() {
+			<main
+				class="h-dvh w-dvw overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600"
+				id="main"
+			>
+				@monthCalendar(calendarData, eventsData, currentMonthAndYear, from)
+			</main>
+		}
+	} else {
+		<main
+			class="h-dvh w-dvw overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600"
+			hx-swap-oob="true"
+			id="main"
+		>
+			@monthCalendar(calendarData, eventsData, currentMonthAndYear, from)
+		</main>
+	}
+}
+
+templ monthCalendar(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
+	<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
+		@monthCalendarheader(currentMonthAndYear, from)
+		@monthCalendarTable(calendarData, eventsData, currentMonthAndYear, from)
+	</section>
+}
+
+templ monthCalendarheader(currentMonthAndYear time.Time, from string) {
+	<div class="w-full flex justify-center items-center gap-7 py-2 px-4">
+		<div class="flex-1 flex justify-end items-center gap-3">
+			<span class="text-xl text-purple-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
+			@prevMonthLink(currentMonthAndYear, strings.ToLower(from) == "prev")
+			@nextMonthLink(currentMonthAndYear, strings.ToLower(from) == "next")
+		</div>
+		<div class="flex items-center">
+			@shared.MonthViewLink(currentMonthAndYear, true)
+			@shared.WeekViewLink(currentMonthAndYear, false)
+		</div>
+	</div>
+}

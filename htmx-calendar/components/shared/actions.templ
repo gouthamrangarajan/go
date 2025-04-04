@@ -1,0 +1,52 @@
+package shared
+
+import (
+	"strconv"
+	"time"
+)
+
+templ MonthViewLink(currentMonthAndYear time.Time, active bool) {
+	{{ url := "/?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) }}
+	{{ activeClass := "bg-teal-700" }}
+	if !active {
+		{{ activeClass = "bg-teal-500" }}
+	}
+	<a
+		class={ "appearance-none outline-none text-white transition duration-300 py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10",activeClass }
+		href={ templ.SafeURL(url) }
+		hx-get={ url }
+		hx-boost="true"
+		hx-swap="outerHTML transition:true"
+		hx-target="body"
+		hx-trigger="monthViewEvent"
+		hx-push-url="true"
+		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
+		x-on:click="$store.data.setProcessingForFetch($event,'monthViewEvent')"
+		style="view-transition-name:monthViewLink"
+	>
+		Month
+	</a>
+}
+
+templ WeekViewLink(currentMonthAndYear time.Time, active bool) {
+	{{ url := "/week?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) + "&week=1" }}
+	{{ activeClass := "bg-teal-700" }}
+	if !active {
+		{{ activeClass = "bg-teal-500" }}
+	}
+	<a
+		class={ "appearance-none outline-none text-white transition duration-300  py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
+		href={ templ.SafeURL(url) }
+		hx-get={ url }
+		hx-boost="true"
+		hx-swap="outerHTML transition:true"
+		hx-target="body"
+		hx-trigger="weekViewEvent"
+		hx-push-url="true"
+		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
+		x-on:click="$store.data.setProcessingForFetch($event,'weekViewEvent')"
+		style="view-transition-name:weekViewLink"
+	>
+		Week
+	</a>
+}

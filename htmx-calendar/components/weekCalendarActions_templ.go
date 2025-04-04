@@ -9,11 +9,12 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"math"
 	"strconv"
 	"time"
 )
 
-func prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Component {
+func prevWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,10 +35,7 @@ func prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		url := "/?from=prev&month=" + strconv.Itoa(int(currentMonthAndYear.Month())-1) + "&year=" + strconv.Itoa(currentMonthAndYear.Year())
-		if int(currentMonthAndYear.Month())-1 < 1 {
-			url = "/?from=prev&month=12" + "&year=" + strconv.Itoa(currentMonthAndYear.Year()-1)
-		}
+		url := generatePrevWeekUrl(week, currentMonthAndYear)
 		if autoFocus {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<a class=\"appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50\" autoFocus href=\"")
 			if templ_7745c5c3_Err != nil {
@@ -55,7 +53,7 @@ func prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 18, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarActions.templ`, Line: 16, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -82,7 +80,7 @@ func prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 35, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarActions.templ`, Line: 33, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -97,7 +95,7 @@ func prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 	})
 }
 
-func nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Component {
+func nextWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -118,10 +116,7 @@ func nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		url := "/?from=next&month=" + strconv.Itoa(int(currentMonthAndYear.Month())+1) + "&year=" + strconv.Itoa(currentMonthAndYear.Year())
-		if int(currentMonthAndYear.Month())+1 > 12 {
-			url = "/?from=next&month=1" + "&year=" + strconv.Itoa(currentMonthAndYear.Year()+1)
-		}
+		url := generateNextWeekUrl(week, currentMonthAndYear)
 		if autoFocus {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<a class=\"appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300  hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50\" autoFocus href=\"")
 			if templ_7745c5c3_Err != nil {
@@ -139,7 +134,7 @@ func nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 61, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarActions.templ`, Line: 56, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -166,7 +161,7 @@ func nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 78, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarActions.templ`, Line: 73, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -181,89 +176,48 @@ func nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) templ.Componen
 	})
 }
 
-func addEventLink(date time.Time, active bool) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
+func numberOfWeeksInMonth(currentMonthAndYear time.Time) int {
+	startDateOfMonth := time.Date(currentMonthAndYear.Year(), currentMonthAndYear.Month(), 1, 0, 0, 0, 0, currentMonthAndYear.Location())
+	startDateForCalendar := startDateOfMonth.AddDate(0, 0, -int(startDateOfMonth.Weekday()))
+	endDateOfMonth := time.Date(currentMonthAndYear.Year(), currentMonthAndYear.Month()+1, 0, 23, 59, 0, 0, currentMonthAndYear.Location())
+	endDateForCalendar := endDateOfMonth.AddDate(0, 0, 6-int(endDateOfMonth.Weekday()))
+	numberOfDays := math.Ceil(endDateForCalendar.Sub(startDateForCalendar).Hours() / 24)
+	numberOfWeeks := int(numberOfDays / 7)
+	return numberOfWeeks
+}
+
+func generatePrevWeekUrl(week int, currentMonthAndYear time.Time) string {
+	week = week - 1
+	month := int(currentMonthAndYear.Month())
+	year := currentMonthAndYear.Year()
+	if week < 1 {
+		month = month - 1
+		if month < 1 {
+			month = 12
+			year = year - 1
 		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
+		week = numberOfWeeksInMonth(time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.Now().Location()))
+	}
+	url := "/week?from=prev&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
+	return url
+}
+
+func generateNextWeekUrl(week int, currentMonthAndYear time.Time) string {
+	week = week + 1
+	month := int(currentMonthAndYear.Month())
+	year := currentMonthAndYear.Year()
+	availableNumberOfWeeks := numberOfWeeksInMonth(time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.Now().Location()))
+	if week > availableNumberOfWeeks {
+		week = 1
+		month = month + 1
+		if month > 12 {
+			month = 1
+			year = year + 1
 		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var11 == nil {
-			templ_7745c5c3_Var11 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day())
-		if active {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<a class=\"appearance-none outline-none text-slate-600 py-1 px-2 rounded transition duration-300 focus:ring-2 focus:ring-teal-600\" href=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var12 templ.SafeURL = templ.SafeURL(url)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var12)))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" hx-get=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var13 string
-			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(url)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 100, Col: 15}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;&#39;)\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var14 string
-			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(date.Day()))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 106, Col: 29}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</a>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<span class=\"text-slate-400 py-1 px-2\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var15 string
-			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(date.Day()))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 108, Col: 67}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		return nil
-	})
+	}
+
+	url := "/week?from=next&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
+	return url
 }
 
 var _ = templruntime.GeneratedTemplate

@@ -50,14 +50,14 @@ func MonthPageWithOob(responseWriter http.ResponseWriter, request *http.Request,
 	channel := make(chan []models.EventData)
 	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
 	eventsData := <-channel
-	components.MonthPage(calendarData.data, eventsData, calendarData.monthStartDate, from, isOob).Render(request.Context(), responseWriter)
+	components.MonthCalendarPage(calendarData.data, eventsData, calendarData.monthStartDate, from, isOob).Render(request.Context(), responseWriter)
 }
 func generateCalendarData(year int, month time.Month, location *time.Location) calendarDataType {
 	ret := calendarDataType{}
-	startDate := time.Date(year, month, 1, 0, 0, 0, 0, location)
-	startDateForCalendar := startDate.AddDate(0, 0, -int(startDate.Weekday()))
-	endDate := time.Date(year, month+1, 0, 23, 59, 0, 0, location)
-	endDateForCalendar := endDate.AddDate(0, 0, 6-int(endDate.Weekday()))
+	startDateOfMonth := time.Date(year, month, 1, 0, 0, 0, 0, location)
+	startDateForCalendar := startDateOfMonth.AddDate(0, 0, -int(startDateOfMonth.Weekday()))
+	endDateOfMonth := time.Date(year, month+1, 0, 23, 59, 0, 0, location)
+	endDateForCalendar := endDateOfMonth.AddDate(0, 0, 6-int(endDateOfMonth.Weekday()))
 	numberOfDays := math.Round(endDateForCalendar.Sub(startDateForCalendar).Hours() / 24)
 	rows := int(numberOfDays / 7)
 	data := make([][7]time.Time, rows)
@@ -72,8 +72,8 @@ func generateCalendarData(year int, month time.Month, location *time.Location) c
 	ret.data = data
 	ret.calendarStartDate = startDateForCalendar
 	ret.calendarEndDate = endDateForCalendar
-	ret.monthStartDate = startDate
-	ret.monthEndDate = endDate
+	ret.monthStartDate = startDateOfMonth
+	ret.monthEndDate = endDateOfMonth
 	ret.calendarDaysStrFormat = allDatesToFilter
 	return ret
 }
@@ -185,7 +185,64 @@ func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, t
 }
 
 func WeekPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
-	// month := request.URL.Query().Get("month")
-	// year := request.URL.Query().Get("year")
-	components.WeekPage(false).Render(request.Context(), responseWriter)
+	toMonth := request.URL.Query().Get("month")
+	toYear := request.URL.Query().Get("year")
+	toWeek := request.URL.Query().Get("week")
+	WeekPageWithOob(responseWriter, request, token, toMonth, toYear, toWeek, false)
+}
+
+func WeekPageWithOob(responseWriter http.ResponseWriter, request *http.Request, token string, toMonth string, toYear string, toWeek string, isOob bool) {
+	today := time.Now()
+	year := today.Year()
+	month := today.Month()
+	week := 1
+	from := request.URL.Query().Get("from")
+
+	if toMonth != "" {
+		monthFromUrl, err := strconv.Atoi(toMonth)
+		if err == nil {
+			month = time.Month(monthFromUrl)
+		}
+	}
+	if toYear != "" {
+		yearFromUrl, err := strconv.Atoi(toYear)
+		if err == nil {
+			year = yearFromUrl
+		}
+	}
+	if toWeek != "" {
+		weekFromUrl, err := strconv.Atoi(toWeek)
+		if err == nil {
+			week = weekFromUrl
+		}
+	}
+	calendarData := generateWeekCalendarData(year, month, week, today.Location())
+	channel := make(chan []models.EventData)
+	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
+	eventsData := <-channel
+	components.WeekCalendarPage(calendarData.data, eventsData, calendarData.monthStartDate, from, week, isOob).Render(request.Context(), responseWriter)
+}
+
+func generateWeekCalendarData(year int, month time.Month, week int, location *time.Location) calendarDataType {
+	ret := calendarDataType{}
+	startDateOfMonth := time.Date(year, month, 1, 0, 0, 0, 0, location)
+	startDateForMonthCalendar := startDateOfMonth.AddDate(0, 0, -int(startDateOfMonth.Weekday()))
+	endDateOfMonth := time.Date(year, month+1, 0, 23, 59, 0, 0, location)
+
+	startDateForWeek := startDateForMonthCalendar.AddDate(0, 0, int(week-1)*7)
+
+	data := make([][7]time.Time, 1)
+
+	for idx := range 7 {
+		data[0][idx] = startDateForWeek.AddDate(0, 0, idx)
+	}
+	allDatesToFilter := generateAllDatesStringFromStartToEnd(data[0][0], data[0][6])
+	ret.calendarDaysStrFormat = allDatesToFilter
+	ret.monthStartDate = startDateOfMonth
+	ret.monthEndDate = endDateOfMonth
+	ret.calendarStartDate = startDateForWeek
+	ret.calendarEndDate = data[0][6]
+	ret.data = data
+	return ret
+
 }
