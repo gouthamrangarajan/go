@@ -166,7 +166,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"><span class=\"text-slate-400 py-1 px-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"><span class=\"text-slate-600 py-1 px-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

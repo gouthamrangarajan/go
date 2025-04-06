@@ -30,7 +30,7 @@ templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 							ondragleave={ templ.JSFuncCall("removeAlpineStoreDnDRowCol", idx, 1) }
 							ondrop={ templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[0][idx].Format("2006-01-02"), allowDnD) }
 						>
-							<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(calendarData[0][idx].Day()) }</span>
+							<span class="text-slate-600 py-1 px-2">{ strconv.Itoa(calendarData[0][idx].Day()) }</span>
 							<div
 								class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",heightClass }
 								style={ "view-transition-name:items-" + calendarData[0][idx].Format("2006-01-02") }
