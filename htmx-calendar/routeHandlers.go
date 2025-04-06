@@ -158,6 +158,9 @@ func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, t
 	year := today.Year()
 	month := today.Month()
 	day := today.Day()
+	week := 0
+	fromWeek := request.URL.Query().Get("week")
+
 	if fromMonth != "" {
 		monthFromUrl, err := strconv.Atoi(fromMonth)
 		if err == nil {
@@ -176,12 +179,27 @@ func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, t
 			day = dayFromUrl
 		}
 	}
-	calendarData := generateCalendarData(year, month, today.Location())
+	if fromWeek != "" {
+		weekFromUrl, err := strconv.Atoi(fromWeek)
+		if err == nil {
+			week = weekFromUrl
+		}
+	}
+	var calendarData calendarDataType
+	if week == 0 {
+		calendarData = generateCalendarData(year, month, today.Location())
+	} else {
+		calendarData = generateWeekCalendarData(year, month, week, today.Location())
+	}
 	channel := make(chan []models.EventData)
 	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
 	eventsData := <-channel
 	addEventDate := time.Date(year, month, day, 0, 0, 0, 0, today.Location())
-	components.AddEventPage(calendarData.data, eventsData, addEventDate, isOob).Render(request.Context(), responseWriter)
+	if week == 0 {
+		components.AddEventPage(calendarData.data, eventsData, addEventDate, isOob).Render(request.Context(), responseWriter)
+	} else {
+		components.AddEventPageWeek(calendarData.data, eventsData, addEventDate, week, isOob).Render(request.Context(), responseWriter)
+	}
 }
 
 func WeekPage(responseWriter http.ResponseWriter, request *http.Request, token string) {

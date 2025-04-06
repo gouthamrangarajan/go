@@ -29,7 +29,7 @@ templ MonthViewLink(currentMonthAndYear time.Time, active bool) {
 }
 
 templ WeekViewLink(currentMonthAndYear time.Time, active bool) {
-	{{ url := "/week?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) + "&week=1" }}
+	{{ url := "/wk?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) + "&week=1" }}
 	{{ activeClass := "bg-teal-700" }}
 	if !active {
 		{{ activeClass = "bg-teal-500" }}
@@ -49,4 +49,25 @@ templ WeekViewLink(currentMonthAndYear time.Time, active bool) {
 	>
 		Week
 	</a>
+}
+
+templ AddEventLink(date time.Time, week int, active bool) {
+	{{ url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) }}
+	if week>0 {
+		{{ url = "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) + "&week=" + strconv.Itoa(week) }}
+	}
+	if active {
+		<a
+			class="appearance-none outline-none text-slate-600 py-1 px-2 rounded transition duration-300 focus:ring-2 focus:ring-teal-600"
+			href={ templ.SafeURL(url) }
+			hx-get={ url }
+			hx-boost="true"
+			hx-swap="outerHTML transition:true"
+			hx-target="body"
+			hx-push-url="true"
+			x-on:click="$store.data.setProcessingForFetch($event,'')"
+		>{ strconv.Itoa(date.Day()) }</a>
+	} else {
+		<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>
+	}
 }

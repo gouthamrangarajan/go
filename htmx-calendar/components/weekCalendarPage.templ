@@ -14,10 +14,7 @@ templ WeekCalendarPage(calendarData [][7]time.Time, eventsData []models.EventDat
 				class="h-dvh w-dvw overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600"
 				id="main"
 			>
-				<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
-					@weekCalendarheader(currentMonthAndYear, from, week)
-					@weekCalendarTable(calendarData, eventsData, currentMonthAndYear, from)
-				</section>
+				@weekCalendar(calendarData, eventsData, currentMonthAndYear, from, week)
 			</main>
 		}
 	} else {
@@ -26,12 +23,16 @@ templ WeekCalendarPage(calendarData [][7]time.Time, eventsData []models.EventDat
 			id="main"
 			hx-swap-oob="true"
 		>
-			<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
-				@weekCalendarheader(currentMonthAndYear, from, week)
-				@weekCalendarTable(calendarData, eventsData, currentMonthAndYear, from)
-			</section>
+			@weekCalendar(calendarData, eventsData, currentMonthAndYear, from, week)
 		</main>
 	}
+}
+
+templ weekCalendar(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, week int) {
+	<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
+		@weekCalendarheader(currentMonthAndYear, from, week)
+		@weekCalendarTable(calendarData, eventsData, currentMonthAndYear, from, week)
+	</section>
 }
 
 templ weekCalendarheader(currentMonthAndYear time.Time, from string, week int) {

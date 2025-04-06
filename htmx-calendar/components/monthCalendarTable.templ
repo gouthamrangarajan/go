@@ -1,6 +1,7 @@
 package components
 
 import (
+	"htmx-calendar/components/shared"
 	"htmx-calendar/models"
 	"strconv"
 	"strings"
@@ -34,7 +35,7 @@ templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventD
 								ondragleave={ templ.JSFuncCall("removeAlpineStoreDnDRowCol", row, col) }
 								ondrop={ templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[row][col].Format("2006-01-02"), allowDnD) }
 							>
-								@addEventLink(calendarData[row][col], active)
+								@shared.AddEventLink(calendarData[row][col], 0, active)
 								<div
 									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",generateMonthTdHeightClass(len(calendarData)) }
 									style={ "view-transition-name:items-" + calendarData[row][col].Format("2006-01-02") }

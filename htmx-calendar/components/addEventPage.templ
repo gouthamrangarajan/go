@@ -14,7 +14,7 @@ templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, d
 				id="main"
 			>
 				@monthCalendar(calendarData, eventsData, date, "")
-				@addEventPageModal(date)
+				@addEventPageModal(date, 0)
 			</main>
 		}
 	} else {
@@ -24,13 +24,39 @@ templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, d
 			hx-swap-oob="true"
 		>
 			@monthCalendar(calendarData, eventsData, date, "")
-			@addEventPageModal(date)
+			@addEventPageModal(date, 0)
 		</main>
 	}
 }
 
-templ addEventPageModal(date time.Time) {
+templ AddEventPageWeek(calendarData [][7]time.Time, eventsData []models.EventData, date time.Time, week int, isOob bool) {
+	if !isOob {
+		@layout() {
+			<main
+				class="relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden"
+				id="main"
+			>
+				@weekCalendar(calendarData, eventsData, date, "", week)
+				@addEventPageModal(date, week)
+			</main>
+		}
+	} else {
+		<main
+			class="relative h-dvh w-dvw overflow-y-hidden overflow-x-hidden"
+			id="main"
+			hx-swap-oob="true"
+		>
+			@weekCalendar(calendarData, eventsData, date, "", week)
+			@addEventPageModal(date, week)
+		</main>
+	}
+}
+
+templ addEventPageModal(date time.Time, week int) {
 	{{ mainPageUrl := "/?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) }}
+	if week > 0 {
+		{{ mainPageUrl = "/wk?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&week=" + strconv.Itoa(week) }}
+	}
 	<div
 		class="absolute top-0 left-0 w-full h-full bg-gray-300/50 flex items-center justify-center"
 		style="view-transition-name:none"

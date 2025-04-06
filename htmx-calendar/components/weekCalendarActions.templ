@@ -15,7 +15,7 @@ templ prevWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) {
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
-			hx-swap="outerHTML transition:true"
+			hx-swap="outerHTML"
 			hx-target="body"
 			hx-trigger="prevMonthEvent"
 			hx-push-url="true"
@@ -32,7 +32,7 @@ templ prevWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) {
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
-			hx-swap="outerHTML transition:true"
+			hx-swap="outerHTML"
 			hx-target="body"
 			hx-trigger="prevMonthEvent"
 			hx-push-url="true"
@@ -55,7 +55,7 @@ templ nextWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) {
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
-			hx-swap="outerHTML transition:true"
+			hx-swap="outerHTML"
 			hx-target="body"
 			hx-trigger="nextMonthEvent"
 			hx-push-url="true"
@@ -72,7 +72,7 @@ templ nextWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) {
 			href={ templ.SafeURL(url) }
 			hx-get={ url }
 			hx-boost="true"
-			hx-swap="outerHTML transition:true"
+			hx-swap="outerHTML"
 			hx-target="body"
 			hx-trigger="nextMonthEvent"
 			hx-push-url="true"
@@ -111,7 +111,7 @@ func generatePrevWeekUrl(week int, currentMonthAndYear time.Time) string {
 		}
 		week = numberOfWeeksInMonth(time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.Now().Location()))
 	}
-	url := "/week?from=prev&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
+	url := "/wk?from=prev&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
 	return url
 }
 
@@ -129,6 +129,6 @@ func generateNextWeekUrl(week int, currentMonthAndYear time.Time) string {
 		}
 	}
 
-	url := "/week?from=next&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
+	url := "/wk?from=next&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
 	return url
 }

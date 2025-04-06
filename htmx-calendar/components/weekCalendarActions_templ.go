@@ -59,7 +59,7 @@ func prevWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) templ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"prevMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;opacity-100 cursor-pointer&#39;\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;prevMonthEvent&#39;)\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" hx-boost=\"true\" hx-swap=\"outerHTML\" hx-target=\"body\" hx-trigger=\"prevMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;opacity-100 cursor-pointer&#39;\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;prevMonthEvent&#39;)\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -86,7 +86,7 @@ func prevWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) templ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"prevMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;opacity-100 cursor-pointer&#39;\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;prevMonthEvent&#39;)\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-boost=\"true\" hx-swap=\"outerHTML\" hx-target=\"body\" hx-trigger=\"prevMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;opacity-100 cursor-pointer&#39;\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;prevMonthEvent&#39;)\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -140,7 +140,7 @@ func nextWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) templ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"nextMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;opacity-100 cursor-pointer&#39;\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;nextMonthEvent&#39;)\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-boost=\"true\" hx-swap=\"outerHTML\" hx-target=\"body\" hx-trigger=\"nextMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;opacity-100 cursor-pointer&#39;\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;nextMonthEvent&#39;)\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -167,7 +167,7 @@ func nextWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) templ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"nextMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;opacity-100 cursor-pointer&#39;\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;nextMonthEvent&#39;)\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-boost=\"true\" hx-swap=\"outerHTML\" hx-target=\"body\" hx-trigger=\"nextMonthEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?&#39;opacity-80 cursor-not-allowed&#39;:&#39;opacity-100 cursor-pointer&#39;\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;nextMonthEvent&#39;)\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -201,7 +201,7 @@ func generatePrevWeekUrl(week int, currentMonthAndYear time.Time) string {
 		}
 		week = numberOfWeeksInMonth(time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.Now().Location()))
 	}
-	url := "/week?from=prev&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
+	url := "/wk?from=prev&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
 	return url
 }
 
@@ -219,7 +219,7 @@ func generateNextWeekUrl(week int, currentMonthAndYear time.Time) string {
 		}
 	}
 
-	url := "/week?from=next&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
+	url := "/wk?from=next&week=" + strconv.Itoa(week) + "&month=" + strconv.Itoa(month) + "&year=" + strconv.Itoa(year)
 	return url
 }
 

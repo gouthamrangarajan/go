@@ -10,9 +10,9 @@ import (
 )
 
 var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, token string, month string, year string, dayOrWeek string, isOob bool){
-	"/":     MonthPageWithOob,
-	"/add":  AddPageWithOob,
-	"/week": WeekPageWithOob,
+	"/":    MonthPageWithOob,
+	"/add": AddPageWithOob,
+	"/wk":  WeekPageWithOob,
 }
 
 func Login(responseWriter http.ResponseWriter, request *http.Request) {
@@ -50,12 +50,13 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 			year = values.Get("year")
 			day = values.Get("day")
 			week = values.Get("week")
-			if day == "" {
-				day = week
-			}
 		}
 		if loginRedirectRoutes[path] != nil {
-			loginRedirectRoutes[path](responseWriter, request, resp.AccessToken, month, year, day, true)
+			if day == "" {
+				loginRedirectRoutes[path](responseWriter, request, resp.AccessToken, month, year, week, true)
+			} else {
+				loginRedirectRoutes[path](responseWriter, request, resp.AccessToken, month, year, day, true)
+			}
 		} else {
 			responseWriter.WriteHeader(404)
 			responseWriter.Write([]byte("Not Found"))
