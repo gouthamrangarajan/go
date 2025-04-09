@@ -50,7 +50,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 			}
 			td1Class := generateWeekTdClass(idx, 0, from)
 			td2Class := generateWeekTdClass(idx, 1, from)
-			var templ_7745c5c3_Var2 = []any{"border-r-2 border-gray-300 font-semibold", td1Class}
+			var templ_7745c5c3_Var2 = []any{"border-r-2 border-gray-300 font-semibold text-center", td1Class}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
