@@ -20,6 +20,7 @@ func main() {
 	http.Handle("/wk", services.MiddlewareUI(WeekPage))
 	http.HandleFunc("/login", Login)
 	http.Handle("/dnd", services.MiddlewareJSON(UpdateDate))
+	http.Handle("/delete", services.MiddlewareJSON(DeleteEvent))
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 	fmt.Println("Listening on :3000")
 	http.ListenAndServe(":3000", nil)

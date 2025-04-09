@@ -264,3 +264,27 @@ func generateWeekCalendarData(year int, month time.Month, week int, location *ti
 	return ret
 
 }
+
+func DeleteEvent(responseWriter http.ResponseWriter, request *http.Request, token string) {
+	if strings.ToUpper(request.Method) != "DELETE" {
+		responseWriter.WriteHeader(405)
+		responseWriter.Write([]byte("Method Not Allowed"))
+	} else {
+		eventId := request.FormValue("eventId")
+		if eventId == "" {
+			responseWriter.WriteHeader(400)
+			responseWriter.Write([]byte("Bad Request"))
+			return
+		}
+		channel := make(chan bool)
+		go services.DeleteEvent(token, eventId, channel)
+		ret := <-channel
+
+		if ret {
+			responseWriter.WriteHeader(200)
+			return
+		}
+		responseWriter.WriteHeader(500)
+		responseWriter.Write([]byte("Internal Server Error"))
+	}
+}

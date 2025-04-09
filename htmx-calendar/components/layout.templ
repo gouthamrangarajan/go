@@ -67,6 +67,20 @@ templ layout() {
 						}						
 					}, { signal: ABORT_CONTROLLER.signal });
 
+					document.body.addEventListener('htmx:beforeRequest', function(event) {	
+						const isDelete=event?.detail?.pathInfo?.requestPath=="/delete";
+						if(isDelete && !Alpine.store('data').processing){
+							Alpine.store('data').processing=true;
+						}						
+					}, { signal: ABORT_CONTROLLER.signal });
+
+					document.body.addEventListener('htmx:afterRequest', function(event) {	
+						const isDelete=event?.detail?.pathInfo?.requestPath=="/delete";
+						if(isDelete && Alpine.store('data').processing){
+							Alpine.store('data').processing=false;
+						}						
+					}, { signal: ABORT_CONTROLLER.signal });
+
 					function dragStarted(event,dataId){
 						event.dataTransfer.clearData();
                         event.dataTransfer.setData('text/plain',dataId); 	
