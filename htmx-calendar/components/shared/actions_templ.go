@@ -209,7 +209,7 @@ func AddEventLink(date time.Time, week int, active bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-push-url=\"true\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;&#39;)\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" x-on:click=\"$store.data.setProcessingForFetch($event,&#39;&#39;)\" hx-replace-url=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

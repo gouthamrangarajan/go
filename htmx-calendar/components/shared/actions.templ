@@ -64,8 +64,8 @@ templ AddEventLink(date time.Time, week int, active bool) {
 			hx-boost="true"
 			hx-swap="outerHTML transition:true"
 			hx-target="body"
-			hx-push-url="true"
 			x-on:click="$store.data.setProcessingForFetch($event,'')"
+			hx-replace-url="true"
 		>{ strconv.Itoa(date.Day()) }</a>
 	} else {
 		<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>
