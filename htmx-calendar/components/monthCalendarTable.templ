@@ -92,10 +92,10 @@ func generateMonthTdClass(row int, col int, from string, daysLen int, dataLen in
 }
 
 func generateMonthTdHeightClass(calendarDataLen int) string {
-	heightClass := "h-10 lg:h-18 xl:h-20"
+	heightClass := "h-12 lg:h-18 xl:h-20"
 	if calendarDataLen < 6 {
 		{
-			heightClass = "h-10 lg:h-24 xl:h-26"
+			heightClass = "h-12 lg:h-24 xl:h-26"
 		}
 	}
 	return heightClass

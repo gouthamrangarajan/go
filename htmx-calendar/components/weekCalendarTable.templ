@@ -44,7 +44,7 @@ templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 										class={ "group text-white text-sm cursor-pointer py-1 px-3 rounded w-full truncate shrink-0 flex items-center gap-2 lg:text-base",activeClass }
 										style="view-transition-name:none"
 									>
-										<span class="flex-1">{ event.Task }</span>
+										<span class="flex-1 truncate">{ event.Task }</span>
 										if active {
 											<button
 												name="eventId"
