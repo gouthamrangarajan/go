@@ -272,8 +272,8 @@
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
-  .h-12 {
-    height: calc(var(--spacing) * 12);
+  .h-14 {
+    height: calc(var(--spacing) * 14);
   }
   .h-dvh {
     height: 100dvh;

@@ -37,7 +37,7 @@ templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventD
 							>
 								@shared.AddEventLink(calendarData[row][col], 0, active)
 								<div
-									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",generateMonthTdHeightClass(len(calendarData)) }
+									class={ "w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600",generateEventsContainerHeightClass(len(calendarData)) }
 									style={ "view-transition-name:items-" + calendarData[row][col].Format("2006-01-02") }
 								>
 									for _,event := range filterDateEvents(eventsData,calendarData[row][col]) {
@@ -91,11 +91,11 @@ func generateMonthTdClass(row int, col int, from string, daysLen int, dataLen in
 	return tdClass
 }
 
-func generateMonthTdHeightClass(calendarDataLen int) string {
-	heightClass := "h-12 lg:h-18 xl:h-20"
+func generateEventsContainerHeightClass(calendarDataLen int) string {
+	heightClass := "h-14 lg:h-18 xl:h-20"
 	if calendarDataLen < 6 {
 		{
-			heightClass = "h-12 lg:h-24 xl:h-26"
+			heightClass = "h-14 lg:h-24 xl:h-26"
 		}
 	}
 	return heightClass

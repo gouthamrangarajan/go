@@ -187,7 +187,7 @@ func monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var12 = []any{"w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600", generateMonthTdHeightClass(len(calendarData))}
+				var templ_7745c5c3_Var12 = []any{"w-full overflow-x-hidden overflow-y-auto flex flex-col gap-1 rounded p-1 scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600 focus:outline-2 focus:outline-purple-600", generateEventsContainerHeightClass(len(calendarData))}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var12...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -346,11 +346,11 @@ func generateMonthTdClass(row int, col int, from string, daysLen int, dataLen in
 	return tdClass
 }
 
-func generateMonthTdHeightClass(calendarDataLen int) string {
-	heightClass := "h-12 lg:h-18 xl:h-20"
+func generateEventsContainerHeightClass(calendarDataLen int) string {
+	heightClass := "h-14 lg:h-18 xl:h-20"
 	if calendarDataLen < 6 {
 		{
-			heightClass = "h-12 lg:h-24 xl:h-26"
+			heightClass = "h-14 lg:h-24 xl:h-26"
 		}
 	}
 	return heightClass
