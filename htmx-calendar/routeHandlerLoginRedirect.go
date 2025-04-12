@@ -59,7 +59,6 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 		} else {
 			responseWriter.WriteHeader(404)
-			responseWriter.Write([]byte("Not Found"))
 		}
 	}
 }

@@ -39,20 +39,17 @@ func MiddlewareJSON(next func(w http.ResponseWriter, r *http.Request, token stri
 		cookie, err := r.Cookie("token")
 		if err != nil {
 			w.WriteHeader(401)
-			w.Write([]byte("UnAuthorized"))
 		} else {
 			token := cookie.Value
 			parsedToken, _, err := jwt.NewParser().ParseUnverified(token, jwt.MapClaims{})
 			//to do validate signature
 			if err != nil {
 				w.WriteHeader(401)
-				w.Write([]byte("UnAuthorized"))
 				return
 			} else {
 				issuer, err := parsedToken.Claims.GetIssuer()
 				if err != nil || os.Getenv("SUPABASE_AUTH_ISSUER") != issuer {
 					w.WriteHeader(401)
-					w.Write([]byte("UnAuthorized"))
 					return
 				}
 			}

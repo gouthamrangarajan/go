@@ -96,7 +96,6 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token
 	jsonErr := json.NewDecoder(request.Body).Decode(&dnd)
 	if jsonErr != nil {
 		responseWriter.WriteHeader(400)
-		responseWriter.Write([]byte("Bad Request"))
 		return
 	}
 	channel := make(chan bool)
@@ -104,12 +103,10 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token
 	ret := <-channel
 
 	if ret {
-		responseWriter.WriteHeader(200)
 		responseWriter.Write([]byte("Success"))
 		return
 	}
 	responseWriter.WriteHeader(500)
-	responseWriter.Write([]byte("Internal Server Error"))
 }
 
 func AddPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
@@ -149,7 +146,6 @@ func AddPage(responseWriter http.ResponseWriter, request *http.Request, token st
 		components.AddEventResult(false, task).Render(request.Context(), responseWriter)
 	} else {
 		responseWriter.WriteHeader(405)
-		responseWriter.Write([]byte("Method Not Allowed"))
 	}
 }
 
@@ -268,12 +264,10 @@ func generateWeekCalendarData(year int, month time.Month, week int, location *ti
 func DeleteEvent(responseWriter http.ResponseWriter, request *http.Request, token string) {
 	if strings.ToUpper(request.Method) != "DELETE" {
 		responseWriter.WriteHeader(405)
-		responseWriter.Write([]byte("Method Not Allowed"))
 	} else {
 		eventId := request.FormValue("eventId")
 		if eventId == "" {
 			responseWriter.WriteHeader(400)
-			responseWriter.Write([]byte("Bad Request"))
 			return
 		}
 		channel := make(chan bool)
@@ -285,6 +279,5 @@ func DeleteEvent(responseWriter http.ResponseWriter, request *http.Request, toke
 			return
 		}
 		responseWriter.WriteHeader(500)
-		responseWriter.Write([]byte("Internal Server Error"))
 	}
 }
