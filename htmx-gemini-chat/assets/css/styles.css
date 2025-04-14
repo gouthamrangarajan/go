@@ -636,8 +636,8 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
-  .h-\[70vh\] {
-    height: 70vh;
+  .h-\[77vh\] {
+    height: 77vh;
   }
   .h-dvh {
     height: 100dvh;
@@ -863,6 +863,11 @@
   .lg\:pb-20 {
     @media (width >= 64rem) {
       padding-bottom: calc(var(--spacing) * 20);
+    }
+  }
+  .xl\:w-6\/12 {
+    @media (width >= 80rem) {
+      width: calc(6/12 * 100%);
     }
   }
 }
