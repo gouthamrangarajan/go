@@ -687,6 +687,9 @@
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
+  .overflow-x-hidden {
+    overflow-x: hidden;
+  }
   .overflow-y-auto {
     overflow-y: auto;
   }
@@ -865,9 +868,9 @@
       padding-bottom: calc(var(--spacing) * 20);
     }
   }
-  .xl\:h-\[77vh\] {
+  .xl\:h-\[73vh\] {
     @media (width >= 80rem) {
-      height: 77vh;
+      height: 73vh;
     }
   }
   .xl\:w-6\/12 {
