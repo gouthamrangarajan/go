@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@plugin 'tailwind-scrollbar';
+@plugin "@tailwindcss/typography";
+
+.animate-scale-y {
+    animation: scaleY 2s var(--ease-spring-3)
+}
+
+@keyframes scaleY {
+    from {
+        opacity: 0;
+        transform: scaleY(0);
+        transform-origin: top;
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleY(1);
+        transform-origin: top;
+    }
+}
