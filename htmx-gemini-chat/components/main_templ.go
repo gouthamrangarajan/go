@@ -43,7 +43,7 @@ func Main(conversations []models.ChatConversation) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full h-full flex flex-col items-center pt-2\"><h1 class=\"text-2xl font-semibold text-cyan-400\">Gemini Chat</h1><section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[70vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-cyan-700 scrollbar-thumb-cyan-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[73vh]\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full h-full flex flex-col items-center pt-2\"><h1 class=\"text-2xl font-semibold text-cyan-400\">Gemini Chat</h1><section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[70vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-cyan-200 scrollbar-thumb-cyan-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[73vh]\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
