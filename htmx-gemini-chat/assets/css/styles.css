@@ -8,6 +8,7 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-cyan-400: oklch(78.9% 0.154 211.53);
+    --color-slate-100: oklch(96.8% 0.007 247.896);
     --color-slate-200: oklch(92.9% 0.013 255.508);
     --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-400: oklch(70.7% 0.022 261.325);
@@ -636,6 +637,9 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
+  .h-1\.5 {
+    height: calc(var(--spacing) * 1.5);
+  }
   .h-\[70vh\] {
     height: 70vh;
   }
@@ -644,6 +648,9 @@
   }
   .h-full {
     height: 100%;
+  }
+  .w-1\.5 {
+    width: calc(var(--spacing) * 1.5);
   }
   .w-11\/12 {
     width: calc(11/12 * 100%);
@@ -684,6 +691,9 @@
   .items-start {
     align-items: flex-start;
   }
+  .gap-1 {
+    gap: calc(var(--spacing) * 1);
+  }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
@@ -711,6 +721,9 @@
   }
   .bg-gray-900 {
     background-color: var(--color-gray-900);
+  }
+  .bg-slate-100 {
+    background-color: var(--color-slate-100);
   }
   .p-1 {
     padding: calc(var(--spacing) * 1);
@@ -810,10 +823,10 @@
       --tw-ring-offset-color: var(--color-gray-900);
     }
   }
-  .hover\:opacity-80 {
+  .hover\:opacity-90 {
     &:hover {
       @media (hover: hover) {
-        opacity: 80%;
+        opacity: 90%;
       }
     }
   }
@@ -833,9 +846,9 @@
       cursor: not-allowed;
     }
   }
-  .disabled\:opacity-50 {
+  .disabled\:opacity-80 {
     &:disabled {
-      opacity: 50%;
+      opacity: 80%;
     }
   }
   .lg\:mt-6 {
@@ -892,6 +905,30 @@
     opacity: 1;
     transform: scaleY(1);
     transform-origin: top;
+  }
+}
+.animate-loader-one {
+  animation: loader 1s var(--ease-spring-3);
+  animation-iteration-count: infinite;
+}
+.animate-loader-two {
+  animation: loader 1s var(--ease-spring-3);
+  animation-delay: 0.3s;
+  animation-iteration-count: infinite;
+}
+.animate-loader-three {
+  animation: loader 1s var(--ease-spring-3);
+  animation-delay: 0.6s;
+  animation-iteration-count: infinite;
+}
+@keyframes loader {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+    transform-origin: bottom;
   }
 }
 @layer base {

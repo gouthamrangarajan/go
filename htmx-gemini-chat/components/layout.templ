@@ -10,7 +10,7 @@ templ layout() {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Gemini Chat</title>
 			<meta name="description" content="Simple AI Chat App to talk to Gemini AI"/>
-			<link rel="icon" href="/assets/images/favicon.svg"/>
+			<link rel="icon" href="/assets/images/favicon.ico"/>
 			<link href="/assets/css/styles.css" rel="stylesheet"/>
 			<link href="/assets/css/openprops.min.css" rel="stylesheet"/>
 			<script src="/assets/js/htmx.min.js" type="text/javascript"></script>
@@ -26,9 +26,19 @@ templ layout() {
                         Alpine.store('data',{
                             prompt:'',
                             processing:false,
+                            setProcessing(val){
+                                if(document.startViewTransition){
+                                    document.startViewTransition(()=>{
+                                        this.processing=val
+                                    })
+                                }
+                                else{
+                                    this.processing=val
+                                }
+                            },
                             submitMessage(ev,idToAppendData){                                
                                 if(!ev.shiftKey && this.prompt.trim()!='' && !this.processing){      
-                                    this.processing=true;                              
+                                    this.setProcessing(true);
                                     const fm=new FormData();
                                     fm.append("prompt",this.prompt);
                                     let pEl=null;
@@ -44,14 +54,14 @@ templ layout() {
                                         const processChunk = async () => {
                                             const { done, value } = await reader.read(); 
                                             if(done){
-                                                this.processing=false;
+                                                this.setProcessing(false);
                                                 messageId="";
                                                 decodedValueMerged="";
                                                 return;
                                             }
                                             let decodedValue = new TextDecoder().decode(value);       
                                             if(decodedValue.includes("data:END")){                                                
-                                                this.processing=false;
+                                                this.setProcessing(false);
                                                 messageId="";
                                                 decodedValueMerged="";
                                                 return;   
@@ -75,7 +85,7 @@ templ layout() {
                                         processChunk()
                                     }).catch(err=>{
                                         console.log(err);
-                                        this.processing=false;
+                                        this.setProcessing(false);
                                     });
                                 }
                             },                            
