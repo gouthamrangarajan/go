@@ -777,8 +777,8 @@
   .scrollbar-thumb-cyan-500 {
     --scrollbar-thumb: oklch(71.5% 0.143 215.221);
   }
-  .scrollbar-track-cyan-100 {
-    --scrollbar-track: oklch(95.6% 0.045 203.388);
+  .scrollbar-track-gray-300 {
+    --scrollbar-track: oklch(87.2% 0.01 258.338);
   }
   .scrollbar-track-transparent {
     --scrollbar-track: transparent;
