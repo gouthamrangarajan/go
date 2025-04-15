@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"htmx-gemini-chat/services"
 	"net/http"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -20,5 +21,10 @@ func main() {
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
 	fmt.Println("Listening on :3000")
-	http.ListenAndServe(":3000", nil)
+	server := &http.Server{
+		Addr:         ":3000",
+		ReadTimeout:  60 * time.Second, // Increase read timeout
+		WriteTimeout: 60 * time.Second, // Increase write timeout
+	}
+	server.ListenAndServe()
 }

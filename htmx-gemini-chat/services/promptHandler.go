@@ -130,7 +130,11 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 	txt := ""
 	for scanner.Scan() {
 		var responseParsed models.GeminiResponse
-		txtInLoop := strings.Replace(scanner.Text(), "data: ", "", 1)
+		line := scanner.Text()
+		txtInLoop := line
+		if strings.HasPrefix(line, "data: ") {
+			txtInLoop = strings.TrimPrefix(line, "data: ")
+		}
 		txt += txtInLoop
 		err = json.Unmarshal([]byte(txt), &responseParsed)
 		if err == nil {

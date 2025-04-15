@@ -54,7 +54,7 @@ templ GeminiMessage(message string) {
 				</radialGradient>
 			</defs>
 		</svg>
-		<span class="prose prose-invert flex-1" x-data={ "{md:`" + strings.ReplaceAll(message, "`", "\\`") + "`}" }>
+		<span class="prose prose-invert flex-1" x-data={ "{md:`" + formatMessageForAlpine(message) + "`}" }>
 			<zero-md>
 				<template data-append>
 					<style>
@@ -66,4 +66,11 @@ templ GeminiMessage(message string) {
 			</zero-md>
 		</span>
 	</p>
+}
+
+func formatMessageForAlpine(message string) string {
+	ret := strings.ReplaceAll(message, `\`, `\\`)
+	ret = strings.ReplaceAll(ret, "${", `\${`)
+	ret = strings.ReplaceAll(ret, "`", "\\`")
+	return ret
 }
