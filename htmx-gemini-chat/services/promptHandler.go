@@ -55,6 +55,7 @@ func generateGeminiRequest(userId string, sessionId int64, prompt string) models
 	return geminiRequest
 }
 func promptHandler(response http.ResponseWriter, request *http.Request, userId string) {
+	ctx := request.Context()
 	prompt := request.FormValue("prompt")
 	prompt = strings.Trim(prompt, "")
 	if prompt == "" {
@@ -69,26 +70,41 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 	response.Header().Set("Content-Type", "text/event-stream")
 	response.Header().Set("Cache-Control", "no-cache")
 	response.Header().Set("Connection", "keep-alive")
-	components.UserMessage(prompt, true).Render(request.Context(), response)
+	components.UserMessage(prompt, true).Render(ctx, response)
 
 	geminiRequest := generateGeminiRequest(userId, sessionId, prompt)
 	geminiAPIChannel := make(chan string)
 	go callGeminiWithStreaming(geminiRequest, geminiAPIChannel)
-	components.GeminiMessageTemplate(rand.Int()).Render(request.Context(), response)
+	components.GeminiMessageTemplate(rand.Int()).Render(ctx, response)
 
 	insertConversationChannel := make(chan int64, 2)
 	defer close(insertConversationChannel)
 	InsertChatConversation(sessionId, prompt, "user", insertConversationChannel)
 
 	consolidateGeminiResponse := ""
+
 	for message := range geminiAPIChannel {
-		sendMessageAndFlush(message, response)
 		consolidateGeminiResponse += message
-		time.Sleep(10 * time.Millisecond)
+		select {
+		case <-ctx.Done():
+			continue
+		default:
+			sendMessageAndFlush(message, response)
+			time.Sleep(10 * time.Millisecond)
+		}
 	}
 
 	InsertChatConversation(sessionId, consolidateGeminiResponse, "model", insertConversationChannel)
-	sendMessageAndFlush("data:END\n\n", response)
+forLoop:
+	for {
+		select {
+		case <-ctx.Done():
+			break forLoop
+		default:
+			sendMessageAndFlush("data:END\n\n", response)
+			break forLoop
+		}
+	}
 	<-insertConversationChannel
 	<-insertConversationChannel
 }
