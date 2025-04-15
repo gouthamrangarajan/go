@@ -95,16 +95,15 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 	}
 
 	InsertChatConversation(sessionId, consolidateGeminiResponse, "model", insertConversationChannel)
-forLoop:
-	for {
-		select {
-		case <-ctx.Done():
-			break forLoop
-		default:
-			sendMessageAndFlush("data:END\n\n", response)
-			break forLoop
-		}
+
+	select {
+	case <-ctx.Done():
+		break
+	default:
+		sendMessageAndFlush("data:END\n\n", response)
+		break
 	}
+
 	<-insertConversationChannel
 	<-insertConversationChannel
 }
