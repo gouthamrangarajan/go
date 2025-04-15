@@ -90,7 +90,7 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 			continue
 		default:
 			sendMessageAndFlush(message, response)
-			time.Sleep(10 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 		}
 	}
 
