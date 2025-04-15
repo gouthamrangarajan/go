@@ -151,7 +151,7 @@ func GeminiMessage(message string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"><zero-md><template data-append><style>\n\t\t\t            .markdown-body {background-color: var(--color-gray-900) !important;}\n\t\t\t        </style></template><script type=\"text/markdown\" x-html=\"md\">\t\t\t        \n\t\t\t    </script></zero-md></span></p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"><zero-md><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template><script type=\"text/markdown\" x-html=\"md\">\t\t\t        \n\t\t\t    </script></zero-md></span></p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
