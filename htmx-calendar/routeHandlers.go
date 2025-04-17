@@ -83,7 +83,7 @@ func generateAllDatesStringFromStartToEnd(start time.Time, end time.Time) []stri
 	ret = append(ret, loopDt.Format("2006-01-02"))
 	for {
 		loopDt = loopDt.AddDate(0, 0, 1)
-		if end.Sub(loopDt) <= 0 {
+		if end.Sub(loopDt) < 0 {
 			break
 		}
 		ret = append(ret, loopDt.Format("2006-01-02"))
