@@ -1,7 +1,5 @@
 package components
 
-var onceHandle = templ.NewOnceHandle()
-
 templ layout() {
 	<!DOCTYPE html>
 	<html>
@@ -14,85 +12,14 @@ templ layout() {
 			<link href="/assets/css/styles.css" rel="stylesheet"/>
 			<link href="/assets/css/openprops.min.css" rel="stylesheet"/>
 			<script src="/assets/js/htmx.min.js" type="text/javascript"></script>
+			<script src="/assets/js/Alpine_focus.min.js" type="text/javascript" defer></script>
 			<script src="/assets/js/Alpine.min.js" type="text/javascript" defer></script>
 			<script type="module" src="https://cdn.jsdelivr.net/npm/zero-md@3?register"></script>
 		</head>
-		<body class="w-dvw h-dvh bg-gray-900 text-gray-50 overflow-x-hidden" x-data="{}">
+		<body class="w-dvw h-dvh bg-gray-900 text-gray-50 overflow-x-hidden relative" x-data="{}">
+			@menuBarButton()
 			{ children... }
-			@onceHandle.Once() {
-				<script type="text/javascript">
-                    var ABORT_CONTROLLER=new AbortController()
-                    document.addEventListener('alpine:init', () => {
-                        Alpine.store('data',{
-                            prompt:'',
-                            processing:false,
-                            setProcessing(val){
-                                if(document.startViewTransition){
-                                    document.startViewTransition(()=>{
-                                        this.processing=val
-                                    })
-                                }
-                                else{
-                                    this.processing=val
-                                }
-                            },
-                            submitMessage(ev,idToAppendData){                                
-                                if(!ev.shiftKey && this.prompt.trim()!='' && !this.processing){      
-                                    this.setProcessing(true);
-                                    const fm=new FormData();
-                                    fm.append("prompt",this.prompt);
-                                    let pEl=null;
-                                    let messageId="";
-                                    let decodedValueMerged ="";
-                                    fetch('/send',{
-                                        body:fm,
-                                        method:"POST",
-                                        signal:ABORT_CONTROLLER.signal
-                                    }).then(resp=>{                               
-                                        this.prompt='';     
-                                        const reader = resp.body.getReader();
-                                        const processChunk = async () => {
-                                            const { done, value } = await reader.read(); 
-                                            if(done){
-                                                this.setProcessing(false);
-                                                messageId="";
-                                                decodedValueMerged="";
-                                                return;
-                                            }
-                                            let decodedValue = new TextDecoder().decode(value);       
-                                            if(decodedValue.includes("data:END")){                                                
-                                                this.setProcessing(false);
-                                                messageId="";
-                                                decodedValueMerged="";
-                                                return;   
-                                            }                                                                          
-                                            else if(decodedValue.startsWith("<p class")){
-                                                pEl=document.createElement("p");                                            
-                                                document.getElementById(idToAppendData).appendChild(pEl);
-                                                pEl.outerHTML=decodedValue;
-                                                const strtIdx=decodedValue.indexOf("message_");
-                                                messageId=decodedValue.substring(strtIdx,decodedValue.indexOf('"',strtIdx));
-                                                document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
-                                                decodedValueMerged="";
-                                            }                                            
-                                            else{
-                                                decodedValueMerged += decodedValue;
-                                                document.getElementById(messageId).innerHTML = decodedValueMerged;
-                                                document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
-                                            }                                        
-                                            processChunk();
-                                        }
-                                        processChunk()
-                                    }).catch(err=>{
-                                        console.log(err);
-                                        this.setProcessing(false);
-                                    });
-                                }
-                            },                            
-                        });
-                    },{signal:ABORT_CONTROLLER.signal});
-                </script>
-			}
+			@bodyScript()
 		</body>
 	</html>
 }

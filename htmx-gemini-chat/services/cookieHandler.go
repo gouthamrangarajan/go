@@ -5,23 +5,24 @@ import (
 	"htmx-gemini-chat/models"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request) {
-	var id string
+	var userId string
 	cookie, err := request.Cookie("id")
 	if err != nil {
-		id = uuid.New().String()
+		userId = uuid.New().String()
 		secure := true
 		if os.Getenv("ENV") == "Development" {
 			secure = false
 		}
 		cookie := http.Cookie{
 			Name:     "id",
-			Value:    id,
+			Value:    userId,
 			Path:     "/",
 			HttpOnly: true,
 			Secure:   secure,
@@ -31,33 +32,76 @@ func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request
 		http.SetCookie(response, &cookie)
 		userChannel := make(chan int)
 		defer close(userChannel)
-		go InsertUser(id, userChannel)
+		go InsertUser(userId, userChannel)
 		<-userChannel
 	} else {
-		id = cookie.Value
+		userId = cookie.Value
 	}
-	sessionChannel := make(chan []models.ChatSession)
-	defer close(sessionChannel)
-	go GetChatSessions(id, sessionChannel)
-	sessions := <-sessionChannel
+	sessions := getChatSessionsViaChannel(userId)
 	conversations := []models.ChatConversation{}
-	if len(sessions) > 0 {
+	chatSessionId := getChatSessionIdFromUrl(request)
+	if chatSessionId < 0 { // RG url sends non integer value
+		http.Error(response, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	if chatSessionId == 0 && len(sessions) > 0 {
+		chatSessionId = sessions[0].Id
+	}
+	if chatSessionId > 0 {
+		ftedSessions := make([]models.ChatSession, 0, 1)
+		for _, session := range sessions {
+			if session.Id == chatSessionId {
+				ftedSessions = append(ftedSessions, session)
+				break
+			}
+		}
+		if len(ftedSessions) == 0 { //RG url sends an chatSessionId not belonging to user
+			http.Error(response, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 		conversationsChannel := make(chan []models.ChatConversation)
 		defer close(conversationsChannel)
-		go GetChatConversations(id, sessions[0].Id, conversationsChannel)
+		go GetChatConversations(userId, chatSessionId, conversationsChannel)
 		conversations = <-conversationsChannel
 	}
-	component := components.Main(conversations)
+	component := components.Main(conversations, sessions, chatSessionId)
 	component.Render(request.Context(), response)
 }
 
+func getChatSessionIdFromUrl(request *http.Request) int {
+	chatSessionId := 0
+	chatSessionIdStr := request.URL.Query().Get("id")
+	if chatSessionIdStr != "" {
+		val, err := strconv.Atoi(chatSessionIdStr)
+		if err != nil {
+			chatSessionId = -1
+		} else {
+			chatSessionId = val
+		}
+	}
+	return chatSessionId
+}
+
 func CookieHandlerToPromptHandler(response http.ResponseWriter, request *http.Request) {
-	var id string
+	var userId string
 	cookie, err := request.Cookie("id")
 	if err != nil {
-		response.WriteHeader(401)
+		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	id = cookie.Value
-	promptHandler(response, request, id)
+	userId = cookie.Value
+	promptHandler(response, request, userId)
+}
+
+func CookieHandlerToNewChatSession(response http.ResponseWriter, request *http.Request) {
+	var userId string
+	cookie, err := request.Cookie("id")
+	if err != nil {
+		http.Error(response, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	userId = cookie.Value
+	newChatSessionId := insertChatSessionViaChannel(userId, "New Chat")
+	component := components.NewChatSession(models.ChatSession{Id: newChatSessionId, Title: "New Chat"})
+	component.Render(request.Context(), response)
 }

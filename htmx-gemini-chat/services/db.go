@@ -67,7 +67,7 @@ func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 	channel <- data
 }
 
-func InsertChatSession(userId string, title string, channel chan<- int64) {
+func InsertChatSession(userId string, title string, channel chan<- int) {
 	db := createDb()
 	defer db.Close()
 	result, err := db.Exec("INSERT INTO chat_sessions (user_id,title, created_at) VALUES (?, ?,?)", userId, title, time.Now().Unix())
@@ -82,10 +82,28 @@ func InsertChatSession(userId string, title string, channel chan<- int64) {
 		channel <- 0
 		return
 	}
-	channel <- newId
+	channel <- int(newId)
 }
 
-func GetChatConversations(userId string, sessionId int64, channel chan<- []models.ChatConversation) {
+func UpdateChatSessionTitle(userId string, sessionId int, title string, channel chan<- int) {
+	db := createDb()
+	defer db.Close()
+	result, err := db.Exec("UPDATE chat_sessions SET title = ? WHERE session_id = ? AND  user_id = ?", title, sessionId, userId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
+		channel <- 0
+		return
+	}
+	rowsAffected, errUpdate := result.RowsAffected()
+	if errUpdate != nil {
+		fmt.Fprintf(os.Stderr, "Error updating title : %v\n", errUpdate)
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
+
+func GetChatConversations(userId string, sessionId int, channel chan<- []models.ChatConversation) {
 	db := createDb()
 	defer db.Close()
 	var data []models.ChatConversation = []models.ChatConversation{}
@@ -113,7 +131,7 @@ func GetChatConversations(userId string, sessionId int64, channel chan<- []model
 	channel <- data
 }
 
-func InsertChatConversation(sessionId int64, message string, sender string, channel chan<- int64) {
+func InsertChatConversation(sessionId int, message string, sender string, channel chan<- int) {
 	db := createDb()
 	defer db.Close()
 	result, err := db.Exec("INSERT INTO chat_conversations (session_id,message,sender, timestamp) VALUES (?, ?,?,?)", sessionId, message, sender, time.Now().Unix())
@@ -128,5 +146,5 @@ func InsertChatConversation(sessionId int64, message string, sender string, chan
 		channel <- 0
 		return
 	}
-	channel <- newId
+	channel <- int(newId)
 }

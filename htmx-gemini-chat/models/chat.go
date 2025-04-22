@@ -1,12 +1,12 @@
 package models
 
 type ChatSession struct {
-	Id    int64
+	Id    int
 	Title string
 }
 type ChatConversation struct {
-	Id        int64
-	SessionId int64
+	Id        int
+	SessionId int
 	Message   string
 	Sender    string
 }

@@ -1,14 +1,16 @@
 package components 
 
 import "htmx-gemini-chat/models"
+import "strconv"
 
-templ Main(conversations []models.ChatConversation) {
+templ Main(conversations []models.ChatConversation, sessions []models.ChatSession, currentChatSessionId int) {
 	@layout() {
-		<main class="w-full h-full flex flex-col items-center pt-2">
-			<h1 class="text-2xl font-semibold text-cyan-400">Gemini Chat</h1>
+		<main class="w-full h-full flex flex-col items-center pt-2" style="view-transition-name:main">
+			<h1 class="text-2xl font-semibold text-cyan-400" style="view-transition-name:header1">Gemini Chat</h1>
 			<section
 				id="section"
-				class="w-11/12 shrink-0 mx-auto h-[70vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-cyan-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[73vh]"
+				class="w-11/12 shrink-0 mx-auto h-[70vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[73vh]"
+				style="view-transition-name:section"
 			>
 				for _,conversation:= range conversations {
 					if conversation.Sender == "user" {
@@ -20,6 +22,7 @@ templ Main(conversations []models.ChatConversation) {
 			</section>
 			<div
 				class="mt-2 shrink-0 rounded border border-slate-200 w-11/12 transition duration-300 mx-auto flex items-center focus-within:ring-1 focus-within:ring-slate-200 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 lg:w-8/12 lg:mt-6 xl:w-6/12"
+				style="view-transition-name:prompt-form"
 			>
 				<textarea
 					class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-500 placeholder:text-gray-400 lg:py-2 lg:px-4 "
@@ -29,6 +32,7 @@ templ Main(conversations []models.ChatConversation) {
 					x-model="$store.data.prompt"
 					x-on:keyup.enter="$store.data.submitMessage($event,'section')"
 				></textarea>
+				@ChatSessionIdInput(currentChatSessionId, false)
 				<button
 					class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
 					x-on:click="$store.data.submitMessage($event,'section')"
@@ -48,5 +52,36 @@ templ Main(conversations []models.ChatConversation) {
 				</button>
 			</div>
 		</main>
+		@menu(sessions)
+	}
+}
+
+templ NewChatSession(session models.ChatSession) {
+	@MenuItem(session, true)
+	<section
+		id="section"
+		class="w-11/12 shrink-0 mx-auto h-[70vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[73vh]"
+		style="view-transition-name:section"
+		hx-swap-oob="true"
+	></section>
+	@ChatSessionIdInput(session.Id, true)
+}
+
+templ ChatSessionIdInput(sessionId int, isOob bool) {
+	if isOob {
+		<input
+			type="hidden"
+			name="chatSessionId"
+			id="chatSessionId"
+			value={ strconv.Itoa(sessionId) }
+			hx-swap-oob="true"
+		/>
+	} else {
+		<input
+			type="hidden"
+			name="chatSessionId"
+			id="chatSessionId"
+			value={ strconv.Itoa(sessionId) }
+		/>
 	}
 }

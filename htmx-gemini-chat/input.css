@@ -6,6 +6,7 @@
     animation: scaleY 2s var(--ease-spring-3);
 }
 
+
 @keyframes scaleY {
     from {
         opacity: 0;
@@ -46,5 +47,22 @@
     to {
         transform: scaleY(1);
         transform-origin: bottom;
+    }
+}
+
+.animate-menu-open {
+    animation: slide-right-menu 1s var(--ease-spring-1);
+}
+
+
+@keyframes slide-right-menu {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
 }

@@ -17,6 +17,7 @@ func main() {
 		fmt.Println("Success loaded .env file")
 	}
 	http.HandleFunc("/", services.CookieHandlerToMainPage)
+	http.HandleFunc("/new", services.CookieHandlerToNewChatSession)
 	http.HandleFunc("/send", services.CookieHandlerToPromptHandler)
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 

@@ -8,8 +8,6 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-var onceHandle = templ.NewOnceHandle()
-
 func layout() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -31,7 +29,11 @@ func layout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Gemini Chat</title><meta name=\"description\" content=\"Simple AI Chat App to talk to Gemini AI\"><link rel=\"icon\" href=\"/assets/images/favicon.ico\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/openprops.min.css\" rel=\"stylesheet\"><script src=\"/assets/js/htmx.min.js\" type=\"text/javascript\"></script><script src=\"/assets/js/Alpine.min.js\" type=\"text/javascript\" defer></script><script type=\"module\" src=\"https://cdn.jsdelivr.net/npm/zero-md@3?register\"></script></head><body class=\"w-dvw h-dvh bg-gray-900 text-gray-50 overflow-x-hidden\" x-data=\"{}\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Gemini Chat</title><meta name=\"description\" content=\"Simple AI Chat App to talk to Gemini AI\"><link rel=\"icon\" href=\"/assets/images/favicon.ico\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/openprops.min.css\" rel=\"stylesheet\"><script src=\"/assets/js/htmx.min.js\" type=\"text/javascript\"></script><script src=\"/assets/js/Alpine_focus.min.js\" type=\"text/javascript\" defer></script><script src=\"/assets/js/Alpine.min.js\" type=\"text/javascript\" defer></script><script type=\"module\" src=\"https://cdn.jsdelivr.net/npm/zero-md@3?register\"></script></head><body class=\"w-dvw h-dvh bg-gray-900 text-gray-50 overflow-x-hidden relative\" x-data=\"{}\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = menuBarButton().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,29 +41,11 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
-					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script type=\"text/javascript\">\n                    var ABORT_CONTROLLER=new AbortController()\n                    document.addEventListener('alpine:init', () => {\n                        Alpine.store('data',{\n                            prompt:'',\n                            processing:false,\n                            setProcessing(val){\n                                if(document.startViewTransition){\n                                    document.startViewTransition(()=>{\n                                        this.processing=val\n                                    })\n                                }\n                                else{\n                                    this.processing=val\n                                }\n                            },\n                            submitMessage(ev,idToAppendData){                                \n                                if(!ev.shiftKey && this.prompt.trim()!='' && !this.processing){      \n                                    this.setProcessing(true);\n                                    const fm=new FormData();\n                                    fm.append(\"prompt\",this.prompt);\n                                    let pEl=null;\n                                    let messageId=\"\";\n                                    let decodedValueMerged =\"\";\n                                    fetch('/send',{\n                                        body:fm,\n                                        method:\"POST\",\n                                        signal:ABORT_CONTROLLER.signal\n                                    }).then(resp=>{                               \n                                        this.prompt='';     \n                                        const reader = resp.body.getReader();\n                                        const processChunk = async () => {\n                                            const { done, value } = await reader.read(); \n                                            if(done){\n                                                this.setProcessing(false);\n                                                messageId=\"\";\n                                                decodedValueMerged=\"\";\n                                                return;\n                                            }\n                                            let decodedValue = new TextDecoder().decode(value);       \n                                            if(decodedValue.includes(\"data:END\")){                                                \n                                                this.setProcessing(false);\n                                                messageId=\"\";\n                                                decodedValueMerged=\"\";\n                                                return;   \n                                            }                                                                          \n                                            else if(decodedValue.startsWith(\"<p class\")){\n                                                pEl=document.createElement(\"p\");                                            \n                                                document.getElementById(idToAppendData).appendChild(pEl);\n                                                pEl.outerHTML=decodedValue;\n                                                const strtIdx=decodedValue.indexOf(\"message_\");\n                                                messageId=decodedValue.substring(strtIdx,decodedValue.indexOf('\"',strtIdx));\n                                                document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;\n                                                decodedValueMerged=\"\";\n                                            }                                            \n                                            else{\n                                                decodedValueMerged += decodedValue;\n                                                document.getElementById(messageId).innerHTML = decodedValueMerged;\n                                                document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;\n                                            }                                        \n                                            processChunk();\n                                        }\n                                        processChunk()\n                                    }).catch(err=>{\n                                        console.log(err);\n                                        this.setProcessing(false);\n                                    });\n                                }\n                            },                            \n                        });\n                    },{signal:ABORT_CONTROLLER.signal});\n                </script>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			return nil
-		})
-		templ_7745c5c3_Err = onceHandle.Once().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = bodyScript().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

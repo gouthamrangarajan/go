@@ -1,0 +1,160 @@
+package components
+
+var onceHandle = templ.NewOnceHandle()
+
+templ bodyScript() {
+	@onceHandle.Once() {
+		<script type="text/javascript">
+            var ABORT_CONTROLLER=new AbortController();//Global variable     
+
+            function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){
+                const pEl=document.createElement("p");
+                document.getElementById(idToAppendHTML).appendChild(pEl);
+                pEl.outerHTML=messageUI;                                
+                const strtIdx=messageUI.indexOf("message_");
+                const messageId=messageUI.substring(strtIdx,messageUI.indexOf('"',strtIdx));
+                return messageId;
+            }
+            function upsertMenuUIWithMenuItem(menuItemUI){
+                const strtIdx=menuItemUI.indexOf("li_");
+                const elId=menuItemUI.substring(strtIdx,menuItemUI.indexOf('"',strtIdx));
+                const el=document.getElementById(elId);
+                if(el){//title change
+                    if(document.startViewTransition){
+                        document.startViewTransition(()=>{
+                            el.outerHTML=menuItemUI;
+                        });
+                    }else{
+                        el.outerHTML=menuItemUI;
+                    }
+                }else{//new menu item
+                    const liEl=document.createElement("li");
+                    document.getElementById('ul_menu').appendChild(liEl);
+                    liEl.outerHTML=menuItemUI;
+                }   
+            }            
+            document.body.addEventListener('htmx:afterSwap', function(event) {	
+                if(Alpine.store('data').addNewChatSessionProcessing){
+                    Alpine.store('data').addNewChatSessionProcessing=false;
+                    const newChatSessionId=document.getElementById("chatSessionId").value
+                    window.history.pushState({},document.title,window.location.origin+"?id="+newChatSessionId);
+                }						
+            }, { signal: ABORT_CONTROLLER.signal });
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('data',{
+                    prompt:'',
+                    processing:false,
+                    addNewChatSessionProcessing:false,
+                    menuOpen:false,
+                    setProcessing(val){
+                        if(document.startViewTransition){
+                            document.startViewTransition(()=>{
+                                this.processing=val;
+                            })
+                        }
+                        else{
+                            this.processing=val;
+                        }
+                    },
+                    openMenu(){
+                        if(document.startViewTransition){
+                            document.startViewTransition(()=>{
+                                this.menuOpen=true;
+                            });
+                        }
+                        else{
+                            this.menuOpen=true;
+                        }
+                    },
+                    closeMenu(){
+                        if(document.startViewTransition){
+                            document.startViewTransition(()=>{
+                                this.menuOpen=false;
+                            });
+                        }
+                        else{
+                            this.menuOpen=false;
+                        }
+                    },
+                    sendFullPageFetchEvent(ev,eventNameToDispatch){
+                        ev.preventDefault();
+                        this.closeMenu();
+                        if(ABORT_CONTROLLER){
+                            ABORT_CONTROLLER.abort();
+                        }   
+                        if(eventNameToDispatch){        
+                            ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
+                        }
+                    },
+                    checkAndSetAddNewProcessing(ev,eventNameToDispatch){
+                        ev.preventDefault();
+                        if(!this.addNewChatSessionProcessing){
+                            this.addNewChatSessionProcessing=true;
+                            if(eventNameToDispatch){
+                                ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
+                            }
+                        }
+                    },
+                    submitMessage(ev,idToAppendData){
+                        if(!ev.shiftKey && this.prompt.trim()!='' && !this.processing){
+                            this.setProcessing(true);
+                            const fm=new FormData();
+                            fm.append("prompt",this.prompt);
+                            fm.append("chatSessionId",document.getElementById("chatSessionId").value);                            
+                            let messageId="";
+                            let decodedValueMerged ="";
+                            fetch('/send',{
+                                body:fm,
+                                method:"POST",
+                                signal:ABORT_CONTROLLER.signal
+                            }).then(resp=>{
+                                this.prompt='';
+                                const reader = resp.body.getReader();
+                                const processChunk = async () => {
+                                    const { done, value } = await reader.read();
+                                    if(done){//streaming end
+                                        this.setProcessing(false);
+                                        messageId="";
+                                        decodedValueMerged="";
+                                        return;
+                                    }
+                                    let decodedValue = new TextDecoder().decode(value);                                    
+                                    if(decodedValue.includes("data:END")){//streaming end
+                                        this.setProcessing(false);
+                                        messageId="";
+                                        decodedValueMerged="";
+                                        return;
+                                    }
+                                    else if(decodedValue.startsWith("<p class")){ //streamed output is a new user message item or new gemini message item
+                                        messageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                        
+                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
+                                        decodedValueMerged="";
+                                    }
+                                    else if(decodedValue.startsWith("<li") && decodedValue.includes('id="li_')){ //streamed output is new menu item or existing menu title change 
+                                        upsertMenuUIWithMenuItem(decodedValue);  
+                                        decodedValueMerged="";                                  
+                                    }
+                                    else if(decodedValue.startsWith("<input") && decodedValue.includes("chatSessionId")){ //chat session id intput
+                                        document.getElementById('chatSessionId').outerHTML=decodedValue;                                        
+                                        decodedValueMerged="";
+                                    }
+                                    else{ //streamed output is gemini message that needs to be appended to existing message 
+                                        decodedValueMerged += decodedValue;                                        
+                                        document.getElementById(messageId).innerHTML = decodedValueMerged;
+                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
+                                    }
+                                    processChunk();
+                                }
+                                processChunk()
+                            }).catch(err=>{
+                                console.log(err);
+                                this.setProcessing(false);
+                            });
+                        }
+                    },
+                   
+                });
+            },{signal:ABORT_CONTROLLER.signal});                    
+        </script>
+	}
+}
