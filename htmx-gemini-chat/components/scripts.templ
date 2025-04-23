@@ -31,13 +31,14 @@ templ bodyScript() {
                     const liEl=document.createElement("li");
                     document.getElementById('ul_menu').appendChild(liEl);
                     liEl.outerHTML=menuItemUI;
+                    liEl.classList.remove('animate-scale-y')
                 }   
             }            
             document.body.addEventListener('htmx:afterSwap', function(event) {	
                 if(Alpine.store('data').addNewChatSessionProcessing){
                     Alpine.store('data').addNewChatSessionProcessing=false;
                     const newChatSessionId=document.getElementById("chatSessionId").value
-                    window.history.pushState({},document.title,window.location.origin+"?id="+newChatSessionId);
+                    window.history.pushState({},document.title,window.location.origin+"?id="+newChatSessionId);                    
                 }						
             }, { signal: ABORT_CONTROLLER.signal });
             document.addEventListener('alpine:init', () => {

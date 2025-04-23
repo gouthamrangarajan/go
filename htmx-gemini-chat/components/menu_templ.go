@@ -34,7 +34,7 @@ func menuBarButton() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template x-if=\"!$store.data.menuOpen\"><button class=\"appearance-none outline-none z-10 absolute top-2 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50\" x-bind:style=\"!$store.data.menuOpen &amp;&amp; {viewTransitionName:&#39;menu-icon-button&#39;}\" x-on:click=\"$store.data.openMenu()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" x-bind:style=\"!$store.data.menuOpen &amp;&amp; {viewTransitionName:&#39;menu-icon&#39;}\"><path fill-rule=\"evenodd\" d=\"M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template x-if=\"!$store.data.menuOpen\"><button class=\"appearance-none outline-none z-10 absolute top-2 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50\" style=\"view-transition-name:menu-icon-button\" x-on:click=\"$store.data.openMenu()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-icon\"><path fill-rule=\"evenodd\" d=\"M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button></template>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,7 +63,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"absolute top-0 left-0 h-dvh w-dvw bg-gray-900/50 flex items-start gap-2\" x-trap=\"$store.data.menuOpen\" x-show=\"$store.data.menuOpen\" style=\"view-transition-name:menu\"><aside class=\"p-1 animate-menu-open w-10/12 h-dvh flex flex-col bg-gray-900 border-r border-slate-200  md:w-1/2 lg:w-1/3 xl:w-1/4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"absolute top-0 left-0 flex items-start gap-2\" x-bind:class=\"$store.data.menuOpen?&#39;h-dvh w-dvw bg-gray-900/50&#39;:&#39;h-0 w-0&#39;\" x-trap=\"$store.data.menuOpen\" style=\"view-transition-name:menu\"><aside class=\"p-1 animate-menu-open w-10/12 h-dvh flex flex-col bg-gray-900 border-r border-slate-200  md:w-1/2 lg:w-1/3 xl:w-1/4\" x-show=\"$store.data.menuOpen\" x-transition:leave-end=\"opacity-0 -translate-x-100\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,7 +81,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></aside><button class=\"appearance-none outline-none animate-menu-open rounded cursor-pointer p-1 mt-2 bg-slate-200 text-red-600 transition duration-300 opacity-80 hover:opacity-100 focus:opacity-100 focus:ring-1 focus:ring-slate-200 focus:ring-offset-2 focus:ring-offset-red-600\" x-on:click=\"$store.data.closeMenu()\" x-bind:style=\"$store.data.menuOpen &amp;&amp; {viewTransitionName:&#39;menu-icon-button&#39;}\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" x-bind:style=\"$store.data.menuOpen &amp;&amp; {viewTransitionName:&#39;menu-icon&#39;}\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></aside><template x-if=\"$store.data.menuOpen\"><button class=\"appearance-none outline-none animate-menu-open rounded cursor-pointer p-1 mt-2 bg-slate-200 text-red-600 transition duration-300 opacity-80 hover:opacity-100 focus:opacity-100 focus:ring-1 focus:ring-slate-200 focus:ring-offset-2 focus:ring-offset-red-600\" x-on:click=\"$store.data.closeMenu()\" style=\"view-transition-name:menu-icon-button\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-icon\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></template></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -127,7 +127,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("li_" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 73, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 77, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -162,7 +162,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.SafeURL(url)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 82, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 86, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -175,7 +175,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:title-" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 89, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 93, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -188,7 +188,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 91, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 95, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

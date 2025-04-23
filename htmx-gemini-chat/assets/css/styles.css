@@ -692,6 +692,9 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
+  .h-0 {
+    height: calc(var(--spacing) * 0);
+  }
   .h-1\.5 {
     height: calc(var(--spacing) * 1.5);
   }
@@ -706,6 +709,9 @@
   }
   .h-full {
     height: 100%;
+  }
+  .w-0 {
+    width: calc(var(--spacing) * 0);
   }
   .w-1\.5 {
     width: calc(var(--spacing) * 1.5);
@@ -727,6 +733,10 @@
   }
   .shrink-0 {
     flex-shrink: 0;
+  }
+  .-translate-x-100 {
+    --tw-translate-x: calc(var(--spacing) * -100);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
   }
   .rotate-y-180 {
     --tw-rotate-y: rotateY(180deg);
@@ -860,6 +870,9 @@
   }
   .text-slate-600 {
     color: var(--color-slate-600);
+  }
+  .opacity-0 {
+    opacity: 0%;
   }
   .opacity-80 {
     opacity: 80%;
@@ -1143,6 +1156,21 @@
     scrollbar-width: initial;
   }
 }
+@property --tw-translate-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
 @property --tw-rotate-x {
   syntax: "*";
   inherits: false;
@@ -1249,6 +1277,9 @@
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-translate-z: 0;
       --tw-rotate-x: rotateX(0);
       --tw-rotate-y: rotateY(0);
       --tw-rotate-z: rotateZ(0);
