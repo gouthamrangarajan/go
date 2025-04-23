@@ -8,7 +8,7 @@ import (
 templ menuBarButton() {
 	<template x-if="!$store.data.menuOpen">
 		<button
-			class="appearance-none outline-none z-10 absolute top-2 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
+			class="appearance-none outline-none z-10 absolute top-5 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
 			style="view-transition-name:menu-icon-button"
 			x-on:click="$store.data.openMenu()"
 		>
@@ -49,7 +49,7 @@ templ menu(sessions []models.ChatSession) {
 		</aside>
 		<template x-if="$store.data.menuOpen">
 			<button
-				class="appearance-none outline-none animate-menu-open rounded cursor-pointer p-1 mt-2 bg-slate-200 text-red-600 transition duration-300 opacity-80 hover:opacity-100 focus:opacity-100 focus:ring-1 focus:ring-slate-200 focus:ring-offset-2 focus:ring-offset-red-600"
+				class="appearance-none outline-none  rounded cursor-pointer p-1 mt-5 bg-cyan-600 text-red-100 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
 				x-on:click="$store.data.closeMenu()"
 				style="view-transition-name:menu-icon-button"
 			>
