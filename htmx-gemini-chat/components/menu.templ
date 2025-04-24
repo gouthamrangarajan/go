@@ -8,7 +8,7 @@ import (
 templ menuBarButton() {
 	<template x-if="!$store.data.menuOpen">
 		<button
-			class="appearance-none outline-none z-10 absolute top-5 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
+			class="appearance-none outline-none z-10 absolute top-3 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
 			style="view-transition-name:menu-icon-button"
 			x-on:click="$store.data.openMenu()"
 		>
