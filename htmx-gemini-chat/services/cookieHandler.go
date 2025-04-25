@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request) {
+func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request, chatSessionId int) {
 	var userId string
 	cookie, err := request.Cookie("id")
 	if err != nil {
@@ -39,7 +39,7 @@ func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request
 	}
 	sessions := getChatSessionsViaChannel(userId)
 	conversations := []models.ChatConversation{}
-	chatSessionId := getChatSessionIdFromUrl(request)
+
 	if chatSessionId < 0 { // RG url sends non integer value
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
@@ -68,7 +68,7 @@ func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request
 	component.Render(request.Context(), response)
 }
 
-func getChatSessionIdFromUrl(request *http.Request) int {
+func getChatSessionIdFromUrlQueryParam(request *http.Request) int {
 	chatSessionId := 0
 	chatSessionIdStr := request.URL.Query().Get("id")
 	if chatSessionIdStr != "" {
@@ -104,4 +104,19 @@ func CookieHandlerToNewChatSession(response http.ResponseWriter, request *http.R
 	newChatSessionId := insertChatSessionViaChannel(userId, "New Chat")
 	component := components.NewChatSession(models.ChatSession{Id: newChatSessionId, Title: "New Chat"})
 	component.Render(request.Context(), response)
+}
+
+func CookieHandlerToChatConversation(response http.ResponseWriter, request *http.Request, sessionId int, conversationId int) {
+	var userId string
+	cookie, err := request.Cookie("id")
+	if err != nil {
+		http.Error(response, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	userId = cookie.Value
+	channel := make(chan string)
+	defer close(channel)
+	go GetChatConversation(userId, sessionId, conversationId, channel)
+	conversation := <-channel
+	response.Write([]byte(conversation))
 }

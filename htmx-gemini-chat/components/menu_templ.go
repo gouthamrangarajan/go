@@ -110,7 +110,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		url := "/?id=" + strconv.Itoa(session.Id)
+		url := "/" + strconv.Itoa(session.Id)
 		animationClass := "animate-scale-y"
 		if !animate {
 			animationClass = ""

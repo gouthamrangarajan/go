@@ -54,14 +54,22 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
 				} else {
 					templ_7745c5c3_Err = GeminiMessage(conversation.Message).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</section><div class=\"mt-2 shrink-0 rounded border border-slate-200 w-11/12 transition duration-300 mx-auto flex items-center focus-within:ring-1 focus-within:ring-slate-200 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 lg:w-8/12 lg:mt-6 xl:w-6/12\" style=\"view-transition-name:prompt-form\"><textarea class=\"appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-500 placeholder:text-gray-400 lg:py-2 lg:px-4 \" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"$store.data.prompt\" x-on:keyup.enter=\"$store.data.submitMessage($event,&#39;section&#39;)\"></textarea>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</section><div class=\"mt-2 shrink-0 rounded border border-slate-200 w-11/12 transition duration-300 mx-auto flex items-center focus-within:ring-1 focus-within:ring-slate-200 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 lg:w-8/12 lg:mt-6 xl:w-6/12\" style=\"view-transition-name:prompt-form\"><textarea class=\"appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-500 placeholder:text-gray-400 lg:py-2 lg:px-4 \" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"$store.data.prompt\" x-on:keyup.enter=\"$store.data.submitMessage($event,&#39;section&#39;)\"></textarea>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -69,7 +77,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"$store.data.submitMessage($event,&#39;section&#39;)\" x-bind:disabled=\"$store.data.processing\"><template x-if=\"!$store.data.processing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\" style=\"view-transition-name:submit-button\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></template><template x-if=\"$store.data.processing\"><div class=\"flex items-center gap-1 flex-1\" style=\"view-transition-name:submit-button\"><span class=\"h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-two\"></span></div></template></button></div></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"$store.data.submitMessage($event,&#39;section&#39;)\" x-bind:disabled=\"$store.data.processing\"><template x-if=\"!$store.data.processing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\" style=\"view-transition-name:submit-button\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></template><template x-if=\"$store.data.processing\"><div class=\"flex items-center gap-1 flex-1\" style=\"view-transition-name:submit-button\"><span class=\"h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-two\"></span></div></template></button></div></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -112,7 +120,7 @@ func NewChatSession(session models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[70vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[73vh]\" style=\"view-transition-name:section\" hx-swap-oob=\"true\"></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[70vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[73vh]\" style=\"view-transition-name:section\" hx-swap-oob=\"true\"></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -146,38 +154,38 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if isOob {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<input type=\"hidden\" name=\"chatSessionId\" id=\"chatSessionId\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<input type=\"hidden\" name=\"chatSessionId\" id=\"chatSessionId\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 76, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 78, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-swap-oob=\"true\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" hx-swap-oob=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<input type=\"hidden\" name=\"chatSessionId\" id=\"chatSessionId\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<input type=\"hidden\" name=\"chatSessionId\" id=\"chatSessionId\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 84, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 86, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -68,7 +68,7 @@ templ menu(sessions []models.ChatSession) {
 }
 
 templ MenuItem(session models.ChatSession, animate bool) {
-	{{ url := "/?id=" + strconv.Itoa(session.Id) }}
+	{{ url := "/" + strconv.Itoa(session.Id) }}
 	{{ animationClass := "animate-scale-y" }}
 	if !animate {
 		{{ animationClass = "" }}

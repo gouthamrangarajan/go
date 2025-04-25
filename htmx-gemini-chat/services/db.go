@@ -131,6 +131,33 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 	channel <- data
 }
 
+func GetChatConversation(userId string, sessionId int, conversationId int, channel chan<- string) {
+	db := createDb()
+	defer db.Close()
+	message := ""
+	rows, err := db.Query("SELECT message FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? AND conversation_id=?", sessionId, userId, conversationId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		channel <- message
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err := rows.Scan(&message); err != nil {
+			fmt.Println("Error scanning row:", err)
+			break
+		} else {
+			break
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+	}
+	channel <- message
+}
+
 func InsertChatConversation(sessionId int, message string, sender string, channel chan<- int) {
 	db := createDb()
 	defer db.Close()
