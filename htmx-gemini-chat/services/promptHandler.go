@@ -75,6 +75,10 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	geminiRequest := generateGeminiRequest(userId, chatSessionId, prompt)
+	geminiAPIChannel := make(chan string)
+	go callGeminiWithStreaming(geminiRequest, geminiAPIChannel)
+
 	response.Header().Set("Content-Type", "text/event-stream")
 	response.Header().Set("Cache-Control", "no-cache")
 	response.Header().Set("Connection", "keep-alive")
@@ -82,7 +86,6 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 	flushResponse(response)
 	time.Sleep(100 * time.Millisecond)
 
-	geminiRequest := generateGeminiRequest(userId, chatSessionId, prompt)
 	if newChatSessionInserted {
 		// send new session UI
 		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, true).Render(ctx, response)
@@ -103,8 +106,7 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
-	geminiAPIChannel := make(chan string)
-	go callGeminiWithStreaming(geminiRequest, geminiAPIChannel)
+
 	components.GeminiMessageTemplate(rand.Int()).Render(ctx, response)
 	flushResponse(response)
 	time.Sleep(100 * time.Millisecond)
