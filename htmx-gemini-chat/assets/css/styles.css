@@ -851,6 +851,9 @@
   .pb-20 {
     padding-bottom: calc(var(--spacing) * 20);
   }
+  .font-\(family-name\:--font-geometric-humanist\) {
+    font-family: var(--font-geometric-humanist);
+  }
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
