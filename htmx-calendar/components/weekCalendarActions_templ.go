@@ -183,9 +183,9 @@ func numberOfWeeksInMonth(currentMonthAndYear time.Time) int {
 	endDateForCalendar := endDateOfMonth.AddDate(0, 0, 6-int(endDateOfMonth.Weekday()))
 	numberOfDays := math.Ceil(endDateForCalendar.Sub(startDateForCalendar).Hours() / 24)
 	numberOfWeeks := int(numberOfDays / 7)
-	if endDateOfMonth.Month() != endDateForCalendar.Month() {
-		numberOfWeeks = numberOfWeeks - 1
-	}
+	// if endDateOfMonth.Month() != endDateForCalendar.Month() {
+	// 	numberOfWeeks = numberOfWeeks - 1
+	// }
 	return numberOfWeeks
 }
 

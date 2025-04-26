@@ -345,6 +345,7 @@ func getActiveFlagAndActiveClassWeekTd(row int, col int, calendarData [][7]time.
 	active := true
 	activeClass := "bg-orange-600"
 	if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year() != currentMonthAndYear.Year() {
+		active = false
 		activeClass = "bg-orange-500"
 	}
 	if calendarData[row][col].Sub(time.Now()).Hours() < -24 {
