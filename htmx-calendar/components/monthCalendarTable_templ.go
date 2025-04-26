@@ -132,7 +132,7 @@ func monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				active, activeClass := getActiveFlagAndActiveClassMonthTd(row, col, calendarData, currentMonthAndYear)
+				active, activeClass := getActiveFlagAndActiveClassMonthTd(calendarData[row][col], currentMonthAndYear)
 				allowDnD := calendarData[row][col].Sub(time.Now()).Hours() >= -24
 				dndClassBindExpression := "$store.data.checkDnDRowCol(" + strconv.Itoa(row) + "," + strconv.Itoa(col) + ")?'border-3 border-teal-600':'border-3 border-transparent'"
 				templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, templ.JSFuncCall("setAlpineStoreDnDRowCol", templ.JSExpression("event"), row, col, allowDnD), templ.JSFuncCall("removeAlpineStoreDnDRowCol", row, col), templ.JSFuncCall("eventDropped", templ.JSExpression("event"), calendarData[row][col].Format("2006-01-02"), allowDnD))
@@ -356,14 +356,14 @@ func generateEventsContainerHeightClass(calendarDataLen int) string {
 	return heightClass
 }
 
-func getActiveFlagAndActiveClassMonthTd(row int, col int, calendarData [][7]time.Time, currentMonthAndYear time.Time) (bool, string) {
+func getActiveFlagAndActiveClassMonthTd(tdData time.Time, currentMonthAndYear time.Time) (bool, string) {
 	active := true
 	activeClass := "bg-orange-600"
-	if calendarData[row][col].Month() != currentMonthAndYear.Month() || calendarData[row][col].Year() != currentMonthAndYear.Year() {
+	if tdData.Month() != currentMonthAndYear.Month() || tdData.Year() != currentMonthAndYear.Year() {
 		active = false
 		activeClass = "bg-orange-500"
 
-	} else if calendarData[row][col].Sub(time.Now()).Hours() < -24 {
+	} else if tdData.Sub(time.Now()).Hours() < -24 {
 		active = false
 		activeClass = "bg-orange-500"
 	}
