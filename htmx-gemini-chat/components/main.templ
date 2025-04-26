@@ -14,11 +14,11 @@ templ Main(conversations []models.ChatConversation, sessions []models.ChatSessio
 			>
 				for _,conversation:= range conversations {
 					if conversation.Sender == "user" {
-						@UserMessage(conversation.Message, false)
-						//@UserMessageWithMDSource(conversation.SessionId, conversation.Id)
+						// @UserMessage(conversation.Message, false)
+						@UserMessageWithMDSource(conversation.SessionId, conversation.Id)
 					} else {
-						@GeminiMessage(conversation.Message)
-						//@GeminiMessageWithMDSource(conversation.SessionId, conversation.Id)
+						// @GeminiMessage(conversation.Message)
+						@GeminiMessageWithMDSource(conversation.SessionId, conversation.Id)
 					}
 				}
 			</section>

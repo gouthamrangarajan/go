@@ -50,20 +50,20 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			}
 			for _, conversation := range conversations {
 				if conversation.Sender == "user" {
-					templ_7745c5c3_Err = UserMessage(conversation.Message, false).Render(ctx, templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
 					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-				} else {
-					templ_7745c5c3_Err = GeminiMessage(conversation.Message).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = UserMessageWithMDSource(conversation.SessionId, conversation.Id).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
+				} else {
 					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = GeminiMessageWithMDSource(conversation.SessionId, conversation.Id).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
