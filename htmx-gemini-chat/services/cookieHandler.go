@@ -1,20 +1,25 @@
 package services
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"htmx-gemini-chat/components"
 	"htmx-gemini-chat/models"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request, chatSessionId int) {
-	var userId string
+	userId := ""
 	cookie, err := request.Cookie("id")
-	if err != nil {
+	if err == nil {
+		userId = getUserIdFromSignedCookie("id", cookie.Value)
+	}
+	if userId == "" {
 		userId = uuid.New().String()
 		secure := true
 		if os.Getenv("ENV") == "Development" {
@@ -22,7 +27,7 @@ func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request
 		}
 		cookie := http.Cookie{
 			Name:     "id",
-			Value:    userId,
+			Value:    generateSignedStrForCookie("id", userId),
 			Path:     "/",
 			HttpOnly: true,
 			Secure:   secure,
@@ -34,8 +39,6 @@ func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request
 		defer close(userChannel)
 		go InsertUser(userId, userChannel)
 		<-userChannel
-	} else {
-		userId = cookie.Value
 	}
 	sessions := getChatSessionsViaChannel(userId)
 	conversations := []models.ChatConversation{}
@@ -68,52 +71,74 @@ func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request
 	component.Render(request.Context(), response)
 }
 
-func getChatSessionIdFromUrlQueryParam(request *http.Request) int {
-	chatSessionId := 0
-	chatSessionIdStr := request.URL.Query().Get("id")
-	if chatSessionIdStr != "" {
-		val, err := strconv.Atoi(chatSessionIdStr)
-		if err != nil {
-			chatSessionId = -1
-		} else {
-			chatSessionId = val
-		}
-	}
-	return chatSessionId
+func generateSignedStrForCookie(name string, val string) string {
+	cookieSecret := os.Getenv("COOKIE_SECRET")
+	mac := hmac.New(sha256.New, []byte(cookieSecret))
+	mac.Write([]byte(name))
+	mac.Write([]byte(val))
+	signature := mac.Sum(nil)
+	cookieValueSignedBytes := append(signature, []byte(val)...)
+	cookieValueSignedStr := base64.URLEncoding.EncodeToString(cookieValueSignedBytes)
+	return cookieValueSignedStr
 }
-
-func CookieHandlerToPromptHandler(response http.ResponseWriter, request *http.Request) {
-	var userId string
-	cookie, err := request.Cookie("id")
+func getUserIdFromSignedCookie(cookieName string, cookieVal string) string {
+	cookieSecret := os.Getenv("COOKIE_SECRET")
+	cookieValueDecoded, err := base64.URLEncoding.DecodeString(cookieVal)
 	if err != nil {
+		return ""
+	}
+	if len(cookieValueDecoded) <= sha256.Size {
+		return ""
+	}
+	signatureFromCookie := cookieValueDecoded[:sha256.Size]
+	userIdFromCookie := cookieValueDecoded[sha256.Size:]
+	mac := hmac.New(sha256.New, []byte(cookieSecret))
+	mac.Write([]byte(cookieName))
+	mac.Write([]byte(userIdFromCookie))
+	signature := mac.Sum(nil)
+	if !hmac.Equal(signature, signatureFromCookie) {
+		return ""
+	}
+	return string(userIdFromCookie)
+}
+func CookieHandlerToPromptHandler(response http.ResponseWriter, request *http.Request) {
+	userId := ""
+	cookie, err := request.Cookie("id")
+	if err == nil {
+		userId = getUserIdFromSignedCookie("id", cookie.Value)
+	}
+	if userId == "" {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	userId = cookie.Value
 	promptHandler(response, request, userId)
 }
 
 func CookieHandlerToNewChatSession(response http.ResponseWriter, request *http.Request) {
-	var userId string
+	userId := ""
 	cookie, err := request.Cookie("id")
-	if err != nil {
+	if err == nil {
+		userId = getUserIdFromSignedCookie("id", cookie.Value)
+	}
+	if userId == "" {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	userId = cookie.Value
 	newChatSessionId := insertChatSessionViaChannel(userId, "New Chat")
 	component := components.NewChatSession(models.ChatSession{Id: newChatSessionId, Title: "New Chat"})
 	component.Render(request.Context(), response)
 }
 
 func CookieHandlerToChatConversation(response http.ResponseWriter, request *http.Request, sessionId int, conversationId int) {
-	var userId string
+	userId := ""
 	cookie, err := request.Cookie("id")
-	if err != nil {
+	if err == nil {
+		userId = getUserIdFromSignedCookie("id", cookie.Value)
+	}
+	if userId == "" {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	userId = cookie.Value
 	channel := make(chan string)
 	defer close(channel)
 	go GetChatConversation(userId, sessionId, conversationId, channel)

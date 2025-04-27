@@ -45,11 +45,6 @@ func main() {
 		fileServer.ServeHTTP(response, request)
 	})
 
-	// http.HandleFunc("/", services.CookieHandlerToMainPage)
-	// http.HandleFunc("/new", services.CookieHandlerToNewChatSession)
-	// http.HandleFunc("/send", services.CookieHandlerToPromptHandler)
-	// http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
-
 	fmt.Println("Listening on :3000")
 	server := &http.Server{
 		Addr:         ":3000",
