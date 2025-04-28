@@ -14,11 +14,7 @@ import (
 )
 
 func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request, chatSessionId int) {
-	userId := ""
-	cookie, err := request.Cookie("id")
-	if err == nil {
-		userId = getUserIdFromSignedCookie("id", cookie.Value)
-	}
+	userId := getUserIdFromRequest(request)
 	if userId == "" {
 		userId = uuid.New().String()
 		secure := true
@@ -81,7 +77,13 @@ func generateSignedStrForCookie(name string, val string) string {
 	cookieValueSignedStr := base64.URLEncoding.EncodeToString(cookieValueSignedBytes)
 	return cookieValueSignedStr
 }
-func getUserIdFromSignedCookie(cookieName string, cookieVal string) string {
+func getUserIdFromRequest(request *http.Request) string {
+	cookieName := "id"
+	cookie, err := request.Cookie("id")
+	if err != nil {
+		return ""
+	}
+	cookieVal := cookie.Value
 	cookieSecret := os.Getenv("COOKIE_SECRET")
 	cookieValueDecoded, err := base64.URLEncoding.DecodeString(cookieVal)
 	if err != nil {
@@ -102,11 +104,7 @@ func getUserIdFromSignedCookie(cookieName string, cookieVal string) string {
 	return string(userIdFromCookie)
 }
 func CookieHandlerToPromptHandler(response http.ResponseWriter, request *http.Request) {
-	userId := ""
-	cookie, err := request.Cookie("id")
-	if err == nil {
-		userId = getUserIdFromSignedCookie("id", cookie.Value)
-	}
+	userId := getUserIdFromRequest(request)
 	if userId == "" {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -115,11 +113,7 @@ func CookieHandlerToPromptHandler(response http.ResponseWriter, request *http.Re
 }
 
 func CookieHandlerToNewChatSession(response http.ResponseWriter, request *http.Request) {
-	userId := ""
-	cookie, err := request.Cookie("id")
-	if err == nil {
-		userId = getUserIdFromSignedCookie("id", cookie.Value)
-	}
+	userId := getUserIdFromRequest(request)
 	if userId == "" {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -130,11 +124,7 @@ func CookieHandlerToNewChatSession(response http.ResponseWriter, request *http.R
 }
 
 func CookieHandlerToChatConversation(response http.ResponseWriter, request *http.Request, sessionId int, conversationId int) {
-	userId := ""
-	cookie, err := request.Cookie("id")
-	if err == nil {
-		userId = getUserIdFromSignedCookie("id", cookie.Value)
-	}
+	userId := getUserIdFromRequest(request)
 	if userId == "" {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
