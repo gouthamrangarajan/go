@@ -1,0 +1,14 @@
+package components
+
+templ fileUpload() {
+	@onceHandle.Once() {
+		//onceHandle is declared in scripts.templ
+		<script type="text/javascript">
+             document.addEventListener('alpine:init', () => {
+                Alpine.data('fileUpload',()=>({
+                    
+                }))
+             },{signal:ABORT_CONTROLLER.signal});//ABORT_CONTROLLER is declared in scripts.templ
+        </script>
+	}
+}

@@ -1065,9 +1065,9 @@
       padding-bottom: calc(var(--spacing) * 20);
     }
   }
-  .xl\:h-\[73vh\] {
+  .xl\:h-\[72vh\] {
     @media (width >= 80rem) {
-      height: 73vh;
+      height: 72vh;
     }
   }
   .xl\:w-1\/4 {
