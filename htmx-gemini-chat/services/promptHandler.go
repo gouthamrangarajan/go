@@ -24,12 +24,14 @@ func generateGeminiRequest(userId string, sessionId int, prompt string) models.G
 	geminiRequest := models.GeminiRequest{}
 	geminiRequest.Contents = make([]models.GeminiRequestContent, 0, len(conversations)+1)
 	for _, conversation := range conversations {
-		geminiRequest.Contents = append(geminiRequest.Contents, models.GeminiRequestContent{
-			Role: conversation.Sender,
-			Parts: append(make([]models.GeminiRequestParts, 0, 1), models.GeminiRequestParts{
-				Text: conversation.Message,
-			}),
-		})
+		if strings.Trim(conversation.Message, "") != "" {
+			geminiRequest.Contents = append(geminiRequest.Contents, models.GeminiRequestContent{
+				Role: conversation.Sender,
+				Parts: append(make([]models.GeminiRequestParts, 0, 1), models.GeminiRequestParts{
+					Text: conversation.Message,
+				}),
+			})
+		}
 	}
 	geminiRequest.Contents = append(geminiRequest.Contents, models.GeminiRequestContent{
 		Role: "User",
