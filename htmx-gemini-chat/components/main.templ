@@ -24,6 +24,7 @@ templ Main(conversations []models.ChatConversation, sessions []models.ChatSessio
 			@chatInput(currentChatSessionId)
 		</main>
 		@menu(sessions)
+		@errorToast()
 	}
 }
 

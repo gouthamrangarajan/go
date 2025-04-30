@@ -31,7 +31,7 @@ func chatInput(currentChatSessionId int) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mt-2 shrink-0 rounded border border-slate-200 w-11/12 transition duration-300 mx-auto flex items-center focus-within:ring-1 focus-within:ring-slate-200 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 lg:w-8/12 lg:mt-6 xl:w-6/12\" style=\"view-transition-name:prompt-form\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"relative mt-2 shrink-0 rounded border border-slate-200 w-11/12 transition duration-300 mx-auto flex items-center focus-within:ring-1 focus-within:ring-slate-200 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 lg:w-8/12 lg:mt-6 xl:w-6/12\" style=\"view-transition-name:prompt-form\" x-data=\"fileUpload\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,7 +39,7 @@ func chatInput(currentChatSessionId int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<textarea class=\"appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-500 placeholder:text-gray-400 lg:py-2 lg:px-4 \" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"$store.data.prompt\" x-on:keyup.enter=\"$store.data.submitMessage($event,&#39;section&#39;)\"></textarea><button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"$store.data.submitMessage($event,&#39;section&#39;)\" x-bind:disabled=\"$store.data.processing\"><template x-if=\"!$store.data.processing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\" style=\"view-transition-name:submit-button\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></template><template x-if=\"$store.data.processing\"><div class=\"flex items-center gap-1 flex-1\" style=\"view-transition-name:submit-button\"><span class=\"h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-two\"></span></div></template></button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<textarea class=\"appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-500 placeholder:text-gray-400 lg:py-2 lg:px-4 \" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"$store.data.prompt\" x-on:keyup.enter=\"$store.data.submitMessage($event,&#39;section&#39;)\"></textarea> <input type=\"file\" name=\"image\" x-ref=\"imageInput\" class=\"hidden\" accept=\"image/*\" x-on:change=\"fileInputChanged\"><button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"$store.data.submitMessage($event,&#39;section&#39;)\" x-bind:disabled=\"$store.data.processing\"><template x-if=\"!$store.data.processing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\" style=\"view-transition-name:submit-button\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></template><template x-if=\"$store.data.processing\"><div class=\"flex items-center gap-1 flex-1\" style=\"view-transition-name:submit-button\"><span class=\"h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-two\"></span></div></template></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -76,7 +76,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 54, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 63, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -94,7 +94,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 62, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 71, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -109,7 +109,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 	})
 }
 
-func imageFileInput() templ.Component {
+func uploadedImg() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -130,7 +130,7 @@ func imageFileInput() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<input type=\"file\" name=\"image\" x-ref=\"imageInput\" class=\"hidden\" accept=\"image/*\"> <input type=\"hidden\" name=\"imageValue\" x-ref=\"imageVal\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"animate-slide-up absolute -top-10 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded bg-white border border-slate-100 text-gray-700\" x-show=\"fileName!=&#39;&#39;\"><img class=\"h-4 w-4 rounded-full\" x-bind:src=\"imgBase64\"> <span x-text=\"fileName\"></span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

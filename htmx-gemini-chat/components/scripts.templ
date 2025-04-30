@@ -6,7 +6,22 @@ templ bodyScript() {
 	@onceHandle.Once() {
 		<script type="text/javascript">
             var ABORT_CONTROLLER=new AbortController();//Global variable     
-
+            var TIMEOUT;
+            function setErrorMessage(message){
+                Alpine.store('error').message=message;
+                if(TIMEOUT){
+                    clearTimeout(TIMEOUT);
+                }
+                TIMEOUT=setTimeout(()=>{
+                    if(document.startViewTransition){
+                        document.startViewTransition(()=>{
+                            Alpine.store('error').message="";
+                        });
+                    }else{
+                         Alpine.store('error').message="";
+                    }
+                },3000)
+            }
             function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){
                 const pEl=document.createElement("p");
                 document.getElementById(idToAppendHTML).appendChild(pEl);
@@ -109,6 +124,11 @@ templ bodyScript() {
                                 method:"POST",
                                 signal:ABORT_CONTROLLER.signal
                             }).then(resp=>{
+                                if(!resp.ok){
+                                    this.setProcessing(false);
+                                    setErrorMessage('Error! Please try again later');     
+                                    return;
+                                }
                                 this.prompt='';
                                 const reader = resp.body.getReader();
                                 const processChunk = async () => {
@@ -150,10 +170,33 @@ templ bodyScript() {
                             }).catch(err=>{
                                 console.log(err);
                                 this.setProcessing(false);
+                                setErrorMessage('Error! Please try again later');     
                             });
                         }
                     },
                    
+                });
+                Alpine.data('fileUpload',()=>({
+                    imgBase64:"",
+                    fileName:"",
+                    fileInputChanged(ev){
+                        const fl=ev.currentTarget.files[0];
+                        const reader = new FileReader();
+                        reader.addEventListener("load",() => {
+                            if (typeof reader.result == "string") {
+                                this.imgBase64=reader.result;
+                                this.fileName=fl.name;
+                            }
+                        },{ signal: ABORT_CONTROLLER.signal });
+                        if (fl.size <= 1024 * 1024) {//1 mb
+                            reader.readAsDataURL(fl);
+                        }else{
+
+                        }
+                    }
+                }));
+                Alpine.store('error',{
+                    message:""
                 });
             },{signal:ABORT_CONTROLLER.signal});                    
         </script>

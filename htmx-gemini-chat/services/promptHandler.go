@@ -40,6 +40,7 @@ func generateGeminiRequest(userId string, sessionId int, prompt string) models.G
 	return geminiRequest
 }
 func promptHandler(response http.ResponseWriter, request *http.Request, userId string) {
+	// panic("sample error")
 	ctx := request.Context()
 	prompt := request.FormValue("prompt")
 	chatSessionIdStr := request.FormValue("chatSessionId")
