@@ -31,6 +31,7 @@ templ menu(sessions []models.ChatSession) {
 		x-bind:class="$store.data.menuOpen?'h-dvh w-dvw bg-gray-900/50':'h-0 w-0'"
 		x-trap="$store.data.menuOpen"
 		style="view-transition-name:menu"
+		x-on:click="$store.data.closeMenu()"
 	>
 		<aside
 			class="p-1 animate-menu-open w-10/12 h-dvh flex flex-col bg-gray-900 border-r border-slate-200  md:w-1/2 lg:w-1/3 xl:w-1/4"
@@ -50,7 +51,6 @@ templ menu(sessions []models.ChatSession) {
 		<template x-if="$store.data.menuOpen">
 			<button
 				class="appearance-none outline-none  rounded cursor-pointer p-1 mt-5 bg-cyan-600 text-red-100 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
-				x-on:click="$store.data.closeMenu()"
 				style="view-transition-name:menu-icon-button"
 			>
 				<svg
@@ -89,7 +89,7 @@ templ MenuItem(session models.ChatSession, animate bool) {
 			hx-target="body"
 			hx-trigger="FETCH_FULL_PAGE_EVENT"
 			hx-push-url="true"
-			x-on:click="$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')"
+			x-on:click.stop="$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')"
 			style={ "view-transition-name:title-" + strconv.Itoa(session.Id) }
 		>
 			{ session.Title }

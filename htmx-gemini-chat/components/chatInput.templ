@@ -6,45 +6,29 @@ templ chatInput(currentChatSessionId int) {
 	<div
 		class="relative mt-2 shrink-0 rounded border border-slate-200 w-11/12 transition duration-300 mx-auto flex items-center focus-within:ring-1 focus-within:ring-slate-200 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 lg:w-8/12 lg:mt-6 xl:w-6/12"
 		style="view-transition-name:prompt-form"
-		x-data="fileUpload"
+		x-data="chatInput"
 	>
-		// @uploadedImg()
 		@ChatSessionIdInput(currentChatSessionId, false)
 		<textarea
 			class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-500 placeholder:text-gray-400 lg:py-2 lg:px-4 "
 			placeholder="Send a message"
 			rows="3"
 			name="prompt"
-			x-model="$store.data.prompt"
-			x-on:keyup.enter="$store.data.submitMessage($event,'section')"
+			x-model="prompt"
+			x-on:keyup.enter="submitMessage($event,'section')"
 		></textarea>
-		<input
-			type="file"
-			name="image"
-			x-ref="imageInput"
-			class="hidden"
-			accept="image/*"
-			x-on:change="fileInputChanged"
-		/>
-		// <button
-		// 	class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
-		// 	x-on:click="$refs.imageInput.click()"
-		// >
-		// 	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-		// 		<path fill-rule="evenodd" d="M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z" clip-rule="evenodd"></path>
-		// 	</svg>
-		// </button>
+		// @fileUpload()
 		<button
 			class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
-			x-on:click="$store.data.submitMessage($event,'section')"
-			x-bind:disabled="$store.data.processing"
+			x-on:click="submitMessage($event,'section')"
+			x-bind:disabled="processing"
 		>
-			<template x-if="!$store.data.processing">
+			<template x-if="!processing">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5" style="view-transition-name:submit-button">
 					<path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd"></path>
 				</svg>
 			</template>
-			<template x-if="$store.data.processing">
+			<template x-if="processing">
 				<div class="flex items-center gap-1 flex-1" style="view-transition-name:submit-button">
 					<span class="h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-one"></span>
 					<span class="h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-two"></span>
@@ -73,7 +57,7 @@ templ ChatSessionIdInput(sessionId int, isOob bool) {
 	}
 }
 
-templ uploadedImg() {
+templ fileUpload() {
 	<div
 		class="animate-slide-up absolute -top-10 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded bg-white border border-slate-100 text-gray-700"
 		x-show="fileName!=''"
@@ -81,4 +65,20 @@ templ uploadedImg() {
 		<img class="h-4 w-4 rounded-full" x-bind:src="imgBase64"/>
 		<span x-text="fileName"></span>
 	</div>
+	<input
+		type="file"
+		name="image"
+		x-ref="imageInput"
+		class="hidden"
+		accept="image/*"
+		x-on:change="fileInputChanged"
+	/>
+	<button
+		class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
+		x-on:click="$refs.imageInput.click()"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+			<path fill-rule="evenodd" d="M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z" clip-rule="evenodd"></path>
+		</svg>
+	</button>
 }

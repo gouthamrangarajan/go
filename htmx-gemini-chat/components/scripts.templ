@@ -8,17 +8,17 @@ templ bodyScript() {
             var ABORT_CONTROLLER=new AbortController();//Global variable     
             var TIMEOUT;
             function setErrorMessage(message){
-                Alpine.store('error').message=message;
+                Alpine.store('data').errorMessage=message;
                 if(TIMEOUT){
                     clearTimeout(TIMEOUT);
                 }
                 TIMEOUT=setTimeout(()=>{
                     if(document.startViewTransition){
                         document.startViewTransition(()=>{
-                            Alpine.store('error').message="";
+                            Alpine.store('data').errorMessage="";
                         });
                     }else{
-                         Alpine.store('error').message="";
+                         Alpine.store('data').errorMessage="";
                     }
                 },3000)
             }
@@ -56,22 +56,11 @@ templ bodyScript() {
                     window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                    
                 }						
             }, { signal: ABORT_CONTROLLER.signal });
-            document.addEventListener('alpine:init', () => {
+            document.addEventListener('alpine:init', () => {                
                 Alpine.store('data',{
-                    prompt:'',
-                    processing:false,
                     addNewChatSessionProcessing:false,
                     menuOpen:false,
-                    setProcessing(val){
-                        if(document.startViewTransition){
-                            document.startViewTransition(()=>{
-                                this.processing=val;
-                            })
-                        }
-                        else{
-                            this.processing=val;
-                        }
-                    },
+                    errorMessage:"",
                     openMenu(){
                         if(document.startViewTransition){
                             document.startViewTransition(()=>{
@@ -109,6 +98,37 @@ templ bodyScript() {
                             if(eventNameToDispatch){
                                 ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
                             }
+                        }
+                    },
+                });
+                Alpine.data('chatInput',()=>({
+                    prompt:'',
+                    processing:false,    
+                    imgBase64:"",
+                    fileName:"",                
+                    setProcessing(val){
+                        if(document.startViewTransition){
+                            document.startViewTransition(()=>{
+                                this.processing=val;
+                            })
+                        }
+                        else{
+                            this.processing=val;
+                        }
+                    },                                        
+                    fileInputChanged(ev){
+                        const fl=ev.currentTarget.files[0];
+                        const reader = new FileReader();
+                        reader.addEventListener("load",() => {
+                            if (typeof reader.result == "string") {
+                                this.imgBase64=reader.result;
+                                this.fileName=fl.name;
+                            }
+                        },{ signal: ABORT_CONTROLLER.signal });
+                        if (fl.size <= 1024 * 1024) {//1 mb
+                            reader.readAsDataURL(fl);
+                        }else{
+
                         }
                     },
                     submitMessage(ev,idToAppendData){
@@ -182,29 +202,7 @@ templ bodyScript() {
                         }
                     },
                    
-                });
-                Alpine.data('fileUpload',()=>({
-                    imgBase64:"",
-                    fileName:"",
-                    fileInputChanged(ev){
-                        const fl=ev.currentTarget.files[0];
-                        const reader = new FileReader();
-                        reader.addEventListener("load",() => {
-                            if (typeof reader.result == "string") {
-                                this.imgBase64=reader.result;
-                                this.fileName=fl.name;
-                            }
-                        },{ signal: ABORT_CONTROLLER.signal });
-                        if (fl.size <= 1024 * 1024) {//1 mb
-                            reader.readAsDataURL(fl);
-                        }else{
-
-                        }
-                    }
-                }));
-                Alpine.store('error',{
-                    message:""
-                });
+                }));                               
             },{signal:ABORT_CONTROLLER.signal});                    
         </script>
 	}
