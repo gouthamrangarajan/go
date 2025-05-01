@@ -121,7 +121,9 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 	consolidateGeminiResponse := ""
 
 	for message := range geminiAPIChannel {
-		consolidateGeminiResponse += message
+		if message != "data:ERROR\n\n" {
+			consolidateGeminiResponse += message
+		}
 		select {
 		case <-ctx.Done():
 			continue
@@ -130,8 +132,9 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
-
-	InsertChatConversation(chatSessionId, consolidateGeminiResponse, "model", insertConversationChannel)
+	if strings.Trim(consolidateGeminiResponse, "") != "" {
+		InsertChatConversation(chatSessionId, consolidateGeminiResponse, "model", insertConversationChannel)
+	}
 
 	select {
 	case <-ctx.Done():
@@ -163,13 +166,13 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 	jsonData, err := json.Marshal(request)
 	if err != nil {
 		fmt.Printf("Error converting request to json data to call Gemini API %v\n", err)
-		channel <- ""
+		channel <- "data:ERROR\n\n"
 		return
 	}
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		fmt.Printf("Error calling Gemini API %v\n", err)
-		channel <- ""
+		channel <- "data:ERROR\n\n"
 		return
 	}
 	defer resp.Body.Close()
@@ -180,7 +183,7 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 		} else {
 			fmt.Printf("Error in Gemini API call: %v+\n", string(errorMsg))
 		}
-		channel <- ""
+		channel <- "data:ERROR\n\n"
 		return
 	}
 	scanner := bufio.NewScanner(resp.Body)

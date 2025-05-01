@@ -146,6 +146,13 @@ templ bodyScript() {
                                         decodedValueMerged="";
                                         return;
                                     }
+                                    else if(decodedValue.includes("data:ERROR")){//error in gemini api
+                                        this.setProcessing(false);
+                                        messageId="";
+                                        decodedValueMerged="";
+                                        setErrorMessage('Error! Please try again later');     
+                                        return;
+                                    }
                                     else if(decodedValue.startsWith("<p class")){ //streamed output is a new user message item or new gemini message item
                                         messageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                        
                                         document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
