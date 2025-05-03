@@ -3,6 +3,7 @@ package services
 import (
 	"bufio"
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"htmx-gemini-chat/components"
@@ -11,40 +12,88 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func generateGeminiRequest(userId string, sessionId int, prompt string) models.GeminiRequest {
+func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase64 string) (models.GeminiRequest, string) {
+	err := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
 	go GetChatConversations(userId, sessionId, conversationsChannel)
 	conversations := <-conversationsChannel
 	geminiRequest := models.GeminiRequest{}
 	geminiRequest.Contents = make([]models.GeminiRequestContent, 0, len(conversations)+1)
+	messageReg := regexp.MustCompile(`^([\w\s]*)\s(data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+))$`)
 	for _, conversation := range conversations {
 		if strings.Trim(conversation.Message, "") != "" {
-			geminiRequest.Contents = append(geminiRequest.Contents, models.GeminiRequestContent{
-				Role: conversation.Sender,
-				Parts: append(make([]models.GeminiRequestParts, 0, 1), models.GeminiRequestParts{
-					Text: conversation.Message,
-				}),
+			matches := messageReg.FindStringSubmatch(conversation.Message)
+			if len(matches) > 5 {
+				messageToGeminiRequestContent := models.GeminiRequestContent{
+					Role: conversation.Sender,
+					Parts: append(make([]models.GeminiRequestParts, 0, 2), models.GeminiRequestParts{
+						Text: &matches[1],
+					}),
+				}
+				messageToGeminiRequestContent.Parts = append(messageToGeminiRequestContent.Parts, models.GeminiRequestParts{
+					ImgData: &models.GeminiRequestImageData{
+						MimeType: matches[3],
+						Data:     matches[5],
+					},
+				})
+				geminiRequest.Contents = append(geminiRequest.Contents, messageToGeminiRequestContent)
+
+			} else {
+				geminiRequest.Contents = append(geminiRequest.Contents, models.GeminiRequestContent{
+					Role: conversation.Sender,
+					Parts: append(make([]models.GeminiRequestParts, 0, 1), models.GeminiRequestParts{
+						Text: &conversation.Message,
+					}),
+				})
+			}
+		}
+	}
+	partsCapacityForPrompt := 1
+	if imgBase64 != "" {
+		partsCapacityForPrompt = 2
+	}
+	promptToGeminiRequestContent := models.GeminiRequestContent{
+		Role: "User",
+		Parts: append(make([]models.GeminiRequestParts, 0, partsCapacityForPrompt), models.GeminiRequestParts{
+			Text: &prompt,
+		}),
+	}
+	if imgBase64 != "" {
+		promptReg := regexp.MustCompile(`^data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
+		matches := promptReg.FindStringSubmatch(imgBase64)
+		if len(matches) < 4 {
+			err = "Invalid Image data"
+		} else {
+			decoded, decodeErr := base64.StdEncoding.DecodeString(matches[3])
+			if decodeErr != nil || len(decoded) > 1024*1024 {
+				err = "Invalid Image data"
+			}
+		}
+
+		if err == "" {
+			promptToGeminiRequestContent.Parts = append(promptToGeminiRequestContent.Parts, models.GeminiRequestParts{
+				ImgData: &models.GeminiRequestImageData{
+					MimeType: matches[1],
+					Data:     matches[3],
+				},
 			})
 		}
 	}
-	geminiRequest.Contents = append(geminiRequest.Contents, models.GeminiRequestContent{
-		Role: "User",
-		Parts: append(make([]models.GeminiRequestParts, 0, 1), models.GeminiRequestParts{
-			Text: prompt,
-		}),
-	})
-	return geminiRequest
+	geminiRequest.Contents = append(geminiRequest.Contents, promptToGeminiRequestContent)
+	return geminiRequest, err
 }
 func promptHandler(response http.ResponseWriter, request *http.Request, userId string) {
 	// panic("sample error")
 	ctx := request.Context()
 	prompt := request.FormValue("prompt")
+	imgBase64 := request.FormValue("imgBase64")
 	chatSessionIdStr := request.FormValue("chatSessionId")
 	chatSessionId, err := strconv.Atoi(chatSessionIdStr)
 	newChatSessionInserted := false
@@ -53,6 +102,7 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 		return
 	}
 	prompt = strings.Trim(prompt, "")
+	imgBase64 = strings.Trim(imgBase64, "")
 	if prompt == "" {
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
@@ -78,14 +128,18 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	geminiRequest := generateGeminiRequest(userId, chatSessionId, prompt)
+	geminiRequest, errStr := generateGeminiRequest(userId, chatSessionId, prompt, imgBase64)
+	if errStr != "" {
+		http.Error(response, "Bad Request", http.StatusBadRequest)
+		return
+	}
 	geminiAPIChannel := make(chan string)
 	go callGeminiWithStreaming(geminiRequest, geminiAPIChannel)
 
 	response.Header().Set("Content-Type", "text/event-stream")
 	response.Header().Set("Cache-Control", "no-cache")
 	response.Header().Set("Connection", "keep-alive")
-	components.UserMessage(prompt, true).Render(ctx, response)
+	components.UserMessage(prompt+" "+imgBase64, true).Render(ctx, response)
 	flushResponse(response)
 	time.Sleep(100 * time.Millisecond)
 
@@ -116,7 +170,7 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 
 	insertConversationChannel := make(chan int, 2)
 	defer close(insertConversationChannel)
-	InsertChatConversation(chatSessionId, prompt, "user", insertConversationChannel)
+	InsertChatConversation(chatSessionId, prompt+" "+imgBase64, "user", insertConversationChannel)
 
 	consolidateGeminiResponse := ""
 
@@ -179,9 +233,9 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 	if resp.StatusCode != http.StatusOK {
 		errorMsg, err := io.ReadAll(resp.Body)
 		if err != nil {
-			fmt.Printf("Error in Gemini API call: %v+\n", resp.Status)
+			fmt.Printf("Error in Gemini API call: %v\n", resp.Status)
 		} else {
-			fmt.Printf("Error in Gemini API call: %v+\n", string(errorMsg))
+			fmt.Printf("Error in Gemini API call: %v\n", string(errorMsg))
 		}
 		channel <- "data:ERROR\n\n"
 		return
@@ -198,7 +252,7 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 		txt += txtInLoop
 		err = json.Unmarshal([]byte(txt), &responseParsed)
 		if err == nil {
-			channel <- responseParsed.Candidates[0].Content.Parts[0].Text
+			channel <- *responseParsed.Candidates[0].Content.Parts[0].Text
 			txt = ""
 
 		}
@@ -239,6 +293,6 @@ func callGeminiWithoutStreaming(request models.GeminiRequest, channel chan<- str
 		channel <- ""
 		return
 	} else {
-		channel <- responseParsed.Candidates[0].Content.Parts[0].Text
+		channel <- *responseParsed.Candidates[0].Content.Parts[0].Text
 	}
 }

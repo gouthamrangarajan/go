@@ -5,6 +5,7 @@ templ errorToast() {
 		<p
 			class="animate-slide-up absolute bottom-2 left-8 flex items-start gap-2 py-2 px-4 rounded bg-white text-red-600 font-semibold lg:bottom-4"
 			x-text="$store.data.errorMessage"
+			style="view-transition-name:error-message"
 		></p>
 	</template>
 }

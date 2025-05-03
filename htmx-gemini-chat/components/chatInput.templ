@@ -10,14 +10,14 @@ templ chatInput(currentChatSessionId int) {
 	>
 		@ChatSessionIdInput(currentChatSessionId, false)
 		<textarea
-			class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-cyan-500 placeholder:text-gray-400 lg:py-2 lg:px-4 "
+			class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-400 lg:py-2 lg:px-4 "
 			placeholder="Send a message"
 			rows="3"
 			name="prompt"
 			x-model="prompt"
 			x-on:keyup.enter="submitMessage($event,'section')"
 		></textarea>
-		// @fileUpload()
+		@fileUpload()
 		<button
 			class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
 			x-on:click="submitMessage($event,'section')"
@@ -58,13 +58,28 @@ templ ChatSessionIdInput(sessionId int, isOob bool) {
 }
 
 templ fileUpload() {
-	<div
-		class="animate-slide-up absolute -top-10 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded bg-white border border-slate-100 text-gray-700"
-		x-show="fileName!=''"
-	>
-		<img class="h-4 w-4 rounded-full" x-bind:src="imgBase64"/>
-		<span x-text="fileName"></span>
-	</div>
+	<template x-if="fileName!=''">
+		<div
+			class="animate-slide-up absolute -top-12 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded bg-gray-800 border border-slate-200 text-slate-200"
+			style="view-transition-name:upload-file-name"
+		>
+			<img class="h-5 w-5 rounded-full" x-bind:src="imgBase64"/>
+			<span x-text="fileName" class="flex-1"></span>
+			<button
+				class="appearance-none outline-none p-1 rounded-full cursor-pointer transition duration-300 text-slate-200 focus:ring-1 focus:ring-slate-200"
+				x-on:click="clearFileInput()"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					class="size-6"
+				>
+					<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
+				</svg>
+			</button>
+		</div>
+	</template>
 	<input
 		type="file"
 		name="image"

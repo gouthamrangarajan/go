@@ -48,13 +48,18 @@ templ bodyScript() {
                     liEl.outerHTML=menuItemUI;
                     liEl.classList.remove('animate-scale-y')
                 }   
-            }            
+            }        
             document.body.addEventListener('htmx:afterSwap', function(event) {	
                 if(Alpine.store('data').addNewChatSessionProcessing){
                     Alpine.store('data').addNewChatSessionProcessing=false;
                     const newChatSessionId=document.getElementById("chatSessionId").value
                     window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                    
                 }						
+            }, { signal: ABORT_CONTROLLER.signal });    
+            document.body.addEventListener('htmx:afterRequest', function(event) {	
+                if(event.detail.failed){
+                    setErrorMessage('Error! Please try again later'); 
+                }
             }, { signal: ABORT_CONTROLLER.signal });
             document.addEventListener('alpine:init', () => {                
                 Alpine.store('data',{
@@ -121,21 +126,39 @@ templ bodyScript() {
                         const reader = new FileReader();
                         reader.addEventListener("load",() => {
                             if (typeof reader.result == "string") {
-                                this.imgBase64=reader.result;
-                                this.fileName=fl.name;
+                                if(reader.result.startsWith("data:image/")){
+                                    this.imgBase64=reader.result;
+                                    this.fileName=fl.name;
+                                }else{
+                                    setErrorMessage('Please select a valid image file')
+                                }
                             }
                         },{ signal: ABORT_CONTROLLER.signal });
                         if (fl.size <= 1024 * 1024) {//1 mb
                             reader.readAsDataURL(fl);
                         }else{
-
+                            setErrorMessage('Image size exceeds the limit of 1 MB');                                 
                         }
+                    },
+                    clearFileInput(){         
+                        if(document.startViewTransition){
+                            document.startViewTransition(()=>{
+                                this.imgBase64='';
+                                this.fileName=''; 
+                            });
+                        }               
+                        else{
+                            this.imgBase64='';
+                            this.fileName=''; 
+                        }                        
+                        this.$refs.imageInput.value=''
                     },
                     submitMessage(ev,idToAppendData){
                         if(!ev.shiftKey && this.prompt.trim()!='' && !this.processing){
                             this.setProcessing(true);
                             const fm=new FormData();
                             fm.append("prompt",this.prompt);
+                            fm.append("imgBase64",this.imgBase64)
                             fm.append("chatSessionId",document.getElementById("chatSessionId").value);                            
                             let messageId="";
                             let decodedValueMerged ="";
@@ -150,6 +173,7 @@ templ bodyScript() {
                                     return;
                                 }
                                 this.prompt='';
+                                this.clearFileInput();
                                 const reader = resp.body.getReader();
                                 const processChunk = async () => {
                                     const { done, value } = await reader.read();
@@ -173,7 +197,7 @@ templ bodyScript() {
                                         setErrorMessage('Error! Please try again later');     
                                         return;
                                     }
-                                    else if(decodedValue.startsWith("<p class")){ //streamed output is a new user message item or new gemini message item
+                                    else if(decodedValue.startsWith("<div class")){ //streamed output is a new user message item or new gemini message item
                                         messageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                        
                                         document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
                                         decodedValueMerged="";
@@ -198,7 +222,7 @@ templ bodyScript() {
                                 console.log(err);
                                 this.setProcessing(false);
                                 setErrorMessage('Error! Please try again later');     
-                            });
+                            });                            
                         }
                     },
                    
