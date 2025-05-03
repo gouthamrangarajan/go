@@ -184,7 +184,9 @@ templ bodyScript() {
                                         return;
                                     }
                                     let decodedValue = new TextDecoder().decode(value);     
-                                    console.log(decodedValue.startsWith("<div class"),decodedValue.indexOf("<div class"));                               
+                                    if(!decodedValue.startsWith("<div class")){
+                                        console.log(decodedValue);                               
+                                    }                                    
                                     if(decodedValue.includes("data:END")){//streaming end
                                         this.setProcessing(false);
                                         messageId="";
