@@ -22,10 +22,10 @@ templ bodyScript() {
                     }
                 },3000)
             }
-            function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){
-                const pEl=document.createElement("p");
-                document.getElementById(idToAppendHTML).appendChild(pEl);
-                pEl.outerHTML=messageUI;                                
+            function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){                
+                const divEl=document.createElement("div");
+                document.getElementById(idToAppendHTML).appendChild(divEl);
+                divEl.outerHTML=messageUI;                                
                 const strtIdx=messageUI.indexOf("message_");
                 const messageId=messageUI.substring(strtIdx,messageUI.indexOf('"',strtIdx));
                 return messageId;
