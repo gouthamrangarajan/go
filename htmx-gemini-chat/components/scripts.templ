@@ -183,7 +183,8 @@ templ bodyScript() {
                                         decodedValueMerged="";
                                         return;
                                     }
-                                    let decodedValue = new TextDecoder().decode(value);                                    
+                                    let decodedValue = new TextDecoder().decode(value);     
+                                    console.log(decodedValue);                               
                                     if(decodedValue.includes("data:END")){//streaming end
                                         this.setProcessing(false);
                                         messageId="";
