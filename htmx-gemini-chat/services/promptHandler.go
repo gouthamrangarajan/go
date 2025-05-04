@@ -143,6 +143,7 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 	flushResponse(response)
 	time.Sleep(100 * time.Millisecond)
 	sendMessageAndFlush(prompt, response)
+	time.Sleep(100 * time.Millisecond)
 
 	if newChatSessionInserted {
 		// send new session UI
