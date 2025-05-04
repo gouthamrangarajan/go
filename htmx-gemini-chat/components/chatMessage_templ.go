@@ -20,10 +20,10 @@ func splitImageFromMessage(message string) (string, string) {
 	image := ""
 	matches := regex.FindStringSubmatch(message)
 	if len(matches) > 5 {
-		text = strings.Trim(matches[1], "")
+		text = strings.TrimSpace(matches[1])
 		image = matches[2]
 	}
-	return strings.Trim(text, ""), image
+	return strings.TrimSpace(text), image
 }
 
 func formatMessageForAlpine(message string) string {
