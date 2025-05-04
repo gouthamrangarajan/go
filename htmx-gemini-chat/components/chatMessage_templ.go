@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "strconv"
 import "strings"
-import "fmt"
+
 import "regexp"
 
 var regex = regexp.MustCompile(`^([\w\s]*)\s(data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+))$`)
@@ -33,7 +33,7 @@ func formatMessageForAlpine(message string) string {
 	return ret
 }
 
-func UserMessage(message string, animate bool) templ.Component {
+func UserMessage(message string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -55,11 +55,7 @@ func UserMessage(message string, animate bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		text, imgData := splitImageFromMessage(message)
-		animateClass := ""
-		if animate {
-			animateClass = "animate-scale-y"
-		}
-		var templ_7745c5c3_Var2 = []any{"w-full flex items-start gap-2 p-1 ", animateClass}
+		var templ_7745c5c3_Var2 = []any{"w-full flex items-start gap-2 p-1 "}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -89,7 +85,7 @@ func UserMessage(message string, animate bool) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(imgData)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 42, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 38, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -107,13 +103,13 @@ func UserMessage(message string, animate bool) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("{md:`" + formatMessageForAlpine(text) + "`}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 45, Col: 96}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 41, Col: 96}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><zero-md><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template><script type=\"text/markdown\" x-html=\"md\">\t\t\t        \n\t\t\t    </script></zero-md></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><zero-md><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template><script type=\"text/markdown\" x-html=\"md\">\t\t\t        \n\t\t\t    \t</script></zero-md></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -121,7 +117,7 @@ func UserMessage(message string, animate bool) templ.Component {
 	})
 }
 
-func GeminiMessageTemplate(id int) templ.Component {
+func UserMessageTemplate(id int) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -142,20 +138,38 @@ func GeminiMessageTemplate(id int) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"w-full flex items-start gap-2 p-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" class=\"shrink-0\"><path d=\"M20 10.0196C14.6358 10.3431 10.3431 14.6358 10.0196 20H9.98042C9.65687 14.6358 5.36425 10.3431 0 10.0196V9.98043C5.36425 9.65688 9.65687 5.36424 9.98042 0H10.0196C10.3431 5.36424 14.6358 9.65688 20 9.98043V10.0196Z\" fill=\"url(#paint0_radial_809_11874)\"></path> <defs><radialGradient id=\"paint0_radial_809_11874\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(-6.13727 9.97493) scale(21.6266 172.607)\"><stop offset=\"0.385135\" stop-color=\"#9E72BA\"></stop> <stop offset=\"0.734299\" stop-color=\"#D65C67\"></stop> <stop offset=\"0.931035\" stop-color=\"#D6635C\"></stop></radialGradient></defs></svg><div class=\"prose prose-invert flex-1\"><zero-md><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template><script type=\"text/markdown\" id=\"")
+		var templ_7745c5c3_Var7 = []any{"w-full flex items-start gap-2 p-1 "}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("message_" + strconv.Itoa(id))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 79, Col: 67}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\">\n                </script></zero-md></div></div>")
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var7).String())
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 1, Col: 0}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6 shrink-0\"><path fill-rule=\"evenodd\" d=\"M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex flex-col\"><div class=\"prose prose-invert flex-1\"><zero-md><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template><script type=\"text/markdown\" id=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("message_" + strconv.Itoa(id))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 69, Col: 68}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\">\t\t\t        \n\t\t\t    \t</script></zero-md></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -179,25 +193,25 @@ func GeminiMessage(message string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
+		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var10 == nil {
+			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"w-full flex items-start gap-2 p-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" class=\"shrink-0\"><path d=\"M20 10.0196C14.6358 10.3431 10.3431 14.6358 10.0196 20H9.98042C9.65687 14.6358 5.36425 10.3431 0 10.0196V9.98043C5.36425 9.65688 9.65687 5.36424 9.98042 0H10.0196C10.3431 5.36424 14.6358 9.65688 20 9.98043V10.0196Z\" fill=\"url(#paint0_radial_809_11874)\"></path> <defs><radialGradient id=\"paint0_radial_809_11874\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(-6.13727 9.97493) scale(21.6266 172.607)\"><stop offset=\"0.385135\" stop-color=\"#9E72BA\"></stop> <stop offset=\"0.734299\" stop-color=\"#D65C67\"></stop> <stop offset=\"0.931035\" stop-color=\"#D6635C\"></stop></radialGradient></defs></svg><div class=\"prose prose-invert flex-1\" x-data=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"w-full flex items-start gap-2 p-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" class=\"shrink-0\"><path d=\"M20 10.0196C14.6358 10.3431 10.3431 14.6358 10.0196 20H9.98042C9.65687 14.6358 5.36425 10.3431 0 10.0196V9.98043C5.36425 9.65688 9.65687 5.36424 9.98042 0H10.0196C10.3431 5.36424 14.6358 9.65688 20 9.98043V10.0196Z\" fill=\"url(#paint0_radial_809_11874)\"></path> <defs><radialGradient id=\"paint0_radial_809_11874\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(-6.13727 9.97493) scale(21.6266 172.607)\"><stop offset=\"0.385135\" stop-color=\"#9E72BA\"></stop> <stop offset=\"0.734299\" stop-color=\"#D65C67\"></stop> <stop offset=\"0.931035\" stop-color=\"#D6635C\"></stop></radialGradient></defs></svg><div class=\"prose prose-invert flex-1\" x-data=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("{md:`" + formatMessageForAlpine(message) + "`}")
+		var templ_7745c5c3_Var11 string
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("{md:`" + formatMessageForAlpine(message) + "`}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 98, Col: 98}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 89, Col: 98}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><zero-md><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template><script type=\"text/markdown\" x-html=\"md\">\t\t\t        \n\t\t\t    </script></zero-md></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><zero-md><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template><script type=\"text/markdown\" x-html=\"md\">\t\t\t        \n\t\t\t    </script></zero-md></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -205,7 +219,7 @@ func GeminiMessage(message string) templ.Component {
 	})
 }
 
-func GeminiMessageWithMDSource(chatSessionId int, conversationId int) templ.Component {
+func GeminiMessageTemplate(id int) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -221,25 +235,25 @@ func GeminiMessageWithMDSource(chatSessionId int, conversationId int) templ.Comp
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var12 == nil {
+			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"w-full flex items-start gap-2 p-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" class=\"shrink-0\"><path d=\"M20 10.0196C14.6358 10.3431 10.3431 14.6358 10.0196 20H9.98042C9.65687 14.6358 5.36425 10.3431 0 10.0196V9.98043C5.36425 9.65688 9.65687 5.36424 9.98042 0H10.0196C10.3431 5.36424 14.6358 9.65688 20 9.98043V10.0196Z\" fill=\"url(#paint0_radial_809_11874)\"></path> <defs><radialGradient id=\"paint0_radial_809_11874\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(-6.13727 9.97493) scale(21.6266 172.607)\"><stop offset=\"0.385135\" stop-color=\"#9E72BA\"></stop> <stop offset=\"0.734299\" stop-color=\"#D65C67\"></stop> <stop offset=\"0.931035\" stop-color=\"#D6635C\"></stop></radialGradient></defs></svg><div class=\"prose prose-invert flex-1\"><zero-md src=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"w-full flex items-start gap-2 p-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" class=\"shrink-0\"><path d=\"M20 10.0196C14.6358 10.3431 10.3431 14.6358 10.0196 20H9.98042C9.65687 14.6358 5.36425 10.3431 0 10.0196V9.98043C5.36425 9.65688 9.65687 5.36424 9.98042 0H10.0196C10.3431 5.36424 14.6358 9.65688 20 9.98043V10.0196Z\" fill=\"url(#paint0_radial_809_11874)\"></path> <defs><radialGradient id=\"paint0_radial_809_11874\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(-6.13727 9.97493) scale(21.6266 172.607)\"><stop offset=\"0.385135\" stop-color=\"#9E72BA\"></stop> <stop offset=\"0.734299\" stop-color=\"#D65C67\"></stop> <stop offset=\"0.931035\" stop-color=\"#D6635C\"></stop></radialGradient></defs></svg><div class=\"prose prose-invert flex-1\"><zero-md><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template><script type=\"text/markdown\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/%v/%v", chatSessionId, conversationId))
+		var templ_7745c5c3_Var13 string
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("message_" + strconv.Itoa(id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 125, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 122, Col: 67}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"><template data-append><style>\n                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}\n\t\t\t        </style></template></zero-md></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\">\n                </script></zero-md></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

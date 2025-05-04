@@ -30,6 +30,13 @@ templ bodyScript() {
                 const messageId=messageUI.substring(strtIdx,messageUI.indexOf('"',strtIdx));
                 return messageId;
             }
+            function prependImageToUserMessage(messageId,imgBase64){
+               const elToPrependImg= document.getElementById(messageId).parentElement.parentElement;
+               const imgEl=document.createElement("img")
+               imgEl.classList.add("w-full", "h-full")
+               imgEl.src=imgBase64        
+               elToPrependImg.prepend(imgEl);              
+            }
             function upsertMenuUIWithMenuItem(menuItemUI){
                 const strtIdx=menuItemUI.indexOf("li_");
                 const elId=menuItemUI.substring(strtIdx,menuItemUI.indexOf('"',strtIdx));
@@ -172,8 +179,7 @@ templ bodyScript() {
                                     setErrorMessage('Error! Please try again later');     
                                     return;
                                 }
-                                this.prompt='';
-                                this.clearFileInput();
+                                this.prompt='';                                
                                 const reader = resp.body.getReader();
                                 const processChunk = async () => {
                                     const { done, value } = await reader.read();
@@ -183,10 +189,7 @@ templ bodyScript() {
                                         decodedValueMerged="";
                                         return;
                                     }
-                                    let decodedValue = new TextDecoder().decode(value);     
-                                    if(!decodedValue.startsWith("<div class")){
-                                        console.log(decodedValue);                               
-                                    }                                    
+                                    let decodedValue = new TextDecoder().decode(value);                                                                         
                                     if(decodedValue.includes("data:END")){//streaming end
                                         this.setProcessing(false);
                                         messageId="";
@@ -204,6 +207,10 @@ templ bodyScript() {
                                         messageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                        
                                         document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
                                         decodedValueMerged="";
+                                        if(this.imgBase64!=""){//streamed output is user message and its based on image input so prepend Img
+                                            prependImageToUserMessage(messageId,this.imgBase64)
+                                            this.clearFileInput();
+                                        }
                                     }
                                     else if(decodedValue.startsWith("<li") && decodedValue.includes('id="li_')){ //streamed output is new menu item or existing menu title change 
                                         upsertMenuUIWithMenuItem(decodedValue);  

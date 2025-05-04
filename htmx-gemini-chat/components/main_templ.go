@@ -49,11 +49,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			}
 			for _, conversation := range conversations {
 				if conversation.Sender == "user" {
-					templ_7745c5c3_Err = UserMessage(conversation.Message, false).Render(ctx, templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " ")
+					templ_7745c5c3_Err = UserMessage(conversation.Message).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -62,13 +58,9 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " ")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</section>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -76,7 +68,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -84,7 +76,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -127,7 +119,7 @@ func NewChatSession(session models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[72vh]\" style=\"view-transition-name:section\" hx-swap-oob=\"true\"></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[72vh]\" style=\"view-transition-name:section\" hx-swap-oob=\"true\"></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -139,9 +139,10 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 	response.Header().Set("Content-Type", "text/event-stream")
 	response.Header().Set("Cache-Control", "no-cache")
 	response.Header().Set("Connection", "keep-alive")
-	components.UserMessage(prompt+" "+imgBase64, true).Render(ctx, response)
+	components.UserMessageTemplate(rand.Int()).Render(ctx, response)
 	flushResponse(response)
 	time.Sleep(100 * time.Millisecond)
+	sendMessageAndFlush(prompt, response)
 
 	if newChatSessionInserted {
 		// send new session UI
