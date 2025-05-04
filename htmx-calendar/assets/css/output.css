@@ -698,22 +698,22 @@
   }
 }
 .animate-slide-left {
-  animation: slide-left 2s var(--ease-spring-3);
+  animation: slide-left 0.2s var(--ease-spring-3);
 }
 .animate-slide-right {
-  animation: slide-right 2s var(--ease-spring-3);
+  animation: slide-right 0.2s var(--ease-spring-3);
 }
 .animate-slide-down {
-  animation: slide-down 2s var(--ease-spring-3);
+  animation: slide-down 0.2s var(--ease-spring-3);
 }
 .animate-slide-down-item {
-  animation: slide-down-item 2s var(--ease-spring-3);
+  animation: slide-down-item 0.2s var(--ease-spring-3);
 }
 .animate-loader {
   animation: loader 2s infinite var(--ease-elastic-in-5);
 }
 .animate-result {
-  animation: result 2s var(--ease-spring-3);
+  animation: result 0.2s var(--ease-spring-3);
 }
 @keyframes slide-left {
   from {
@@ -786,15 +786,15 @@
   }
 }
 ::view-transition-old(modal) {
-  animation: slide-up 600ms var(--ease-spring-3);
+  animation: slide-up 0.2s var(--ease-spring-3);
 }
 ::view-transition-new(modal) {
   height: 100%;
-  transition: height 200ms var(--ease-spring-3);
+  transition: height 0.2s var(--ease-spring-3);
 }
 ::view-transition-old(mainSection), ::view-transition-new(mainSection) {
   height: 100%;
-  transition: height 200ms var(--ease-spring-3);
+  transition: height 0.2s var(--ease-spring-3);
 }
 @layer base {
   * {
