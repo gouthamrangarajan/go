@@ -13,7 +13,7 @@ templ Main(conversations []models.ChatConversation, sessions []models.ChatSessio
 			>
 				for _,conversation:= range conversations {
 					if conversation.Sender == "user" {
-						@UserMessage(conversation.Message)
+						@UserMessage(conversation.Message, conversation.ImgData)
 					} else {
 						@GeminiMessage(conversation.Message)
 					}

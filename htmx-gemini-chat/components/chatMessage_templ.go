@@ -11,21 +11,6 @@ import templruntime "github.com/a-h/templ/runtime"
 import "strconv"
 import "strings"
 
-import "regexp"
-
-var regex = regexp.MustCompile(`^([\w\s]*)\s(data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+))$`)
-
-func splitImageFromMessage(message string) (string, string) {
-	text := message
-	image := ""
-	matches := regex.FindStringSubmatch(message)
-	if len(matches) > 5 {
-		text = strings.TrimSpace(matches[1])
-		image = matches[2]
-	}
-	return strings.TrimSpace(text), image
-}
-
 func formatMessageForAlpine(message string) string {
 	ret := strings.ReplaceAll(message, `\`, `\\`)
 	ret = strings.ReplaceAll(ret, "${", `\${`)
@@ -33,7 +18,7 @@ func formatMessageForAlpine(message string) string {
 	return ret
 }
 
-func UserMessage(message string) templ.Component {
+func UserMessage(message string, imgData string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -54,7 +39,6 @@ func UserMessage(message string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		text, imgData := splitImageFromMessage(message)
 		var templ_7745c5c3_Var2 = []any{"w-full flex items-start gap-2 p-1 "}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
@@ -85,7 +69,7 @@ func UserMessage(message string) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(imgData)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 38, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 22, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -101,9 +85,9 @@ func UserMessage(message string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("{md:`" + formatMessageForAlpine(text) + "`}")
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("{md:`" + formatMessageForAlpine(message) + "`}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 41, Col: 96}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 25, Col: 99}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -163,7 +147,7 @@ func UserMessageTemplate(id int) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("message_" + strconv.Itoa(id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 69, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 53, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -205,7 +189,7 @@ func GeminiMessage(message string) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("{md:`" + formatMessageForAlpine(message) + "`}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 89, Col: 98}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 73, Col: 98}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -247,7 +231,7 @@ func GeminiMessageTemplate(id int) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("message_" + strconv.Itoa(id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 122, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 106, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {

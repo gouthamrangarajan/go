@@ -122,16 +122,3 @@ func CookieHandlerToNewChatSession(response http.ResponseWriter, request *http.R
 	component := components.NewChatSession(models.ChatSession{Id: newChatSessionId, Title: "New Chat"})
 	component.Render(request.Context(), response)
 }
-
-func CookieHandlerToChatConversation(response http.ResponseWriter, request *http.Request, sessionId int, conversationId int) {
-	userId := getUserIdFromRequest(request)
-	if userId == "" {
-		http.Error(response, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	channel := make(chan string)
-	defer close(channel)
-	go GetChatConversation(userId, sessionId, conversationId, channel)
-	conversation := <-channel
-	response.Write([]byte(conversation))
-}

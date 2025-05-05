@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-var regex = regexp.MustCompile(`^([\w\s]*)\s(data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+))$`)
+var imgRegex = regexp.MustCompile(`^(data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+))$`)
 
 func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase64 string) (models.GeminiRequest, string) {
 	err := ""
@@ -30,20 +30,22 @@ func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 	geminiRequest.Contents = make([]models.GeminiRequestContent, 0, len(conversations)+1)
 	for _, conversation := range conversations {
 		if strings.TrimSpace(conversation.Message) != "" {
-			matches := regex.FindStringSubmatch(conversation.Message)
-			if len(matches) > 5 {
+			if conversation.ImgData != "" {
 				messageToGeminiRequestContent := models.GeminiRequestContent{
 					Role: conversation.Sender,
 					Parts: append(make([]models.GeminiRequestParts, 0, 2), models.GeminiRequestParts{
-						Text: &matches[1],
+						Text: &conversation.Message,
 					}),
 				}
-				messageToGeminiRequestContent.Parts = append(messageToGeminiRequestContent.Parts, models.GeminiRequestParts{
-					ImgData: &models.GeminiRequestImageData{
-						MimeType: matches[3],
-						Data:     matches[5],
-					},
-				})
+				matches := imgRegex.FindStringSubmatch(conversation.ImgData)
+				if len(matches) > 4 {
+					messageToGeminiRequestContent.Parts = append(messageToGeminiRequestContent.Parts, models.GeminiRequestParts{
+						ImgData: &models.GeminiRequestImageData{
+							MimeType: matches[2],
+							Data:     matches[4],
+						},
+					})
+				}
 				geminiRequest.Contents = append(geminiRequest.Contents, messageToGeminiRequestContent)
 
 			} else {
@@ -67,11 +69,11 @@ func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 		}),
 	}
 	if imgBase64 != "" {
-		matches := regex.FindStringSubmatch(" " + imgBase64)
+		matches := imgRegex.FindStringSubmatch(imgBase64)
 		if len(matches) < 5 {
 			err = "Invalid Image data"
 		} else {
-			decoded, decodeErr := base64.StdEncoding.DecodeString(matches[5])
+			decoded, decodeErr := base64.StdEncoding.DecodeString(matches[4])
 			if decodeErr != nil || len(decoded) > 1024*1024 {
 				err = "Invalid Image data"
 			}
@@ -80,8 +82,8 @@ func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 		if err == "" {
 			promptToGeminiRequestContent.Parts = append(promptToGeminiRequestContent.Parts, models.GeminiRequestParts{
 				ImgData: &models.GeminiRequestImageData{
-					MimeType: matches[3],
-					Data:     matches[5],
+					MimeType: matches[2],
+					Data:     matches[4],
 				},
 			})
 		}
@@ -172,7 +174,7 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 
 	insertConversationChannel := make(chan int, 2)
 	defer close(insertConversationChannel)
-	InsertChatConversation(chatSessionId, prompt+" "+imgBase64, "user", insertConversationChannel)
+	InsertChatConversation(chatSessionId, prompt, imgBase64, "user", insertConversationChannel)
 
 	consolidateGeminiResponse := ""
 
@@ -189,7 +191,7 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 		}
 	}
 	if strings.TrimSpace(consolidateGeminiResponse) != "" {
-		InsertChatConversation(chatSessionId, consolidateGeminiResponse, "model", insertConversationChannel)
+		InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "model", insertConversationChannel)
 	}
 
 	select {

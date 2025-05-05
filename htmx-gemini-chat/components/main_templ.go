@@ -49,7 +49,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			}
 			for _, conversation := range conversations {
 				if conversation.Sender == "user" {
-					templ_7745c5c3_Err = UserMessage(conversation.Message).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = UserMessage(conversation.Message, conversation.ImgData).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

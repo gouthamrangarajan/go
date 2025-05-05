@@ -32,14 +32,6 @@ func main() {
 	})
 	router.Post("/new", services.CookieHandlerToNewChatSession)
 	router.Post("/send", services.CookieHandlerToPromptHandler)
-	router.Get("/{sessionId}/{conversationId}", func(response http.ResponseWriter, request *http.Request) {
-		sessionIdStr := chi.URLParam(request, "sessionId")
-		conversationIdStr := chi.URLParam(request, "conversationId")
-		sessionId, _ := strconv.Atoi(sessionIdStr)
-		conversationId, _ := strconv.Atoi(conversationIdStr)
-		services.CookieHandlerToChatConversation(response, request, sessionId, conversationId)
-	})
-
 	router.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
 		fileServer.ServeHTTP(response, request)
