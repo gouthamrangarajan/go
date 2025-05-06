@@ -713,7 +713,7 @@
   animation: loader 2s infinite var(--ease-elastic-in-5);
 }
 .animate-result {
-  animation: result 0.2s var(--ease-spring-3);
+  animation: result 0.2s var(--ease-spring-1);
 }
 @keyframes slide-left {
   from {
