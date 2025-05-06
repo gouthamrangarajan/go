@@ -698,13 +698,13 @@
   }
 }
 .animate-slide-left {
-  animation: slide-left 0.2s var(--ease-spring-3);
+  animation: slide-left 2s var(--ease-spring-3);
 }
 .animate-slide-right {
-  animation: slide-right 0.2s var(--ease-spring-3);
+  animation: slide-right 2s var(--ease-spring-3);
 }
 .animate-slide-down {
-  animation: slide-down 0.2s var(--ease-spring-3);
+  animation: slide-down 2s var(--ease-spring-3);
 }
 .animate-slide-down-item {
   animation: slide-down-item 0.2s var(--ease-spring-3);
@@ -786,7 +786,7 @@
   }
 }
 ::view-transition-old(modal) {
-  animation: slide-up 0.2s var(--ease-spring-3);
+  animation: slide-up 0.6s var(--ease-spring-3);
 }
 ::view-transition-new(modal) {
   height: 100%;
