@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-var imgRegex = regexp.MustCompile(`^(data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+))$`)
+var imgRegex = regexp.MustCompile(`^data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
 
 func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase64 string) (models.GeminiRequest, string) {
 	err := ""
@@ -38,11 +38,11 @@ func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 					}),
 				}
 				matches := imgRegex.FindStringSubmatch(conversation.ImgData)
-				if len(matches) > 4 {
+				if len(matches) > 3 {
 					messageToGeminiRequestContent.Parts = append(messageToGeminiRequestContent.Parts, models.GeminiRequestParts{
 						ImgData: &models.GeminiRequestImageData{
-							MimeType: matches[2],
-							Data:     matches[4],
+							MimeType: matches[1],
+							Data:     matches[3],
 						},
 					})
 				}
@@ -70,10 +70,10 @@ func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 	}
 	if imgBase64 != "" {
 		matches := imgRegex.FindStringSubmatch(imgBase64)
-		if len(matches) < 5 {
+		if len(matches) < 4 {
 			err = "Invalid Image data"
 		} else {
-			decoded, decodeErr := base64.StdEncoding.DecodeString(matches[4])
+			decoded, decodeErr := base64.StdEncoding.DecodeString(matches[3])
 			if decodeErr != nil || len(decoded) > 1024*1024 {
 				err = "Invalid Image data"
 			}
@@ -82,8 +82,8 @@ func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 		if err == "" {
 			promptToGeminiRequestContent.Parts = append(promptToGeminiRequestContent.Parts, models.GeminiRequestParts{
 				ImgData: &models.GeminiRequestImageData{
-					MimeType: matches[2],
-					Data:     matches[4],
+					MimeType: matches[1],
+					Data:     matches[3],
 				},
 			})
 		}
