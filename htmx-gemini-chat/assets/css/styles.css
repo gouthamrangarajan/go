@@ -1114,7 +1114,7 @@
   }
 }
 .animate-scale-y {
-  animation: scaleY 0.2s var(--ease-spring-3);
+  animation: scaleY 0.2s var(--ease-spring-1);
 }
 @keyframes scaleY {
   from {
@@ -1129,7 +1129,7 @@
   }
 }
 .animate-slide-up {
-  animation: slide-up 0.2s var(--ease-spring-3);
+  animation: slide-up 2s var(--ease-spring-3);
 }
 @keyframes slide-up {
   from {
@@ -1166,7 +1166,7 @@
   }
 }
 .animate-menu-open {
-  animation: slide-right-menu 1s var(--ease-spring-1);
+  animation: slide-right-menu 0.2s var(--ease-spring-3);
 }
 @keyframes slide-right-menu {
   from {
