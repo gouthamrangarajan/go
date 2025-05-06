@@ -179,7 +179,8 @@ templ bodyScript() {
                                     setErrorMessage('Error! Please try again later');     
                                     return;
                                 }
-                                this.prompt='';                                
+                                this.prompt='';         
+                                document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40 ;                       
                                 const reader = resp.body.getReader();
                                 const processChunk = async () => {
                                     const { done, value } = await reader.read();
@@ -222,8 +223,7 @@ templ bodyScript() {
                                     }
                                     else{ //streamed output is gemini message that needs to be appended to existing message 
                                         decodedValueMerged += decodedValue;                                        
-                                        document.getElementById(messageId).innerHTML = decodedValueMerged;
-                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
+                                        document.getElementById(messageId).innerHTML = decodedValueMerged;                                        
                                     }
                                     processChunk();
                                 }
