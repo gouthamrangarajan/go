@@ -60,7 +60,7 @@ templ bodyScript() {
                 if(Alpine.store('data').addNewChatSessionProcessing){
                     Alpine.store('data').addNewChatSessionProcessing=false;
                     const newChatSessionId=document.getElementById("chatSessionId").value
-                    window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                    
+                    window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
                 }						
             }, { signal: ABORT_CONTROLLER.signal });    
             document.body.addEventListener('htmx:afterRequest', function(event) {	
