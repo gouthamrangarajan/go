@@ -14,7 +14,7 @@
 }
 
 .animate-slide-down-item {
-    animation: slide-down-item 0.2s var(--ease-spring-3);
+    animation: slide-down-item 0.2s var(--ease-in-3);
 }
 
 .animate-loader {
@@ -22,7 +22,7 @@
 }
 
 .animate-result {
-    animation: result 0.2s var(--ease-spring-1);
+    animation: result 0.2s var(--ease-in-3);
 }
 
 @keyframes slide-left {
@@ -111,16 +111,16 @@
 }
 
 ::view-transition-old(modal) {
-    animation: slide-up 0.6s var(--ease-spring-3);
+    animation: slide-up 0.6s var(--ease-in-3);
 }
 
 ::view-transition-new(modal) {
     height: 100%;
-    transition: height 0.2s var(--ease-spring-3);
+    transition: height 0.2s var(--ease-in-3);
 }
 
 ::view-transition-old(mainSection),
 ::view-transition-new(mainSection) {
     height: 100%;
-    transition: height 0.2s var(--ease-spring-3);
+    transition: height 0.2s var(--ease-in-3);
 }
