@@ -3,7 +3,7 @@
 @plugin "@tailwindcss/typography";
 
 .animate-scale-y {
-    animation: scaleY 0.2s var(--ease-spring-1);
+    animation: scaleY 0.2s var(--ease-in-3);
 }
 
 
@@ -68,7 +68,7 @@
 }
 
 .animate-menu-open {
-    animation: slide-right-menu 0.2s var(--ease-spring-3);
+    animation: slide-right-menu 0.2s var(--ease-in-3);
 }
 
 
