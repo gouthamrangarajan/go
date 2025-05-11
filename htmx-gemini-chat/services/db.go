@@ -103,6 +103,24 @@ func UpdateChatSessionTitle(userId string, sessionId int, title string, channel 
 	channel <- int(rowsAffected)
 }
 
+func DeleteChatSession(userId string, sessionId int, channel chan<- int) {
+	db := createDb()
+	defer db.Close()
+	result, err := db.Exec("DELETE FROM chat_sessions WHERE session_id = ? AND  user_id = ?", sessionId, userId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
+		channel <- 0
+		return
+	}
+	rowsAffected, errUpdate := result.RowsAffected()
+	if errUpdate != nil {
+		fmt.Fprintf(os.Stderr, "Error deleting Chat Session : %v\n", errUpdate)
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
+
 func GetChatConversations(userId string, sessionId int, channel chan<- []models.ChatConversation) {
 	db := createDb()
 	defer db.Close()

@@ -6,19 +6,7 @@ templ Main(conversations []models.ChatConversation, sessions []models.ChatSessio
 	@layout() {
 		<main class="w-full h-full flex flex-col items-center pt-3" style="view-transition-name:main">
 			<h1 class="text-2xl font-semibold text-cyan-400" style="view-transition-name:header1">Gemini Chat</h1>
-			<section
-				id="section"
-				class="w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[72vh]"
-				style="view-transition-name:section"
-			>
-				for _,conversation:= range conversations {
-					if conversation.Sender == "user" {
-						@UserMessage(conversation.Message, conversation.ImgData)
-					} else {
-						@GeminiMessage(conversation.Message)
-					}
-				}
-			</section>
+			@section(conversations, false)
 			@chatInput(currentChatSessionId)
 		</main>
 		@menu(sessions)
@@ -28,11 +16,44 @@ templ Main(conversations []models.ChatConversation, sessions []models.ChatSessio
 
 templ NewChatSession(session models.ChatSession) {
 	@MenuItem(session, true)
-	<section
-		id="section"
-		class="w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[72vh]"
-		style="view-transition-name:section"
-		hx-swap-oob="true"
-	></section>
+	@section(make([]models.ChatConversation, 0, 0), true)
 	@ChatSessionIdInput(session.Id, true)
+}
+
+templ UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatSessionIdForConversations int) {
+	@section(conversations, true)
+	@ChatSessionIdInput(chatSessionIdForConversations, true)
+}
+
+templ section(conversations []models.ChatConversation, isOob bool) {
+	if (isOob) {
+		<section
+			id="section"
+			class="w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[72vh]"
+			style="view-transition-name:section"
+			hx-swap-oob="true"
+		>
+			for _,conversation:= range conversations {
+				if conversation.Sender == "user" {
+					@UserMessage(conversation.Message, conversation.ImgData)
+				} else {
+					@GeminiMessage(conversation.Message)
+				}
+			}
+		</section>
+	} else {
+		<section
+			id="section"
+			class="w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded border border-slate-200 lg:w-8/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-6/12 xl:h-[72vh]"
+			style="view-transition-name:section"
+		>
+			for _,conversation:= range conversations {
+				if conversation.Sender == "user" {
+					@UserMessage(conversation.Message, conversation.ImgData)
+				} else {
+					@GeminiMessage(conversation.Message)
+				}
+			}
+		</section>
+	}
 }

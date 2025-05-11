@@ -20,7 +20,7 @@ func main() {
 	}
 	router := chi.NewRouter()
 	router.Get("/", func(response http.ResponseWriter, request *http.Request) {
-		services.CookieHandlerToMainPage(response, request, 0)
+		services.RouteHandlerToMainPage(response, request, 0)
 	})
 	router.Get("/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
 		sessionIdStr := chi.URLParam(request, "sessionId")
@@ -28,10 +28,18 @@ func main() {
 		if err != nil {
 			sessionId = -1
 		}
-		services.CookieHandlerToMainPage(response, request, sessionId)
+		services.RouteHandlerToMainPage(response, request, sessionId)
 	})
-	router.Post("/new", services.CookieHandlerToNewChatSession)
-	router.Post("/send", services.CookieHandlerToPromptHandler)
+	router.Post("/new", services.RouteHandlerToNewChatSession)
+	router.Post("/send", services.RouteHandlerToPromptHandler)
+	router.Delete("/delete/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
+		sessionIdStr := chi.URLParam(request, "sessionId")
+		sessionId, err := strconv.Atoi(sessionIdStr)
+		if err != nil {
+			sessionId = -1
+		}
+		services.RouteHandlerToDeleteSession(response, request, sessionId)
+	})
 	router.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
 		fileServer.ServeHTTP(response, request)

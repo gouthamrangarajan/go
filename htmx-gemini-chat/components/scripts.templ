@@ -59,18 +59,27 @@ templ bodyScript() {
             document.body.addEventListener('htmx:afterSwap', function(event) {	
                 if(Alpine.store('data').addNewChatSessionProcessing){
                     Alpine.store('data').addNewChatSessionProcessing=false;
-                    const newChatSessionId=document.getElementById("chatSessionId").value
+                    const newChatSessionId=document.getElementById("chatSessionId").value;
                     window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
-                }						
+                } else{   
+                    const chatSessionId=document.getElementById("chatSessionId").value;
+                    if(!window.location.pathname.endsWith("/"+chatSessionId)){
+                        window.history.replaceState({},document.title,window.location.origin+"/"+chatSessionId);                     
+                    }  
+                }            					
             }, { signal: ABORT_CONTROLLER.signal });    
             document.body.addEventListener('htmx:afterRequest', function(event) {	
                 if(event.detail.failed){
                     setErrorMessage('Error! Please try again later'); 
                 }
+                if(Alpine.store('data').deleteChatSessionProcessing){
+                    Alpine.store('data').deleteChatSessionProcessing=false;                                                      
+                }	
             }, { signal: ABORT_CONTROLLER.signal });
             document.addEventListener('alpine:init', () => {                
                 Alpine.store('data',{
                     addNewChatSessionProcessing:false,
+                    deleteChatSessionProcessing:false,
                     menuOpen:false,
                     errorMessage:"",
                     openMenu(){
@@ -112,6 +121,16 @@ templ bodyScript() {
                             }
                         }
                     },
+                    checkAndSetDeleteProcessing(ev,eventNameToDispatch){
+                        ev.preventDefault();
+                        if(!this.deleteChatSessionProcessing){
+                            this.deleteChatSessionProcessing=true;
+                            if(eventNameToDispatch){
+                                ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
+                            }
+                        }
+                    },
+                    
                 });
                 Alpine.data('chatInput',()=>({
                     prompt:'',

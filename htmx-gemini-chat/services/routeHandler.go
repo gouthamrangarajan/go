@@ -8,12 +8,13 @@ import (
 	"htmx-gemini-chat/models"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-func CookieHandlerToMainPage(response http.ResponseWriter, request *http.Request, chatSessionId int) {
+func RouteHandlerToMainPage(response http.ResponseWriter, request *http.Request, chatSessionId int) {
 	userId := getUserIdFromRequest(request)
 	if userId == "" {
 		userId = uuid.New().String()
@@ -103,7 +104,7 @@ func getUserIdFromRequest(request *http.Request) string {
 	}
 	return string(userIdFromCookie)
 }
-func CookieHandlerToPromptHandler(response http.ResponseWriter, request *http.Request) {
+func RouteHandlerToPromptHandler(response http.ResponseWriter, request *http.Request) {
 	userId := getUserIdFromRequest(request)
 	if userId == "" {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
@@ -112,13 +113,71 @@ func CookieHandlerToPromptHandler(response http.ResponseWriter, request *http.Re
 	promptHandler(response, request, userId)
 }
 
-func CookieHandlerToNewChatSession(response http.ResponseWriter, request *http.Request) {
+func RouteHandlerToNewChatSession(response http.ResponseWriter, request *http.Request) {
 	userId := getUserIdFromRequest(request)
 	if userId == "" {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 	newChatSessionId := insertChatSessionViaChannel(userId, "New Chat")
+	if newChatSessionId == 0 {
+		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	component := components.NewChatSession(models.ChatSession{Id: newChatSessionId, Title: "New Chat"})
 	component.Render(request.Context(), response)
+}
+
+func RouteHandlerToDeleteSession(response http.ResponseWriter, request *http.Request,
+	chatSessionIdToDelete int) {
+
+	chatSessionIdDataDisplayedInUIStr := request.FormValue("chatSessionId")
+	chatSessionIdDataDisplayedInUI, err := strconv.Atoi(chatSessionIdDataDisplayedInUIStr)
+	if err != nil {
+		chatSessionIdDataDisplayedInUI = 0
+	}
+	userId := getUserIdFromRequest(request)
+	if userId == "" {
+		http.Error(response, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	sessions := getChatSessionsViaChannel(userId)
+
+	if chatSessionIdToDelete <= 0 { // RG url sends non integer value
+		http.Error(response, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	ftedSessions := make([]models.ChatSession, 0, 1)
+	for _, session := range sessions {
+		if session.Id == chatSessionIdToDelete {
+			ftedSessions = append(ftedSessions, session)
+			break
+		}
+	}
+	if len(ftedSessions) == 0 { //RG url sends an chatSessionId not belonging to user
+		http.Error(response, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	channel := make(chan int)
+	defer close(channel)
+	go DeleteChatSession(userId, chatSessionIdToDelete, channel)
+	rowsAffected := <-channel
+	if rowsAffected <= 0 {
+		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	if chatSessionIdToDelete == chatSessionIdDataDisplayedInUI {
+		//change UI & return
+		sessions := getChatSessionsViaChannel(userId)
+		conversationsChannel := make(chan []models.ChatConversation)
+		defer close(conversationsChannel)
+		go GetChatConversations(userId, sessions[0].Id, conversationsChannel)
+		conversations := <-conversationsChannel
+		component := components.UIToReplaceDeleteChatSession(conversations, sessions[0].Id)
+		component.Render(request.Context(), response)
+		return
+	}
+	response.WriteHeader(http.StatusOK)
 }
