@@ -141,12 +141,11 @@ func RouteHandlerToDeleteSession(response http.ResponseWriter, request *http.Req
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	sessions := getChatSessionsViaChannel(userId)
-
 	if chatSessionIdToDelete <= 0 { // RG url sends non integer value
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
 	}
+	sessions := getChatSessionsViaChannel(userId)
 
 	ftedSessions := make([]models.ChatSession, 0, 1)
 	for _, session := range sessions {
