@@ -199,7 +199,7 @@ templ bodyScript() {
                                     return;
                                 }
                                 this.prompt='';         
-                                document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40 ;                       
+                                document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40 ;                                                       
                                 const reader = resp.body.getReader();
                                 const processChunk = async () => {
                                     const { done, value } = await reader.read();
@@ -214,6 +214,7 @@ templ bodyScript() {
                                         this.setProcessing(false);
                                         messageId="";
                                         decodedValueMerged="";
+                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40 ;                       
                                         return;
                                     }
                                     else if(decodedValue.includes("data:ERROR")){//error in gemini api
@@ -242,7 +243,8 @@ templ bodyScript() {
                                     }
                                     else{ //streamed output is gemini message that needs to be appended to existing message 
                                         decodedValueMerged += decodedValue;                                        
-                                        document.getElementById(messageId).innerHTML = decodedValueMerged;                                        
+                                        document.getElementById(messageId).innerHTML = decodedValueMerged;   
+                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;                                                            
                                     }
                                     processChunk();
                                 }
