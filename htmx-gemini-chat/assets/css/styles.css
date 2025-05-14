@@ -10,6 +10,7 @@
     --color-red-100: oklch(93.6% 0.032 17.717);
     --color-red-300: oklch(80.8% 0.114 19.571);
     --color-red-600: oklch(57.7% 0.245 27.325);
+    --color-lime-500: oklch(76.8% 0.233 130.85);
     --color-cyan-50: oklch(98.4% 0.019 200.873);
     --color-cyan-400: oklch(78.9% 0.154 211.53);
     --color-cyan-600: oklch(60.9% 0.126 221.723);
@@ -856,6 +857,9 @@
       background-color: color-mix(in oklab, var(--color-gray-900) 50%, transparent);
     }
   }
+  .bg-lime-500 {
+    background-color: var(--color-lime-500);
+  }
   .bg-slate-100 {
     background-color: var(--color-slate-100);
   }
@@ -1174,7 +1178,7 @@
   }
 }
 .animate-scale-y {
-  animation: scaleY 0.2s var(--ease-in-3);
+  animation: scaleY 0.2s var(--ease-elastic-in-5);
 }
 @keyframes scaleY {
   from {
@@ -1226,7 +1230,7 @@
   }
 }
 .animate-menu-open {
-  animation: slide-right-menu 0.2s var(--ease-in-3);
+  animation: slide-right-menu 0.2s var(--ease-elastic-in-5);
 }
 @keyframes slide-right-menu {
   from {
@@ -1239,7 +1243,7 @@
   }
 }
 .animate-delete-menu {
-  animation: delete-menu 0.2s var(--ease-in-3);
+  animation: delete-menu 0.2s var(--ease-elastic-in-5);
 }
 @keyframes delete-menu {
   from {
@@ -1249,6 +1253,19 @@
   }
   to {
     opacity: 1;
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+.animate-page-loader {
+  animation: page-loader 2s var(--ease-elastic-in-5) infinite;
+}
+@keyframes page-loader {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  100% {
     transform: scaleX(1);
     transform-origin: left;
   }

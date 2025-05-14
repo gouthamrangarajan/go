@@ -1,0 +1,9 @@
+package components
+
+templ PageLoader() {
+	<template x-if="$store.data.fullPageFetchProcessing">
+		<div
+			class="absolute top-0 left-0 w-full h-1.5 animate-page-loader bg-lime-500"
+		></div>
+	</template>
+}

@@ -61,7 +61,10 @@ templ bodyScript() {
                     Alpine.store('data').addNewChatSessionProcessing=false;
                     const newChatSessionId=document.getElementById("chatSessionId").value;
                     window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
-                } else{   
+                } else if(Alpine.store('data').fullPageFetchProcessing){
+                    Alpine.store('data').fullPageFetchProcessing=false;
+                }
+                else{   
                     const chatSessionId=document.getElementById("chatSessionId").value;
                     const chatSessionIdParsed=parseInt(chatSessionId);                    
                      if(!window.location.pathname.endsWith("/"+chatSessionId)){
@@ -77,6 +80,12 @@ templ bodyScript() {
             document.body.addEventListener('htmx:afterRequest', function(event) {	
                 if(event.detail.failed){
                     setErrorMessage('Error! Please try again later'); 
+                    if(Alpine.store('data').addNewChatSessionProcessing){
+                       Alpine.store('data').addNewChatSessionProcessing=false;                                                      
+                    }	
+                    if(Alpine.store('data').fullPageFetchProcessing){
+                       Alpine.store('data').fullPageFetchProcessing=false;                                                      
+                    }	                    
                 }
                 if(Alpine.store('data').deleteChatSessionProcessing){
                     Alpine.store('data').deleteChatSessionProcessing=false;                                                      
@@ -86,6 +95,7 @@ templ bodyScript() {
                 Alpine.store('data',{
                     addNewChatSessionProcessing:false,
                     deleteChatSessionProcessing:false,
+                    fullPageFetchProcessing:false,
                     menuOpen:false,
                     errorMessage:"",
                     openMenu(){
@@ -109,14 +119,16 @@ templ bodyScript() {
                         }
                     },
                     sendFullPageFetchEvent(ev,eventNameToDispatch){
-                        ev.preventDefault();
+                        ev.preventDefault();                        
+                        this.fullPageFetchProcessing=true;
                         this.closeMenu();
                         if(ABORT_CONTROLLER){
                             ABORT_CONTROLLER.abort();
                         }   
                         if(eventNameToDispatch){        
                             ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
-                        }
+                        }                        
+                        
                     },
                     checkAndSetAddNewProcessing(ev,eventNameToDispatch){
                         ev.preventDefault();

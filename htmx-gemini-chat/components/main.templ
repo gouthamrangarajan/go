@@ -4,13 +4,14 @@ import "htmx-gemini-chat/models"
 
 templ Main(conversations []models.ChatConversation, sessions []models.ChatSession, currentChatSessionId int) {
 	@layout() {
-		<main class="w-full h-full flex flex-col items-center pt-3" style="view-transition-name:main">
+		<main class="relative w-full h-full flex flex-col items-center pt-3" style="view-transition-name:main">
 			<h1 class="text-2xl font-semibold text-cyan-400" style="view-transition-name:header1">Gemini Chat</h1>
 			@section(conversations, false)
 			@chatInput(currentChatSessionId)
 		</main>
 		@menu(sessions)
 		@errorToast()
+		@PageLoader()
 	}
 }
 
