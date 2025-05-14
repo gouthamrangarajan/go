@@ -63,9 +63,15 @@ templ bodyScript() {
                     window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
                 } else{   
                     const chatSessionId=document.getElementById("chatSessionId").value;
-                    if(!window.location.pathname.endsWith("/"+chatSessionId)){
-                        window.history.replaceState({},document.title,window.location.origin+"/"+chatSessionId);                     
-                    }  
+                    const chatSessionIdParsed=parseInt(chatSessionId);                    
+                     if(!window.location.pathname.endsWith("/"+chatSessionId)){
+                        if(isNaN(chatSessionIdParsed) || chatSessionIdParsed==0){
+                            window.history.replaceState({},document.title,window.location.origin);                     
+                        }
+                        else {
+                            window.history.replaceState({},document.title,window.location.origin+"/"+chatSessionId);                     
+                        }  
+                     }
                 }            					
             }, { signal: ABORT_CONTROLLER.signal });    
             document.body.addEventListener('htmx:afterRequest', function(event) {	

@@ -3,7 +3,6 @@ package services
 import (
 	"bufio"
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"htmx-gemini-chat/components"
@@ -20,80 +19,13 @@ import (
 
 var imgRegex = regexp.MustCompile(`^data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
 
-func generateGeminiRequest(userId string, sessionId int, prompt string, imgBase64 string) (models.GeminiRequest, string) {
-	err := ""
-	conversationsChannel := make(chan []models.ChatConversation)
-	defer close(conversationsChannel)
-	go GetChatConversations(userId, sessionId, conversationsChannel)
-	conversations := <-conversationsChannel
-	geminiRequest := models.GeminiRequest{}
-	geminiRequest.Contents = make([]models.GeminiRequestContent, 0, len(conversations)+1)
-	for _, conversation := range conversations {
-		if strings.TrimSpace(conversation.Message) != "" {
-			if conversation.ImgData != "" {
-				messageToGeminiRequestContent := models.GeminiRequestContent{
-					Role: conversation.Sender,
-					Parts: append(make([]models.GeminiRequestParts, 0, 2), models.GeminiRequestParts{
-						Text: &conversation.Message,
-					}),
-				}
-				matches := imgRegex.FindStringSubmatch(conversation.ImgData)
-				if len(matches) > 3 {
-					messageToGeminiRequestContent.Parts = append(messageToGeminiRequestContent.Parts, models.GeminiRequestParts{
-						ImgData: &models.GeminiRequestImageData{
-							MimeType: matches[1],
-							Data:     matches[3],
-						},
-					})
-				}
-				geminiRequest.Contents = append(geminiRequest.Contents, messageToGeminiRequestContent)
-
-			} else {
-				geminiRequest.Contents = append(geminiRequest.Contents, models.GeminiRequestContent{
-					Role: conversation.Sender,
-					Parts: append(make([]models.GeminiRequestParts, 0, 1), models.GeminiRequestParts{
-						Text: &conversation.Message,
-					}),
-				})
-			}
-		}
-	}
-	partsCapacityForPrompt := 1
-	if imgBase64 != "" {
-		partsCapacityForPrompt = 2
-	}
-	promptToGeminiRequestContent := models.GeminiRequestContent{
-		Role: "user",
-		Parts: append(make([]models.GeminiRequestParts, 0, partsCapacityForPrompt), models.GeminiRequestParts{
-			Text: &prompt,
-		}),
-	}
-	if imgBase64 != "" {
-		matches := imgRegex.FindStringSubmatch(imgBase64)
-		if len(matches) < 4 {
-			err = "Invalid Image data"
-		} else {
-			decoded, decodeErr := base64.StdEncoding.DecodeString(matches[3])
-			if decodeErr != nil || len(decoded) > 1024*1024 {
-				err = "Invalid Image data"
-			}
-		}
-
-		if err == "" {
-			promptToGeminiRequestContent.Parts = append(promptToGeminiRequestContent.Parts, models.GeminiRequestParts{
-				ImgData: &models.GeminiRequestImageData{
-					MimeType: matches[1],
-					Data:     matches[3],
-				},
-			})
-		}
-	}
-	geminiRequest.Contents = append(geminiRequest.Contents, promptToGeminiRequestContent)
-	return geminiRequest, err
-}
-func promptHandler(response http.ResponseWriter, request *http.Request, userId string) {
-	// panic("sample error")
+func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	ctx := request.Context()
+	userId, ok := ctx.Value(UserIDKey).(string)
+	if !ok {
+		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 	prompt := request.FormValue("prompt")
 	imgBase64 := request.FormValue("imgBase64")
 	chatSessionIdStr := request.FormValue("chatSessionId")
@@ -110,10 +42,10 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 		return
 	}
 	if chatSessionId == 0 {
-		chatSessionId = insertChatSessionViaChannel(userId, prompt)
+		chatSessionId = InsertChatSessionViaChannel(userId, prompt)
 		newChatSessionInserted = true
 	} else {
-		allChatSessions := getChatSessionsViaChannel(userId)
+		allChatSessions := GetChatSessionsViaChannel(userId)
 		ftedSessions := make([]models.ChatSession, 0, 1)
 		for _, session := range allChatSessions {
 			if session.Id == chatSessionId {
@@ -130,7 +62,7 @@ func promptHandler(response http.ResponseWriter, request *http.Request, userId s
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	geminiRequest, errStr := generateGeminiRequest(userId, chatSessionId, prompt, imgBase64)
+	geminiRequest, errStr := GenerateGeminiRequest(userId, chatSessionId, prompt, imgBase64)
 	if errStr != "" {
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
@@ -263,41 +195,4 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 		}
 	}
 
-}
-func callGeminiWithoutStreaming(request models.GeminiRequest, channel chan<- string) {
-	defer close(channel)
-	url := os.Getenv("GEMINI_URL") + os.Getenv("GEMINI_KEY")
-
-	jsonData, err := json.Marshal(request)
-	if err != nil {
-		fmt.Printf("Error converting request to json data to call Gemini API %v\n", err)
-		channel <- ""
-		return
-	}
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		fmt.Printf("Error calling Gemini API %v\n", err)
-		channel <- ""
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		errorMsg, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Error in Gemini API call: %v+\n", resp.Status)
-		} else {
-			fmt.Printf("Error in Gemini API call: %v+\n", string(errorMsg))
-		}
-		channel <- ""
-		return
-	}
-	var responseParsed models.GeminiResponse
-	err = json.NewDecoder(resp.Body).Decode(&responseParsed)
-	if err != nil {
-		fmt.Printf("Error parsing JSON response from Gemini API %v\n", err)
-		channel <- ""
-		return
-	} else {
-		channel <- *responseParsed.Candidates[0].Content.Parts[0].Text
-	}
 }

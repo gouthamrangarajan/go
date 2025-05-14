@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"htmx-gemini-chat/services"
+	"htmx-gemini-chat/services/middlewares"
 	"net/http"
 	"strconv"
 	"time"
@@ -19,8 +20,9 @@ func main() {
 		fmt.Println("Success loaded .env file")
 	}
 	router := chi.NewRouter()
+	router.Use(middlewares.Authorization)
 	router.Get("/", func(response http.ResponseWriter, request *http.Request) {
-		services.RouteHandlerToMainPage(response, request, 0)
+		services.MainPageHandler(response, request, 0)
 	})
 	router.Get("/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
 		sessionIdStr := chi.URLParam(request, "sessionId")
@@ -28,17 +30,17 @@ func main() {
 		if err != nil {
 			sessionId = -1
 		}
-		services.RouteHandlerToMainPage(response, request, sessionId)
+		services.MainPageHandler(response, request, sessionId)
 	})
-	router.Post("/new", services.RouteHandlerToNewChatSession)
-	router.Post("/send", services.RouteHandlerToPromptHandler)
+	router.Post("/new", services.NewChatSessionHandler)
+	router.Post("/send", services.PromptHandler)
 	router.Delete("/delete/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
 		sessionIdStr := chi.URLParam(request, "sessionId")
 		sessionId, err := strconv.Atoi(sessionIdStr)
 		if err != nil {
 			sessionId = -1
 		}
-		services.RouteHandlerToDeleteSession(response, request, sessionId)
+		services.DeleteSessionHandler(response, request, sessionId)
 	})
 	router.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
