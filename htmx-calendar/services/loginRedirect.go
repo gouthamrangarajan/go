@@ -1,15 +1,16 @@
-package main
+package services
 
 import (
+	"context"
 	"htmx-calendar/components"
-	"htmx-calendar/services"
+	"htmx-calendar/services/db"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
 )
 
-var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, token string, month string, year string, dayOrWeek string, isOob bool){
+var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, month string, year string, dayOrWeek string, isOob bool){
 	"/":    MonthPageWithOob,
 	"/add": AddPageWithOob,
 	"/wk":  WeekPageWithOob,
@@ -18,9 +19,9 @@ var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request
 func Login(responseWriter http.ResponseWriter, request *http.Request) {
 	email := request.FormValue("email")
 	password := request.FormValue("password")
-	channel := make(chan services.LoginResponse)
+	channel := make(chan db.LoginResponse)
 	defer close(channel)
-	go services.Login(services.LoginRequest{Email: email, Password: password}, channel)
+	go db.Login(db.LoginRequest{Email: email, Password: password}, channel)
 	resp := <-channel
 	if resp.ErrorCode != "" {
 		components.LoginError().Render(request.Context(), responseWriter)
@@ -52,10 +53,12 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 			week = values.Get("week")
 		}
 		if loginRedirectRoutes[path] != nil {
+			ctx := context.WithValue(request.Context(), TokenKey, resp.AccessToken)
+			request = request.WithContext(ctx)
 			if day == "" {
-				loginRedirectRoutes[path](responseWriter, request, resp.AccessToken, month, year, week, true)
+				loginRedirectRoutes[path](responseWriter, request, month, year, week, true)
 			} else {
-				loginRedirectRoutes[path](responseWriter, request, resp.AccessToken, month, year, day, true)
+				loginRedirectRoutes[path](responseWriter, request, month, year, day, true)
 			}
 		} else {
 			responseWriter.WriteHeader(404)

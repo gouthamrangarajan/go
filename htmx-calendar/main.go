@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"htmx-calendar/services"
+	"htmx-calendar/services/middleware"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -15,13 +17,21 @@ func main() {
 	} else {
 		fmt.Println("Loaded .env file")
 	}
-	http.Handle("/", services.MiddlewareUI(MonthPage))
-	http.Handle("/add", services.MiddlewareUI(AddPage))
-	http.Handle("/wk", services.MiddlewareUI(WeekPage))
-	http.HandleFunc("/login", Login)
-	http.Handle("/dnd", services.MiddlewareJSON(UpdateDate))
-	http.Handle("/delete", services.MiddlewareJSON(DeleteEvent))
-	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+	router := chi.NewRouter()
+	router.Use(middleware.Authorization)
+
+	router.Get("/", services.MonthPage)
+	router.Get("/add", services.AddPage)
+	router.Post("/add", services.AddPage)
+	router.Get("/wk", services.WeekPage)
+	router.Post("/login", services.Login)
+	router.Post("/dnd", services.UpdateDate)
+	router.Delete("/delete", services.DeleteEvent)
+	router.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
+		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
+		fileServer.ServeHTTP(response, request)
+	})
+
 	fmt.Println("Listening on :3000")
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":3000", router)
 }

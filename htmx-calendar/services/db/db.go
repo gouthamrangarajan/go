@@ -1,4 +1,4 @@
-package services
+package db
 
 import (
 	"encoding/json"

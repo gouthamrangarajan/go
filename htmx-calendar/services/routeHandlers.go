@@ -1,11 +1,11 @@
-package main
+package services
 
 import (
 	"encoding/json"
 	"fmt"
 	"htmx-calendar/components"
 	"htmx-calendar/models"
-	"htmx-calendar/services"
+	"htmx-calendar/services/db"
 	"math"
 	"net/http"
 	"strconv"
@@ -24,12 +24,13 @@ type calendarDataType struct {
 	calendarDaysStrFormat []string
 }
 
-func MonthPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
+func MonthPage(responseWriter http.ResponseWriter, request *http.Request) {
 	month := request.URL.Query().Get("month")
 	year := request.URL.Query().Get("year")
-	MonthPageWithOob(responseWriter, request, token, month, year, "", false)
+	MonthPageWithOob(responseWriter, request, month, year, "", false)
 }
-func MonthPageWithOob(responseWriter http.ResponseWriter, request *http.Request, token string, toMonth string, toYear string, toDay string, isOob bool) {
+func MonthPageWithOob(responseWriter http.ResponseWriter, request *http.Request, toMonth string, toYear string, toDay string, isOob bool) {
+	token := request.Context().Value(TokenKey).(string)
 	from := request.URL.Query().Get("from")
 	today := time.Now()
 	year := today.Year()
@@ -48,7 +49,7 @@ func MonthPageWithOob(responseWriter http.ResponseWriter, request *http.Request,
 	}
 	calendarData := generateCalendarData(year, month, today.Location())
 	channel := make(chan []models.EventData)
-	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
+	go db.GetData(token, calendarData.calendarDaysStrFormat, channel)
 	eventsData := <-channel
 	components.MonthCalendarPage(calendarData.data, eventsData, calendarData.monthStartDate, from, isOob).Render(request.Context(), responseWriter)
 }
@@ -91,15 +92,16 @@ func generateAllDatesStringFromStartToEnd(start time.Time, end time.Time) []stri
 	return ret
 }
 
-func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token string) {
+func UpdateDate(responseWriter http.ResponseWriter, request *http.Request) {
 	var dnd models.DnD
 	jsonErr := json.NewDecoder(request.Body).Decode(&dnd)
 	if jsonErr != nil {
 		responseWriter.WriteHeader(400)
 		return
 	}
+	token := request.Context().Value(TokenKey).(string)
 	channel := make(chan bool)
-	go services.UpdateDate(token, dnd.Id, dnd.Date, channel)
+	go db.UpdateDate(token, dnd.Id, dnd.Date, channel)
 	ret := <-channel
 
 	if ret {
@@ -109,13 +111,14 @@ func UpdateDate(responseWriter http.ResponseWriter, request *http.Request, token
 	responseWriter.WriteHeader(500)
 }
 
-func AddPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
+func AddPage(responseWriter http.ResponseWriter, request *http.Request) {
 	if strings.ToUpper(request.Method) == "GET" {
 		fromMonth := request.URL.Query().Get("month")
 		fromYear := request.URL.Query().Get("year")
 		fromDay := request.URL.Query().Get("day")
-		AddPageWithOob(responseWriter, request, token, fromMonth, fromYear, fromDay, false)
+		AddPageWithOob(responseWriter, request, fromMonth, fromYear, fromDay, false)
 	} else if strings.ToUpper(request.Method) == "POST" {
+		token := request.Context().Value(TokenKey).(string)
 		task := request.FormValue("task")
 		task = strings.Trim(task, "")
 		date := request.FormValue("date")
@@ -130,7 +133,7 @@ func AddPage(responseWriter http.ResponseWriter, request *http.Request, token st
 				fmt.Printf("Error get subject from claims %v\n", err)
 			} else {
 				channel := make(chan int16)
-				go services.AddData(token, models.EventData{
+				go db.AddData(token, models.EventData{
 					Task:      task,
 					Frequency: frequency,
 					Date:      date,
@@ -149,14 +152,14 @@ func AddPage(responseWriter http.ResponseWriter, request *http.Request, token st
 	}
 }
 
-func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, token string, fromMonth string, fromYear string, fromDay string, isOob bool) {
+func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, fromMonth string, fromYear string, fromDay string, isOob bool) {
 	today := time.Now()
 	year := today.Year()
 	month := today.Month()
 	day := today.Day()
 	week := 0
 	fromWeek := request.URL.Query().Get("week")
-
+	token := request.Context().Value(TokenKey).(string)
 	if fromMonth != "" {
 		monthFromUrl, err := strconv.Atoi(fromMonth)
 		if err == nil {
@@ -188,7 +191,7 @@ func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, t
 		calendarData = generateWeekCalendarData(year, month, week, today.Location())
 	}
 	channel := make(chan []models.EventData)
-	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
+	go db.GetData(token, calendarData.calendarDaysStrFormat, channel)
 	eventsData := <-channel
 	addEventDate := time.Date(year, month, day, 0, 0, 0, 0, today.Location())
 	if week == 0 {
@@ -198,19 +201,20 @@ func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, t
 	}
 }
 
-func WeekPage(responseWriter http.ResponseWriter, request *http.Request, token string) {
+func WeekPage(responseWriter http.ResponseWriter, request *http.Request) {
 	toMonth := request.URL.Query().Get("month")
 	toYear := request.URL.Query().Get("year")
 	toWeek := request.URL.Query().Get("week")
-	WeekPageWithOob(responseWriter, request, token, toMonth, toYear, toWeek, false)
+	WeekPageWithOob(responseWriter, request, toMonth, toYear, toWeek, false)
 }
 
-func WeekPageWithOob(responseWriter http.ResponseWriter, request *http.Request, token string, toMonth string, toYear string, toWeek string, isOob bool) {
+func WeekPageWithOob(responseWriter http.ResponseWriter, request *http.Request, toMonth string, toYear string, toWeek string, isOob bool) {
 	today := time.Now()
 	year := today.Year()
 	month := today.Month()
 	week := 1
 	from := request.URL.Query().Get("from")
+	token := request.Context().Value(TokenKey).(string)
 
 	if toMonth != "" {
 		monthFromUrl, err := strconv.Atoi(toMonth)
@@ -232,7 +236,7 @@ func WeekPageWithOob(responseWriter http.ResponseWriter, request *http.Request, 
 	}
 	calendarData := generateWeekCalendarData(year, month, week, today.Location())
 	channel := make(chan []models.EventData)
-	go services.GetData(token, calendarData.calendarDaysStrFormat, channel)
+	go db.GetData(token, calendarData.calendarDaysStrFormat, channel)
 	eventsData := <-channel
 	components.WeekCalendarPage(calendarData.data, eventsData, calendarData.monthStartDate, from, week, isOob).Render(request.Context(), responseWriter)
 }
@@ -261,23 +265,20 @@ func generateWeekCalendarData(year int, month time.Month, week int, location *ti
 
 }
 
-func DeleteEvent(responseWriter http.ResponseWriter, request *http.Request, token string) {
-	if strings.ToUpper(request.Method) != "DELETE" {
-		responseWriter.WriteHeader(405)
-	} else {
-		eventId := request.FormValue("eventId")
-		if eventId == "" {
-			responseWriter.WriteHeader(400)
-			return
-		}
-		channel := make(chan bool)
-		go services.DeleteEvent(token, eventId, channel)
-		ret := <-channel
-
-		if ret {
-			responseWriter.WriteHeader(200)
-			return
-		}
-		responseWriter.WriteHeader(500)
+func DeleteEvent(responseWriter http.ResponseWriter, request *http.Request) {
+	eventId := request.FormValue("eventId")
+	if eventId == "" {
+		responseWriter.WriteHeader(400)
+		return
 	}
+	token := request.Context().Value(TokenKey).(string)
+	channel := make(chan bool)
+	go db.DeleteEvent(token, eventId, channel)
+	ret := <-channel
+
+	if ret {
+		responseWriter.WriteHeader(200)
+		return
+	}
+	responseWriter.WriteHeader(500)
 }
