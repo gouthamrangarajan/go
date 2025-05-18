@@ -77,7 +77,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	flushResponse(response)
 	time.Sleep(200 * time.Millisecond)
 	sendMessageAndFlush(prompt, response)
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(200 * time.Millisecond)
 
 	if newChatSessionInserted {
 		// send new session UI
