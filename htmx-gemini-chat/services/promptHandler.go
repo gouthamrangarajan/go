@@ -75,7 +75,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Connection", "keep-alive")
 	components.UserMessageTemplate(rand.Int()).Render(ctx, response)
 	flushResponse(response)
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(200 * time.Millisecond)
 	sendMessageAndFlush(prompt, response)
 	time.Sleep(100 * time.Millisecond)
 
