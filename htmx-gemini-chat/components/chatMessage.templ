@@ -26,7 +26,7 @@ templ UserMessage(message string, imgData string) {
 				<zero-md>
 					<template data-append>
 						<style>
-                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}
+                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}} @media(prefers-color-scheme: light){.markdown-body th,.markdown-body td{background-color:var(--color-gray-900) !important;}}
 			        </style>
 					</template>
 					<script type="text/markdown" x-html="md">			        
@@ -47,7 +47,7 @@ templ UserMessageTemplate(id int) {
 				<zero-md>
 					<template data-append>
 						<style>
-                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}
+                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}} @media(prefers-color-scheme: light){.markdown-body th,.markdown-body td{background-color:var(--color-gray-900) !important;}}
 			        </style>
 					</template>
 					<script type="text/markdown" id={ "message_" + strconv.Itoa(id) }>			        
@@ -74,7 +74,7 @@ templ GeminiMessage(message string) {
 			<zero-md>
 				<template data-append>
 					<style>
-                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}
+                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}  @media(prefers-color-scheme: light){.markdown-body th,.markdown-body td{background-color:var(--color-gray-900) !important;}}
 			        </style>
 				</template>
 				<script type="text/markdown" x-html="md">			        
@@ -100,7 +100,7 @@ templ GeminiMessageTemplate(id int) {
 			<zero-md>
 				<template data-append>
 					<style>
-                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}
+                        .markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}} @media(prefers-color-scheme: light){.markdown-body th,.markdown-body td{background-color:var(--color-gray-900) !important;}}
 			        </style>
 				</template>
 				<script type="text/markdown" id={ "message_" + strconv.Itoa(id) }>
