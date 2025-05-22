@@ -71,7 +71,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<ul id=\"ul_menu\" class=\"appearance-none outline-none w-full h-full mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<ul id=\"ul_menu\" class=\"appearance-none outline-none w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -207,7 +207,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</a> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90\" x-on:click=\"showDelete=!showDelete\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z\" clip-rule=\"evenodd\"></path></svg></button> <button x-show=\"showDelete\" x-transition:leave-end=\"opacity-0 scale-x-0\" class=\"appearance-none outline-none animate-delete-menu origin-left absolute -right-19 top-2 py-1 px-3 bg-white text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-300 hover:ring-2 hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80 md:-right-22\" hx-delete=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</a> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90\" x-on:click=\"showDelete=!showDelete\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z\" clip-rule=\"evenodd\"></path></svg></button> <button x-show=\"showDelete\" x-transition:leave-end=\"opacity-0 scale-x-0\" class=\"appearance-none outline-none animate-delete-menu origin-right absolute right-12 top-2 py-1 px-3 bg-white text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-300 hover:ring-2 hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80\" hx-delete=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

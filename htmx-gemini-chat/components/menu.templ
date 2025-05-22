@@ -42,7 +42,7 @@ templ menu(sessions []models.ChatSession) {
 			@newChatButton()
 			<ul
 				id="ul_menu"
-				class="appearance-none outline-none w-full h-full mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 "
+				class="appearance-none outline-none w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 "
 			>
 				for _,session:= range sessions {
 					@MenuItem(session, false)
@@ -108,7 +108,7 @@ templ MenuItem(session models.ChatSession, animate bool) {
 		<button
 			x-show="showDelete"
 			x-transition:leave-end="opacity-0 scale-x-0"
-			class="appearance-none outline-none animate-delete-menu origin-left absolute -right-19 top-2 py-1 px-3 bg-white text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-300 hover:ring-2 hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80 md:-right-22"
+			class="appearance-none outline-none animate-delete-menu origin-right absolute right-12 top-2 py-1 px-3 bg-white text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-300 hover:ring-2 hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80"
 			hx-delete={ "/delete/" + strconv.Itoa(session.Id) }
 			hx-trigger="DELETE_CHAT_SESSION_EVENT"
 			x-on:click="$store.data.checkAndSetDeleteProcessing($event,'DELETE_CHAT_SESSION_EVENT')"
