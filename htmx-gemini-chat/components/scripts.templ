@@ -5,6 +5,7 @@ var onceHandle = templ.NewOnceHandle()
 templ bodyScript() {
 	@onceHandle.Once() {
 		<script type="text/javascript">
+        (()=>{
             var ABORT_CONTROLLER=new AbortController();//Global variable     
             var TIMEOUT;
             function setErrorMessage(message){
@@ -278,6 +279,7 @@ templ bodyScript() {
                    
                 }));                               
             },{signal:ABORT_CONTROLLER.signal});                    
+        })();
         </script>
 	}
 }
