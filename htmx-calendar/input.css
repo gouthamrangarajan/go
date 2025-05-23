@@ -22,7 +22,7 @@
 }
 
 .animate-result {
-    animation: result 0.2s var(--ease-elastic-in-5);
+    animation: result 0.6s var(--ease-elastic-in-5);
 }
 
 @keyframes slide-left {

@@ -56,7 +56,7 @@ func GetData(accessToken string, dateRange []string, channel chan<- []models.Eve
 		channel <- response
 		return
 	}
-	data, _, err := client.From("calendar").Select("id, task, frequency, date", "exact", false).In("date", dateRange).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).In("date", dateRange).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- response
@@ -104,7 +104,7 @@ func AddData(accessToken string, data models.EventData, channel chan<- int16) {
 		channel <- 0
 		return
 	}
-	_, count, err := client.From("calendar").Insert(map[string]string{"date": data.Date, "task": data.Task, "frequency": data.Frequency, "user_id": data.UserId}, false, "", "minimal", "exact").Execute()
+	_, count, err := client.From("calendar").Insert(map[string]string{"date": data.Date, "task": data.Task, "frequency": data.Frequency, "user_id": data.UserId, "exact": data.Exact, "stopAfter": data.StopAfter}, false, "", "minimal", "exact").Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- 0

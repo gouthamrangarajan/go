@@ -118,16 +118,53 @@ func AddPage(responseWriter http.ResponseWriter, request *http.Request) {
 		fromDay := request.URL.Query().Get("day")
 		AddPageWithOob(responseWriter, request, fromMonth, fromYear, fromDay, false)
 	} else if strings.ToUpper(request.Method) == "POST" {
+		dateLayout := "2006-01-02"
 		token := request.Context().Value(TokenKey).(string)
 		task := request.FormValue("task")
 		task = strings.Trim(task, "")
 		date := request.FormValue("date")
+		var dateFormatted time.Time
 		frequency := request.FormValue("frequency")
+		stopAfter := request.FormValue("stopAfter")
+		var stopAfterFormatted time.Time
+		exact := request.FormValue("exact")
+		errors := []string{}
 		parsedToken, _, err := jwt.NewParser().ParseUnverified(token, jwt.MapClaims{})
 		if err != nil {
 			fmt.Printf("Error parsing accesstoken %v\n", err)
 		}
-		if err == nil && len(task) > 3 {
+		if date == "" {
+			errors = append(errors, "Date is required")
+		} else {
+			dateFormatted, err = time.Parse(dateLayout, date)
+			if err != nil {
+				errors = append(errors, "Date is not in correct format")
+			}
+		}
+		if len(task) <= 3 {
+			errors = append(errors, "Task should be more than 3 characters")
+		}
+		if frequency == "Only once" && stopAfter != "" {
+			errors = append(errors, "Stop after is not allowed for only once frequency")
+		} else if frequency != "Only once" {
+			if stopAfter != "" {
+				stopAfterFormatted, err = time.Parse(dateLayout, stopAfter)
+				if err != nil {
+					errors = append(errors, "Stop After is not in correct format")
+				} else if stopAfterFormatted.Sub(dateFormatted).Hours() < 24 {
+					errors = append(errors, "Stop After date should be after Event date")
+				}
+			}
+		}
+		if frequency == "Only once" && exact == "yes" {
+			errors = append(errors, "Exact date is not allowed for only once frequency")
+		}
+
+		if len(errors) > 0 {
+			components.AddEventValidationError(errors).Render(request.Context(), responseWriter)
+			return
+		}
+		if err == nil {
 			sub, err := parsedToken.Claims.GetSubject()
 			if err != nil {
 				fmt.Printf("Error get subject from claims %v\n", err)
@@ -138,6 +175,8 @@ func AddPage(responseWriter http.ResponseWriter, request *http.Request) {
 					Frequency: frequency,
 					Date:      date,
 					UserId:    sub,
+					Exact:     exact,
+					StopAfter: stopAfter,
 				}, channel)
 				rowsAffected := <-channel
 				if rowsAffected > 0 {
