@@ -266,14 +266,14 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6 absolute top-3 right-3 -z-10\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></div></fieldset><div class=\"flex flex-col gap-2 p-2 bg-gray-50\" x-show=\"frequency!=&#39;Only once&#39;\" x-transition:enter=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\"><fieldset class=\"flex items-center gap-1 relative disabled:cursor-not-allowed disabled:bg-gray-50 \" x-bind:disabled=\"frequency==&#39;Only once&#39;\"><input type=\"checkbox\" id=\"exact\" name=\"exact\" value=\"yes\" x-model=\"exact\" class=\"w-5 h-5 border-gray-300 rounded\"> <label for=\"exact\" class=\"text-slate-600 text-lg\"><span>Use Exact Date:</span></label></fieldset><fieldset class=\"flex flex-col gap-1 disabled:bg-gray-50 disabled:cursor-not-allowed\" x-bind:disabled=\"frequency==&#39;Only once&#39;\"><label for=\"stopAfter\" class=\"text-slate-600 text-lg flex items-start gap-1\">Stop After:\t\t\t\t\t\t\t</label> <input type=\"date\" id=\"stopAfter\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600 disabled:cursor-not-allowed\" name=\"stopAfter\" x-bind:disabled=\"frequency==&#39;Only once&#39;\" min=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6 absolute top-3 right-3 -z-10\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></div></fieldset><div class=\"flex flex-col gap-2 p-2 bg-gray-50\" x-show=\"frequency!=&#39;Only once&#39;\" x-transition:enter=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\"><fieldset class=\"flex items-center gap-1 relative disabled:cursor-not-allowed disabled:bg-gray-50 \" x-bind:disabled=\"frequency==&#39;Only once&#39;\" x-show=\"frequency!=&#39;Only once&#39; &amp;&amp; frequency!=&#39;Daily&#39;\" x-transition:enter=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\"><input type=\"checkbox\" id=\"exact\" name=\"exact\" value=\"yes\" x-model=\"exact\" class=\"w-5 h-5 border-gray-300 rounded\"> <label for=\"exact\" class=\"text-slate-600 text-lg\"><span>Use Exact Date:</span></label></fieldset><fieldset class=\"flex flex-col gap-1 disabled:bg-gray-50 disabled:cursor-not-allowed\" x-bind:disabled=\"frequency==&#39;Only once&#39;\"><label for=\"stopAfter\" class=\"text-slate-600 text-lg flex items-start gap-1\">Stop After:\t\t\t\t\t\t\t</label> <input type=\"date\" id=\"stopAfter\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600 disabled:cursor-not-allowed\" name=\"stopAfter\" x-bind:disabled=\"frequency==&#39;Only once&#39;\" min=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(date.AddDate(0, 0, 1).Format("2006-01-02"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 182, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 189, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -316,7 +316,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully added task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 199, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 206, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -334,7 +334,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("Error adding task " + task + ". Please try again later.")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 217, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 224, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -382,7 +382,7 @@ func AddEventValidationError(errs []string) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 227, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 234, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
