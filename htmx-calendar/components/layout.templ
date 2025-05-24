@@ -21,8 +21,7 @@ templ layout() {
 			{ children... }
 			<div x-show="$store.data.processing" class="animate-loader w-full h-1.5 absolute top-0 left-0 bg-purple-600"></div>
 			@onceHandle.Once() {
-				<script type="text/javascript">
-				(()=>{
+				<script type="text/javascript">				
 					var ABORT_CONTROLLER=new AbortController();														
 					document.addEventListener('alpine:init', () => {						
 						Alpine.store('data', {
@@ -89,6 +88,7 @@ templ layout() {
 					}					
 
 					function setAlpineStoreDnDRowCol(event,row,col,allowDnD){
+						console.log(event,row,col,allowDnD);
 						if(Alpine.store('data').dragging && allowDnD){
 							Alpine.store('data').dnDRowCol=[row,col];
 							event.preventDefault();
@@ -139,8 +139,7 @@ templ layout() {
 							Alpine.store('data').dnDRowCol=[];
 							Alpine.store('data').dragging=false;
 						}						
-					}
-				})();
+					}				
 				</script>
 			}
 		</body>
