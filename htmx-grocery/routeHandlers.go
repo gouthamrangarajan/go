@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"htmx-grocery/components"
 	"htmx-grocery/models"
@@ -9,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -61,11 +59,9 @@ func AddGroceryItem(w http.ResponseWriter, r *http.Request) {
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	sort := r.FormValue("sort")
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
-	defer cancel()
 	openaiChannel := make(chan string)
 	defer close(openaiChannel)
-	callOpenAI(r.FormValue("item"), openaiChannel, ctx)
+	callOpenAI(r.FormValue("item"), openaiChannel)
 	newItemChannel := make(chan int)
 	defer close(newItemChannel)
 	go services.InsertGroceryItemViaChannel(databaseUrl, authToken, r.FormValue("item"), 1, newItemChannel)
@@ -180,7 +176,7 @@ func transformGrocery(grocery models.Grocery) components.Item {
 	return components.Item{Id: grocery.Id, Name: grocery.Description, Quantity: grocery.Quantity, Completed: grocery.Completed, AnimationClass: ""}
 }
 
-func callOpenAI(item string, channel chan<- string, ctx context.Context) {
+func callOpenAI(item string, channel chan<- string) {
 	url := os.Getenv("OPENAI_API_URL")
 	key := os.Getenv("OPENAI_API_KEY")
 	model := os.Getenv("OPENAI_API_MODEL")
@@ -193,5 +189,5 @@ func callOpenAI(item string, channel chan<- string, ctx context.Context) {
 		Messages: append([]services.OpenAIAPIRequestMessageField{},
 			services.OpenAIAPIRequestMessageField{Role: "user", Content: prompt}),
 	}
-	go services.CallOpenAIViaChannelTillContext(url, key, request, channel, ctx)
+	go services.CallOpenAIViaChannel(url, key, request, channel)
 }
