@@ -67,7 +67,7 @@ func main() {
 	emailChannel := make(chan string)
 	defer close(emailChannel)
 	go sendEmail(os.Getenv("REMINDER_EMAIL_TO"), os.Getenv("REMINDER_EMAIL_FROM"), emailStrBuffer.String(), os.Getenv("REMINDER_EMAIL_SUBJECT"), os.Getenv("RESEND_API_KEY"), emailChannel)
-	<-emailChannel
+	fmt.Println(<-emailChannel)
 }
 func GetCurrentDayDataForUser(userId string, currDateStr string, channel chan<- []models.EventData) {
 	defer close(channel)
