@@ -2,6 +2,8 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
+    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --color-red-200: oklch(0.885 0.062 18.334);
     --color-red-600: oklch(0.577 0.245 27.325);
     --color-orange-50: oklch(0.98 0.016 73.684);
@@ -13,7 +15,9 @@
     --color-teal-600: oklch(0.6 0.118 184.704);
     --color-teal-700: oklch(0.511 0.096 186.391);
     --color-purple-600: oklch(0.558 0.288 302.321);
+    --color-pink-600: oklch(0.592 0.249 0.584);
     --color-slate-400: oklch(0.704 0.04 256.788);
+    --color-slate-500: oklch(0.554 0.046 257.417);
     --color-slate-600: oklch(0.446 0.043 257.281);
     --color-gray-50: oklch(0.985 0.002 247.839);
     --color-gray-300: oklch(0.872 0.01 258.338);
@@ -228,6 +232,9 @@
   }
   .mx-auto {
     margin-inline: auto;
+  }
+  .mb-2 {
+    margin-bottom: calc(var(--spacing) * 2);
   }
   .scrollbar-thin {
     &::-webkit-scrollbar-track {
@@ -473,8 +480,14 @@
   .text-center {
     text-align: center;
   }
+  .text-left {
+    text-align: left;
+  }
   .font-\(family-name\:--font-neo-grotesque\) {
     font-family: var(--font-neo-grotesque);
+  }
+  .font-sans {
+    font-family: var(--font-sans);
   }
   .text-lg {
     font-size: var(--text-lg);
@@ -496,6 +509,9 @@
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
   }
+  .text-pink-600 {
+    color: var(--color-pink-600);
+  }
   .text-purple-600 {
     color: var(--color-purple-600);
   }
@@ -504,6 +520,9 @@
   }
   .text-slate-400 {
     color: var(--color-slate-400);
+  }
+  .text-slate-500 {
+    color: var(--color-slate-500);
   }
   .text-slate-600 {
     color: var(--color-slate-600);
