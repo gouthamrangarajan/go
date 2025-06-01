@@ -61,6 +61,10 @@ func main() {
 			}
 		}
 	}
+	if len(consolidatedData) == 0 {
+		fmt.Println("No events found for today")
+		return
+	}
 	component := components.EmailTemplate(consolidatedData)
 	emailStrBuffer := new(bytes.Buffer)
 	component.Render(context.Background(), emailStrBuffer)
