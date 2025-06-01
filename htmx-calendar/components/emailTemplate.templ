@@ -1,0 +1,32 @@
+package components
+
+import "htmx-calendar/models"
+
+templ EmailTemplate(eventsData []models.EventData) {
+	{{ bodyStyle := "font-family:ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\",\"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"" }}
+	<html>
+		<body style={ bodyStyle }>
+			<span
+				style="font-size:20px;line-height:1.4;font-weight:600;margin-bottom:0.5rem;color:#45556c"
+			>Tasks</span>
+			<hr style="background-color:oklch(0.592 0.249 0.584)"/>
+			<table style="width:100%;text-align:left">
+				<tbody>
+					for _, event := range eventsData {
+						<tr>
+							<td
+								style="padding-inline:1rem;padding-block:0.5rem;"
+							>
+								<span
+									style="color:#9810fa;font-size:18px;line-height:1.55;font-weight:600"
+								>{ event.Task }</span>
+								<br/>
+								<span style="font-size:16px;line-height:1.5;color:#62748e">{ event.Frequency }</span>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</body>
+	</html>
+}
