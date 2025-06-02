@@ -106,7 +106,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 
 	insertConversationChannel := make(chan int, 2)
 	defer close(insertConversationChannel)
-	InsertChatConversation(chatSessionId, prompt, imgBase64, "user", insertConversationChannel)
+	go InsertChatConversation(chatSessionId, prompt, imgBase64, "user", insertConversationChannel)
 
 	consolidateGeminiResponse := ""
 
@@ -123,7 +123,9 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		}
 	}
 	if strings.TrimSpace(consolidateGeminiResponse) != "" {
-		InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "model", insertConversationChannel)
+		go InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "model", insertConversationChannel)
+	} else {
+		insertConversationChannel <- 0 // to unblock the channel
 	}
 
 	select {
