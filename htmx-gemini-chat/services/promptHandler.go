@@ -83,10 +83,10 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		// send new session UI
 		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, true).Render(ctx, response)
 		flushResponse(response)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(200 * time.Millisecond)
 		components.ChatSessionIdInput(chatSessionId, false).Render(ctx, response)
 		flushResponse(response)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(200 * time.Millisecond)
 	} else if len(geminiRequest.Contents) == 1 {
 		//  update title
 		chatSessionTitleChannel := make(chan int)
@@ -96,13 +96,13 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		if rowsAffectedTitleUpdate > 0 {
 			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, false).Render(ctx, response)
 			flushResponse(response)
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(200 * time.Millisecond)
 		}
 	}
 
 	components.GeminiMessageTemplate(rand.Int()).Render(ctx, response)
 	flushResponse(response)
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(200 * time.Millisecond)
 
 	insertConversationChannel := make(chan int, 2)
 	defer close(insertConversationChannel)
