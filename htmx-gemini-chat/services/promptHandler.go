@@ -8,7 +8,6 @@ import (
 	"htmx-gemini-chat/components"
 	"htmx-gemini-chat/models"
 	"io"
-	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
@@ -73,7 +72,17 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "text/event-stream")
 	response.Header().Set("Cache-Control", "no-cache")
 	response.Header().Set("Connection", "keep-alive")
-	components.UserMessageTemplate(rand.Int()).Render(ctx, response)
+
+	insertUserChatConversationChannel := make(chan int)
+	defer close(insertUserChatConversationChannel)
+	go InsertChatConversation(chatSessionId, prompt, imgBase64, "user", insertUserChatConversationChannel)
+	userMessageId := <-insertUserChatConversationChannel
+
+	if userMessageId == 0 {
+		sendMessageAndFlush("data:ERROR\n\n", response)
+		return
+	}
+	components.UserMessageTemplate(userMessageId).Render(ctx, response)
 	flushResponse(response)
 	time.Sleep(200 * time.Millisecond)
 	sendMessageAndFlush(prompt, response)
@@ -100,15 +109,18 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		}
 	}
 
-	components.GeminiMessageTemplate(rand.Int()).Render(ctx, response)
+	consolidateGeminiResponse := ""
+	insertGeminiMessageChatConversationChannel := make(chan int)
+	defer close(insertGeminiMessageChatConversationChannel)
+	go InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "model", insertGeminiMessageChatConversationChannel)
+	geminiMessageId := <-insertGeminiMessageChatConversationChannel
+	if geminiMessageId == 0 {
+		sendMessageAndFlush("data:ERROR\n\n", response)
+		return
+	}
+	components.GeminiMessageTemplate(geminiMessageId).Render(ctx, response)
 	flushResponse(response)
 	time.Sleep(200 * time.Millisecond)
-
-	insertConversationChannel := make(chan int, 2)
-	defer close(insertConversationChannel)
-	go InsertChatConversation(chatSessionId, prompt, imgBase64, "user", insertConversationChannel)
-
-	consolidateGeminiResponse := ""
 
 	for message := range geminiAPIChannel {
 		if message != "data:ERROR\n\n" {
@@ -123,9 +135,18 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		}
 	}
 	if strings.TrimSpace(consolidateGeminiResponse) != "" {
-		go InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "model", insertConversationChannel)
-	} else {
-		insertConversationChannel <- 0 // to unblock the channel
+		updateChatConversationChannel := make(chan int)
+		defer close(updateChatConversationChannel)
+		go UpateGeminiMessageChatConversation(geminiMessageId, consolidateGeminiResponse, updateChatConversationChannel)
+		rowsAffectedUpdate := <-updateChatConversationChannel
+		if rowsAffectedUpdate == 0 {
+			sendMessageAndFlush("data:ERROR\n\n", response)
+			deleteChatConversationChannel := make(chan int)
+			defer close(deleteChatConversationChannel)
+			go DeleteGeminiMessageChatConversation(geminiMessageId, deleteChatConversationChannel)
+			<-deleteChatConversationChannel
+			return
+		}
 	}
 
 	select {
@@ -136,8 +157,6 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		break
 	}
 
-	<-insertConversationChannel
-	<-insertConversationChannel
 }
 
 func sendMessageAndFlush(message string, response http.ResponseWriter) {

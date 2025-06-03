@@ -166,3 +166,38 @@ func InsertChatConversation(sessionId int, message string, imgData string, sende
 	}
 	channel <- int(newId)
 }
+func UpateGeminiMessageChatConversation(conversationId int, message string, channel chan<- int) {
+	db := createDb()
+	defer db.Close()
+	result, err := db.Exec("UPDATE chat_conversations SET message= ? WHERE  conversation_id=?", message, conversationId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
+		channel <- 0
+		return
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error updating chat conversation: %v\n", err)
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
+
+func DeleteGeminiMessageChatConversation(conversationId int, channel chan<- int) {
+	db := createDb()
+	defer db.Close()
+	result, err := db.Exec("DELETE FROM chat_conversations WHERE  conversation_id=?", conversationId)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
+		channel <- 0
+		return
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error deleting chat conversation: %v\n", err)
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}

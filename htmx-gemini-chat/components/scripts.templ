@@ -27,11 +27,14 @@ templ bodyScript() {
                 document.getElementById(idToAppendHTML).appendChild(divEl);
                 divEl.outerHTML=messageUI;                                
                 const strtIdx=messageUI.indexOf("message_");
-                const messageId=messageUI.substring(strtIdx,messageUI.indexOf('"',strtIdx));
+                if (strtIdx==-1){                   
+                    return -1;
+                }
+                const messageId=messageUI.substring(strtIdx+"message_".length,messageUI.indexOf('"',strtIdx));                
                 return messageId;
             }
             function prependImageToUserMessage(messageId,imgBase64){
-               const elToPrependImg= document.getElementById(messageId).parentElement.parentElement;
+               const elToPrependImg= document.getElementById("message_"+messageId).parentElement.parentElement;
                const imgEl=document.createElement("img")
                imgEl.classList.add("w-full", "h-full")
                imgEl.src=imgBase64        
@@ -97,6 +100,8 @@ templ bodyScript() {
                     addNewChatSessionProcessing:false,
                     deleteChatSessionProcessing:false,
                     fullPageFetchProcessing:false,
+                    promptProcessing:false,
+                    promptMessageId:-1,
                     menuOpen:false,
                     errorMessage:"",
                     openMenu(){
@@ -153,17 +158,16 @@ templ bodyScript() {
                 });
                 Alpine.data('chatInput',()=>({
                     prompt:'',
-                    processing:false,    
                     imgBase64:"",
                     fileName:"",                
                     setProcessing(val){
                         if(document.startViewTransition){
                             document.startViewTransition(()=>{
-                                this.processing=val;
+                                this.$store.data.promptProcessing=val;                                
                             })
                         }
                         else{
-                            this.processing=val;
+                            this.$store.data.promptProcessing=val;                            
                         }
                     },                                        
                     fileInputChanged(ev){
@@ -204,8 +208,7 @@ templ bodyScript() {
                             const fm=new FormData();
                             fm.append("prompt",this.prompt);
                             fm.append("imgBase64",this.imgBase64)
-                            fm.append("chatSessionId",document.getElementById("chatSessionId").value);                            
-                            let messageId="";
+                            fm.append("chatSessionId",document.getElementById("chatSessionId").value);                                                        
                             let decodedValueMerged ="";
                             fetch('/send',{
                                 body:fm,
@@ -224,46 +227,44 @@ templ bodyScript() {
                                     const { done, value } = await reader.read();
                                     if(done){//streaming end
                                         this.setProcessing(false);
-                                        messageId="";
+                                        this.$store.data.promptMessageId="";
                                         decodedValueMerged="";
                                         return;
                                     }
                                     let decodedValue = new TextDecoder().decode(value);                                                                         
                                     if(decodedValue.includes("data:END")){//streaming end
                                         this.setProcessing(false);
-                                        messageId="";
-                                        decodedValueMerged="";
-                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40 ;                       
+                                        this.$store.data.promptMessageId=-1;
+                                        decodedValueMerged="";                                        
+                                        // document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40 ;                       
                                         return;
                                     }
                                     else if(decodedValue.includes("data:ERROR")){//error in gemini api
                                         this.setProcessing(false);
-                                        messageId="";
-                                        decodedValueMerged="";
+                                        this.$store.data.promptMessageId=-1;
+                                        decodedValueMerged="";                                        
                                         setErrorMessage('Error! Please try again later');     
                                         return;
                                     }
                                     else if(decodedValue.startsWith("<div class")){ //streamed output is a new user message item or new gemini message item
-                                        messageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                        
-                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
+                                        this.$store.data.promptMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                         
+                                        // document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
                                         decodedValueMerged="";
                                         if(this.imgBase64!=""){//streamed output is user message and its based on image input so prepend Img
-                                            prependImageToUserMessage(messageId,this.imgBase64)
+                                            prependImageToUserMessage(this.$store.data.promptMessageId,this.imgBase64)
                                             this.clearFileInput();
-                                        }
+                                        }                                        
                                     }
                                     else if(decodedValue.startsWith("<li") && decodedValue.includes('id="li_')){ //streamed output is new menu item or existing menu title change 
                                         upsertMenuUIWithMenuItem(decodedValue);  
-                                        //decodedValueMerged="";                                  
                                     }
                                     else if(decodedValue.startsWith("<input") && decodedValue.includes("chatSessionId")){ //chat session id intput
                                         document.getElementById('chatSessionId').outerHTML=decodedValue;                                        
-                                        //decodedValueMerged="";
                                     }
                                     else{ //streamed output is gemini message that needs to be appended to existing message 
                                         decodedValueMerged += decodedValue;                                        
-                                        document.getElementById(messageId).innerHTML = decodedValueMerged;   
-                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;                                                            
+                                        document.getElementById('message_'+this.$store.data.promptMessageId).innerHTML = decodedValueMerged;   
+                                        // document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;                                                            
                                     }
                                     processChunk();
                                 }
