@@ -221,7 +221,7 @@ templ bodyScript() {
                                     return;
                                 }
                                 this.prompt='';         
-                                document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40 ;                                                       
+                                // document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40 ;                                                       
                                 const reader = resp.body.getReader();
                                 const processChunk = async () => {
                                     const { done, value } = await reader.read();
@@ -248,7 +248,7 @@ templ bodyScript() {
                                     }
                                     else if(decodedValue.startsWith("<div class")){ //streamed output is a new user message item or new gemini message item
                                         this.$store.data.promptMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                         
-                                        // document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight;
+                                         document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40;
                                         decodedValueMerged="";
                                         if(this.imgBase64!=""){//streamed output is user message and its based on image input so prepend Img
                                             prependImageToUserMessage(this.$store.data.promptMessageId,this.imgBase64)
