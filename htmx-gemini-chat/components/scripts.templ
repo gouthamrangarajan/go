@@ -56,9 +56,9 @@ templ bodyScript() {
                     const liEl=document.createElement("li");
                     document.getElementById('ul_menu').appendChild(liEl);
                     liEl.outerHTML=menuItemUI;
-                    liEl.classList.remove('animate-scale-y');                    
-                    htmx.process(document.getElementById(elId));
+                    liEl.classList.remove('animate-scale-y');                                        
                 }   
+                htmx.process(document.getElementById(elId));
             }        
             document.body.addEventListener('htmx:afterSwap', function(event) {	
                 if(Alpine.store('data').addNewChatSessionProcessing){
