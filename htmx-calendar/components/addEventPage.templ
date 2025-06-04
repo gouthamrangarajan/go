@@ -91,10 +91,10 @@ templ addEventPageModal(date time.Time, week int) {
 				action="/add"
 				hx-post="/add"
 				class="flex flex-col gap-4 "
-				hx-trigger="addEvent"
+				hx-trigger="ADD_EVENT"
 				hx-target=".add__result"
 				hx-swap="outerHTML"
-				x-on:submit="$store.data.setProcessingForSubmit($event,'addEvent')"
+				x-on:submit="$store.data.setProcessingForSubmit($event,'ADD_EVENT')"
 				x-bind:disabled="$store.data.processing"
 				x-data="{frequency:'Only once',exact:false}"
 			>

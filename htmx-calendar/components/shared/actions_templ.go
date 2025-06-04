@@ -79,7 +79,7 @@ func MonthViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"monthViewEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'\" x-on:click=\"$store.data.setProcessingForFetch($event,'monthViewEvent')\" style=\"view-transition-name:monthViewLink\">Month</a>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"MONTH_VIEW_EVENT\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'\" x-on:click=\"$store.data.setProcessingForFetch($event,'MONTH_VIEW_EVENT')\" style=\"view-transition-name:monthViewLink\">Month</a>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -153,7 +153,7 @@ func WeekViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"weekViewEvent\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'\" x-on:click=\"$store.data.setProcessingForFetch($event,'weekViewEvent')\" style=\"view-transition-name:weekViewLink\">Week</a>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"body\" hx-trigger=\"WEEK_VIEW_EVENT\" hx-push-url=\"true\" x-bind:class=\"$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'\" x-on:click=\"$store.data.setProcessingForFetch($event,'WEEK_VIEW_EVENT')\" style=\"view-transition-name:weekViewLink\">Week</a>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

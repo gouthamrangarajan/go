@@ -18,10 +18,10 @@ templ MonthViewLink(currentMonthAndYear time.Time, active bool) {
 		hx-boost="true"
 		hx-swap="outerHTML transition:true"
 		hx-target="body"
-		hx-trigger="monthViewEvent"
+		hx-trigger="MONTH_VIEW_EVENT"
 		hx-push-url="true"
 		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-		x-on:click="$store.data.setProcessingForFetch($event,'monthViewEvent')"
+		x-on:click="$store.data.setProcessingForFetch($event,'MONTH_VIEW_EVENT')"
 		style="view-transition-name:monthViewLink"
 	>
 		Month
@@ -41,10 +41,10 @@ templ WeekViewLink(currentMonthAndYear time.Time, active bool) {
 		hx-boost="true"
 		hx-swap="outerHTML transition:true"
 		hx-target="body"
-		hx-trigger="weekViewEvent"
+		hx-trigger="WEEK_VIEW_EVENT"
 		hx-push-url="true"
 		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-		x-on:click="$store.data.setProcessingForFetch($event,'weekViewEvent')"
+		x-on:click="$store.data.setProcessingForFetch($event,'WEEK_VIEW_EVENT')"
 		style="view-transition-name:weekViewLink"
 	>
 		Week

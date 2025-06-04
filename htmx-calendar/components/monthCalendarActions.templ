@@ -19,10 +19,10 @@ templ prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-boost="true"
 			hx-swap="outerHTML"
 			hx-target="body"
-			hx-trigger="prevMonthEvent"
+			hx-trigger="PREV_MONTH_EVENT"
 			hx-push-url="true"
 			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="$store.data.setProcessingForFetch($event,'prevMonthEvent')"
+			x-on:click="$store.data.setProcessingForFetch($event,'PREV_MONTH_EVENT')"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
 				<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
@@ -36,10 +36,10 @@ templ prevMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-boost="true"
 			hx-swap="outerHTML"
 			hx-target="body"
-			hx-trigger="prevMonthEvent"
+			hx-trigger="PREV_MONTH_EVENT"
 			hx-push-url="true"
 			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="$store.data.setProcessingForFetch($event,'prevMonthEvent')"
+			x-on:click="$store.data.setProcessingForFetch($event,'PREV_MONTH_EVENT')"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
 				<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
@@ -62,10 +62,10 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-boost="true"
 			hx-swap="outerHTML"
 			hx-target="body"
-			hx-trigger="nextMonthEvent"
+			hx-trigger="NEXT_MONTH_EVENT"
 			hx-push-url="true"
 			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="$store.data.setProcessingForFetch($event,'nextMonthEvent')"
+			x-on:click="$store.data.setProcessingForFetch($event,'NEXT_MONTH_EVENT')"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
 				<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
@@ -79,14 +79,36 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 			hx-boost="true"
 			hx-swap="outerHTML"
 			hx-target="body"
-			hx-trigger="nextMonthEvent"
+			hx-trigger="NEXT_MONTH_EVENT"
 			hx-push-url="true"
 			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="$store.data.setProcessingForFetch($event,'nextMonthEvent')"
+			x-on:click="$store.data.setProcessingForFetch($event,'NEXT_MONTH_EVENT')"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
 				<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
 			</svg>
 		</a>
 	}
+}
+
+templ goToYearLink(goToMonth int, goToYear int, currYear int) {
+	{{ url := "/?month=" + strconv.Itoa(goToMonth) + "&year=" + strconv.Itoa(goToYear) }}
+	{{ classBindExpression := "$store.data.processing?'opacity-80 cursor-not-allowed text-slate-600':'opacity-100 cursor-pointer text-slate-600'" }}
+	if goToYear == currYear {
+		{{ classBindExpression = "$store.data.processing?'opacity-80 cursor-not-allowed bg-slate-600 text-white':'opacity-100 cursor-pointer  bg-slate-600 text-white'" }}
+	}
+	<a
+		class={ "appearance-none outline-none py-1 px-3 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2" }
+		href={ templ.SafeURL(url) }
+		hx-get={ url }
+		hx-swap="outerHTML transition:true"
+		hx-target="body"
+		hx-boost="true"
+		hx-push-url="true"
+		hx-trigger="YEAR_CHANGE_EVENT"
+		x-bind:class={ classBindExpression }
+		x-on:click="$store.data.setProcessingForFetch($event,'YEAR_CHANGE_EVENT')"
+	>
+		{ goToYear }
+	</a>
 }

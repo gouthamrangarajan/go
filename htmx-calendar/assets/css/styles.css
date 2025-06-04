@@ -12,6 +12,7 @@
     --color-teal-500: oklch(0.704 0.14 182.503);
     --color-teal-600: oklch(0.6 0.118 184.704);
     --color-teal-700: oklch(0.511 0.096 186.391);
+    --color-purple-300: oklch(0.827 0.119 306.383);
     --color-purple-600: oklch(0.558 0.288 302.321);
     --color-slate-400: oklch(0.704 0.04 256.788);
     --color-slate-600: oklch(0.446 0.043 257.281);
@@ -199,6 +200,12 @@
   .top-3 {
     top: calc(var(--spacing) * 3);
   }
+  .top-8 {
+    top: calc(var(--spacing) * 8);
+  }
+  .right-0 {
+    right: calc(var(--spacing) * 0);
+  }
   .right-3 {
     right: calc(var(--spacing) * 3);
   }
@@ -207,6 +214,9 @@
   }
   .-z-10 {
     z-index: calc(10 * -1);
+  }
+  .z-10 {
+    z-index: 10;
   }
   .container {
     width: 100%;
@@ -291,6 +301,9 @@
   .w-11\/12 {
     width: calc(11/12 * 100%);
   }
+  .w-64 {
+    width: calc(var(--spacing) * 64);
+  }
   .w-dvw {
     width: 100dvw;
   }
@@ -305,6 +318,18 @@
   }
   .table-fixed {
     table-layout: fixed;
+  }
+  .scale-70 {
+    --tw-scale-x: 70%;
+    --tw-scale-y: 70%;
+    --tw-scale-z: 70%;
+    scale: var(--tw-scale-x) var(--tw-scale-y);
+  }
+  .scale-100 {
+    --tw-scale-x: 100%;
+    --tw-scale-y: 100%;
+    --tw-scale-z: 100%;
+    scale: var(--tw-scale-x) var(--tw-scale-y);
   }
   .transform {
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
@@ -323,6 +348,9 @@
   }
   .flex-col {
     flex-direction: column;
+  }
+  .flex-wrap {
+    flex-wrap: wrap;
   }
   .items-center {
     align-items: center;
@@ -383,6 +411,10 @@
   .rounded-lg {
     border-radius: var(--radius-lg);
   }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
   .border-2 {
     border-style: var(--tw-border-style);
     border-width: 2px;
@@ -410,6 +442,9 @@
   .border-gray-300 {
     border-color: var(--color-gray-300);
   }
+  .border-purple-300 {
+    border-color: var(--color-purple-300);
+  }
   .border-teal-600 {
     border-color: var(--color-teal-600);
   }
@@ -434,6 +469,9 @@
   .bg-red-200 {
     background-color: var(--color-red-200);
   }
+  .bg-slate-600 {
+    background-color: var(--color-slate-600);
+  }
   .bg-teal-200 {
     background-color: var(--color-teal-200);
   }
@@ -451,6 +489,9 @@
   }
   .p-2 {
     padding: calc(var(--spacing) * 2);
+  }
+  .px-1 {
+    padding-inline: calc(var(--spacing) * 1);
   }
   .px-2 {
     padding-inline: calc(var(--spacing) * 2);
@@ -538,6 +579,10 @@
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
+  .duration-200 {
+    --tw-duration: 200ms;
+    transition-duration: 200ms;
+  }
   .duration-300 {
     --tw-duration: 300ms;
     transition-duration: 300ms;
@@ -598,9 +643,19 @@
       --tw-ring-color: var(--color-orange-600);
     }
   }
+  .focus\:ring-purple-600 {
+    &:focus {
+      --tw-ring-color: var(--color-purple-600);
+    }
+  }
   .focus\:ring-red-600 {
     &:focus {
       --tw-ring-color: var(--color-red-600);
+    }
+  }
+  .focus\:ring-slate-600 {
+    &:focus {
+      --tw-ring-color: var(--color-slate-600);
     }
   }
   .focus\:ring-teal-600 {
@@ -658,6 +713,11 @@
   .disabled\:opacity-70 {
     &:disabled {
       opacity: 70%;
+    }
+  }
+  .md\:right-24 {
+    @media (width >= 48rem) {
+      right: calc(var(--spacing) * 24);
     }
   }
   .md\:w-9\/12 {
@@ -734,7 +794,10 @@
   animation: loader 2s infinite var(--ease-elastic-in-5);
 }
 .animate-result {
-  animation: result 0.6s var(--ease-elastic-in-5);
+  animation: result 0.2s var(--ease-elastic-in-5);
+}
+.animate-drop-down {
+  animation: drop-down 0.2s var(--ease-elastic-in-5);
 }
 @keyframes slide-left {
   from {
@@ -806,6 +869,16 @@
     transform-origin: top;
   }
 }
+@keyframes drop-down {
+  from {
+    opacity: 0;
+    scale: 0.7;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
 ::view-transition-old(modal) {
   animation: slide-up 0.6s var(--ease-elastic-in-5);
 }
@@ -822,6 +895,21 @@
     scrollbar-color: initial;
     scrollbar-width: initial;
   }
+}
+@property --tw-scale-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
 }
 @property --tw-rotate-x {
   syntax: "*";

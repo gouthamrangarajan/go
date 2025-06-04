@@ -8,8 +8,6 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-var onceHandle = templ.NewOnceHandle()
-
 func layout() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -43,29 +41,11 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
-					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"text/javascript\">\t\t\t\t\n\t\t\t\t\tvar ABORT_CONTROLLER=new AbortController();\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\tdocument.addEventListener('alpine:init', () => {\t\t\t\t\t\t\n\t\t\t\t\t\tAlpine.store('data', {\n\t\t\t\t\t\t\tprocessing: false,\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tdnDRowCol:[],\t\t\n\t\t\t\t\t\t\tdragging:false,\t\t\t\t\t\n\t\t\t\t\t\t\tcheckDnDRowCol(row,col){\n\t\t\t\t\t\t\t\tif(this.dnDRowCol.length<2 || !this.dragging){\n\t\t\t\t\t\t\t\t\treturn false;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\tif(this.dnDRowCol[0]==row && this.dnDRowCol[1]==col){\n\t\t\t\t\t\t\t\t\treturn true;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\treturn false;\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\tsetProcessingForFetch(targetEv,optionalEventNameToDispatch){\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\tif(!this.processing){\n\t\t\t\t\t\t\t\t\tif(ABORT_CONTROLLER){\n\t\t\t\t\t\t\t\t\t\tABORT_CONTROLLER.abort();\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\tthis.processing=true;\n\t\t\t\t\t\t\t\t\tif(optionalEventNameToDispatch && optionalEventNameToDispatch!=''){\n\t\t\t\t\t\t\t\t\t\ttargetEv.preventDefault();\t\n\t\t\t\t\t\t\t\t\t\ttargetEv.currentTarget.dispatchEvent(new Event(optionalEventNameToDispatch))\n\t\t\t\t\t\t\t\t\t}\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t}\t\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\tsetProcessingForSubmit(targetEv,optionalEventNameToDispatch){\n\t\t\t\t\t\t\t\tif(!this.processing){\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\tthis.processing=true;\n\t\t\t\t\t\t\t\t\tif(optionalEventNameToDispatch && optionalEventNameToDispatch!=''){\n\t\t\t\t\t\t\t\t\t\ttargetEv.preventDefault();\t\n\t\t\t\t\t\t\t\t\t\ttargetEv.currentTarget.dispatchEvent(new Event(optionalEventNameToDispatch))\n\t\t\t\t\t\t\t\t\t}\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t})\t\t\t\t\t\t\t\n\t\t\t\t\t}, { signal: ABORT_CONTROLLER.signal });\n\n\t\t\t\t\tdocument.body.addEventListener('htmx:afterSwap', function(event) {\t\n\t\t\t\t\t\tif(Alpine.store('data').processing){\n\t\t\t\t\t\t\tAlpine.store('data').processing=false\n\t\t\t\t\t\t}\t\t\t\t\t\t\n\t\t\t\t\t}, { signal: ABORT_CONTROLLER.signal });\n\n\t\t\t\t\tdocument.body.addEventListener('htmx:beforeRequest', function(event) {\t\n\t\t\t\t\t\tconst isDelete=event?.detail?.pathInfo?.requestPath==\"/delete\";\n\t\t\t\t\t\tif(isDelete && !Alpine.store('data').processing){\n\t\t\t\t\t\t\tAlpine.store('data').processing=true;\n\t\t\t\t\t\t}\t\t\t\t\t\t\n\t\t\t\t\t}, { signal: ABORT_CONTROLLER.signal });\n\n\t\t\t\t\tdocument.body.addEventListener('htmx:afterRequest', function(event) {\t\n\t\t\t\t\t\tconst isDelete=event?.detail?.pathInfo?.requestPath==\"/delete\";\n\t\t\t\t\t\tif(isDelete && Alpine.store('data').processing){\n\t\t\t\t\t\t\tAlpine.store('data').processing=false;\n\t\t\t\t\t\t}\t\t\t\t\t\t\n\t\t\t\t\t}, { signal: ABORT_CONTROLLER.signal });\n\n\t\t\t\t\tfunction dragStarted(event,dataId){\n\t\t\t\t\t\tevent.dataTransfer.clearData();\n                        event.dataTransfer.setData('text/plain',dataId); \t\n\t\t\t\t\t\tAlpine.store('data').dragging=true;\t\t\t\t\t\n\t\t\t\t\t}\t\t\t\t\t\n\n\t\t\t\t\tfunction setAlpineStoreDnDRowCol(event,row,col,allowDnD){\n\t\t\t\t\t\tconsole.log(event,row,col,allowDnD);\n\t\t\t\t\t\tif(Alpine.store('data').dragging && allowDnD){\n\t\t\t\t\t\t\tAlpine.store('data').dnDRowCol=[row,col];\n\t\t\t\t\t\t\tevent.preventDefault();\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction removeAlpineStoreDnDRowCol(row,col){\n\t\t\t\t\t\tif(Alpine.store('data').dnDRowCol.length==2\n\t\t\t\t\t\t\t&& Alpine.store('data').dnDRowCol[0]==row \n\t\t\t\t\t\t\t&& Alpine.store('data').dnDRowCol[1]==col){\n\t\t\t\t\t\t\t\tAlpine.store('data').dnDRowCol=[]\n\t\t\t\t\t\t\t}\n\t\t\t\t\t}\t\n\n\t\t\t\t\tfunction eventDropped(event,date,allowDnD){\n\t\t\t\t\t\tif(!allowDnD){\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tAlpine.store('data').processing=true;\n\t\t\t\t\t\tconst dataId=event.dataTransfer.getData('text/plain');\t\n\t\t\t\t\t\tfetch('/dnd',{\n\t\t\t\t\t\t\tmethod:\"POST\",\n\t\t\t\t\t\t\tbody:JSON.stringify({id:dataId,date}),\n\t\t\t\t\t\t\theaders:{\n\t\t\t\t\t\t\t\t'content-type':'application/json'\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t}).then(resp=>{\n\t\t\t\t\t\t\tAlpine.store('data').processing=false;\n\t\t\t\t\t\t}).catch(err=>{\n\t\t\t\t\t\t\tconsole.log(err);\n\t\t\t\t\t\t\tAlpine.store('data').processing=false;\n\t\t\t\t\t\t});\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\tconst elToRemove=document.querySelector(\"[data-id='\"+dataId+\"']\");\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\tconst targetElToAppend=event.currentTarget;\t\t\t\t\t\t\n\t\t\t\t\t\tif(document.startViewTransition){\n\t\t\t\t\t\t\tdocument.startViewTransition(()=>{\t\t\n\t\t\t\t\t\t\t\telToRemove.remove();\n\t\t\t\t\t\t\t\telToRemove.classList.add(\"animate-slide-down-item\");\n\t\t\t\t\t\t\t\ttargetElToAppend.children[1].appendChild(elToRemove);\n\t\t\t\t\t\t\t\tAlpine.store('data').dnDRowCol=[];\n\t\t\t\t\t\t\t\tAlpine.store('data').dragging=false;\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t\telse{\t\t\t\t\n\t\t\t\t\t\t\telToRemove.remove();\t\t\t\n\t\t\t\t\t\t\telToRemove.classList.add(\"animate-slide-down-item\");\n\t\t\t\t\t\t\ttargetElToAppend.children[1].appendChild(elToRemove);\n\t\t\t\t\t\t\tAlpine.store('data').dnDRowCol=[];\n\t\t\t\t\t\t\tAlpine.store('data').dragging=false;\n\t\t\t\t\t\t}\t\t\t\t\t\t\n\t\t\t\t\t}\t\t\t\t\n\t\t\t\t</script>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			return nil
-		})
-		templ_7745c5c3_Err = onceHandle.Once().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = bodyScript().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

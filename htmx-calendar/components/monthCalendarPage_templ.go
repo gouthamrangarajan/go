@@ -148,33 +148,47 @@ func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Compo
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"w-full flex justify-center items-center gap-7 py-2 px-4\"><div class=\"flex-1 flex justify-end items-center gap-3\"><span class=\"text-xl text-purple-600 font-semibold text-center\" style=\"view-transition-name:monthAndYearName\">")
+		years := []int{}
+		for idx := -10; idx <= 10; idx++ {
+			years = append(years, currentMonthAndYear.Year()+idx)
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"w-full flex justify-center items-center gap-7 py-2 px-4\"><div class=\"flex-1 flex justify-end items-center gap-3 relative\" x-data=\"{showYears:false}\"><div class=\"text-xl text-purple-600 font-semibold text-center flex gap-1\" style=\"view-transition-name:monthAndYearName\"><span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 42, Col: 151}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 48, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> <a href=\"#\" class=\"appearance-none outline-none px-1 cursor-pointer rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-purple-600\" x-on:click.stop.prevent=\"showYears=true\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentMonthAndYear.Year()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 42, Col: 196}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 53, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</a></div><div class=\"absolute animate-drop-down top-8 right-0 z-10 w-64 border border-purple-300 bg-white rounded py-2 px-4 flex flex-col gap-2 md:right-24\" x-on:click.outside=\"showYears=false\" x-show=\"showYears\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-200\" x-transition:leave-start=\"opacity-100 scale-100\" x-transition:leave-end=\"opacity-0 scale-70\"><span class=\"text-lg text-slate-600\">Select year:</span><div class=\"flex gap-2 flex-wrap items-center w-full\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, year := range years {
+			templ_7745c5c3_Err = goToYearLink(int(currentMonthAndYear.Month()), year, int(currentMonthAndYear.Year())).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -186,7 +200,7 @@ func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"flex items-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"flex items-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -198,7 +212,7 @@ func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
