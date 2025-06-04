@@ -18,6 +18,17 @@ import (
 
 var imgRegex = regexp.MustCompile(`^data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
 
+// ALGO
+// Step 1: Validate data, e.g empty prompt, invalid chatSessionId, invalid imagedata etc.
+// Step 2: Insert new chat session or get all chat conversations
+// Step 3: Convert chat conversation + prompt + image to GeminiRequest & call Gemini API
+// Step 4: Insert user message in chat conversation & send to client
+// Step 5: If new chat session inserted, send new session UI
+// Step 6: If first message, update chat session title with prompt & send to client
+// Step 7: Insert Gemini message in chat conversation
+// Step 8: Send Gemini messages to client
+// Step 9: Consolidate & Update Gemini message in chat conversation
+
 func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	ctx := request.Context()
 	userId, ok := ctx.Value(UserIDKey).(string)
