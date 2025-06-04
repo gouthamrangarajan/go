@@ -178,7 +178,7 @@ func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</a></div><div class=\"absolute animate-drop-down top-8 right-0 z-10 w-64 border border-purple-300 bg-white rounded py-2 px-4 flex flex-col gap-2 md:right-24\" x-on:click.outside=\"showYears=false\" x-show=\"showYears\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-200\" x-transition:leave-start=\"opacity-100 scale-100\" x-transition:leave-end=\"opacity-0 scale-70\"><span class=\"text-lg text-slate-600\">Select year:</span><div class=\"flex gap-2 flex-wrap items-center w-full\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</a></div><div class=\"absolute animate-drop-down top-8 -right-11 z-10 w-64 border border-purple-300 bg-white rounded py-2 px-4 flex flex-col gap-2 md:right-24\" x-on:click.outside=\"showYears=false\" x-show=\"showYears\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-200\" x-transition:leave-start=\"opacity-100 scale-100\" x-transition:leave-end=\"opacity-0 scale-70\"><span class=\"text-lg text-slate-600\">Select year:</span><div class=\"flex gap-2 flex-wrap items-center w-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
