@@ -21,45 +21,7 @@ templ bodyScript() {
                          Alpine.store('data').errorMessage="";
                     }
                 },3000)
-            }
-            function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){                
-                const divEl=document.createElement("div");
-                document.getElementById(idToAppendHTML).appendChild(divEl);
-                divEl.outerHTML=messageUI;                                
-                const strtIdx=messageUI.indexOf("message_");
-                if (strtIdx==-1){                   
-                    return -1;
-                }
-                const messageId=messageUI.substring(strtIdx+"message_".length,messageUI.indexOf('"',strtIdx));                
-                return messageId;
-            }
-            function prependImageToUserMessage(messageId,imgBase64){
-               const elToPrependImg= document.getElementById("message_"+messageId).parentElement.parentElement;
-               const imgEl=document.createElement("img")
-               imgEl.classList.add("w-full", "h-full")
-               imgEl.src=imgBase64        
-               elToPrependImg.prepend(imgEl);              
-            }
-            function upsertMenuUIWithMenuItem(menuItemUI){
-                const strtIdx=menuItemUI.indexOf("li_");
-                const elId=menuItemUI.substring(strtIdx,menuItemUI.indexOf('"',strtIdx));
-                const el=document.getElementById(elId);
-                if(el){//title change
-                    if(document.startViewTransition){
-                        document.startViewTransition(()=>{
-                            el.outerHTML=menuItemUI;
-                        });
-                    }else{
-                        el.outerHTML=menuItemUI;
-                    }
-                }else{//new menu item
-                    const liEl=document.createElement("li");
-                    document.getElementById('ul_menu').appendChild(liEl);
-                    liEl.outerHTML=menuItemUI;
-                    liEl.classList.remove('animate-scale-y');                                        
-                }   
-                htmx.process(document.getElementById(elId));
-            }        
+            }              
             document.body.addEventListener('htmx:afterSwap', function(event) {	
                 if(Alpine.store('data').addNewChatSessionProcessing){
                     Alpine.store('data').addNewChatSessionProcessing=false;
@@ -94,6 +56,19 @@ templ bodyScript() {
                 if(Alpine.store('data').deleteChatSessionProcessing){
                     Alpine.store('data').deleteChatSessionProcessing=false;                                                      
                 }	
+            }, { signal: ABORT_CONTROLLER.signal });
+            document.body.addEventListener('htmx:confirm', function(evt) {                
+                const msg=evt.target.getAttribute('hx-confirm');
+                if(msg){
+                  evt.preventDefault();
+                  const confirmationResult=window.confirm(msg);
+                  if(confirmationResult){
+                    evt.detail.issueRequest(true)
+                  }
+                  else if(Alpine.store('data').deleteChatSessionProcessing){
+                    Alpine.store('data').deleteChatSessionProcessing=false;                                                      
+                  }
+                }
             }, { signal: ABORT_CONTROLLER.signal });
             document.addEventListener('alpine:init', () => {                
                 Alpine.store('data',{
@@ -278,7 +253,46 @@ templ bodyScript() {
                     },
                    
                 }));                               
-            },{signal:ABORT_CONTROLLER.signal});                    
+            },{signal:ABORT_CONTROLLER.signal});             
+            function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){                
+                const divEl=document.createElement("div");
+                document.getElementById(idToAppendHTML).appendChild(divEl);
+                divEl.outerHTML=messageUI;                                
+                const strtIdx=messageUI.indexOf("message_");
+                if (strtIdx==-1){                   
+                    return -1;
+                }
+                const messageId=messageUI.substring(strtIdx+"message_".length,messageUI.indexOf('"',strtIdx));                
+                return messageId;
+            }
+            function prependImageToUserMessage(messageId,imgBase64){
+               const elToPrependImg= document.getElementById("message_"+messageId).parentElement.parentElement;
+               const imgEl=document.createElement("img")
+               imgEl.classList.add("w-full", "h-full")
+               imgEl.src=imgBase64        
+               elToPrependImg.prepend(imgEl);              
+            }
+            function upsertMenuUIWithMenuItem(menuItemUI){
+                const strtIdx=menuItemUI.indexOf("li_");
+                const elId=menuItemUI.substring(strtIdx,menuItemUI.indexOf('"',strtIdx));
+                const el=document.getElementById(elId);
+                if(el){//title change
+                    if(document.startViewTransition){
+                        document.startViewTransition(()=>{
+                            el.outerHTML=menuItemUI;
+                        });
+                    }else{
+                        el.outerHTML=menuItemUI;
+                    }
+                }else{//new menu item
+                    const liEl=document.createElement("li");
+                    document.getElementById('ul_menu').appendChild(liEl);
+                    liEl.outerHTML=menuItemUI;
+                    liEl.classList.remove('animate-scale-y');                                        
+                }   
+                console.log(document.getElementById(elId));
+                htmx.process(document.getElementById(elId));
+            }           
         </script>
 	}
 }
