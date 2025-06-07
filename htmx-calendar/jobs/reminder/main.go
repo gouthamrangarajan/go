@@ -225,8 +225,8 @@ func GetWeeklyDataForUserSaturday(userId string, currDateStr string, channel cha
 					continue
 				}
 			}
+			ftedResponse = append(ftedResponse, event)
 		}
-		ftedResponse = append(ftedResponse, allResponse...)
 	}
 	channel <- ftedResponse
 }
