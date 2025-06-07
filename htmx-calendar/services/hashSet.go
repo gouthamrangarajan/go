@@ -1,4 +1,4 @@
-package main
+package services
 
 type ElementType interface {
 	int | string | int32 | int64 | uint | uint32 | uint64 | bool | float64 | float32

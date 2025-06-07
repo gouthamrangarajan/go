@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"htmx-calendar/components"
 	"htmx-calendar/models"
+	"htmx-calendar/services"
 	"os"
 	"time"
 
@@ -50,7 +51,7 @@ func main() {
 	go GetYearlyDataForUserFirstSaturday(userId, today, channels[13])
 
 	consolidatedData := []models.EventData{}
-	dataIdIncludedHash := NewHashSet[string]()
+	dataIdIncludedHash := services.NewHashSet[string]()
 	for _, channel := range channels {
 		for data := range channel {
 			for _, event := range data {
@@ -279,8 +280,8 @@ func GetEveryTwoWeeksDataForUserWithExactDate(userId string, currDateStr string,
 	}
 	channel <- ftedResponse
 }
-func GetAlternateSaturdaysInAYear(year int) HashSet[string] {
-	alternateSaturdays := NewHashSet[string]()
+func GetAlternateSaturdaysInAYear(year int) services.HashSet[string] {
+	alternateSaturdays := services.NewHashSet[string]()
 	firstDate := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 	daysToAddToReachSaturday := time.Saturday - firstDate.Weekday()
@@ -372,7 +373,7 @@ func GetMonthlyDataForUserWithExactDate(userId string, currDateStr string, chann
 	}
 	dateToInclude := currDate
 	appStartDate := time.Date(2023, time.Month(1), 1, 0, 0, 0, 0, currDate.Location())
-	allMonthDates := NewHashSet[string]()
+	allMonthDates := services.NewHashSet[string]()
 	for {
 		if dateToInclude.Before(appStartDate) {
 			break
