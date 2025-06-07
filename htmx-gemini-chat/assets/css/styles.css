@@ -759,8 +759,8 @@
   .w-full {
     width: 100%;
   }
-  .max-w-max {
-    max-width: max-content;
+  .max-w-full {
+    max-width: 100%;
   }
   .flex-1 {
     flex: 1;

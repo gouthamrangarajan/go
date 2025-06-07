@@ -30,7 +30,7 @@ templ section(conversations []models.ChatConversation, isOob bool) {
 	if (isOob) {
 		<section
 			id="section"
-			class="w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-9/12 xl:h-[72vh] focus:ring-1 focus:ring-slate-200"
+			class="w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-9/12 xl:h-[72vh] focus:ring-1 focus:ring-slate-200"
 			style="view-transition-name:section"
 			hx-swap-oob="true"
 		>
@@ -45,7 +45,7 @@ templ section(conversations []models.ChatConversation, isOob bool) {
 	} else {
 		<section
 			id="section"
-			class="w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-9/12 xl:h-[72vh] focus:ring-1 focus:ring-slate-200"
+			class="w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-9/12 xl:h-[72vh] focus:ring-1 focus:ring-slate-200"
 			style="view-transition-name:section"
 		>
 			for _,conversation:= range conversations {
