@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-templ menu(sessions []models.ChatSession) {
+templ menuBarButton() {
 	<template x-if="!$store.data.menuOpen">
 		<button
 			class="appearance-none outline-none z-10 absolute top-3 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
@@ -23,6 +23,9 @@ templ menu(sessions []models.ChatSession) {
 			</svg>
 		</button>
 	</template>
+}
+
+templ menu(sessions []models.ChatSession) {
 	<div
 		class="absolute top-0 left-0 flex items-start gap-2"
 		x-bind:class="$store.data.menuOpen?'h-dvh w-dvw bg-gray-900/40':'h-0 w-0'"
