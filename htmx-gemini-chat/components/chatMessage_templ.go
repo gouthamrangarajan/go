@@ -62,7 +62,7 @@ func UserMessage(message string, imgData string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if imgData != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<img className=\"h-full w-full\" src=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<img class=\"h-full w-full\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
