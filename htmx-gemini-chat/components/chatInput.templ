@@ -4,7 +4,7 @@ import "strconv"
 
 templ chatInput(currentChatSessionId int) {
 	<div
-		class="relative mt-2 shrink-0 rounded border border-slate-200 w-11/12 transition duration-300 mx-auto flex items-center focus-within:ring-1 focus-within:ring-slate-200 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 lg:w-8/12 lg:mt-6 xl:w-6/12"
+		class="relative mt-2 shrink-0 rounded w-11/12 bg-[#151b23] transition duration-300 mx-auto flex items-center shadow-lg/30 shadow-cyan-500/50 focus-within:shadow-xl/30 lg:w-10/12 lg:mt-6 xl:w-9/12"
 		style="view-transition-name:prompt-form"
 		x-data="chatInput"
 	>
@@ -60,7 +60,7 @@ templ ChatSessionIdInput(sessionId int, isOob bool) {
 templ fileUpload() {
 	<template x-if="fileName!=''">
 		<div
-			class="animate-slide-up absolute -top-12 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded bg-gray-800 border border-slate-200 text-slate-200"
+			class="animate-slide-up absolute -top-12 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded bg-gray-800 text-slate-200"
 			style="view-transition-name:upload-file-name"
 		>
 			<img class="h-5 w-5 rounded-full" x-bind:src="imgBase64"/>
