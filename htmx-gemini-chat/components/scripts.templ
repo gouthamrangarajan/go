@@ -291,6 +291,7 @@ templ bodyScript() {
                     liEl.outerHTML=menuItemUI;
                     liEl.classList.remove('animate-scale-y');                                        
                 }   
+                htmx.process(document.getElementById(elId));
             }           
         </script>
 	}
