@@ -36,9 +36,9 @@ templ section(conversations []models.ChatConversation, isOob bool) {
 		>
 			for _,conversation:= range conversations {
 				if conversation.Sender == "user" {
-					@UserMessage(conversation.Message, conversation.ImgData)
+					@UserMessage(conversation.Id, conversation.Message, conversation.ImgData)
 				} else {
-					@GeminiMessage(conversation.Message)
+					@GeminiMessage(conversation.Id, conversation.Message)
 				}
 			}
 		</section>
@@ -50,9 +50,9 @@ templ section(conversations []models.ChatConversation, isOob bool) {
 		>
 			for _,conversation:= range conversations {
 				if conversation.Sender == "user" {
-					@UserMessage(conversation.Message, conversation.ImgData)
+					@UserMessage(conversation.Id, conversation.Message, conversation.ImgData)
 				} else {
-					@GeminiMessage(conversation.Message)
+					@GeminiMessage(conversation.Id, conversation.Message)
 				}
 			}
 		</section>

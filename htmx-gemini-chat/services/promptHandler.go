@@ -96,8 +96,8 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	components.UserMessageTemplate(userMessageId).Render(ctx, response)
 	flushResponse(response)
 	time.Sleep(200 * time.Millisecond)
-	sendMessageAndFlush(prompt, response)
-	time.Sleep(200 * time.Millisecond)
+	// sendMessageAndFlush(prompt, response)
+	// time.Sleep(200 * time.Millisecond)
 
 	if newChatSessionInserted {
 		// send new session UI
