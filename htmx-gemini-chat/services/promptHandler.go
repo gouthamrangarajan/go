@@ -95,18 +95,16 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	}
 	components.UserMessageTemplate(userMessageId).Render(ctx, response)
 	flushResponse(response)
-	time.Sleep(200 * time.Millisecond)
-	// sendMessageAndFlush(prompt, response)
-	// time.Sleep(200 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 
 	if newChatSessionInserted {
 		// send new session UI
 		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, true).Render(ctx, response)
 		flushResponse(response)
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 		components.ChatSessionIdInput(chatSessionId, false).Render(ctx, response)
 		flushResponse(response)
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 	} else if len(geminiRequest.Contents) == 1 {
 		//  update title
 		chatSessionTitleChannel := make(chan int)
@@ -116,7 +114,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		if rowsAffectedTitleUpdate > 0 {
 			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, false).Render(ctx, response)
 			flushResponse(response)
-			time.Sleep(200 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 		}
 	}
 
@@ -131,7 +129,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	}
 	components.GeminiMessageTemplate(geminiMessageId).Render(ctx, response)
 	flushResponse(response)
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 
 	for message := range geminiAPIChannel {
 		if message != "data:ERROR\n\n" {
