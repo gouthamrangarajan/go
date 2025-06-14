@@ -27,7 +27,6 @@
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
     --font-weight-semibold: 600;
-    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
@@ -960,9 +959,9 @@
     --tw-duration: 300ms;
     transition-duration: 300ms;
   }
-  .ease-in-out {
-    --tw-ease: var(--ease-in-out);
-    transition-timing-function: var(--ease-in-out);
+  .ease-\(--ease-elastic-in-out-5\) {
+    --tw-ease: var(--ease-elastic-in-out-5);
+    transition-timing-function: var(--ease-elastic-in-out-5);
   }
   .prose-invert {
     --tw-prose-body: var(--tw-prose-invert-body);

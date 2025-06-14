@@ -63,7 +63,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"absolute top-0 left-0 flex items-start gap-2\" x-bind:class=\"$store.data.menuOpen?'h-dvh w-dvw bg-gray-900/40':'h-0 w-0'\" x-trap=\"$store.data.menuOpen\" x-on:click=\"$store.data.closeMenu()\" style=\"view-transition-name:menu\"><aside class=\"p-1 w-10/12 h-dvh flex flex-col bg-gray-900 border-r border-slate-600 transition duration-200 ease-in-out md:w-1/2 lg:w-1/3 xl:w-1/4\" x-show=\"$store.data.menuOpen\" x-transition:leave-end=\"opacity-0 -translate-x-100\" x-on:click.stop>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"absolute top-0 left-0 flex items-start gap-2 transition duration-200 ease-(--ease-elastic-in-out-5)\" x-bind:class=\"$store.data.menuOpen?'h-dvh w-dvw bg-gray-900/40':'h-0 w-0'\" x-trap=\"$store.data.menuOpen\" x-on:click=\"$store.data.closeMenu()\" style=\"view-transition-name:menu\"><aside class=\"p-1 w-10/12 h-dvh flex flex-col bg-gray-900 border-r border-slate-600 transition duration-200 ease-(--ease-elastic-in-out-5) md:w-1/2 lg:w-1/3 xl:w-1/4\" x-show=\"$store.data.menuOpen\" x-transition:leave-end=\"opacity-0 -translate-x-100\" x-on:click.stop>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -71,7 +71,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<ul id=\"ul_menu\" class=\"appearance-none outline-none w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<ul id=\"ul_menu\" class=\"appearance-none outline-none w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 transition duration-200 ease-(--ease-elastic-in-out-5)\" x-show=\"$store.data.menuOpen\" x-transition:leave-end=\"opacity-0 -translate-x-100\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -127,7 +127,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("li_" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 78, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 80, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -153,7 +153,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:li-" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 80, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 82, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -175,7 +175,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.SafeURL(url)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 89, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 91, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -188,7 +188,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:title-" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 96, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 98, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -201,7 +201,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 98, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 100, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -214,7 +214,7 @@ func MenuItem(session models.ChatSession, animate bool) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("/delete/" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 112, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 114, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
