@@ -179,7 +179,7 @@ templ bodyScript() {
                         this.$refs.imageInput.value=''
                     },
                     submitMessage(ev,idToAppendData){
-                        if(!ev.shiftKey && this.prompt.trim()!='' && !this.processing){
+                        if(!ev.shiftKey && this.prompt.trim()!='' && !this.$store.data.promptProcessing){
                             this.setProcessing(true);
                             const fm=new FormData();
                             fm.append("prompt",this.prompt);
