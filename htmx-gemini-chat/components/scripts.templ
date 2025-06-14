@@ -76,7 +76,7 @@ templ bodyScript() {
                     deleteChatSessionProcessing:false,
                     fullPageFetchProcessing:false,
                     promptProcessing:false,
-                    promptMessageId:-1,
+                    currentMessageId:-1,
                     menuOpen:false,
                     errorMessage:"",
                     openMenu(){
@@ -201,35 +201,30 @@ templ bodyScript() {
                                     const { done, value } = await reader.read();
                                     if(done){//streaming end
                                         this.setProcessing(false);
-                                        this.$store.data.promptMessageId="";
+                                        this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";
                                         return;
                                     }
                                     let decodedValue = new TextDecoder().decode(value);                                                                         
                                     if(decodedValue.includes("data:END")){//streaming end
                                         this.setProcessing(false);
-                                        this.$store.data.promptMessageId=-1;
+                                        this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";                                                                                
                                         return;
                                     }
                                     else if(decodedValue.includes("data:ERROR")){//error in gemini api
                                         this.setProcessing(false);
-                                        this.$store.data.promptMessageId=-1;
+                                        this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";                                        
                                         setErrorMessage('Error! Please try again later');     
                                         return;
                                     }
                                     else if(decodedValue.startsWith("<div class")){ //streamed output is a new user message item or new gemini message item
-                                        this.$store.data.promptMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                                                                 
+                                        this.$store.data.currentMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                                                                 
                                         decodedValueMerged="";                                           
                                         if(this.prompt!=''){ //streamed output is user message 
-                                            document.getElementById('message_'+this.$store.data.promptMessageId).innerHTML = this.prompt;  
-                                            this.prompt='';
-                                            if(this.imgBase64!=""){// streamed output is based on image input so prepend Img
-                                                prependImageToUserMessage(this.$store.data.promptMessageId,this.imgBase64)
-                                                this.clearFileInput();
-                                            } 
-                                        }                                          
+                                          this.appendPromptAndImageToUserMessageTemplate()                                                                   
+                                        }
                                         document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40;                                 
                                     }
                                     else if(decodedValue.startsWith("<li") && decodedValue.includes('id="li_')){ //streamed output is new menu item or existing menu title change 
@@ -240,7 +235,7 @@ templ bodyScript() {
                                     }
                                     else{ //streamed output is gemini message that needs to be appended to existing message 
                                         decodedValueMerged += decodedValue;                                        
-                                        document.getElementById('message_'+this.$store.data.promptMessageId).innerHTML = decodedValueMerged;   
+                                        document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   
                                     }
                                     processChunk();
                                 }
@@ -252,7 +247,14 @@ templ bodyScript() {
                             });                            
                         }
                     },
-                   
+                   appendPromptAndImageToUserMessageTemplate(){                    
+                        document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = this.prompt;  
+                        this.prompt='';
+                        if(this.imgBase64!=""){// streamed output is based on image input so prepend Img
+                            prependImageToUserMessage(this.$store.data.currentMessageId,this.imgBase64)
+                            this.clearFileInput();
+                        } 
+                    }                                  
                 }));                               
             },{signal:ABORT_CONTROLLER.signal});             
             function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){                
