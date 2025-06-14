@@ -27,7 +27,7 @@ templ layout() {
                                     <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
                                 </svg>
                                 `;
-                     copyButtonStr=`<button style="width:2rem;height:2rem">
+                     copyButtonStr=`<button style="width:2rem;height:2rem" aria-label="Copy code">
                             ${this.copySvgStr}
                         </button>`;
                      async load() { 
@@ -54,7 +54,8 @@ templ layout() {
                             const code = btn.previousElementSibling.firstElementChild.innerText 
                             await navigator.clipboard.writeText(code) 
                             btn.innerHTML = this.tickSvgStr
-                            setTimeout(() => (btn.innerHTML = this.copySvgStr), 2500) 
+                            btn.setAttribute('aria-label', 'Copied code')
+                            setTimeout(() => {btn.innerHTML = this.copySvgStr;btn.setAttribute('aria-label', 'Copy code')}, 2500) 
                         } 
                         }) 
                         return out 
