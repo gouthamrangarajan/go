@@ -27,40 +27,40 @@ templ layout() {
                                     <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
                                 </svg>
                                 `;
-                     copyButtonStr=`<button style="width:2rem;height:2rem" aria-label="Copy code">
-                            ${this.copySvgStr}
-                        </button>`;
+                    copyButtonStr=`<button aria-label="Copy code">
+                                    ${this.copySvgStr}
+                                  </button>`;
                      async load() { 
-                        await super.load() 
-                        this.template += `<style>.markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}  @media(prefers-color-scheme: light){.markdown-body th,.markdown-body td{background-color:var(--color-gray-900) !important;}} .zero-md-copy{position:relative;}.zero-md-copy button{position:absolute;top:0.5rem;right:0.75rem;cursor:pointer;opacity:0.9;}</style>` 
+                        await super.load(); 
+                        this.template += `<style>.markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}  @media(prefers-color-scheme: light){.markdown-body th,.markdown-body td{background-color:var(--color-gray-900) !important;}} .zero-md-copy{position:relative;}.zero-md-copy button{position:absolute;top:0.5rem;right:0.75rem;cursor:pointer;opacity:0.9;height:2rem;width:2rem;}</style>`; 
                     } 
                     async parse(obj) { 
-                        const parsed = await super.parse(obj) 
-                        if (!navigator.clipboard) return parsed 
-                        const tpl = document.createElement('template') 
-                        tpl.innerHTML = parsed 
+                        const parsed = await super.parse(obj); 
+                        if (!navigator.clipboard) return parsed; 
+                        const tpl = document.createElement('template'); 
+                        tpl.innerHTML = parsed; 
                         tpl.content.querySelectorAll('pre>code').forEach((code) => { 
-                        const pre = code.parentElement 
+                        const pre = code.parentElement; 
                         pre.replaceWith( 
-                            this.frag(`<div class="zero-md-copy">${pre.outerHTML}${this.copyButtonStr}</div>`) 
-                        ) 
-                        }) 
-                        return tpl.innerHTML 
+                                this.frag(`<div class="zero-md-copy">${pre.outerHTML}${this.copyButtonStr}</div>`)
+                            );
+                        }); 
+                        return tpl.innerHTML; 
                     } 
                     async render(obj) { 
-                        const out = await super.render(obj) 
+                        const out = await super.render(obj); 
                         this.root.querySelectorAll('.zero-md-copy button').forEach((btn) => { 
                         btn.onclick = async () => { 
-                            const code = btn.previousElementSibling.firstElementChild.innerText 
-                            await navigator.clipboard.writeText(code) 
-                            btn.innerHTML = this.tickSvgStr
-                            btn.setAttribute('aria-label', 'Copied code')
-                            setTimeout(() => {btn.innerHTML = this.copySvgStr;btn.setAttribute('aria-label', 'Copy code')}, 2500) 
-                        } 
-                        }) 
-                        return out 
+                            const code = btn.previousElementSibling.firstElementChild.innerText; 
+                            await navigator.clipboard.writeText(code); 
+                            btn.innerHTML = this.tickSvgStr;
+                            btn.setAttribute('aria-label', 'Copied code');
+                            setTimeout(() => {btn.innerHTML = this.copySvgStr;btn.setAttribute('aria-label', 'Copy code');}, 2500); 
+                            } 
+                        }); 
+                        return out;
                     }               
-                 })
+                 });
             </script>
 		</head>
 		<body class="w-dvw h-dvh overflow-x-hidden relative font-(family-name:--font-geometric-humanist) bg-gray-900 text-gray-50" x-data="{}">
