@@ -44,7 +44,7 @@ templ menu(sessions []models.ChatSession) {
 				id="ul_menu"
 				class="appearance-none outline-none w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 transition duration-200 ease-(--ease-elastic-in-out-5)"
 				x-show="$store.data.menuOpen"
-				x-transition:leave-end="opacity-0 -translate-x-100"
+				x-transition:leave-end="opacity-0"
 			>
 				for _,session:= range sessions {
 					@MenuItem(session, false)
