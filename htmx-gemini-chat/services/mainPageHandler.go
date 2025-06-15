@@ -42,3 +42,17 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 	component := components.Main(conversations, sessions, chatSessionId)
 	component.Render(request.Context(), response)
 }
+
+func MarkdownSrcHandler(sessionId int, conversationId int, response http.ResponseWriter, request *http.Request) {
+	userId, ok := request.Context().Value(UserIDKey).(string)
+	if !ok {
+		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	conversationChannel := make(chan models.ChatConversation)
+	defer close(conversationChannel)
+	go GetChatConversation(userId, sessionId, conversationId, conversationChannel)
+	conversation := <-conversationChannel
+	response.Header().Set("Cache-Control", "public, max-age=31536000, immutable") // 1 year (31536000 seconds), immutable
+	response.Write([]byte(conversation.Message))
+}

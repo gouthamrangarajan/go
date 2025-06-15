@@ -32,6 +32,23 @@ func main() {
 		}
 		services.MainPageHandler(response, request, sessionId)
 	})
+	router.Get("/{sessionId}/{conversationId}", func(response http.ResponseWriter, request *http.Request) {
+		sessionIdStr := chi.URLParam(request, "sessionId")
+		sessionId, err := strconv.Atoi(sessionIdStr)
+		if err != nil {
+			sessionId = -1
+		}
+		conversationIdStr := chi.URLParam(request, "conversationId")
+		conversationId, err := strconv.Atoi(conversationIdStr)
+		if err != nil {
+			conversationId = -1
+		}
+		if sessionId == -1 || conversationId == -1 {
+			http.Error(response, "Invalid request", http.StatusBadRequest)
+			return
+		}
+		services.MarkdownSrcHandler(sessionId, conversationId, response, request)
+	})
 	router.Post("/new", services.NewChatSessionHandler)
 	router.Post("/send", services.PromptHandler)
 	router.Delete("/delete/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
