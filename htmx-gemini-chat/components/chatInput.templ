@@ -4,13 +4,13 @@ import "strconv"
 
 templ chatInput(currentChatSessionId int) {
 	<div
-		class="relative mt-2 shrink-0 rounded w-11/12 bg-[#151b23] transition duration-300 mx-auto flex items-center shadow-lg/30 shadow-cyan-500/50 focus-within:shadow-xl/30 lg:w-10/12 lg:mt-6 xl:w-9/12"
+		class="relative mt-2 shrink-0 rounded w-11/12 bg-white dark:bg-[#151b23] transition duration-300 mx-auto flex items-center shadow-lg/30 shadow-cyan-500/50 focus-within:shadow-xl/30 lg:w-10/12 lg:mt-6 xl:w-9/12 "
 		style="view-transition-name:prompt-form"
 		x-data="chatInput"
 	>
 		@ChatSessionIdInput(currentChatSessionId, false)
 		<textarea
-			class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-400 lg:py-2 lg:px-4 "
+			class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4"
 			placeholder="Send a message"
 			rows="3"
 			name="prompt"
@@ -19,7 +19,7 @@ templ chatInput(currentChatSessionId int) {
 		></textarea>
 		@fileUpload()
 		<button
-			class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
+			class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
 			x-on:click="submitMessage($event,'section')"
 			x-bind:disabled="$store.data.promptProcessing"
 		>
@@ -30,8 +30,8 @@ templ chatInput(currentChatSessionId int) {
 			</template>
 			<template x-if="$store.data.promptProcessing">
 				<div class="flex items-center gap-1 flex-1" style="view-transition-name:submit-button">
-					<span class="h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-one"></span>
-					<span class="h-1.5 w-1.5 bg-slate-100 rounded-full animate-loader-two"></span>
+					<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one"></span>
+					<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two"></span>
 				</div>
 			</template>
 		</button>
@@ -60,13 +60,13 @@ templ ChatSessionIdInput(sessionId int, isOob bool) {
 templ fileUpload() {
 	<template x-if="fileName!=''">
 		<div
-			class="animate-slide-up absolute -top-12 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded bg-gray-800 text-slate-200"
+			class="animate-slide-up absolute -top-12 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded border dark:border-0 border-gray-600 bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-200"
 			style="view-transition-name:upload-file-name"
 		>
 			<img class="h-5 w-5 rounded-full" x-bind:src="imgBase64"/>
 			<span x-text="fileName" class="flex-1"></span>
 			<button
-				class="appearance-none outline-none p-1 rounded-full cursor-pointer transition duration-300 text-slate-200 focus:ring-1 focus:ring-slate-200"
+				class="appearance-none outline-none p-1 rounded-full cursor-pointer transition duration-300 text-red-600 dark:text-slate-200 focus:ring-1 focus:ring-red-600 dark:focus:ring-slate-200"
 				x-on:click="clearFileInput()"
 			>
 				<svg
@@ -89,7 +89,7 @@ templ fileUpload() {
 		x-on:change="fileInputChanged"
 	/>
 	<button
-		class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
+		class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
 		x-on:click="$refs.imageInput.click()"
 		x-bind:disabled="$store.data.promptProcessing"
 	>

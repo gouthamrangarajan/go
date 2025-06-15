@@ -30,9 +30,29 @@ templ layout() {
                     copyButtonStr=`<button aria-label="Copy code">
                                     ${this.copySvgStr}
                                   </button>`;
-                     async load() { 
+                    async load() { 
                         await super.load(); 
-                        this.template += `<style>.markdown-body {background-color:  var(--color-gray-900) !important; color:var(--color-gray-50) !important;} @media(prefers-color-scheme: dark){.markdown-body table{color:var(--color-gray-50) !important;}}  @media(prefers-color-scheme: light){.markdown-body th,.markdown-body td{background-color:var(--color-gray-900) !important;}} .zero-md-copy{position:relative;}.zero-md-copy button{position:absolute;top:0.5rem;right:0.75rem;cursor:pointer;opacity:0.9;height:2rem;width:2rem;}</style>`; 
+                        this.template += `<style>                                           
+                                            @media(prefers-color-scheme: dark){
+                                                .markdown-body {
+                                                    background-color:  var(--color-gray-900) !important; 
+                                                    color:var(--color-gray-50) !important;
+                                                } 
+                                                .markdown-body table{
+                                                    color:var(--color-gray-50) !important;
+                                                }
+                                            }  	
+                                            .zero-md-copy{position:relative;}
+                                            .zero-md-copy button{
+                                                position:absolute;
+                                                top:0.5rem;
+                                                right:0.75rem;
+                                                cursor:pointer;
+                                                opacity:0.9;
+                                                height:2rem;
+                                                width:2rem;
+                                            }
+                                        </style>`; 
                     } 
                     async parse(obj) { 
                         const parsed = await super.parse(obj); 
@@ -50,12 +70,12 @@ templ layout() {
                     async render(obj) { 
                         const out = await super.render(obj); 
                         this.root.querySelectorAll('.zero-md-copy button').forEach((btn) => { 
-                        btn.onclick = async () => { 
-                            const code = btn.previousElementSibling.firstElementChild.innerText; 
-                            await navigator.clipboard.writeText(code); 
-                            btn.innerHTML = this.tickSvgStr;
-                            btn.setAttribute('aria-label', 'Copied code');
-                            setTimeout(() => {btn.innerHTML = this.copySvgStr;btn.setAttribute('aria-label', 'Copy code');}, 2500); 
+                            btn.onclick = async () => { 
+                                const code = btn.previousElementSibling.firstElementChild.innerText; 
+                                await navigator.clipboard.writeText(code); 
+                                btn.innerHTML = this.tickSvgStr;
+                                btn.setAttribute('aria-label', 'Copied code');
+                                setTimeout(() => {btn.innerHTML = this.copySvgStr;btn.setAttribute('aria-label', 'Copy code');}, 2500); 
                             } 
                         }); 
                         return out;
@@ -63,7 +83,11 @@ templ layout() {
                  });
             </script>
 		</head>
-		<body class="w-dvw h-dvh overflow-x-hidden relative font-(family-name:--font-geometric-humanist) bg-gray-900 text-gray-50" x-data="{}">
+		<body
+			x-cloak
+			class="w-dvw h-dvh overflow-x-hidden relative font-(family-name:--font-geometric-humanist) bg-white dark:bg-gray-900 text-slate-700  dark:text-gray-50"
+			x-data="{}"
+		>
 			@menuBarButton()
 			{ children... }
 			@bodyScript()
