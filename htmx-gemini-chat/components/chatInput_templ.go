@@ -31,7 +31,7 @@ func chatInput(currentChatSessionId int) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"relative mt-2 shrink-0 rounded w-11/12 bg-white dark:bg-[#151b23] transition duration-300 mx-auto flex items-center shadow-lg/30 shadow-cyan-500/50 focus-within:shadow-xl/30 lg:w-10/12 lg:mt-6 xl:w-9/12 \" style=\"view-transition-name:prompt-form\" x-data=\"chatInput\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"relative mt-2 shrink-0 rounded w-11/12 bg-white dark:bg-[#151b23] transition duration-300 mx-auto flex items-center shadow-lg/30 shadow-cyan-600/70 dark:shadow-cyan-500/50 focus-within:shadow-xl/30 lg:w-10/12 lg:mt-6 xl:w-9/12 \" style=\"view-transition-name:prompt-form\" x-data=\"chatInput\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,7 +39,7 @@ func chatInput(currentChatSessionId int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<textarea class=\"appreance-none outline-none w-full py-1 px-3 flex-1 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4\" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"prompt\" x-on:keyup.enter=\"submitMessage($event,'section')\"></textarea>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<textarea class=\"appreance-none outline-none w-full py-1 px-3 flex-1 resize-none text-slate-800 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4\" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"prompt\" x-on:keyup.enter=\"submitMessage($event,'section')\"></textarea>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

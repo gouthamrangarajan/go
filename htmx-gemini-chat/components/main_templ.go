@@ -181,7 +181,7 @@ func section(conversations []models.ChatConversation, isOob bool) templ.Componen
 		}
 		ctx = templ.ClearChildren(ctx)
 		if isOob {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-9/12 xl:h-[72vh]\" style=\"view-transition-name:section\" hx-swap-oob=\"true\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-9/12 xl:h-[72vh]\" style=\"view-transition-name:section\" hx-swap-oob=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -203,7 +203,7 @@ func section(conversations []models.ChatConversation, isOob bool) templ.Componen
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-9/12 xl:h-[72vh]\" style=\"view-transition-name:section\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto h-[68vh] flex flex-col gap-2 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 mt-2 py-1 px-3 pb-20 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 lg:pb-20 xl:w-9/12 xl:h-[72vh]\" style=\"view-transition-name:section\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

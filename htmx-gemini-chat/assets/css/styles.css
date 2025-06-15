@@ -21,6 +21,7 @@
     --color-slate-300: oklch(86.9% 0.022 252.894);
     --color-slate-600: oklch(44.6% 0.043 257.281);
     --color-slate-700: oklch(37.2% 0.044 257.287);
+    --color-slate-800: oklch(27.9% 0.041 260.031);
     --color-gray-50: oklch(98.5% 0.002 247.839);
     --color-gray-400: oklch(70.7% 0.022 261.325);
     --color-gray-500: oklch(55.1% 0.027 264.364);
@@ -928,6 +929,9 @@
   .text-slate-700 {
     color: var(--color-slate-700);
   }
+  .text-slate-800 {
+    color: var(--color-slate-800);
+  }
   .text-white {
     color: var(--color-white);
   }
@@ -943,10 +947,10 @@
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
-  .shadow-cyan-500\/50 {
-    --tw-shadow-color: color-mix(in srgb, oklch(71.5% 0.143 215.221) 50%, transparent);
+  .shadow-cyan-600\/70 {
+    --tw-shadow-color: color-mix(in srgb, oklch(60.9% 0.126 221.723) 70%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
-      --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-cyan-500) 50%, transparent) var(--tw-shadow-alpha), transparent);
+      --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-cyan-600) 70%, transparent) var(--tw-shadow-alpha), transparent);
     }
   }
   .transition {
@@ -993,8 +997,8 @@
   .scrollbar-thumb-lime-500 {
     --scrollbar-thumb: oklch(76.8% 0.233 130.85);
   }
-  .scrollbar-track-gray-300 {
-    --scrollbar-track: oklch(87.2% 0.01 258.338);
+  .scrollbar-track-gray-200 {
+    --scrollbar-track: oklch(92.8% 0.006 264.531);
   }
   .scrollbar-track-transparent {
     --scrollbar-track: transparent;
@@ -1248,6 +1252,11 @@
       color: var(--color-red-600);
     }
   }
+  .dark\:text-slate-100 {
+    @media (prefers-color-scheme: dark) {
+      color: var(--color-slate-100);
+    }
+  }
   .dark\:text-slate-200 {
     @media (prefers-color-scheme: dark) {
       color: var(--color-slate-200);
@@ -1256,6 +1265,19 @@
   .dark\:text-slate-600 {
     @media (prefers-color-scheme: dark) {
       color: var(--color-slate-600);
+    }
+  }
+  .dark\:shadow-cyan-500\/50 {
+    @media (prefers-color-scheme: dark) {
+      --tw-shadow-color: color-mix(in srgb, oklch(71.5% 0.143 215.221) 50%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-cyan-500) 50%, transparent) var(--tw-shadow-alpha), transparent);
+      }
+    }
+  }
+  .dark\:scrollbar-track-gray-300 {
+    @media (prefers-color-scheme: dark) {
+      --scrollbar-track: oklch(87.2% 0.01 258.338);
     }
   }
   .dark\:placeholder\:text-gray-400 {

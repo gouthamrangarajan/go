@@ -71,7 +71,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<ul id=\"ul_menu\" class=\"appearance-none outline-none w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-300 scrollbar-thumb-lime-500 transition duration-200 ease-(--ease-elastic-in-out-5)\" x-show=\"$store.data.menuOpen\" x-transition:leave-end=\"opacity-0\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<ul id=\"ul_menu\" class=\"appearance-none outline-none w-full h-full max-h-[90vh] overflow-y-auto overflow-x-hidden mt-5 scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 transition duration-200 ease-(--ease-elastic-in-out-5)\" x-show=\"$store.data.menuOpen\" x-transition:leave-end=\"opacity-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
