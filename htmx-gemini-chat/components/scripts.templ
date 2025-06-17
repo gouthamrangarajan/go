@@ -22,6 +22,39 @@ templ bodyScript() {
                     }
                 },3000)
             }              
+            document.addEventListener('DOMContentLoaded', function() {                
+                domContentLoadedEvent();
+            },{signal: ABORT_CONTROLLER.signal});
+            function domContentLoadedEvent() {                
+                document.querySelectorAll('zero-md').forEach(function(el) {                    
+                    el.addEventListener('zero-md-rendered', function() {      
+                        if(document.startViewTransition){
+                            document.startViewTransition(()=>{
+                                if(el.parentElement.parentElement.classList.contains("hidden")){
+                                    el.parentElement.parentElement.classList.replace("hidden","flex");
+                                } else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
+                                    el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
+                                }
+                            });
+                        }
+                        else{                     
+                            if(el.parentElement.parentElement.classList.contains("hidden")){
+                                el.parentElement.parentElement.classList.replace("hidden","flex");
+                            } else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
+                                el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
+                            }
+                        }
+                    }, { signal: ABORT_CONTROLLER.signal });
+                    //Below is doubtful and never called
+                    el.addEventListener('zero-md-error', function() {                          
+                        if(el.parentElement.parentElement.classList.contains("hidden")){
+                            el.parentElement.parentElement.classList.replace("hidden","flex");
+                        }else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
+                            el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
+                        }
+                    }, { signal: ABORT_CONTROLLER.signal });
+                });
+            }
             document.body.addEventListener('htmx:afterSwap', function(event) {	
                 if(Alpine.store('data').addNewChatSessionProcessing){
                     Alpine.store('data').addNewChatSessionProcessing=false;
@@ -29,6 +62,7 @@ templ bodyScript() {
                     window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
                 } else if(Alpine.store('data').fullPageFetchProcessing){
                     Alpine.store('data').fullPageFetchProcessing=false;
+                    domContentLoadedEvent();
                 }
                 else{   
                     const chatSessionId=document.getElementById("chatSessionId").value;
@@ -38,7 +72,8 @@ templ bodyScript() {
                             window.history.replaceState({},document.title,window.location.origin);                     
                         }
                         else {
-                            window.history.replaceState({},document.title,window.location.origin+"/"+chatSessionId);                     
+                            window.history.replaceState({},document.title,window.location.origin+"/"+chatSessionId); 
+                            domContentLoadedEvent();                    
                         }  
                      }
                 }            					
@@ -70,6 +105,7 @@ templ bodyScript() {
                   }
                 }
             }, { signal: ABORT_CONTROLLER.signal });
+           
             document.addEventListener('alpine:init', () => {                
                 Alpine.store('data',{
                     addNewChatSessionProcessing:false,
@@ -88,7 +124,7 @@ templ bodyScript() {
                         else{
                             this.menuOpen=true;
                         }
-                    htmx.process(document.getElementsByTagName('aside')[0]);//Find a better way
+                        htmx.process(document.getElementsByTagName('aside')[0]);//Find a better way
                     },
                     closeMenu(){
                         if(document.startViewTransition){
