@@ -88,7 +88,7 @@ templ MenuItem(session models.ChatSession) {
 			hx-get={ string(templ.SafeURL(url)) }
 			hx-boost="true"
 			hx-swap="outerHTML transition:true"
-			hx-target="body"
+			hx-target="#section"
 			hx-trigger="FETCH_FULL_PAGE_EVENT"
 			hx-push-url="true"
 			x-on:click.stop="$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')"

@@ -4,27 +4,29 @@ var onceHandle = templ.NewOnceHandle()
 
 templ bodyScript() {
 	@onceHandle.Once() {
-		<script type="text/javascript">
-            var ABORT_CONTROLLER=new AbortController();//Global variable     
-            var TIMEOUT;
-            function setErrorMessage(message){
-                Alpine.store('data').errorMessage=message;
-                if(TIMEOUT){
-                    clearTimeout(TIMEOUT);
+		<script type="text/javascript">            
+            function addErrorMessage(message){
+                if(document.startViewTransition){
+                    document.startViewTransition(()=>{
+                        Alpine.store('data').errorMessages.push(message);
+                    });
                 }
-                TIMEOUT=setTimeout(()=>{
+                else{
+                    Alpine.store('data').errorMessages.push(message);
+                }
+                setTimeout(()=>{
                     if(document.startViewTransition){
                         document.startViewTransition(()=>{
-                            Alpine.store('data').errorMessage="";
+                            Alpine.store('data').errorMessages.splice(0,1);
                         });
                     }else{
-                         Alpine.store('data').errorMessage="";
+                         Alpine.store('data').errorMessages.splice(0,1);
                     }
                 },3000)
             }              
             document.addEventListener('DOMContentLoaded', function() {                
                 domContentLoadedEvent();
-            },{signal: ABORT_CONTROLLER.signal});
+            });
             function domContentLoadedEvent() {                
                 document.querySelectorAll('zero-md').forEach(function(el) {                    
                     el.addEventListener('zero-md-rendered', function() {      
@@ -44,7 +46,7 @@ templ bodyScript() {
                                 el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
                             }
                         }
-                    }, { signal: ABORT_CONTROLLER.signal });
+                    });
                     //Below is doubtful and never called
                     el.addEventListener('zero-md-error', function() {                          
                         if(el.parentElement.parentElement.classList.contains("hidden")){
@@ -52,7 +54,7 @@ templ bodyScript() {
                         }else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
                             el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
                         }
-                    }, { signal: ABORT_CONTROLLER.signal });
+                    });
                 });
             }
             document.body.addEventListener('htmx:afterSwap', function(event) {	
@@ -77,10 +79,10 @@ templ bodyScript() {
                         }  
                      }
                 }            					
-            }, { signal: ABORT_CONTROLLER.signal });    
+            });    
             document.body.addEventListener('htmx:afterRequest', function(event) {	
                 if(event.detail.failed){
-                    setErrorMessage('Error! Please try again later'); 
+                    addErrorMessage('Error! Please try again later'); 
                     if(Alpine.store('data').addNewChatSessionProcessing){
                        Alpine.store('data').addNewChatSessionProcessing=false;                                                      
                     }	
@@ -91,7 +93,7 @@ templ bodyScript() {
                 if(Alpine.store('data').deleteChatSessionProcessing){
                     Alpine.store('data').deleteChatSessionProcessing=false;                                                      
                 }	
-            }, { signal: ABORT_CONTROLLER.signal });
+            });
             document.body.addEventListener('htmx:confirm', function(evt) {                
                 const msg=evt.target.getAttribute('hx-confirm');
                 if(msg){
@@ -104,7 +106,7 @@ templ bodyScript() {
                     Alpine.store('data').deleteChatSessionProcessing=false;                                                      
                   }
                 }
-            }, { signal: ABORT_CONTROLLER.signal });
+            });
            
             document.addEventListener('alpine:init', () => {                
                 Alpine.store('data',{
@@ -114,7 +116,7 @@ templ bodyScript() {
                     promptProcessing:false,
                     currentMessageId:-1,
                     menuOpen:false,
-                    errorMessage:"",
+                    errorMessages:[],
                     openMenu(){                        
                         this.menuOpen=true;
                         htmx.process(document.getElementsByTagName('aside')[0]);
@@ -125,10 +127,7 @@ templ bodyScript() {
                     sendFullPageFetchEvent(ev,eventNameToDispatch){
                         ev.preventDefault();                        
                         this.fullPageFetchProcessing=true;
-                        this.closeMenu();
-                        if(ABORT_CONTROLLER){
-                            ABORT_CONTROLLER.abort();
-                        }   
+                        this.closeMenu();                        
                         if(eventNameToDispatch){        
                             ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
                         }                        
@@ -177,14 +176,14 @@ templ bodyScript() {
                                     this.imgBase64=reader.result;
                                     this.fileName=fl.name;
                                 }else{
-                                    setErrorMessage('Please select a valid image file')
+                                    addErrorMessage('Please select a valid image file')
                                 }
                             }
-                        },{ signal: ABORT_CONTROLLER.signal });
+                        });
                         if (fl.size <= 1024 * 1024) {//1 mb
                             reader.readAsDataURL(fl);
                         }else{
-                            setErrorMessage('Image size exceeds the limit of 1 MB');                                 
+                            addErrorMessage('Image size exceeds the limit of 1 MB');                                 
                         }
                     },
                     clearFileInput(){         
@@ -210,12 +209,11 @@ templ bodyScript() {
                             let decodedValueMerged ="";
                             fetch('/send',{
                                 body:fm,
-                                method:"POST",
-                                signal:ABORT_CONTROLLER.signal
+                                method:"POST",                                
                             }).then(resp=>{
                                 if(!resp.ok){
                                     this.setProcessing(false);
-                                    setErrorMessage('Error! Please try again later');     
+                                    addErrorMessage('Error! Please try again later');     
                                     return;
                                 }                                
                                 const reader = resp.body.getReader();
@@ -238,7 +236,7 @@ templ bodyScript() {
                                         this.setProcessing(false);
                                         this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";                                        
-                                        setErrorMessage('Error! Please try again later');     
+                                        addErrorMessage('Error! Please try again later');     
                                         return;
                                     }
                                     else if(decodedValue.startsWith("<div class")){ //streamed output is a new user message item or new gemini message item
@@ -265,7 +263,7 @@ templ bodyScript() {
                             }).catch(err=>{
                                 console.log(err);
                                 this.setProcessing(false);
-                                setErrorMessage('Error! Please try again later');     
+                                addErrorMessage('Error! Please try again later');     
                             });                            
                         }
                     },
@@ -278,7 +276,7 @@ templ bodyScript() {
                         } 
                     }                                  
                 }));                               
-            },{signal:ABORT_CONTROLLER.signal});             
+            });             
             function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){                
                 const divEl=document.createElement("div");
                 document.getElementById(idToAppendHTML).appendChild(divEl);

@@ -18,13 +18,17 @@ templ Main(conversations []models.ChatConversation, sessions []models.ChatSessio
 
 templ NewChatSession(session models.ChatSession) {
 	@MenuItem(session)
-	@section(make([]models.ChatConversation, 0, 0), true)
-	@ChatSessionIdInput(session.Id, true)
+	@SectionAndChatSessionIdInput(session.Id, make([]models.ChatConversation, 0, 0), true)
 }
 
 templ UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatSessionIdForConversations int) {
 	@section(conversations, true)
 	@ChatSessionIdInput(chatSessionIdForConversations, true)
+}
+
+templ SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConversation, isOob bool) {
+	@section(conversations, isOob)
+	@ChatSessionIdInput(sessionId, isOob)
 }
 
 templ section(conversations []models.ChatConversation, isOob bool) {

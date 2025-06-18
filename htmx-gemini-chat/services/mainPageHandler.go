@@ -39,8 +39,13 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 		go GetChatConversations(userId, chatSessionId, conversationsChannel)
 		conversations = <-conversationsChannel
 	}
-	component := components.Main(conversations, sessions, chatSessionId)
-	component.Render(request.Context(), response)
+	if request.Header.Get("HX-Request") == "true" {
+		component := components.SectionAndChatSessionIdInput(chatSessionId, conversations, true)
+		component.Render(request.Context(), response)
+	} else {
+		component := components.Main(conversations, sessions, chatSessionId)
+		component.Render(request.Context(), response)
+	}
 }
 
 func MarkdownSrcHandler(sessionId int, conversationId int, response http.ResponseWriter, request *http.Request) {
