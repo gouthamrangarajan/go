@@ -115,27 +115,12 @@ templ bodyScript() {
                     currentMessageId:-1,
                     menuOpen:false,
                     errorMessage:"",
-                    openMenu(){
-                        if(document.startViewTransition){
-                            document.startViewTransition(()=>{
-                                this.menuOpen=true;
-                                Alpine.nextTick(()=>{htmx.process(document.getElementsByTagName('aside')[0]);});
-                            });
-                        }
-                        else{
-                            this.menuOpen=true;
-                            Alpine.nextTick(()=>{htmx.process(document.getElementsByTagName('aside')[0]);});
-                        }                       
+                    openMenu(){                        
+                        this.menuOpen=true;
+                        htmx.process(document.getElementsByTagName('aside')[0]);
                     },
-                    closeMenu(){
-                        if(document.startViewTransition){
-                            document.startViewTransition(()=>{
-                                this.menuOpen=false;
-                            });
-                        }
-                        else{
-                            this.menuOpen=false;
-                        }
+                    closeMenu(){                      
+                        this.menuOpen=false;
                     },
                     sendFullPageFetchEvent(ev,eventNameToDispatch){
                         ev.preventDefault();                        

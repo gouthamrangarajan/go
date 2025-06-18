@@ -6,64 +6,69 @@ import (
 )
 
 templ menuBarButton() {
-	<template x-if="!$store.data.menuOpen">
+	<button
+		class="appearance-none outline-none z-10 absolute top-3 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
+		x-on:click="$store.data.openMenu()"
+		x-show="!$store.data.menuOpen"
+		x-transition:enter="transition duration-200 ease-(--ease-in-3)"
+		x-transition:enter-start="opacity-0 translate-x-2"
+		x-show="$store.data.menuOpen"
+	>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="currentColor"
+			class="size-6"
+		>
+			<path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"></path>
+		</svg>
+	</button>
+}
+
+templ menu(sessions []models.ChatSession) {
+	<div
+		class="absolute top-0 left-0 flex items-start gap-2 h-full w-full bg-white/60 dark:bg-gray-900/40"
+		x-trap="$store.data.menuOpen"
+		x-on:click="$store.data.closeMenu()"
+		style="view-transition-name:menu-background"
+		x-show="$store.data.menuOpen"
+	>
+		<aside
+			class="p-1 w-10/12 h-full flex flex-col bg-white dark:bg-gray-900  border-r border-slate-300 dark:border-slate-600 overflow-y-auto overflow-x-hidden  scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 md:w-1/2 lg:w-1/3 xl:w-1/4 "
+			x-on:click.stop
+			x-transition:enter="transition duration-200 ease-(--ease-in-3)"
+			x-transition:leave="transition duration-200 ease-(--ease-in-3)"
+			x-transition:enter-start="opacity-0 -translate-x-2"
+			x-transition:leave-end="opacity-0 -translate-x-2"
+			x-show="$store.data.menuOpen"
+		>
+			@newChatButton()
+			<ul
+				id="ul_menu"
+				class="appearance-none outline-none w-full h-full mt-5 shrink-0"
+				style="view-transition-name:menu"
+			>
+				for _,session:= range sessions {
+					@MenuItem(session)
+				}
+			</ul>
+		</aside>
 		<button
-			class="appearance-none outline-none z-10 absolute top-3 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
-			style="view-transition-name:menu-icon-button"
-			x-on:click="$store.data.openMenu()"
+			class="appearance-none outline-none  rounded cursor-pointer p-1 mt-5 bg-cyan-600 text-red-100 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
+			x-transition:enter="transition duration-200 ease-(--ease-in-3)"
+			x-transition:enter-start="opacity-0 -translate-x-2"
+			x-show="$store.data.menuOpen"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 24 24"
 				fill="currentColor"
 				class="size-6"
-				style="view-transition-name:menu-icon"
 			>
-				<path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd"></path>
+				<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
 			</svg>
 		</button>
-	</template>
-}
-
-templ menu(sessions []models.ChatSession) {
-	<template x-if="$store.data.menuOpen">
-		<div
-			class="absolute top-0 left-0 flex items-start gap-2 h-full w-full bg-white/60 dark:bg-gray-900/40"
-			x-trap="$store.data.menuOpen"
-			x-on:click="$store.data.closeMenu()"
-			style="view-transition-name:menu-background"
-		>
-			<aside
-				class="p-1 w-10/12 h-full flex flex-col bg-white dark:bg-gray-900  border-r border-slate-300 dark:border-slate-600 overflow-y-auto overflow-x-hidden  scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 md:w-1/2 lg:w-1/3 xl:w-1/4 "
-				x-on:click.stop
-			>
-				@newChatButton()
-				<ul
-					id="ul_menu"
-					class="appearance-none outline-none w-full h-full mt-5 shrink-0"
-					style="view-transition-name:menu"
-				>
-					for _,session:= range sessions {
-						@MenuItem(session)
-					}
-				</ul>
-			</aside>
-			<button
-				class="appearance-none outline-none  rounded cursor-pointer p-1 mt-5 bg-cyan-600 text-red-100 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
-				style="view-transition-name:menu-icon-button"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 24 24"
-					fill="currentColor"
-					class="size-6"
-					style="view-transition-name:menu-icon"
-				>
-					<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
-				</svg>
-			</button>
-		</div>
-	</template>
+	</div>
 }
 
 templ MenuItem(session models.ChatSession) {
@@ -101,8 +106,11 @@ templ MenuItem(session models.ChatSession) {
 		</button>
 		<button
 			x-show="showDelete"
+			x-transition:enter="transition duration-200 ease-(--ease-in-3)"
+			x-transition:leave="transition duration-200 ease-(--ease-in-3)"
+			x-transition:enter-start="opacity-0 scale-x-0"
 			x-transition:leave-end="opacity-0 scale-x-0"
-			class="appearance-none outline-none animate-delete-menu origin-right absolute right-12 top-2 py-1 px-3 bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-slate-600 dark:focus:ring-red-300 hover:ring-2 hover:ring-slate-600 dark:hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80"
+			class="appearance-none outline-none origin-right absolute right-12 top-2 py-1 px-3 bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-slate-600 dark:focus:ring-red-300 hover:ring-2 hover:ring-slate-600 dark:hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80"
 			hx-delete={ "/delete/" + strconv.Itoa(session.Id) }
 			hx-trigger="DELETE_CHAT_SESSION_EVENT"
 			x-on:click="$store.data.checkAndSetDeleteProcessing($event,'DELETE_CHAT_SESSION_EVENT')"

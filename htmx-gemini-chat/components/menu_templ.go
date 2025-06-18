@@ -34,7 +34,7 @@ func menuBarButton() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template x-if=\"!$store.data.menuOpen\"><button class=\"appearance-none outline-none z-10 absolute top-3 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50\" style=\"view-transition-name:menu-icon-button\" x-on:click=\"$store.data.openMenu()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-icon\"><path fill-rule=\"evenodd\" d=\"M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<button class=\"appearance-none outline-none z-10 absolute top-3 left-2 rounded cursor-pointer p-1 bg-cyan-600 text-slate-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50\" x-on:click=\"$store.data.openMenu()\" x-show=\"!$store.data.menuOpen\" x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0 translate-x-2\" x-show=\"$store.data.menuOpen\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,7 +63,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<template x-if=\"$store.data.menuOpen\"><div class=\"absolute top-0 left-0 flex items-start gap-2 h-full w-full bg-white/60 dark:bg-gray-900/40\" x-trap=\"$store.data.menuOpen\" x-on:click=\"$store.data.closeMenu()\" style=\"view-transition-name:menu-background\"><aside class=\"p-1 w-10/12 h-full flex flex-col bg-white dark:bg-gray-900  border-r border-slate-300 dark:border-slate-600 overflow-y-auto overflow-x-hidden  scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 md:w-1/2 lg:w-1/3 xl:w-1/4 \" x-on:click.stop>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"absolute top-0 left-0 flex items-start gap-2 h-full w-full bg-white/60 dark:bg-gray-900/40\" x-trap=\"$store.data.menuOpen\" x-on:click=\"$store.data.closeMenu()\" style=\"view-transition-name:menu-background\" x-show=\"$store.data.menuOpen\"><aside class=\"p-1 w-10/12 h-full flex flex-col bg-white dark:bg-gray-900  border-r border-slate-300 dark:border-slate-600 overflow-y-auto overflow-x-hidden  scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 md:w-1/2 lg:w-1/3 xl:w-1/4 \" x-on:click.stop x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:leave=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0 -translate-x-2\" x-transition:leave-end=\"opacity-0 -translate-x-2\" x-show=\"$store.data.menuOpen\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,7 +81,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></aside><button class=\"appearance-none outline-none  rounded cursor-pointer p-1 mt-5 bg-cyan-600 text-red-100 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50\" style=\"view-transition-name:menu-icon-button\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-icon\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></aside><button class=\"appearance-none outline-none  rounded cursor-pointer p-1 mt-5 bg-cyan-600 text-red-100 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50\" x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0 -translate-x-2\" x-show=\"$store.data.menuOpen\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -123,7 +123,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("li_" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 72, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 77, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -149,7 +149,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:li-" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 74, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 79, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -171,7 +171,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.SafeURL(url)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 83, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 88, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -184,7 +184,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:title-" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 90, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 95, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -197,20 +197,20 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 92, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 97, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</a> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90\" x-on:click=\"showDelete=!showDelete\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z\" clip-rule=\"evenodd\"></path></svg></button> <button x-show=\"showDelete\" x-transition:leave-end=\"opacity-0 scale-x-0\" class=\"appearance-none outline-none animate-delete-menu origin-right absolute right-12 top-2 py-1 px-3 bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-slate-600 dark:focus:ring-red-300 hover:ring-2 hover:ring-slate-600 dark:hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80\" hx-delete=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</a> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90\" x-on:click=\"showDelete=!showDelete\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z\" clip-rule=\"evenodd\"></path></svg></button> <button x-show=\"showDelete\" x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:leave=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0 scale-x-0\" x-transition:leave-end=\"opacity-0 scale-x-0\" class=\"appearance-none outline-none origin-right absolute right-12 top-2 py-1 px-3 bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-slate-600 dark:focus:ring-red-300 hover:ring-2 hover:ring-slate-600 dark:hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80\" hx-delete=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("/delete/" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 106, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 114, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
