@@ -119,12 +119,13 @@ templ bodyScript() {
                         if(document.startViewTransition){
                             document.startViewTransition(()=>{
                                 this.menuOpen=true;
+                                Alpine.nextTick(()=>{htmx.process(document.getElementsByTagName('aside')[0]);});
                             });
                         }
                         else{
                             this.menuOpen=true;
-                        }
-                        htmx.process(document.getElementsByTagName('aside')[0]);//Find a better way
+                            Alpine.nextTick(()=>{htmx.process(document.getElementsByTagName('aside')[0]);});
+                        }                       
                     },
                     closeMenu(){
                         if(document.startViewTransition){
@@ -261,7 +262,7 @@ templ bodyScript() {
                                         if(this.prompt!=''){ //streamed output is user message 
                                           this.appendPromptAndImageToUserMessageTemplate()                                                                   
                                         }
-                                        document.getElementById(idToAppendData).scrollTop = document.getElementById(idToAppendData).scrollHeight +40;                                 
+                                        document.getElementsByTagName('main')[0].scrollTop=document.getElementsByTagName('main')[0].scrollHeight+40;                         
                                     }
                                     else if(decodedValue.startsWith("<li") && decodedValue.includes('id="li_')){ //streamed output is new menu item or existing menu title change 
                                         upsertMenuUIWithMenuItem(decodedValue);  

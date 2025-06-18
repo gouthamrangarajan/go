@@ -29,7 +29,7 @@ func PageLoader() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template x-if=\"$store.data.fullPageFetchProcessing\"><div class=\"absolute top-0 left-0 w-full h-1.5 animate-page-loader bg-lime-500\"></div></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template x-if=\"$store.data.fullPageFetchProcessing\"><div class=\"absolute top-0 left-0 w-full z-10 h-1.5 animate-page-loader bg-lime-500\"></div></template>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -2,7 +2,7 @@ package components
 
 templ layout() {
 	<!DOCTYPE html>
-	<html>
+	<html class="w-full h-full">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -85,10 +85,9 @@ templ layout() {
 		</head>
 		<body
 			x-cloak
-			class="w-dvw h-dvh overflow-x-hidden relative font-(family-name:--font-geometric-humanist) bg-white dark:bg-gray-900 text-slate-700  dark:text-gray-50"
+			class="w-full h-full relative font-(family-name:--font-geometric-humanist) bg-white dark:bg-gray-900 text-slate-700  dark:text-gray-50 "
 			x-data="{}"
 		>
-			@menuBarButton()
 			{ children... }
 			@bodyScript()
 		</body>

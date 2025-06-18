@@ -3,7 +3,7 @@ package components
 templ errorToast() {
 	<template x-if="$store.data.errorMessage!=''">
 		<p
-			class="animate-slide-up absolute bottom-2 left-8 flex items-start gap-2 py-2 px-4 rounded bg-white text-red-600 font-semibold lg:bottom-4"
+			class="animate-slide-up absolute bottom-2 left-8 flex items-start gap-2 py-2 px-4 rounded bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 font-semibold lg:bottom-4"
 			x-text="$store.data.errorMessage"
 			style="view-transition-name:error-message"
 		></p>

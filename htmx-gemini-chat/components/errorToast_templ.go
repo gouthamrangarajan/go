@@ -29,7 +29,7 @@ func errorToast() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template x-if=\"$store.data.errorMessage!=''\"><p class=\"animate-slide-up absolute bottom-2 left-8 flex items-start gap-2 py-2 px-4 rounded bg-white text-red-600 font-semibold lg:bottom-4\" x-text=\"$store.data.errorMessage\" style=\"view-transition-name:error-message\"></p></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template x-if=\"$store.data.errorMessage!=''\"><p class=\"animate-slide-up absolute bottom-2 left-8 flex items-start gap-2 py-2 px-4 rounded bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 font-semibold lg:bottom-4\" x-text=\"$store.data.errorMessage\" style=\"view-transition-name:error-message\"></p></template>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

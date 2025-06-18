@@ -99,7 +99,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 
 	if newChatSessionInserted {
 		// send new session UI
-		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, true).Render(ctx, response)
+		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(ctx, response)
 		flushResponse(response)
 		time.Sleep(200 * time.Millisecond)
 		components.ChatSessionIdInput(chatSessionId, false).Render(ctx, response)
@@ -112,7 +112,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		go UpdateChatSessionTitle(userId, chatSessionId, prompt, chatSessionTitleChannel)
 		rowsAffectedTitleUpdate := <-chatSessionTitleChannel
 		if rowsAffectedTitleUpdate > 0 {
-			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, false).Render(ctx, response)
+			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(ctx, response)
 			flushResponse(response)
 			time.Sleep(200 * time.Millisecond)
 		}

@@ -4,13 +4,13 @@ import "strconv"
 
 templ chatInput(currentChatSessionId int) {
 	<div
-		class="relative mt-2 shrink-0 rounded w-11/12 bg-white dark:bg-[#151b23] transition duration-300 mx-auto flex items-center shadow-lg/30 shadow-cyan-600/70 dark:shadow-cyan-500/50 focus-within:shadow-xl/30 lg:w-10/12 lg:mt-6 xl:w-9/12 "
+		class="absolute bottom-4 shrink-0 rounded w-11/12 bg-white dark:bg-[#151b23] transition duration-300 mx-auto flex items-center shadow-lg/30 shadow-cyan-600/70 dark:shadow-cyan-500/50 focus-within:shadow-xl/30 lg:w-10/12 lg:mt-6 xl:w-9/12 "
 		style="view-transition-name:prompt-form"
 		x-data="chatInput"
 	>
 		@ChatSessionIdInput(currentChatSessionId, false)
 		<textarea
-			class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none text-slate-800 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4"
+			class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4"
 			placeholder="Send a message"
 			rows="3"
 			name="prompt"
@@ -60,7 +60,7 @@ templ ChatSessionIdInput(sessionId int, isOob bool) {
 templ fileUpload() {
 	<template x-if="fileName!=''">
 		<div
-			class="animate-slide-up absolute -top-12 left-0 z-10 w-full py-1 px-3 flex items-center gap-3 rounded border dark:border-0 border-gray-600 bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-200"
+			class="animate-slide-up absolute -top-9 left-0 w-full py-1 px-3 flex items-center gap-3 rounded border dark:border-0 border-gray-600 bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-200"
 			style="view-transition-name:upload-file-name"
 		>
 			<img class="h-5 w-5 rounded-full" x-bind:src="imgBase64"/>
