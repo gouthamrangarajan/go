@@ -203,14 +203,14 @@ func MenuItem(session models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</a> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90\" x-on:click=\"showDelete=!showDelete\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z\" clip-rule=\"evenodd\"></path></svg></button> <button x-show=\"showDelete\" x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:leave=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0 scale-x-0\" x-transition:leave-end=\"opacity-0 scale-x-0\" class=\"appearance-none outline-none origin-right absolute right-12 top-2 py-1 px-3 bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-slate-600 dark:focus:ring-red-300 hover:ring-2 hover:ring-slate-600 dark:hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80\" hx-delete=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</a> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90\" x-on:click=\"showDelete=!showDelete\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z\" clip-rule=\"evenodd\"></path></svg></button> <button x-show=\"showDelete\" x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0 scale-x-0\" class=\"appearance-none outline-none origin-right absolute right-12 top-2 py-1 px-3 bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-slate-600 dark:focus:ring-red-300 hover:ring-2 hover:ring-slate-600 dark:hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80\" hx-delete=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("/delete/" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 114, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 112, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
