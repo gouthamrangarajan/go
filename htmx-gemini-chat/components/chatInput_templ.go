@@ -31,7 +31,7 @@ func chatInput(currentChatSessionId int) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 shrink-0 rounded w-11/12 p-1 bg-white dark:bg-[#151b23] transition duration-300 mx-auto flex items-center inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 \" style=\"view-transition-name:prompt-form\" x-data=\"chatInput\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 shrink-0 rounded w-11/12 p-1 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-center inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 \" style=\"view-transition-name:prompt-form\" x-data=\"chatInput\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

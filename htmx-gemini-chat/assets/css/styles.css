@@ -430,6 +430,9 @@
   .border-slate-600 {
     border-color: var(--color-slate-600);
   }
+  .bg-\[\#f6f8fa\] {
+    background-color: #f6f8fa;
+  }
   .bg-cyan-600 {
     background-color: var(--color-cyan-600);
   }
