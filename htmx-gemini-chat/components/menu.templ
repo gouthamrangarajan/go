@@ -75,7 +75,7 @@ templ MenuItem(session models.ChatSession) {
 	{{ url := "/" + strconv.Itoa(session.Id) }}
 	<li
 		id={ "li_" + strconv.Itoa(session.Id) }
-		class={ "relative cursor-pointer py-2 px-4  w-full flex gap-1" }
+		class={ "menu relative cursor-pointer py-2 px-4  w-full flex gap-1" }
 		style={ "view-transition-name:li-" + strconv.Itoa(session.Id) }
 		x-data="{showDelete:false}"
 	>

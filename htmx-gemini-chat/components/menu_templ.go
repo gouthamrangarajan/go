@@ -111,7 +111,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		url := "/" + strconv.Itoa(session.Id)
-		var templ_7745c5c3_Var4 = []any{"relative cursor-pointer py-2 px-4  w-full flex gap-1"}
+		var templ_7745c5c3_Var4 = []any{"menu relative cursor-pointer py-2 px-4  w-full flex gap-1"}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -112,7 +112,7 @@ templ bodyScript() {
                 Alpine.store('data',{
                     addNewChatSessionProcessing:false,
                     deleteChatSessionProcessing:false,
-                    fullPageFetchProcessing:false,
+                    fullPageFetchProcessing:false,                    
                     promptProcessing:false,
                     currentMessageId:-1,
                     menuOpen:false,
@@ -150,13 +150,45 @@ templ bodyScript() {
                                 ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
                             }
                         }
-                    },
-                    
+                    },                    
                 });
                 Alpine.data('chatInput',()=>({
                     prompt:'',
                     imgBase64:"",
-                    fileName:"",                
+                    fileName:"",  
+                    abortController:new AbortController(),         
+                    init(){
+                        this.$watch('$store.data.fullPageFetchProcessing',(val)=>{
+                            if(val){
+                                this.checkAndAbortStreaming();
+                            }
+                        }),
+                        this.$watch('$store.data.addNewChatSessionProcessing',(val)=>{
+                            if(val){
+                                this.checkAndAbortStreaming();
+                            }
+                        }),
+                        this.$watch('$store.data.deleteChatSessionProcessing',(val)=>{                            
+                            if(val){
+                                const chatSessionId=document.getElementById("chatSessionId").value;
+                                if(window.location.pathname.endsWith("/"+chatSessionId)){
+                                    this.checkAndAbortStreaming();
+                                }else{
+                                    const firstMenu=document.getElementsByClassName("menu")[0]
+                                    if(firstMenu && firstMenu.id.endsWith("_"+chatSessionId)){                                        
+                                        this.checkAndAbortStreaming();
+                                    }
+                                }
+                            }
+                        })
+                    },                          
+                    checkAndAbortStreaming(){
+                        if(this.$store.data.promptProcessing){
+                            this.abortController.abort();
+                            this.abortController=new AbortController();
+                            this.setProcessing(false);
+                        }
+                    },             
                     setProcessing(val){
                         if(document.startViewTransition){
                             document.startViewTransition(()=>{
@@ -209,7 +241,8 @@ templ bodyScript() {
                             let decodedValueMerged ="";
                             fetch('/send',{
                                 body:fm,
-                                method:"POST",                                
+                                method:"POST",  
+                                signal:this.abortController.signal,                              
                             }).then(resp=>{
                                 if(!resp.ok){
                                     this.setProcessing(false);
@@ -267,7 +300,7 @@ templ bodyScript() {
                             });                            
                         }
                     },
-                   appendPromptAndImageToUserMessageTemplate(){                    
+                    appendPromptAndImageToUserMessageTemplate(){                    
                         document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = this.prompt;  
                         this.prompt='';
                         if(this.imgBase64!=""){// streamed output is based on image input so prepend Img
