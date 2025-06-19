@@ -184,7 +184,7 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 	url := os.Getenv("GEMINI_STREAMING_URL") + os.Getenv("GEMINI_KEY")
 
 	jsonData, err := json.Marshal(request)
-	os.WriteFile("test2.txt", jsonData, 0644)
+	// os.WriteFile("test2.txt", jsonData, 0644)
 	if err != nil {
 		fmt.Printf("Error converting request to json data to call Gemini API %v\n", err)
 		channel <- "data:ERROR\n\n"
