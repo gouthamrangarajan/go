@@ -4,7 +4,7 @@ import "strconv"
 
 templ chatInput(currentChatSessionId int) {
 	<div
-		class="absolute bottom-4 shrink-0 rounded w-11/12 bg-white dark:bg-[#151b23] transition duration-300 mx-auto flex items-center shadow-lg/30 shadow-cyan-600/70 dark:shadow-cyan-500/50 focus-within:shadow-xl/30 lg:w-10/12 lg:mt-6 xl:w-9/12 "
+		class="absolute bottom-0 shrink-0 rounded w-11/12 p-1 bg-white dark:bg-[#151b23] transition duration-300 mx-auto flex items-center inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 "
 		style="view-transition-name:prompt-form"
 		x-data="chatInput"
 	>
@@ -60,7 +60,7 @@ templ ChatSessionIdInput(sessionId int, isOob bool) {
 templ fileUpload() {
 	<template x-if="fileName!=''">
 		<div
-			class="animate-slide-up absolute -top-9 left-0 w-full py-1 px-3 flex items-center gap-3 rounded border dark:border-0 border-gray-600 bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-200"
+			class="animate-slide-up absolute -top-10 left-0 w-full py-1 px-3 flex items-center gap-3 rounded inset-shadow-sm inset-shadow-cyan-700 dark:inset-shadow-cyan-400 bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-200"
 			style="view-transition-name:upload-file-name"
 		>
 			<img class="h-5 w-5 rounded-full" x-bind:src="imgBase64"/>
