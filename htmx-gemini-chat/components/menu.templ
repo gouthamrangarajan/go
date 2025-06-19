@@ -31,6 +31,10 @@ templ menu(sessions []models.ChatSession) {
 		x-trap="$store.data.menuOpen"
 		x-on:click="$store.data.closeMenu()"
 		style="view-transition-name:menu-background"
+		x-transition:enter="transition duration-200 ease-(--ease-in-3)"
+		x-transition:leave="transition duration-200 ease-(--ease-in-3)"
+		x-transition:enter-start="opacity-0"
+		x-transition:leave-end="opacity-0"
 		x-show="$store.data.menuOpen"
 	>
 		<aside
