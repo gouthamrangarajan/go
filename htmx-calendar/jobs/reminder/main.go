@@ -31,7 +31,7 @@ func main() {
 
 	channels := make([]chan []models.EventData, 14)
 
-	for idx, _ := range channels {
+	for idx := range channels {
 		channels[idx] = make(chan []models.EventData)
 	}
 
