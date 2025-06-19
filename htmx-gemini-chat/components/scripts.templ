@@ -22,7 +22,7 @@ templ bodyScript() {
                     }else{
                          Alpine.store('data').errorMessages.splice(0,1);
                     }
-                },3000)
+                },3000);
             }              
             document.addEventListener('DOMContentLoaded', function() {                
                 domContentLoadedEvent();
@@ -290,9 +290,13 @@ templ bodyScript() {
                                         decodedValueMerged += decodedValue;                                        
                                         document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   
                                     }
-                                    processChunk();
+                                    processChunk().catch(err=>{
+                                        console.log(err);                                        
+                                    });
                                 }
-                                processChunk()
+                                processChunk().catch(err=>{
+                                    console.log(err);                                    
+                                });
                             }).catch(err=>{
                                 console.log(err);
                                 this.setProcessing(false);
