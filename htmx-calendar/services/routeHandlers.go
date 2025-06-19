@@ -27,7 +27,11 @@ type calendarDataType struct {
 func MonthPage(responseWriter http.ResponseWriter, request *http.Request) {
 	month := request.URL.Query().Get("month")
 	year := request.URL.Query().Get("year")
-	MonthPageWithOob(responseWriter, request, month, year, "", false)
+	if request.Header.Get("HX-Request") == "true" {
+		MonthPageWithOob(responseWriter, request, month, year, "", true)
+	} else {
+		MonthPageWithOob(responseWriter, request, month, year, "", false)
+	}
 }
 func MonthPageWithOob(responseWriter http.ResponseWriter, request *http.Request, toMonth string, toYear string, toDay string, isOob bool) {
 	token := request.Context().Value(TokenKey).(string)
@@ -116,7 +120,11 @@ func AddPage(responseWriter http.ResponseWriter, request *http.Request) {
 		fromMonth := request.URL.Query().Get("month")
 		fromYear := request.URL.Query().Get("year")
 		fromDay := request.URL.Query().Get("day")
-		AddPageWithOob(responseWriter, request, fromMonth, fromYear, fromDay, false)
+		if request.Header.Get("HX-Request") == "true" {
+			AddPageWithOob(responseWriter, request, fromMonth, fromYear, fromDay, true)
+		} else {
+			AddPageWithOob(responseWriter, request, fromMonth, fromYear, fromDay, false)
+		}
 	} else if strings.ToUpper(request.Method) == "POST" {
 		dateLayout := "2006-01-02"
 		token := request.Context().Value(TokenKey).(string)
@@ -244,7 +252,11 @@ func WeekPage(responseWriter http.ResponseWriter, request *http.Request) {
 	toMonth := request.URL.Query().Get("month")
 	toYear := request.URL.Query().Get("year")
 	toWeek := request.URL.Query().Get("week")
-	WeekPageWithOob(responseWriter, request, toMonth, toYear, toWeek, false)
+	if request.Header.Get("HX-Request") == "true" {
+		WeekPageWithOob(responseWriter, request, toMonth, toYear, toWeek, true)
+	} else {
+		WeekPageWithOob(responseWriter, request, toMonth, toYear, toWeek, false)
+	}
 }
 
 func WeekPageWithOob(responseWriter http.ResponseWriter, request *http.Request, toMonth string, toYear string, toWeek string, isOob bool) {

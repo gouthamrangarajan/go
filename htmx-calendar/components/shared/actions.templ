@@ -17,7 +17,7 @@ templ MonthViewLink(currentMonthAndYear time.Time, active bool) {
 		hx-get={ url }
 		hx-boost="true"
 		hx-swap="outerHTML transition:true"
-		hx-target="body"
+		hx-target="main"
 		hx-trigger="MONTH_VIEW_EVENT"
 		hx-push-url="true"
 		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
@@ -40,7 +40,7 @@ templ WeekViewLink(currentMonthAndYear time.Time, active bool) {
 		hx-get={ url }
 		hx-boost="true"
 		hx-swap="outerHTML transition:true"
-		hx-target="body"
+		hx-target="main"
 		hx-trigger="WEEK_VIEW_EVENT"
 		hx-push-url="true"
 		x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
@@ -63,7 +63,7 @@ templ AddEventLink(date time.Time, week int, active bool) {
 			hx-get={ url }
 			hx-boost="true"
 			hx-swap="outerHTML transition:true"
-			hx-target="body"
+			hx-target="main"
 			x-on:click="$store.data.setProcessingForFetch($event,'')"
 			hx-replace-url="true"
 		>{ strconv.Itoa(date.Day()) }</a>

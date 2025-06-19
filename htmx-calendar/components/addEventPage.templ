@@ -74,7 +74,7 @@ templ addEventPageModal(date time.Time, week int) {
 					hx-get={ mainPageUrl }
 					hx-boost="true"
 					hx-swap="outerHTML transition:true"
-					hx-target="body"
+					hx-target="main"
 					hx-push-url="true"
 					x-on:click="$store.data.setProcessingForFetch($event,'')"
 					class="apperance-none outline-none p-1 font-semibold rounded-full text-red-600 transition duration-300 focus:ring-2 focus:ring-red-600 hover:opacity-80"

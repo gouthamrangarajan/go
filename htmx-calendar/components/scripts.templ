@@ -3,126 +3,121 @@ package components
 var onceHandle = templ.NewOnceHandle()
 
 templ bodyScript() {
-    @onceHandle.Once() {
-				<script type="text/javascript">				
-					var ABORT_CONTROLLER=new AbortController();														
-					document.addEventListener('alpine:init', () => {						
-						Alpine.store('data', {
-							processing: false,								
-							dnDRowCol:[],		
-							dragging:false,					
-							checkDnDRowCol(row,col){
-								if(this.dnDRowCol.length<2 || !this.dragging){
-									return false;
-								}
-								if(this.dnDRowCol[0]==row && this.dnDRowCol[1]==col){
-									return true;
-								}
-								return false;
-							},
-							setProcessingForFetch(targetEv,optionalEventNameToDispatch){									
-								if(!this.processing){
-									if(ABORT_CONTROLLER){
-										ABORT_CONTROLLER.abort();
-									}
-									this.processing=true;
-									if(optionalEventNameToDispatch && optionalEventNameToDispatch!=''){
-										targetEv.preventDefault();	
-										targetEv.currentTarget.dispatchEvent(new Event(optionalEventNameToDispatch))
-									}									
-								}	
-							},
-							setProcessingForSubmit(targetEv,optionalEventNameToDispatch){
-								if(!this.processing){									
-									this.processing=true;
-									if(optionalEventNameToDispatch && optionalEventNameToDispatch!=''){
-										targetEv.preventDefault();	
-										targetEv.currentTarget.dispatchEvent(new Event(optionalEventNameToDispatch))
-									}									
-								}
-							}								
-						})							
-					}, { signal: ABORT_CONTROLLER.signal });
-
-					document.body.addEventListener('htmx:afterSwap', function(event) {	
-						if(Alpine.store('data').processing){
-							Alpine.store('data').processing=false
-						}						
-					}, { signal: ABORT_CONTROLLER.signal });
-
-					document.body.addEventListener('htmx:beforeRequest', function(event) {	
-						const isDelete=event?.detail?.pathInfo?.requestPath=="/delete";
-						if(isDelete && !Alpine.store('data').processing){
-							Alpine.store('data').processing=true;
-						}						
-					}, { signal: ABORT_CONTROLLER.signal });
-
-					document.body.addEventListener('htmx:afterRequest', function(event) {	
-						const isDelete=event?.detail?.pathInfo?.requestPath=="/delete";
-						if(isDelete && Alpine.store('data').processing){
-							Alpine.store('data').processing=false;
-						}						
-					}, { signal: ABORT_CONTROLLER.signal });
-
-					function dragStarted(event,dataId){
-						event.dataTransfer.clearData();
-                        event.dataTransfer.setData('text/plain',dataId); 	
-						Alpine.store('data').dragging=true;					
-					}					
-
-					function setAlpineStoreDnDRowCol(event,row,col,allowDnD){
-						console.log(event,row,col,allowDnD);
-						if(Alpine.store('data').dragging && allowDnD){
-							Alpine.store('data').dnDRowCol=[row,col];
-							event.preventDefault();
+	@onceHandle.Once() {
+		<script type="text/javascript">			
+			document.addEventListener('alpine:init', () => {						
+				Alpine.store('data', {
+					processing: false,								
+					dnDRowCol:[],		
+					dragging:false,					
+					checkDnDRowCol(row,col){
+						if(this.dnDRowCol.length<2 || !this.dragging){
+							return false;
 						}
-					}
-
-					function removeAlpineStoreDnDRowCol(row,col){
-						if(Alpine.store('data').dnDRowCol.length==2
-							&& Alpine.store('data').dnDRowCol[0]==row 
-							&& Alpine.store('data').dnDRowCol[1]==col){
-								Alpine.store('data').dnDRowCol=[]
-							}
-					}	
-
-					function eventDropped(event,date,allowDnD){
-						if(!allowDnD){
-							return;
+						if(this.dnDRowCol[0]==row && this.dnDRowCol[1]==col){
+							return true;
 						}
-						Alpine.store('data').processing=true;
-						const dataId=event.dataTransfer.getData('text/plain');	
-						fetch('/dnd',{
-							method:"POST",
-							body:JSON.stringify({id:dataId,date}),
-							headers:{
-								'content-type':'application/json'
-							},
-						}).then(resp=>{
-							Alpine.store('data').processing=false;
-						}).catch(err=>{
-							console.log(err);
-							Alpine.store('data').processing=false;
-						});																	
-						const elToRemove=document.querySelector("[data-id='"+dataId+"']");											
-						const targetElToAppend=event.currentTarget;						
-						if(document.startViewTransition){
-							document.startViewTransition(()=>{		
-								elToRemove.remove();
-								elToRemove.classList.add("animate-slide-down-item");
-								targetElToAppend.children[1].appendChild(elToRemove);
-								Alpine.store('data').dnDRowCol=[];
-								Alpine.store('data').dragging=false;
-							});
+						return false;
+					},
+					setProcessingForFetch(targetEv,optionalEventNameToDispatch){									
+						if(!this.processing){									
+							this.processing=true;
+							if(optionalEventNameToDispatch && optionalEventNameToDispatch!=''){
+								targetEv.preventDefault();	
+								targetEv.currentTarget.dispatchEvent(new Event(optionalEventNameToDispatch))
+							}									
+						}	
+					},
+					setProcessingForSubmit(targetEv,optionalEventNameToDispatch){
+						if(!this.processing){									
+							this.processing=true;
+							if(optionalEventNameToDispatch && optionalEventNameToDispatch!=''){
+								targetEv.preventDefault();	
+								targetEv.currentTarget.dispatchEvent(new Event(optionalEventNameToDispatch))
+							}									
 						}
-						else{				
-							elToRemove.remove();			
-							elToRemove.classList.add("animate-slide-down-item");
-							targetElToAppend.children[1].appendChild(elToRemove);
-							Alpine.store('data').dnDRowCol=[];
-							Alpine.store('data').dragging=false;
-						}						
-					}				
-				</script>
+					}								
+				})							
+			});
+
+			document.body.addEventListener('htmx:afterSwap', function(event) {	
+				if(Alpine.store('data').processing){
+					Alpine.store('data').processing=false
+				}						
+			});
+
+			document.body.addEventListener('htmx:beforeRequest', function(event) {	
+				const isDelete=event?.detail?.pathInfo?.requestPath=="/delete";
+				if(isDelete && !Alpine.store('data').processing){
+					Alpine.store('data').processing=true;
+				}						
+			});
+
+			document.body.addEventListener('htmx:afterRequest', function(event) {	
+				const isDelete=event?.detail?.pathInfo?.requestPath=="/delete";
+				if(isDelete && Alpine.store('data').processing){
+					Alpine.store('data').processing=false;
+				}						
+			});
+
+			function dragStarted(event,dataId){
+				event.dataTransfer.clearData();
+				event.dataTransfer.setData('text/plain',dataId); 	
+				Alpine.store('data').dragging=true;					
+			}					
+
+			function setAlpineStoreDnDRowCol(event,row,col,allowDnD){				
+				if(Alpine.store('data').dragging && allowDnD){
+					Alpine.store('data').dnDRowCol=[row,col];
+					event.preventDefault();
+				}
 			}
+
+			function removeAlpineStoreDnDRowCol(row,col){
+				if(Alpine.store('data').dnDRowCol.length==2
+					&& Alpine.store('data').dnDRowCol[0]==row 
+					&& Alpine.store('data').dnDRowCol[1]==col){
+						Alpine.store('data').dnDRowCol=[]
+					}
+			}	
+
+			function eventDropped(event,date,allowDnD){
+				if(!allowDnD){
+					return;
+				}
+				Alpine.store('data').processing=true;
+				const dataId=event.dataTransfer.getData('text/plain');	
+				fetch('/dnd',{
+					method:"POST",
+					body:JSON.stringify({id:dataId,date}),
+					headers:{
+						'content-type':'application/json'
+					},
+				}).then(resp=>{
+					Alpine.store('data').processing=false;
+				}).catch(err=>{
+					console.log(err);
+					Alpine.store('data').processing=false;
+				});																	
+				const elToRemove=document.querySelector("[data-id='"+dataId+"']");											
+				const targetElToAppend=event.currentTarget;						
+				if(document.startViewTransition){
+					document.startViewTransition(()=>{		
+						elToRemove.remove();
+						elToRemove.classList.add("animate-slide-down-item");
+						targetElToAppend.children[1].appendChild(elToRemove);
+						Alpine.store('data').dnDRowCol=[];
+						Alpine.store('data').dragging=false;
+					});
+				}
+				else{				
+					elToRemove.remove();			
+					elToRemove.classList.add("animate-slide-down-item");
+					targetElToAppend.children[1].appendChild(elToRemove);
+					Alpine.store('data').dnDRowCol=[];
+					Alpine.store('data').dragging=false;
+				}						
+			}				
+		</script>
+	}
 }
