@@ -137,6 +137,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		}
 		select {
 		case <-ctx.Done():
+			fmt.Println("Client disconnected, stopping streaming")
 			continue
 		default:
 			sendMessageAndFlush(message, response)
@@ -160,6 +161,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 
 	select {
 	case <-ctx.Done():
+		fmt.Println("Client disconnected, ignoring data:END message")
 		break
 	default:
 		sendMessageAndFlush("data:END\n\n", response)
