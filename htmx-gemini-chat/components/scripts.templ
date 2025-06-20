@@ -231,52 +231,54 @@ templ bodyScript() {
                         }                        
                         this.$refs.imageInput.value=''
                     },
-                    submitMessage(ev,idToAppendData){
+                    async submitMessage(ev,idToAppendData){
                         if(!ev.shiftKey && this.prompt.trim()!='' && !this.$store.data.promptProcessing){
                             this.setProcessing(true);
                             const fm=new FormData();
                             fm.append("prompt",this.prompt);
                             fm.append("imgBase64",this.imgBase64)
                             fm.append("chatSessionId",document.getElementById("chatSessionId").value);                                                        
-                            let decodedValueMerged ="";
-                            fetch('/send',{
-                                body:fm,
-                                method:"POST",  
-                                signal:this.abortController.signal,                              
-                            }).then(resp=>{
+                            try{
+                                let decodedValueMerged ="";                                
+                                const resp= await fetch('/send',{
+                                    body:fm,
+                                    method:"POST",  
+                                    signal:this.abortController.signal,                              
+                                });                        
                                 if(!resp.ok){
                                     this.setProcessing(false);
                                     addErrorMessage('Error! Please try again later');     
                                     return;
-                                }                                
+                                }                                   
                                 const reader = resp.body.getReader();
-                                const processChunk = async () => {
+                                const textDecoder=new TextDecoder();                                                                 
+                                while (true){
                                     const { done, value } = await reader.read();
                                     if(done){//streaming end
                                         this.setProcessing(false);
                                         this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";
-                                        return;
+                                        break;
                                     }
-                                    let decodedValue = new TextDecoder().decode(value);                                                                         
+                                    let decodedValue = textDecoder.decode(value);                                                                         
                                     if(decodedValue.includes("data:END")){//streaming end
                                         this.setProcessing(false);
                                         this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";                                                                                
-                                        return;
+                                        break;
                                     }
                                     else if(decodedValue.includes("data:ERROR")){//error in gemini api
                                         this.setProcessing(false);
                                         this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";                                        
                                         addErrorMessage('Error! Please try again later');     
-                                        return;
+                                        break;
                                     }
                                     else if(decodedValue.startsWith("<div class")){ //streamed output is a new user message item or new gemini message item
                                         this.$store.data.currentMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                                                                 
                                         decodedValueMerged="";                                           
                                         if(this.prompt!=''){ //streamed output is user message 
-                                          this.appendPromptAndImageToUserMessageTemplate()                                                                   
+                                            this.appendPromptAndImageToUserMessageTemplate()                                                                   
                                         }
                                         document.getElementsByTagName('main')[0].scrollTop=document.getElementsByTagName('main')[0].scrollHeight+100;                         
                                     }
@@ -289,19 +291,17 @@ templ bodyScript() {
                                     else{ //streamed output is gemini message that needs to be appended to existing message 
                                         decodedValueMerged += decodedValue;                                        
                                         document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   
-                                    }
-                                    processChunk().catch(err=>{
-                                        console.log(err);                                        
-                                    });
+                                    }                                    
                                 }
-                                processChunk().catch(err=>{
-                                    console.log(err);                                    
-                                });
-                            }).catch(err=>{
+                        
+                            }
+                            catch(err){
                                 console.log(err);
                                 this.setProcessing(false);
-                                addErrorMessage('Error! Please try again later');     
-                            });                            
+                                if (err?.name !== 'AbortError') {
+                                    addErrorMessage('Error! Please try again later');     
+                                }
+                            }                            
                         }
                     },
                     appendPromptAndImageToUserMessageTemplate(){                    
