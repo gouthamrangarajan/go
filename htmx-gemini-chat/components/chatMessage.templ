@@ -24,13 +24,6 @@ templ UserMessage(id int, message string, imgData string) {
 			}
 			<div class="flex-1 max-w-full" x-data={ "{md:`" + formatMessageForAlpine(message) + "`}" }>
 				<zero-md>
-					<script type="application/json" data-merge="mermaid">
-						{
-							"mermaid": {
-								"suppressErrorRendering": true                                                   
-							}
-						}
-					</script>
 					<script type="text/markdown" x-html="md" id={ "message_" + strconv.Itoa(id) }>			        
 			    	</script>
 				</zero-md>
@@ -66,13 +59,6 @@ templ UserMessageTemplate(id int) {
 		<div class="flex flex-col gap-1">
 			<div class="flex-1 max-w-full">
 				<zero-md>
-					<script type="application/json" data-merge="mermaid">
-						{
-							"mermaid": {
-								"suppressErrorRendering": true                                                   
-							}
-						}
-					</script>
 					<script type="text/markdown" id={ "message_" + strconv.Itoa(id) }>			        
 			    	</script>
 				</zero-md>
@@ -95,13 +81,6 @@ templ GeminiMessage(id int, message string) {
 		</svg>
 		<div class="flex-1 max-w-full" x-data={ "{md:`" + formatMessageForAlpine(message) + "`}" }>
 			<zero-md>
-				<script type="application/json" data-merge="mermaid">
-					{
-						"mermaid": {
-							"suppressErrorRendering": true                                               
-						}
-					}
-				</script>
 				<script type="text/markdown" x-html="md" id={ "message_" + strconv.Itoa(id) }>			        
 			    </script>
 			</zero-md>
@@ -141,13 +120,6 @@ templ GeminiMessageTemplate(id int) {
 		</svg>
 		<div class="flex-1 max-w-full">
 			<zero-md>
-				<script type="application/json" data-merge="mermaid">
-					{
-						"mermaid": {
-							"suppressErrorRendering": true                                                   
-						}
-					}
-				</script>
 				<script type="text/markdown" id={ "message_" + strconv.Itoa(id) }>					
                 </script>
 			</zero-md>
