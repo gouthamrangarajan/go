@@ -73,6 +73,12 @@ func main() {
 	defer close(emailChannel)
 	go sendEmail(os.Getenv("REMINDER_EMAIL_TO"), os.Getenv("REMINDER_EMAIL_FROM"), emailStrBuffer.String(), os.Getenv("REMINDER_EMAIL_SUBJECT"), os.Getenv("RESEND_API_KEY"), emailChannel)
 	fmt.Println(<-emailChannel)
+
+	// Below is for debugging purposes, to print the consolidated data
+	// fmt.Println("")
+	// for _, data := range consolidatedData {
+	// 	fmt.Printf("Task : %v, Frequency : %v\n", data.Task, data.Frequency)
+	// }
 }
 func GetCurrentDayDataForUser(userId string, currDateStr string, channel chan<- []models.EventData) {
 	defer close(channel)
@@ -126,6 +132,16 @@ func GetDailyDataForUser(userId string, currDateStr string, channel chan<- []mod
 		return
 	}
 	for _, event := range allResponse {
+		eventDate, err := time.Parse(dateLayout, event.Date)
+		if err != nil {
+			fmt.Printf("Error parsing date %v\n", err.Error())
+			continue
+		}
+		diff := int(currDate.Sub(eventDate).Hours() / 24)
+		if diff < 0 {
+			fmt.Printf("Skipping future event %v in daily\n", event.Task)
+			continue
+		}
 		stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 		if err == nil {
 			if stopAfterDate.Before(currDate) {
@@ -172,7 +188,11 @@ func GetWeeklyDataForUserWithExactDate(userId string, currDateStr string, channe
 			fmt.Printf("Error parsing date %v\n", err.Error())
 			continue
 		}
-		if int(currDate.Sub(eventDate).Hours()/24)%7 == 0 {
+		diff := int(currDate.Sub(eventDate).Hours() / 24)
+		if diff < 0 {
+			fmt.Printf("Skipping future event %v in weekly\n", event.Task)
+			continue
+		} else if diff%7 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -219,6 +239,16 @@ func GetWeeklyDataForUserSaturday(userId string, currDateStr string, channel cha
 	if currDate.Weekday() == time.Saturday {
 		currDate, _ := time.Parse(dateLayout, currDateStr)
 		for _, event := range allResponse {
+			eventDate, err := time.Parse(dateLayout, event.Date)
+			if err != nil {
+				fmt.Printf("Error parsing date %v\n", err.Error())
+				continue
+			}
+			diff := int(currDate.Sub(eventDate).Hours() / 24)
+			if diff < 0 {
+				fmt.Printf("Skipping future event %v in weekly\n", event.Task)
+				continue
+			}
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -267,7 +297,12 @@ func GetEveryTwoWeeksDataForUserWithExactDate(userId string, currDateStr string,
 			fmt.Printf("Error parsing date %v\n", err.Error())
 			continue
 		}
-		if int(currDate.Sub(eventDate).Hours()/24)%14 == 0 {
+		diff := int(currDate.Sub(eventDate).Hours() / 24)
+		if diff < 0 {
+			fmt.Printf("Skipping future event %v in every two weeks\n", event.Task)
+			continue
+		}
+		if diff%14 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -327,6 +362,16 @@ func GetEveryTwoWeeksDataForUserSaturday(userId string, currDateStr string, chan
 		alternateSaturdays := GetAlternateSaturdaysInAYear(currDate.Year())
 
 		for _, event := range allResponse {
+			eventDate, err := time.Parse(dateLayout, event.Date)
+			if err != nil {
+				fmt.Printf("Error parsing date %v\n", err.Error())
+				continue
+			}
+			diff := int(currDate.Sub(eventDate).Hours() / 24)
+			if diff < 0 {
+				fmt.Printf("Skipping future event %v in every two weeks\n", event.Task)
+				continue
+			}
 			if alternateSaturdays.Contains(event.Date) {
 				stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 				if err == nil {
@@ -383,6 +428,16 @@ func GetMonthlyDataForUserWithExactDate(userId string, currDateStr string, chann
 	}
 	for _, event := range allResponse {
 		if allMonthDates.Contains(event.Date) {
+			eventDate, err := time.Parse(dateLayout, event.Date)
+			if err != nil {
+				fmt.Printf("Error parsing date %v\n", err.Error())
+				continue
+			}
+			diff := int(currDate.Sub(eventDate).Hours() / 24)
+			if diff < 0 {
+				fmt.Printf("Skipping future event %v in monthly\n", event.Task)
+				continue
+			}
 			stopAfter, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfter.Before(currDate) {
@@ -427,6 +482,16 @@ func GetMonthlyDataForUserFirstSaturday(userId string, currDateStr string, chann
 	}
 	if currDate.Weekday() == time.Saturday && currDate.Day() <= 7 {
 		for _, event := range allResponse {
+			eventDate, err := time.Parse(dateLayout, event.Date)
+			if err != nil {
+				fmt.Printf("Error parsing date %v\n", err.Error())
+				continue
+			}
+			diff := int(currDate.Sub(eventDate).Hours() / 24)
+			if diff < 0 {
+				fmt.Printf("Skipping future event %v in monthly\n", event.Task)
+				continue
+			}
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -475,6 +540,12 @@ func GetQuarterlyDataForUserWithExactDate(userId string, currDateStr string, cha
 			fmt.Printf("Error parsing date %v\n", err.Error())
 			continue
 		}
+
+		diff := int(currDate.Sub(eventDate).Hours() / 24)
+		if diff < 0 {
+			fmt.Printf("Skipping future event %v in quarterly\n", event.Task)
+			continue
+		}
 		if int(currDate.Sub(eventDate).Hours()/24/30)%3 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
@@ -520,6 +591,16 @@ func GetQuarterlyDataForUserFirstSaturday(userId string, currDateStr string, cha
 	}
 	if currDate.Weekday() == time.Saturday && currDate.Day() <= 7 && currDate.Month()%3 == 1 {
 		for _, event := range allResponse {
+			eventDate, err := time.Parse(dateLayout, event.Date)
+			if err != nil {
+				fmt.Printf("Error parsing date %v\n", err.Error())
+				continue
+			}
+			diff := int(currDate.Sub(eventDate).Hours() / 24)
+			if diff < 0 {
+				fmt.Printf("Skipping future event %v in quarterly\n", event.Task)
+				continue
+			}
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -568,6 +649,11 @@ func GetHalfYearlyDataForUserWithExactDate(userId string, currDateStr string, ch
 			fmt.Printf("Error parsing date %v\n", err.Error())
 			continue
 		}
+		diff := int(currDate.Sub(eventDate).Hours() / 24)
+		if diff < 0 {
+			fmt.Printf("Skipping future event %v in half yearly\n", event.Task)
+			continue
+		}
 		if int(currDate.Sub(eventDate).Hours()/24/30)%6 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
@@ -613,6 +699,16 @@ func GetHalfYearlyDataForUserFirstSaturday(userId string, currDateStr string, ch
 	}
 	if currDate.Weekday() == time.Saturday && currDate.Day() <= 7 && currDate.Month()%6 == 1 {
 		for _, event := range allResponse {
+			eventDate, err := time.Parse(dateLayout, event.Date)
+			if err != nil {
+				fmt.Printf("Error parsing date %v\n", err.Error())
+				continue
+			}
+			diff := int(currDate.Sub(eventDate).Hours() / 24)
+			if diff < 0 {
+				fmt.Printf("Skipping future event %v in half yearly\n", event.Task)
+				continue
+			}
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -661,6 +757,11 @@ func GetYearlyDataForUserWithExactDate(userId string, currDateStr string, channe
 			fmt.Printf("Error parsing date %v\n", err.Error())
 			continue
 		}
+		diff := int(currDate.Sub(eventDate).Hours() / 24)
+		if diff < 0 {
+			fmt.Printf("Skipping future event %v in yearly\n", event.Task)
+			continue
+		}
 		if int(currDate.Sub(eventDate).Hours()/24/30)%12 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
@@ -706,6 +807,16 @@ func GetYearlyDataForUserFirstSaturday(userId string, currDateStr string, channe
 	}
 	if currDate.Weekday() == time.Saturday && currDate.Day() <= 7 && currDate.Month() == 1 {
 		for _, event := range allResponse {
+			eventDate, err := time.Parse(dateLayout, event.Date)
+			if err != nil {
+				fmt.Printf("Error parsing date %v\n", err.Error())
+				continue
+			}
+			diff := int(currDate.Sub(eventDate).Hours() / 24)
+			if diff < 0 {
+				fmt.Printf("Skipping future event %v in yearly\n", event.Task)
+				continue
+			}
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
