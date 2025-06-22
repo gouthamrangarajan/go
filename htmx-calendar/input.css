@@ -84,7 +84,7 @@
 
 
 .animate-result {
-    animation: result 0.2s var(--ease-elastic-in-5);
+    animation: result 0.2s var(--ease-in-3);
 }
 
 @keyframes result {
@@ -127,4 +127,13 @@
 ::view-transition-new(mainSection) {
     height: 100%;
     transition: height 0.2s var(--ease-elastic-in-5);
+}
+
+.flatpickr-calendar:before,
+.flatpickr-calendar:after {
+    content: none;
+}
+
+.flatpickr-calendar.animate.open {
+    animation-timing-function: var(--ease-in-3);
 }

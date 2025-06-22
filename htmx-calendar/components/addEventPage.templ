@@ -96,7 +96,25 @@ templ addEventPageModal(date time.Time, week int) {
 				hx-swap="outerHTML"
 				x-on:submit="$store.data.setProcessingForSubmit($event,'ADD_EVENT')"
 				x-bind:disabled="$store.data.processing"
-				x-data="{frequency:'Only once',exact:false}"
+				x-data="{frequency:'Only once',exact:false,flatpickrInstance:null}"
+				x-init={ ` $watch('frequency',(val)=>{
+								if(this.flatpickrInstance && this.flatpickrInstance.destroy){										
+									this.flatpickrInstance.destroy();
+								}
+								if (val!=='Only once'){
+									this.flatpickrInstance=flatpickr($refs.dateInput, {
+										dateFormat: 'Y-m-d',										
+										minDate: '`+date.AddDate(0, 0, 1).Format("2006-01-02")+`',
+										enableTime: false,
+										allowInput: true,
+										disableMobile: false,
+										locale: {
+											firstDayOfWeek: 0 // start week on Sunday
+										},										
+									});
+								}								
+							});
+						` }
 			>
 				<fieldset class="flex flex-col gap-1">
 					<label for="date" class="text-slate-600 text-lg">Date:</label>
@@ -186,7 +204,7 @@ templ addEventPageModal(date time.Time, week int) {
 							class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600 disabled:cursor-not-allowed"
 							name="stopAfter"
 							x-bind:disabled="frequency=='Only once'"
-							min={ date.AddDate(0, 0, 1).Format("2006-01-02") }
+							x-ref="dateInput"
 						/>
 					</fieldset>
 				</div>

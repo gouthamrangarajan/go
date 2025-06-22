@@ -194,6 +194,9 @@
   .relative {
     position: relative;
   }
+  .static {
+    position: static;
+  }
   .top-0 {
     top: calc(var(--spacing) * 0);
   }
@@ -259,6 +262,9 @@
       width: 8px;
       height: 8px;
     }
+  }
+  .block {
+    display: block;
   }
   .flex {
     display: flex;
@@ -574,6 +580,10 @@
   .shadow-teal-600 {
     --tw-shadow-color: var(--color-teal-600);
   }
+  .blur {
+    --tw-blur: blur(8px);
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
   .transition {
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
@@ -850,7 +860,7 @@
   }
 }
 .animate-result {
-  animation: result 0.2s var(--ease-elastic-in-5);
+  animation: result 0.2s var(--ease-in-3);
 }
 @keyframes result {
   from {
@@ -884,6 +894,12 @@
 ::view-transition-old(mainSection), ::view-transition-new(mainSection) {
   height: 100%;
   transition: height 0.2s var(--ease-elastic-in-5);
+}
+.flatpickr-calendar:before, .flatpickr-calendar:after {
+  content: none;
+}
+.flatpickr-calendar.animate.open {
+  animation-timing-function: var(--ease-in-3);
 }
 @layer base {
   * {
@@ -994,6 +1010,46 @@
   syntax: "*";
   inherits: false;
   initial-value: 0 0 #0000;
+}
+@property --tw-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow {
+  syntax: "*";
+  inherits: false;
 }
 @property --tw-duration {
   syntax: "*";

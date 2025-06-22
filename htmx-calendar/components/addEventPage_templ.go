@@ -217,69 +217,86 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"main\" hx-push-url=\"true\" x-on:click=\"$store.data.setProcessingForFetch($event,'')\" class=\"apperance-none outline-none p-1 font-semibold rounded-full text-red-600 transition duration-300 focus:ring-2 focus:ring-red-600 hover:opacity-80\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></a></div><p class=\"add__result py-1 px-3 w-full\" style=\"view-transition-name:addResult\"></p><form id=\"addEventForm\" method=\"POST\" action=\"/add\" hx-post=\"/add\" class=\"flex flex-col gap-4 \" hx-trigger=\"ADD_EVENT\" hx-target=\".add__result\" hx-swap=\"outerHTML\" x-on:submit=\"$store.data.setProcessingForSubmit($event,'ADD_EVENT')\" x-bind:disabled=\"$store.data.processing\" x-data=\"{frequency:'Only once',exact:false}\"><fieldset class=\"flex flex-col gap-1\"><label for=\"date\" class=\"text-slate-600 text-lg\">Date:</label> <input type=\"date\" id=\"date\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"date\" readonly required value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"main\" hx-push-url=\"true\" x-on:click=\"$store.data.setProcessingForFetch($event,'')\" class=\"apperance-none outline-none p-1 font-semibold rounded-full text-red-600 transition duration-300 focus:ring-2 focus:ring-red-600 hover:opacity-80\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></a></div><p class=\"add__result py-1 px-3 w-full\" style=\"view-transition-name:addResult\"></p><form id=\"addEventForm\" method=\"POST\" action=\"/add\" hx-post=\"/add\" class=\"flex flex-col gap-4 \" hx-trigger=\"ADD_EVENT\" hx-target=\".add__result\" hx-swap=\"outerHTML\" x-on:submit=\"$store.data.setProcessingForSubmit($event,'ADD_EVENT')\" x-bind:disabled=\"$store.data.processing\" x-data=\"{frequency:'Only once',exact:false,flatpickrInstance:null}\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format("2006-01-02"))
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(` $watch('frequency',(val)=>{
+								if(this.flatpickrInstance && this.flatpickrInstance.destroy){										
+									this.flatpickrInstance.destroy();
+								}
+								if (val!=='Only once'){
+									this.flatpickrInstance=flatpickr($refs.dateInput, {
+										dateFormat: 'Y-m-d',										
+										minDate: '` + date.AddDate(0, 0, 1).Format("2006-01-02") + `',
+										enableTime: false,
+										allowInput: true,
+										disableMobile: false,
+										locale: {
+											firstDayOfWeek: 0 // start week on Sunday
+										},										
+									});
+								}								
+							});
+						`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 110, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 117, Col: 7}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"></fieldset><fieldset class=\"flex flex-col gap-1\"><label for=\"task\" class=\"text-slate-600 text-lg\">Task:</label> <input type=\"text\" id=\"task\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"task\" required autofocus minlength=\"3\"></fieldset><fieldset class=\"flex flex-col gap-1 w-full \"><label for=\"frequency\" class=\"text-slate-600 text-lg\">Frequency:</label><div class=\"relative w-full\"><select id=\"frequency\" class=\"appearance-none outline-none w-full py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"frequency\" x-model=\"frequency\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"><fieldset class=\"flex flex-col gap-1\"><label for=\"date\" class=\"text-slate-600 text-lg\">Date:</label> <input type=\"date\" id=\"date\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"date\" readonly required value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format("2006-01-02"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 128, Col: 39}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"></fieldset><fieldset class=\"flex flex-col gap-1\"><label for=\"task\" class=\"text-slate-600 text-lg\">Task:</label> <input type=\"text\" id=\"task\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"task\" required autofocus minlength=\"3\"></fieldset><fieldset class=\"flex flex-col gap-1 w-full \"><label for=\"frequency\" class=\"text-slate-600 text-lg\">Frequency:</label><div class=\"relative w-full\"><select id=\"frequency\" class=\"appearance-none outline-none w-full py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600\" name=\"frequency\" x-model=\"frequency\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range []string{"Only once", "Daily", "Weekly", "Every two weeks", "Monthly", "Quarterly", "Half yearly", "Yearly"} {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<option value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(item)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 135, Col: 28}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<option value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(item)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 135, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 153, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</option>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(item)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 153, Col: 37}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</option>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6 absolute top-3 right-3 -z-10\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></div></fieldset><div class=\"flex flex-col gap-2 p-2 bg-gray-50\" x-show=\"frequency!='Only once'\" x-transition:enter=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\"><fieldset class=\"flex items-center gap-1 relative disabled:cursor-not-allowed disabled:bg-gray-50 \" x-bind:disabled=\"frequency=='Only once'\" x-show=\"frequency!='Only once' && frequency!='Daily'\" x-transition:enter=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\"><input type=\"checkbox\" id=\"exact\" name=\"exact\" value=\"yes\" x-model=\"exact\" class=\"w-5 h-5 border-gray-300 rounded\"> <label for=\"exact\" class=\"text-slate-600 text-lg\"><span>Use Exact Date:</span></label></fieldset><fieldset class=\"flex flex-col gap-1 disabled:bg-gray-50 disabled:cursor-not-allowed\" x-bind:disabled=\"frequency=='Only once'\"><label for=\"stopAfter\" class=\"text-slate-600 text-lg flex items-start gap-1\">Stop After:\t\t\t\t\t\t\t</label> <input type=\"date\" id=\"stopAfter\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600 disabled:cursor-not-allowed\" name=\"stopAfter\" x-bind:disabled=\"frequency=='Only once'\" min=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(date.AddDate(0, 0, 1).Format("2006-01-02"))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 189, Col: 55}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"></fieldset></div><button type=\"submit\" x-bind:disabled=\"$store.data.processing\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-600 text-white text-lg transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Submit</button></form></dialog></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6 absolute top-3 right-3 -z-10\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></div></fieldset><div class=\"flex flex-col gap-2 p-2 bg-gray-50\" x-show=\"frequency!='Only once'\" x-transition:enter=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\"><fieldset class=\"flex items-center gap-1 relative disabled:cursor-not-allowed disabled:bg-gray-50 \" x-bind:disabled=\"frequency=='Only once'\" x-show=\"frequency!='Only once' && frequency!='Daily'\" x-transition:enter=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition var(--ease-elastic-in-5) duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\"><input type=\"checkbox\" id=\"exact\" name=\"exact\" value=\"yes\" x-model=\"exact\" class=\"w-5 h-5 border-gray-300 rounded\"> <label for=\"exact\" class=\"text-slate-600 text-lg\"><span>Use Exact Date:</span></label></fieldset><fieldset class=\"flex flex-col gap-1 disabled:bg-gray-50 disabled:cursor-not-allowed\" x-bind:disabled=\"frequency=='Only once'\"><label for=\"stopAfter\" class=\"text-slate-600 text-lg flex items-start gap-1\">Stop After:\t\t\t\t\t\t\t</label> <input type=\"date\" id=\"stopAfter\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-300 transition duration-300 focus:border-gray-600 disabled:cursor-not-allowed\" name=\"stopAfter\" x-bind:disabled=\"frequency=='Only once'\" x-ref=\"dateInput\"></fieldset></div><button type=\"submit\" x-bind:disabled=\"$store.data.processing\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-600 text-white text-lg transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Submit</button></form></dialog></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -316,7 +333,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully added task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 206, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 224, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -334,7 +351,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("Error adding task " + task + ". Please try again later.")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 224, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 242, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -382,7 +399,7 @@ func AddEventValidationError(errs []string) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 234, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 252, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
