@@ -25,10 +25,10 @@ templ bodyScript() {
                 },3000);
             }              
             document.addEventListener('DOMContentLoaded', function() {                
-                domContentLoadedEvent();
+                domContentLoadedEvent();                    
             });
             function domContentLoadedEvent() {                
-                document.querySelectorAll('zero-md').forEach(function(el) {                    
+                document.querySelectorAll('zero-md').forEach(function(el) {                                      
                     el.addEventListener('zero-md-rendered', function() {      
                         if(document.startViewTransition){
                             document.startViewTransition(()=>{
@@ -47,14 +47,15 @@ templ bodyScript() {
                             }
                         }
                     });
+                                      
                     //Below is doubtful and never called
-                    el.addEventListener('zero-md-error', function() {                          
-                        if(el.parentElement.parentElement.classList.contains("hidden")){
-                            el.parentElement.parentElement.classList.replace("hidden","flex");
-                        }else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
-                            el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
-                        }
-                    });
+                    // el.addEventListener('zero-md-error', function() {                          
+                    //     if(el.parentElement.parentElement.classList.contains("hidden")){
+                    //         el.parentElement.parentElement.classList.replace("hidden","flex");
+                    //     }else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
+                    //         el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
+                    //     }
+                    // });
                 });
             }
             document.body.addEventListener('htmx:afterSwap', function(event) {	
@@ -288,8 +289,8 @@ templ bodyScript() {
                                     else if(decodedValue.startsWith("<input") && decodedValue.includes("chatSessionId")){ //chat session id intput
                                         document.getElementById('chatSessionId').outerHTML=decodedValue;                                        
                                     }
-                                    else{ //streamed output is gemini message that needs to be appended to existing message 
-                                        decodedValueMerged += decodedValue;                                        
+                                    else{ //streamed output is gemini message that needs to be appended to existing message                                         
+                                        decodedValueMerged += decodedValue;                                                 
                                         document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   
                                     }                                    
                                 }

@@ -31,7 +31,7 @@ templ layout() {
                                     ${this.copySvgStr}
                                   </button>`;
                     async load() { 
-                        await super.load(); 
+                        await super.load();                         
                         this.template += `<style>                                           
                                             @media(prefers-color-scheme: dark){
                                                 .markdown-body {
@@ -52,10 +52,28 @@ templ layout() {
                                                 height:2rem;
                                                 width:2rem;
                                             }
-                                        </style>`; 
+                                        </style>                                      
+                                        `;                      
                     } 
                     async parse(obj) { 
-                        const parsed = await super.parse(obj); 
+                        if(obj.text.includes('```mermaid')){                                
+                            const lines = obj.text.split('\n'); 
+                            for(let idx=0;idx<lines.length;idx++){
+                                if (lines[idx].includes('[') &&  !lines[idx].includes('["')){
+                                    lines[idx]=lines[idx].replace(/\[/g,'["').replace(/\]/g,'"]');                                        
+                                }
+                                else if (lines[idx].includes('{') &&  !lines[idx].includes('{"')){
+                                    lines[idx]=lines[idx].replace(/\{/g,'{"').replace(/\}/g,'"}');                                        
+                                }
+                                else if(lines[idx].includes('subgraph') && !lines[idx].includes('subgraph "')){
+                                    lines[idx]=lines[idx].replace('subgraph','subgraph "');
+                                    lines[idx]+='"';
+                                }                                    
+                                    
+                            }
+                            obj.text = lines.join('\n');    
+                        }
+                        const parsed = await super.parse(obj);                                                
                         if (!navigator.clipboard) return parsed; 
                         const tpl = document.createElement('template'); 
                         tpl.innerHTML = parsed; 
@@ -77,7 +95,7 @@ templ layout() {
                                 btn.setAttribute('aria-label', 'Copied code');
                                 setTimeout(() => {btn.innerHTML = this.copySvgStr;btn.setAttribute('aria-label', 'Copy code');}, 2500); 
                             } 
-                        }); 
+                        });                         
                         return out;
                     }               
                  });
