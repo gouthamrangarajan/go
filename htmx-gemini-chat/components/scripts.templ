@@ -262,20 +262,23 @@ templ bodyScript() {
                                         break;
                                     }
                                     let decodedValue = textDecoder.decode(value);                                                                         
-                                    if(decodedValue.includes("data:END")){//streaming end
+                                    if(decodedValue.includes("event: END")){//streaming end
                                         this.setProcessing(false);
                                         this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";                                                                                
                                         break;
                                     }
-                                    else if(decodedValue.includes("data:ERROR")){//error in gemini api
+                                    else if(decodedValue.includes("event: ERROR")){//error in gemini api
                                         this.setProcessing(false);
                                         this.$store.data.currentMessageId=-1;
                                         decodedValueMerged="";                                        
                                         addErrorMessage('Error! Please try again later');     
                                         break;
                                     }
-                                    else if(decodedValue.startsWith("<div class")){ //streamed output is a new user message item or new gemini message item
+                                    else if(decodedValue.includes("event: GEMINI_MESSAGE_TEMPLATE") || 
+                                            decodedValue.includes("event: USER_MESSAGE_TEMPLATE") 
+                                            ){ //streamed output is a new user message item or new gemini message item                                        
+                                        decodedValue=decodedValue.replace("event: GEMINI_MESSAGE_TEMPLATE\ndata: ","").replace("event: USER_MESSAGE_TEMPLATE\ndata: ","").trimEnd();
                                         this.$store.data.currentMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                                                                 
                                         decodedValueMerged="";                                           
                                         if(this.prompt!=''){ //streamed output is user message 
@@ -283,13 +286,16 @@ templ bodyScript() {
                                         }
                                         document.getElementsByTagName('main')[0].scrollTop=document.getElementsByTagName('main')[0].scrollHeight+100;                         
                                     }
-                                    else if(decodedValue.startsWith("<li") && decodedValue.includes('id="li_')){ //streamed output is new menu item or existing menu title change 
+                                    else if(decodedValue.includes("event: MENU_ITEM")){ //streamed output is new menu item or existing menu title change 
+                                        decodedValue=decodedValue.replace("event: MENU_ITEM\ndata: ","").trimEnd();
                                         upsertMenuUIWithMenuItem(decodedValue);  
                                     }
-                                    else if(decodedValue.startsWith("<input") && decodedValue.includes("chatSessionId")){ //chat session id intput
+                                    else if(decodedValue.includes("event: CHAT_SESSION_ID_INPUT")){ //chat session id intput
+                                        decodedValue=decodedValue.replace("event: CHAT_SESSION_ID_INPUT\ndata: ","").trimEnd();
                                         document.getElementById('chatSessionId').outerHTML=decodedValue;                                        
                                     }
-                                    else{ //streamed output is gemini message that needs to be appended to existing message                                         
+                                    else if(decodedValue.includes("event: MESSAGE")){ //streamed output is gemini message that needs to be appended to existing message                                         
+                                        decodedValue=decodedValue.replace("event: MESSAGE\ndata: ",""); //no trim end required , if added will remove \n coming in data also
                                         decodedValueMerged += decodedValue;                                                 
                                         document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   
                                     }                                    

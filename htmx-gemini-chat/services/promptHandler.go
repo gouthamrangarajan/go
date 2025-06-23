@@ -3,6 +3,7 @@ package services
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"htmx-gemini-chat/components"
@@ -90,21 +91,26 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	userMessageId := <-insertUserChatConversationChannel
 
 	if userMessageId == 0 {
-		sendMessageAndFlush("data:ERROR\n\n", response)
+		sendMessageAndFlush("event: ERROR\n\n", response)
 		return
 	}
-	components.UserMessageTemplate(userMessageId).Render(ctx, response)
-	flushResponse(response)
+	eventDataBuffer := new(bytes.Buffer)
+	components.UserMessageTemplate(userMessageId).Render(context.Background(), eventDataBuffer)
+	sendMessageAndFlush("event: USER_MESSAGE_TEMPLATE\ndata: "+eventDataBuffer.String()+"\n\n", response)
 	time.Sleep(200 * time.Millisecond)
 
 	if newChatSessionInserted {
 		// send new session UI
-		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(ctx, response)
-		flushResponse(response)
+		eventDataBuffer.Reset()
+		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(context.Background(), eventDataBuffer)
+		sendMessageAndFlush("event: MENU_ITEM\ndata: "+eventDataBuffer.String()+"\n\n", response)
 		time.Sleep(200 * time.Millisecond)
-		components.ChatSessionIdInput(chatSessionId, false).Render(ctx, response)
-		flushResponse(response)
+
+		eventDataBuffer.Reset()
+		components.ChatSessionIdInput(chatSessionId, false).Render(context.Background(), eventDataBuffer)
+		sendMessageAndFlush("event: CHAT_SESSION_ID_INPUT\ndata: "+eventDataBuffer.String()+"\n\n", response)
 		time.Sleep(200 * time.Millisecond)
+
 	} else if len(geminiRequest.Contents) == 1 {
 		//  update title
 		chatSessionTitleChannel := make(chan int)
@@ -112,8 +118,9 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		go UpdateChatSessionTitle(userId, chatSessionId, prompt, chatSessionTitleChannel)
 		rowsAffectedTitleUpdate := <-chatSessionTitleChannel
 		if rowsAffectedTitleUpdate > 0 {
-			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(ctx, response)
-			flushResponse(response)
+			eventDataBuffer.Reset()
+			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(context.Background(), eventDataBuffer)
+			sendMessageAndFlush("event: MENU_ITEM\ndata: "+eventDataBuffer.String()+"\n\n", response)
 			time.Sleep(200 * time.Millisecond)
 		}
 	}
@@ -124,11 +131,13 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	go InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "model", insertGeminiMessageChatConversationChannel)
 	geminiMessageId := <-insertGeminiMessageChatConversationChannel
 	if geminiMessageId == 0 {
-		sendMessageAndFlush("data:ERROR\n\n", response)
+		sendMessageAndFlush("event: ERROR\n\n", response)
 		return
 	}
-	components.GeminiMessageTemplate(geminiMessageId).Render(ctx, response)
-	flushResponse(response)
+
+	eventDataBuffer.Reset()
+	components.GeminiMessageTemplate(geminiMessageId).Render(context.Background(), eventDataBuffer)
+	sendMessageAndFlush("event: GEMINI_MESSAGE_TEMPLATE\ndata: "+eventDataBuffer.String()+"\n\n", response)
 	time.Sleep(200 * time.Millisecond)
 
 	for message := range geminiAPIChannel {
@@ -140,8 +149,14 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 			fmt.Println("Client disconnected, stopping streaming")
 			continue
 		default:
-			sendMessageAndFlush(message, response)
-			time.Sleep(100 * time.Millisecond)
+			if message != "data:ERROR\n\n" {
+				//not adding \n\n in the end here , might confuse find a better way
+				//if added,trimend in the javscript is needed which will remove \n coming in data also
+				sendMessageAndFlush("event: MESSAGE\ndata: "+message, response)
+				time.Sleep(100 * time.Millisecond)
+			} else {
+				sendMessageAndFlush("event: ERROR\n\n", response)
+			}
 		}
 	}
 	if strings.TrimSpace(consolidateGeminiResponse) != "" {
@@ -150,7 +165,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		go UpateGeminiMessageChatConversation(geminiMessageId, consolidateGeminiResponse, updateChatConversationChannel)
 		rowsAffectedUpdate := <-updateChatConversationChannel
 		if rowsAffectedUpdate == 0 {
-			sendMessageAndFlush("data:ERROR\n\n", response)
+			sendMessageAndFlush("event: ERROR\n\n", response)
 			deleteChatConversationChannel := make(chan int)
 			defer close(deleteChatConversationChannel)
 			go DeleteGeminiMessageChatConversation(geminiMessageId, deleteChatConversationChannel)
@@ -161,10 +176,10 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 
 	select {
 	case <-ctx.Done():
-		fmt.Println("Client disconnected, ignoring data:END message")
+		fmt.Println("Client disconnected, ignoring 'event: END\n\n' message")
 		break
 	default:
-		sendMessageAndFlush("data:END\n\n", response)
+		sendMessageAndFlush("event: END\n\n", response)
 		break
 	}
 
@@ -172,10 +187,6 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 
 func sendMessageAndFlush(message string, response http.ResponseWriter) {
 	fmt.Fprintf(response, "%v", message)
-	flushResponse(response)
-}
-
-func flushResponse(response http.ResponseWriter) {
 	if flusher, ok := response.(http.Flusher); ok {
 		flusher.Flush()
 	}
