@@ -261,44 +261,49 @@ templ bodyScript() {
                                         decodedValueMerged="";
                                         break;
                                     }
-                                    let decodedValue = textDecoder.decode(value);                                                                         
-                                    if(decodedValue.includes("event: END")){//streaming end
-                                        this.setProcessing(false);
-                                        this.$store.data.currentMessageId=-1;
-                                        decodedValueMerged="";                                                                                
-                                        break;
-                                    }
-                                    else if(decodedValue.includes("event: ERROR")){//error in gemini api
-                                        this.setProcessing(false);
-                                        this.$store.data.currentMessageId=-1;
-                                        decodedValueMerged="";                                        
-                                        addErrorMessage('Error! Please try again later');     
-                                        break;
-                                    }
-                                    else if(decodedValue.includes("event: GEMINI_MESSAGE_TEMPLATE") || 
-                                            decodedValue.includes("event: USER_MESSAGE_TEMPLATE") 
-                                            ){ //streamed output is a new user message item or new gemini message item                                        
-                                        decodedValue=decodedValue.replace("event: GEMINI_MESSAGE_TEMPLATE\ndata: ","").replace("event: USER_MESSAGE_TEMPLATE\ndata: ","").trimEnd();
-                                        this.$store.data.currentMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedValue);                                                                                 
-                                        decodedValueMerged="";                                           
-                                        if(this.prompt!=''){ //streamed output is user message 
-                                            this.appendPromptAndImageToUserMessageTemplate()                                                                   
+                                    const decodedValue = textDecoder.decode(value);     
+                                    decodedValue.split('event: ').forEach((decodedItem)=>{
+                                        if(decodedItem.trim()==''){
+                                            return;
                                         }
-                                        document.getElementsByTagName('main')[0].scrollTop=document.getElementsByTagName('main')[0].scrollHeight+100;                         
-                                    }
-                                    else if(decodedValue.includes("event: MENU_ITEM")){ //streamed output is new menu item or existing menu title change 
-                                        decodedValue=decodedValue.replace("event: MENU_ITEM\ndata: ","").trimEnd();
-                                        upsertMenuUIWithMenuItem(decodedValue);  
-                                    }
-                                    else if(decodedValue.includes("event: CHAT_SESSION_ID_INPUT")){ //chat session id intput
-                                        decodedValue=decodedValue.replace("event: CHAT_SESSION_ID_INPUT\ndata: ","").trimEnd();
-                                        document.getElementById('chatSessionId').outerHTML=decodedValue;                                        
-                                    }
-                                    else if(decodedValue.includes("event: MESSAGE")){ //streamed output is gemini message that needs to be appended to existing message                                         
-                                        decodedValue=decodedValue.replace("event: MESSAGE\ndata: ",""); //no trim end required , if added will remove \n coming in data also
-                                        decodedValueMerged += decodedValue;                                                 
-                                        document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   
-                                    }                                    
+                                        if(decodedItem.includes("END\n\n")){
+                                            this.setProcessing(false);
+                                            this.$store.data.currentMessageId=-1;
+                                            decodedValueMerged="";                                                                                
+                                            return;
+                                        }
+                                        else if(decodedItem.includes("ERROR\n\n")){
+                                            this.setProcessing(false);
+                                            this.$store.data.currentMessageId=-1;
+                                            decodedValueMerged="";                                        
+                                            addErrorMessage('Error! Please try again later');     
+                                            return;
+                                        }
+                                        else if(decodedItem.includes("GEMINI_MESSAGE_TEMPLATE") || 
+                                            decodedItem.includes("USER_MESSAGE_TEMPLATE") 
+                                            ){ //streamed output is a new user message item or new gemini message item                                        
+                                            decodedItem=decodedItem.replace("GEMINI_MESSAGE_TEMPLATE\ndata: ","").replace("USER_MESSAGE_TEMPLATE\ndata: ","").trimEnd();
+                                            this.$store.data.currentMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedItem);                                                                                 
+                                            decodedValueMerged="";                                           
+                                            if(this.prompt!=''){ //streamed output is user message 
+                                                this.appendPromptAndImageToUserMessageTemplate()                                                                   
+                                            }
+                                            document.getElementsByTagName('main')[0].scrollTop=document.getElementsByTagName('main')[0].scrollHeight+100;                         
+                                        }
+                                        else if(decodedItem.includes("MENU_ITEM")){ //streamed output is new menu item or existing menu title change 
+                                            decodedItem=decodedItem.replace("MENU_ITEM\ndata: ","").trimEnd();
+                                            upsertMenuUIWithMenuItem(decodedItem);  
+                                        }
+                                        else if(decodedItem.includes("CHAT_SESSION_ID_INPUT")){ //chat session id intput
+                                            decodedItem=decodedItem.replace("CHAT_SESSION_ID_INPUT\ndata: ","").trimEnd();
+                                            document.getElementById('chatSessionId').outerHTML=decodedItem;                                        
+                                        }
+                                        else if(decodedItem.includes("MESSAGE")){ //streamed output is gemini message that needs to be appended to existing message                                         
+                                            decodedItem=decodedItem.replace("MESSAGE\ndata: ",""); //no trim end required , if added will remove \n coming in data also
+                                            decodedValueMerged += decodedItem;                                                 
+                                            document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   
+                                        }              
+                                    });                                                                                                                                                                                                                                                                          
                                 }
                         
                             }

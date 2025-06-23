@@ -14,7 +14,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var imgRegex = regexp.MustCompile(`^data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
@@ -97,19 +96,16 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	eventDataBuffer := new(bytes.Buffer)
 	components.UserMessageTemplate(userMessageId).Render(context.Background(), eventDataBuffer)
 	sendMessageAndFlush("event: USER_MESSAGE_TEMPLATE\ndata: "+eventDataBuffer.String()+"\n\n", response)
-	time.Sleep(200 * time.Millisecond)
 
 	if newChatSessionInserted {
 		// send new session UI
 		eventDataBuffer.Reset()
 		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(context.Background(), eventDataBuffer)
 		sendMessageAndFlush("event: MENU_ITEM\ndata: "+eventDataBuffer.String()+"\n\n", response)
-		time.Sleep(200 * time.Millisecond)
 
 		eventDataBuffer.Reset()
 		components.ChatSessionIdInput(chatSessionId, false).Render(context.Background(), eventDataBuffer)
 		sendMessageAndFlush("event: CHAT_SESSION_ID_INPUT\ndata: "+eventDataBuffer.String()+"\n\n", response)
-		time.Sleep(200 * time.Millisecond)
 
 	} else if len(geminiRequest.Contents) == 1 {
 		//  update title
@@ -121,7 +117,6 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 			eventDataBuffer.Reset()
 			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(context.Background(), eventDataBuffer)
 			sendMessageAndFlush("event: MENU_ITEM\ndata: "+eventDataBuffer.String()+"\n\n", response)
-			time.Sleep(200 * time.Millisecond)
 		}
 	}
 
@@ -138,7 +133,6 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	eventDataBuffer.Reset()
 	components.GeminiMessageTemplate(geminiMessageId).Render(context.Background(), eventDataBuffer)
 	sendMessageAndFlush("event: GEMINI_MESSAGE_TEMPLATE\ndata: "+eventDataBuffer.String()+"\n\n", response)
-	time.Sleep(200 * time.Millisecond)
 
 	for message := range geminiAPIChannel {
 		if message != "data:ERROR\n\n" {
@@ -153,7 +147,6 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 				//not adding \n\n in the end here , might confuse find a better way
 				//if added,trimend in the javscript is needed which will remove \n coming in data also
 				sendMessageAndFlush("event: MESSAGE\ndata: "+message, response)
-				time.Sleep(100 * time.Millisecond)
 			} else {
 				sendMessageAndFlush("event: ERROR\n\n", response)
 			}
