@@ -52,6 +52,6 @@ Open your browser and navigate to `http://http://127.0.0.1:7331/` to start chatt
 
 ### Deployed version
 
-![rg-gemini-chat](https://rg-gemini-chat.up.railway.app/)
+[rg-gemini-chat](https://rg-gemini-chat.up.railway.app/)
 
-![screenshot](https://github.com/gouthamrangarajan/go/blob/main/htmx-gemini-chat/Gemini_Chat.png)
+![screenshot](Gemini_Chat.png)
