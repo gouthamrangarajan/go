@@ -12,7 +12,8 @@ Welcome to the Gemini Chat project! This application allows users to talk to Goo
 - Gemini (works for Flash-2.0, Flash-2.5 & Flash-2.5-lite)
 - Golang , templ , chi
 - Htmx, Alpine
-- Tailwind
+- Zero md
+- Tailwind, Open Props
 - Turso
 
 ### Installation
@@ -39,10 +40,9 @@ To get started with the Gemini Chat application, follow these steps:
     templ generate --watch --proxy="http://localhost:3000" --cmd="go run ."
    ```
 5. Use Tailwind cli (Terminal 2)
-
-```bash
+   ```bash
    npx @tailwindcss/cli -i ./input.css -o ./assets/css/styles.css --watch
-```
+   ```
 
 ### Usage
 
