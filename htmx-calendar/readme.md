@@ -1,11 +1,6 @@
-## Gemini Chat
+## HTMX Calendar
 
 Welcome to the Calendar project! This application allows users to track events in a calendar
-
-### Features
-
-- Real-time messaging
-- Responsive design
 
 ### Model/Library/Frameworks used
 
@@ -37,7 +32,7 @@ To get started with the calendar application, follow these steps:
    - SUPABASE_DATA_FETCH_URL
    - SUPABASE_LOGIN_URL
 
-   .env file for job
+   .env file for job (create in jobs/reminder folder)
 
    - ENV
    - REMINDER_EMAIL_FROM
@@ -70,6 +65,6 @@ Open your browser and navigate to `http://http://127.0.0.1:7331/`
 
 ### Deployed version
 
-[rg-calendar](rg-calendar.up.railway.app)
+[rg-calendar](https://rg-calendar.up.railway.app)
 
 ![screenshot](Calendar-3.png)
