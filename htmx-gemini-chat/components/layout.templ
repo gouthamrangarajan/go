@@ -59,7 +59,8 @@ templ layout() {
                         if(obj.text.includes('```mermaid')){                                
                             const lines = obj.text.split('\n'); 
                             for(let idx=0;idx<lines.length;idx++){
-                                if (lines[idx].includes('[') &&  !lines[idx].includes('["')){
+                                if (lines[idx].includes('[') &&  !lines[idx].includes('["') //use case ALB_Lambda1[ALB]
+                                    && !lines[idx].includes('[("')){ //use case ALB_Lambda1[("ALB (for Lambda 1)")]
                                     lines[idx]=lines[idx].replace(/\[/g,'["').replace(/\]/g,'"]');                                        
                                 }
                                 else if (lines[idx].includes('{') &&  !lines[idx].includes('{"')){
