@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 )
 
@@ -18,6 +19,8 @@ func main() {
 		fmt.Println("Loaded .env file")
 	}
 	router := chi.NewRouter()
+	router.Use(chiMiddleware.Logger)
+	router.Use(chiMiddleware.Compress(5))
 	router.Use(middleware.Authorization)
 
 	router.Get("/", services.MonthPage)
