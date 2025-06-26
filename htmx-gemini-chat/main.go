@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 )
 
@@ -20,11 +21,17 @@ func main() {
 		fmt.Println("Success loaded .env file")
 	}
 	router := chi.NewRouter()
+	router.Use(middleware.Logger)
 	router.Use(middlewares.Authorization)
-	router.Get("/", func(response http.ResponseWriter, request *http.Request) {
+	router.Post("/send", services.PromptHandler)
+
+	compressedRouter := chi.NewRouter()
+	compressedRouter.Use(middleware.Compress(5))
+
+	compressedRouter.Get("/", func(response http.ResponseWriter, request *http.Request) {
 		services.MainPageHandler(response, request, 0)
 	})
-	router.Get("/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
+	compressedRouter.Get("/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
 		sessionIdStr := chi.URLParam(request, "sessionId")
 		sessionId, err := strconv.Atoi(sessionIdStr)
 		if err != nil {
@@ -32,7 +39,7 @@ func main() {
 		}
 		services.MainPageHandler(response, request, sessionId)
 	})
-	router.Get("/{sessionId}/{conversationId}", func(response http.ResponseWriter, request *http.Request) {
+	compressedRouter.Get("/{sessionId}/{conversationId}", func(response http.ResponseWriter, request *http.Request) {
 		sessionIdStr := chi.URLParam(request, "sessionId")
 		sessionId, err := strconv.Atoi(sessionIdStr)
 		if err != nil {
@@ -49,9 +56,8 @@ func main() {
 		}
 		services.MarkdownSrcHandler(sessionId, conversationId, response, request)
 	})
-	router.Post("/new", services.NewChatSessionHandler)
-	router.Post("/send", services.PromptHandler)
-	router.Delete("/delete/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
+	compressedRouter.Post("/new", services.NewChatSessionHandler)
+	compressedRouter.Delete("/delete/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
 		sessionIdStr := chi.URLParam(request, "sessionId")
 		sessionId, err := strconv.Atoi(sessionIdStr)
 		if err != nil {
@@ -59,10 +65,12 @@ func main() {
 		}
 		services.DeleteSessionHandler(response, request, sessionId)
 	})
-	router.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
+	compressedRouter.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
 		fileServer.ServeHTTP(response, request)
 	})
+
+	router.Mount("/", compressedRouter)
 
 	fmt.Println("Listening on :3000")
 	server := &http.Server{
