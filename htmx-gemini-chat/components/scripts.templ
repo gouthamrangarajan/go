@@ -126,10 +126,15 @@ templ bodyScript() {
                         this.menuOpen=false;
                     },
                     sendFullPageFetchEvent(ev,eventNameToDispatch){
-                        ev.preventDefault();                        
+                        ev.preventDefault();          
+                        if( ev?.currentTarget?.href &&
+                            ev.currentTarget.href.endsWith("/"+document.getElementById("chatSessionId").value))
+                        {
+                            return;
+                        }                
                         this.fullPageFetchProcessing=true;
                         this.closeMenu();                        
-                        if(eventNameToDispatch){        
+                        if(eventNameToDispatch){                                  
                             ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
                         }                        
                         
