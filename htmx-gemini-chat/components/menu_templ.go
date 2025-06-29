@@ -63,7 +63,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"absolute top-0 left-0 flex items-start gap-2 h-full w-full bg-white/60 dark:bg-gray-900/40\" x-trap=\"$store.data.menuOpen\" x-on:click=\"$store.data.closeMenu()\" style=\"view-transition-name:menu-background\" x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:leave=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0\" x-transition:leave-end=\"opacity-0\" x-show=\"$store.data.menuOpen\"><aside class=\"p-1 w-10/12 h-full flex flex-col bg-white dark:bg-gray-900  border-r border-slate-300 dark:border-slate-600 overflow-y-auto overflow-x-hidden  scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 md:w-1/2 lg:w-1/3 xl:w-1/4 \" x-on:click.stop x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:leave=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0 -translate-x-2\" x-transition:leave-end=\"opacity-0 -translate-x-2\" x-show=\"$store.data.menuOpen\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"absolute top-0 left-0 flex items-start gap-2 h-full w-full bg-white/60 dark:bg-gray-900/40\" x-trap=\"$store.data.menuOpen\" x-on:click=\"$store.data.closeMenu()\" style=\"view-transition-name:menu-background\" x-transition:enter=\"transition duration-200 ease-(--ease-in-3)\" x-transition:leave=\"transition duration-200 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0\" x-transition:leave-end=\"opacity-0\" x-show=\"$store.data.menuOpen\"><aside class=\"p-1 w-10/12 h-full flex flex-col bg-white dark:bg-gray-900  border-r border-slate-300 dark:border-slate-600 overflow-y-auto overflow-x-hidden  scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500 md:w-1/2 lg:w-1/3 xl:w-1/4 \" x-on:click.stop x-transition:enter=\"transition duration-199 ease-(--ease-in-3)\" x-transition:leave=\"transition duration-199 ease-(--ease-in-3)\" x-transition:enter-start=\"opacity-0 -translate-x-2\" x-transition:leave-end=\"opacity-0 -translate-x-2\" x-show=\"$store.data.menuOpen\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -181,7 +181,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" hx-boost=\"true\" hx-swap=\"outerHTML\" hx-target=\"#section\" hx-trigger=\"FETCH_FULL_PAGE_EVENT\" hx-push-url=\"true\" x-on:click.stop=\"$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" hx-boost=\"true\" hx-swap=\"outerHTML transition:true\" hx-target=\"#section\" hx-trigger=\"FETCH_FULL_PAGE_EVENT\" hx-push-url=\"true\" x-on:click.stop=\"$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')\" style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
