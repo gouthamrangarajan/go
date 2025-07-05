@@ -29,7 +29,7 @@ func layout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>RG Stock</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"icon\" href=\"/assets/imgs/favicon.ico\" type=\"image/x-icon\"><link rel=\"stylesheet\" href=\"/assets/css/styles.css\"><link rel=\"stylesheet\" href=\"/assets/css/open-props.min.css\"><script src=\"/assets/js/data-star.min.js\" type=\"module\"></script><script src=\"/assets/js/echarts.min.js\"></script></head><body class=\"w-full h-full bg-slate-100\"><main class=\"w-full h-full overflow-y-auto scrollbar-thin scrollbar-track-violet-200 scrollbar-thumb-[#8A2BE2]\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>RG Stock</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"icon\" href=\"/assets/imgs/favicon.ico\" type=\"image/x-icon\"><link rel=\"stylesheet\" href=\"/assets/css/styles.css\"><link rel=\"stylesheet\" href=\"/assets/css/open-props.min.css\"><script src=\"/assets/js/data-star.min.js\" type=\"module\"></script><script src=\"/assets/js/echarts.min.js\"></script></head><body class=\"w-full h-full bg-slate-100\"><main class=\"w-full h-full flex flex-col gap-2 overflow-y-auto scrollbar-thin scrollbar-track-violet-200 scrollbar-thumb-[#8A2BE2]\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

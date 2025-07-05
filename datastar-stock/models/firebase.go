@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type FirebaseConfig struct {
 	Type                    string `json:"type"`
 	ProjectID               string `json:"project_id"`
@@ -14,10 +16,6 @@ type FirebaseConfig struct {
 	UniverseDomain          string `json:"universe_domain"`
 }
 
-type PopularsFromDb struct {
-	Data []string `firestore:"data"`
-}
-
 type SignInRequest struct {
 	Email             string `json:"email"`
 	Password          string `json:"password"`
@@ -30,4 +28,14 @@ type SignInResponse struct {
 	ExpiresIn    string `json:"expiresIn"`
 	LocalID      string `json:"localId"`
 	Registered   bool   `json:"registered"`
+}
+
+type PopularsFromDb struct {
+	Data []string `firestore:"data"`
+}
+
+type RecentFromDb struct {
+	Ticker          string    `firestore:"Ticker"`
+	TickerLowerCase string    `firestore:"ticker"`
+	Date            time.Time `firestore:"date"`
 }

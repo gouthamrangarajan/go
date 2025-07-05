@@ -39,7 +39,7 @@ func main() {
 		password := strings.Trim(request.FormValue("password"), "")
 		redirect := strings.Trim(request.FormValue("redirect"), "")
 		if redirect == "" {
-			redirect = "/home"
+			redirect = "/home/populars"
 		}
 		channel := make(chan models.SignInResponse) // Create a channel to receive the sign-in response
 		defer close(channel)
@@ -69,13 +69,33 @@ func main() {
 			return
 		}
 	})
-	router.Get("/home", func(responseWriter http.ResponseWriter, request *http.Request) {
+	router.Get("/home/populars", func(responseWriter http.ResponseWriter, request *http.Request) {
 		popularsChannel := make(chan models.PopularsFromDb)
 		defer close(popularsChannel)
 		go services.GetPopulars(request.Context(), popularsChannel)
 		populars := <-popularsChannel
 
-		component := components.Home(populars.Data)
+		component := components.Populars(populars.Data)
+		component.Render(request.Context(), responseWriter)
+	})
+	router.Get("/home/recent", func(responseWriter http.ResponseWriter, request *http.Request) {
+		recentsChannel := make(chan []models.RecentFromDb)
+		defer close(recentsChannel)
+		go services.GetRecent(request.Context(), recentsChannel)
+		recents := <-recentsChannel
+
+		recentsToSend := make([]string, 5)
+		for idx, item := range recents {
+			if idx > 4 {
+				break
+			}
+			if strings.Trim(item.Ticker, " ") != "" {
+				recentsToSend[idx] = strings.Trim(item.Ticker, " ")
+			} else if strings.Trim(item.TickerLowerCase, " ") != "" {
+				recentsToSend[idx] = strings.Trim(item.TickerLowerCase, " ")
+			}
+		}
+		component := components.Recent(recentsToSend)
 		component.Render(request.Context(), responseWriter)
 	})
 	router.Get("/data/{ticker}", func(responseWriter http.ResponseWriter, request *http.Request) {

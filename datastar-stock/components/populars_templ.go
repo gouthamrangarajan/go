@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func home() templ.Component {
+func Populars(tickers []string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -41,17 +41,23 @@ func home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"shadow w-full py-2 px-4 bg-white\"><a class=\"appearance-none outline-none cursor-pointer text-[#006400] text-2xl font-semibold transition-all duration-300 hover:opacity-80 focus:underline focus:underline-offset-2\" href=\"/\" style=\"view-transition-name:header\">Stock API</a></header><div class=\"w-full flex items-center justify-center gap-2\"><a class=\"apperance-none outline-none py-2 px-4 transition duration-300 rounded-lg text-lg text-[#4682B4] font-semibold bg-white shadow focus:ring-2 focus:ring-[#8A2BE2] hover:opacity-80\" href=\"/home/populars\">Populars</a> <a class=\"apperance-none outline-none py-2 px-4 transition duration-300 rounded-lg text-lg text-[#4682B4] font-semibold bg-white shadow focus:ring-2 focus:ring-[#8A2BE2] hover:opacity-80\" href=\"/home/recent\">Recent</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"py-2 px-4 grid grid-cols-1 gap-2 lg:gap-4 lg:grid-cols-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ_7745c5c3_Var1.Render(ctx, templ_7745c5c3_Buffer)
+			for idx, ticker := range tickers {
+				templ_7745c5c3_Err = card(idx, ticker).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layout().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = home().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

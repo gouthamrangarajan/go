@@ -1,0 +1,11 @@
+package components
+
+templ Recent(tickers []string) {
+	@home() {
+		<div class="py-2 px-4 grid grid-cols-1 gap-2 lg:gap-4 lg:grid-cols-2">
+			for idx, ticker := range tickers {
+				@card(idx, ticker)
+			}
+		</div>
+	}
+}

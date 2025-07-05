@@ -1,0 +1,44 @@
+package components 
+
+templ card(index int, ticker string) {
+	{{ animation := "animate-card" }}
+	{{switch index {
+case 0:
+	animation = "animate-card"
+case 1:
+	animation = "animate-card-1"
+case 2:
+	animation = "animate-card-2"
+default:
+	animation = "animate-card-3"
+}
+	}}
+	<div
+		class={ animation + " shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
+		data-on-load={ "@get('/data/" + ticker + "')" }
+		data-on-resize__window__throttle.500ms.trail={ "ResizeChart('chart_" + ticker + "')" }
+		id={ "card_" + ticker }
+	>
+		<p class="w-full text-[#4682B4] text-lg font-semibold">
+			{ ticker }
+		</p>
+		<div class="w-full h-96" id={ "chart_" + ticker }></div>
+	</div>
+}
+
+templ CardError(ticker string) {
+	<div
+		class={ " shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
+		id={ "card_" + ticker }
+	>
+		<p class="w-full text-[#FF8C00] font-semibold">
+			{ ticker }
+		</p>
+		<div class="flex flex-col gap-1 items-center justify-center text-red-500 h-96">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+				<path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd"></path>
+			</svg>
+			<p>Error! Try again later</p>
+		</div>
+	</div>
+}
