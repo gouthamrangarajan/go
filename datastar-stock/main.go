@@ -119,7 +119,6 @@ func main() {
 		eChartData := <-eChartDataChannel
 
 		str := `LoadChart("chart_` + ticker + `",[` + eChartData.AxisData + `],[` + eChartData.ChartData + `])`
-		// fmt.Println("Sending data to client:", str)
 		sse.ExecuteScript(str, datastar.WithExecuteScriptAutoRemove(true))
 	})
 

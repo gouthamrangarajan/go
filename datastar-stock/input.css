@@ -91,7 +91,7 @@
 
 @keyframes result {
     from {
-        transform: scaleY(0);
+        transform: scaleY(0.7);
         opacity: 0;
         transform-origin: top;
     }

@@ -45,7 +45,7 @@ func Login(redirect string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ErrorMessage().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = loginResult().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -66,7 +66,7 @@ func Login(redirect string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ButtonSubmit().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = buttonSubmit().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -84,7 +84,7 @@ func Login(redirect string) templ.Component {
 	})
 }
 
-func ButtonSubmit() templ.Component {
+func buttonSubmit() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -113,7 +113,7 @@ func ButtonSubmit() templ.Component {
 	})
 }
 
-func ErrorMessage() templ.Component {
+func loginResult() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -134,7 +134,7 @@ func ErrorMessage() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p class=\"animate-result py-1 px-3 rounded w-full font-semibold bg-red-200 text-red-600\" id=\"results\" data-text=\"$errorMessage\" data-show=\"$errorMessage!=''\"></p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p class=\" py-1 px-3 rounded w-full font-semibold\" data-class=\"{'animate-result bg-red-200 text-red-600':$errorMessage!=''}\" id=\"results\" data-text=\"$errorMessage\"></p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
