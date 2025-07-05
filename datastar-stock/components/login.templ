@@ -1,0 +1,52 @@
+package components
+
+templ Login(redirect string) {
+	@layout() {
+		<div class="w-full h-full flex items-center justify-center">
+			<form
+				method="post"
+				action="/login"
+				class="animate-login py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12"
+				data-signals-signing-in="false"
+				data-signals-error-message="''"
+				data-on-submit="evt.preventDefault();$signingIn=true;$errorMessage='';@post('/login',{contentType:'form'})"
+				data-on-datastar-sse="evt.detail.type == 'finished' && $errorMessage==''?window.location.href=window.location.href:evt.detail.type == 'finished'?$signingIn=false:$signingIn=$signingIn"
+			>
+				<p class="text-2xl text-[#006400]">Login</p>
+				@ErrorMessage()
+				<input type="hidden" name="redirect" value={ redirect }/>
+				<label class="flex flex-col gap-1 w-full">
+					<span class="text-gray-700">Email</span>
+					<input type="email" name="email" class="appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 " required/>
+				</label>
+				<label class="flex flex-col gap-1 w-full">
+					<span class="text-gray-700">Password</span>
+					<input type="password" name="password" class="appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50" required/>
+				</label>
+				@ButtonSubmit()
+			</form>
+		</div>
+	}
+}
+
+templ ButtonSubmit() {
+	<button
+		type="submit"
+		id="submit"
+		class="appearance-none outline-none w-full rounded-full py-2 px-4 bg-[#8A2BE2] text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-[#8A2BE2] focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80"
+		data-attr-disabled="$signingIn"
+	>
+		<span data-show="!$signingIn">Submit</span>
+		<span data-show="$signingIn">Submitting</span>
+		<span data-show="$signingIn" class="animate-spin-2 w-5 h-5 border-2 border-dashed border-white rounded-full"></span>
+	</button>
+}
+
+templ ErrorMessage() {
+	<p
+		class="animate-result py-1 px-3 rounded w-full font-semibold bg-red-200 text-red-600"
+		id="results"
+		data-text="$errorMessage"
+		data-show="$errorMessage!=''"
+	></p>
+}

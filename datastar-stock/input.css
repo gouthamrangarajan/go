@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@plugin 'tailwind-scrollbar';
+
+@view-transition {
+    navigation: auto;
+}
+
+.animate-card {
+    animation: card 2s var(--ease-spring-3);
+}
+
+.animate-card-1 {
+    animation: card 2s var(--ease-spring-3) forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+}
+
+.animate-card-2 {
+    animation: card 2s var(--ease-spring-3) forwards;
+    animation-delay: 0.4s;
+    opacity: 0;
+}
+
+.animate-card-3 {
+    animation: card 2s var(--ease-spring-3) forwards;
+    animation-delay: 0.7s;
+    opacity: 0;
+}
+
+@keyframes card {
+    from {
+        transform: translateY(10%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-header {
+    animation: header 2s var(--ease-spring-3);
+}
+
+@keyframes header {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-login {
+    animation: login 2s var(--ease-spring-3);
+}
+
+@keyframes login {
+    from {
+        transform: translateY(-10%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-spin-2 {
+    animation: spin-2 2s var(--ease-spring-3) infinite;
+}
+
+@keyframes spin-2 {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-result {
+    animation: result 0.2s var(--ease-elastic-in-5) forwards;
+}
+
+@keyframes result {
+    from {
+        transform: scaleY(0);
+        opacity: 0;
+        transform-origin: top;
+    }
+
+    to {
+        transform: scaleY(1);
+        opacity: 1;
+        transform-origin: top;
+    }
+}

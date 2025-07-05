@@ -1,0 +1,80 @@
+package components
+
+templ layout() {
+	<!DOCTYPE html>
+	<html lang="en" class="w-full h-full">
+		<head>
+			<title>RG Stock</title>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="icon" href="/assets/imgs/favicon.ico" type="image/x-icon"/>
+			<link rel="stylesheet" href="/assets/css/styles.css"/>
+			<link rel="stylesheet" href="/assets/css/open-props.min.css"/>
+			<script src="/assets/js/data-star.min.js" type="module"></script>
+			<script src="/assets/js/echarts.min.js"></script>
+		</head>
+		<body class="w-full h-full bg-slate-100">
+			<main class="w-full h-full overflow-y-auto scrollbar-thin scrollbar-track-violet-200 scrollbar-thumb-[#8A2BE2]">
+				{ children... }
+			</main>
+			<script type="text/javascript">
+				function ResizeChart(id){
+					let chartDom = document.getElementById(id);	
+					let myChart=echarts.getInstanceByDom(chartDom);				
+					if(myChart) {
+						myChart.resize();
+					}
+				}
+				function LoadChart(id,xAxisData,yAxisData){		
+					let chartDom = document.getElementById(id);	
+					let myChart=echarts.getInstanceByDom(chartDom);				
+					if(!myChart) {
+						myChart = echarts.init(chartDom);
+					}
+					let option = {
+						xAxis: {
+							type: 'category',
+							boundaryGap: false,
+							data: xAxisData
+						},
+						yAxis: {
+							type: 'value'
+						},
+						series: [
+							{
+								data: yAxisData,
+								type: 'line',								
+								type: "line",
+								smooth: true,
+								color: "#8A2BE2",
+								areaStyle: {
+									color: "rgba(138, 43, 226,0.3)",
+								},
+							}
+						],
+						tooltip: {
+							trigger: "axis",
+						},
+						toolbox: {
+							feature: {
+								restore: {},
+							},
+						},						
+						dataZoom: [
+							{
+								type: "inside",
+								start: xAxisData.length - 100,
+								end: xAxisData.length,
+							},
+							{
+								start: xAxisData.length - 100,
+								end: xAxisData.length,
+							},
+						]
+					};
+					option && myChart.setOption(option);
+				}							
+			</script>
+		</body>
+	</html>
+}
