@@ -48,7 +48,7 @@ func main() {
 
 		if email == "" || password == "" || signInResponse.IDToken == "ERROR" {
 			sse := datastar.NewSSE(responseWriter, request)
-			sse.MergeSignals([]byte("{errorMessage:'Error. Invalid Credentials'}"))
+			sse.MergeSignals([]byte("{errorMessage:'Error. Invalid Credentials',signingIn:false}"))
 		} else {
 			expiresIn := time.Now().Add(55 * time.Minute) // Default to 1 hour
 			expiresInParsed, err := strconv.Atoi(signInResponse.ExpiresIn)
