@@ -4,21 +4,27 @@ templ home() {
 	@layout() {
 		<header class="shadow w-full py-2 px-4 bg-white">
 			<a
-				class="appearance-none outline-none cursor-pointer text-[#006400] text-2xl font-semibold transition-all duration-300 hover:opacity-80 focus:underline focus:underline-offset-2"
+				class="appearance-none outline-none cursor-pointer text-primary text-2xl font-semibold transition-all duration-300 hover:opacity-80 focus:underline focus:underline-offset-2"
 				href="/"
 				style="view-transition-name:header"
 			>Stock API</a>
 		</header>
 		<div class="w-full flex items-center justify-center gap-2">
 			<a
-				class="apperance-none outline-none py-2 px-4 transition duration-300 rounded-lg text-lg text-[#4682B4] font-semibold bg-white shadow focus:ring-2 focus:ring-[#8A2BE2] hover:opacity-80"
+				class="appearance-none outline-none py-2 px-4 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80"
 				href="/home/populars"
+				style="view-transition-name:populars-menu"
+				data-on-click="window.location.href.endsWith('/home/populars')?evt.preventDefault() : evt.stopPropagation()"
+				data-class="{'shadow text-menu font-semibold':window.location.href.endsWith('/home/populars'),'text-slate-700':!window.location.href.endsWith('/home/populars')}"
 			>
 				Populars
 			</a>
 			<a
-				class="apperance-none outline-none py-2 px-4 transition duration-300 rounded-lg text-lg text-[#4682B4] font-semibold bg-white shadow focus:ring-2 focus:ring-[#8A2BE2] hover:opacity-80"
+				class="appearance-none outline-none py-2 px-4 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80"
 				href="/home/recent"
+				style="view-transition-name:recent-menu"
+				data-on-click="window.location.href.endsWith('/home/recent')?evt.preventDefault() : evt.stopPropagation()"
+				data-class="{'shadow text-menu font-semibold':window.location.href.endsWith('/home/recent'),'text-slate-700':!window.location.href.endsWith('/home/recent')}"
 			>
 				Recent
 			</a>

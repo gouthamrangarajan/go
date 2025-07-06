@@ -18,8 +18,9 @@ default:
 		data-on-load={ "@get('/data/" + ticker + "')" }
 		data-on-resize__window__throttle.500ms.trail={ "ResizeChart('chart_" + ticker + "')" }
 		id={ "card_" + ticker }
+		style={ "view-transition-name:card_" + ticker }
 	>
-		<p class="w-full text-[#4682B4] text-lg font-semibold">
+		<p class="w-full text-menu text-lg font-semibold">
 			{ ticker }
 		</p>
 		<div class="w-full h-96" id={ "chart_" + ticker }></div>
@@ -31,7 +32,7 @@ templ CardError(ticker string) {
 		class={ " shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
 		id={ "card_" + ticker }
 	>
-		<p class="w-full text-[#FF8C00] font-semibold">
+		<p class="w-full text-menu font-semibold">
 			{ ticker }
 		</p>
 		<div class="flex flex-col gap-1 items-center justify-center text-red-500 h-96">

@@ -12,7 +12,12 @@
     --color-red-600: oklch(57.7% 0.245 27.325);
     --color-indigo-500: oklch(58.5% 0.233 277.117);
     --color-slate-100: oklch(96.8% 0.007 247.896);
+    --color-slate-500: oklch(55.4% 0.046 257.417);
+    --color-slate-600: oklch(44.6% 0.043 257.281);
+    --color-slate-700: oklch(37.2% 0.044 257.287);
     --color-gray-50: oklch(98.5% 0.002 247.839);
+    --color-gray-400: oklch(70.7% 0.022 261.325);
+    --color-gray-500: oklch(55.1% 0.027 264.364);
     --color-gray-600: oklch(44.6% 0.03 256.802);
     --color-gray-700: oklch(37.3% 0.034 259.733);
     --color-black: #000;
@@ -30,6 +35,10 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
+    --color-primary: #006400;
+    --color-primary-light: #90EE90;
+    --color-menu: #4682B4;
+    --color-secondary: #8A2BE2;
   }
 }
 @layer base {
@@ -337,9 +346,6 @@
   .border-white {
     border-color: var(--color-white);
   }
-  .bg-\[\#8A2BE2\] {
-    background-color: #8A2BE2;
-  }
   .bg-black\/30 {
     background-color: color-mix(in srgb, #000 30%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -348,6 +354,9 @@
   }
   .bg-red-200 {
     background-color: var(--color-red-200);
+  }
+  .bg-secondary {
+    background-color: var(--color-secondary);
   }
   .bg-slate-100 {
     background-color: var(--color-slate-100);
@@ -386,26 +395,26 @@
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
   }
-  .text-\[\#90EE90\] {
-    color: #90EE90;
-  }
-  .text-\[\#4682B4\] {
-    color: #4682B4;
-  }
-  .text-\[\#006400\] {
-    color: #006400;
-  }
-  .text-\[\#FF8C00\] {
-    color: #FF8C00;
-  }
   .text-gray-700 {
     color: var(--color-gray-700);
+  }
+  .text-menu {
+    color: var(--color-menu);
+  }
+  .text-primary {
+    color: var(--color-primary);
+  }
+  .text-primary-light {
+    color: var(--color-primary-light);
   }
   .text-red-500 {
     color: var(--color-red-500);
   }
   .text-red-600 {
     color: var(--color-red-600);
+  }
+  .text-slate-700 {
+    color: var(--color-slate-700);
   }
   .text-white {
     color: var(--color-white);
@@ -489,14 +498,19 @@
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
   }
-  .focus\:ring-\[\#8A2BE2\] {
-    &:focus {
-      --tw-ring-color: #8A2BE2;
-    }
-  }
   .focus\:ring-gray-600 {
     &:focus {
       --tw-ring-color: var(--color-gray-600);
+    }
+  }
+  .focus\:ring-menu {
+    &:focus {
+      --tw-ring-color: var(--color-menu);
+    }
+  }
+  .focus\:ring-secondary {
+    &:focus {
+      --tw-ring-color: var(--color-secondary);
     }
   }
   .focus\:ring-offset-2 {

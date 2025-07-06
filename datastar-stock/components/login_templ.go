@@ -41,7 +41,7 @@ func Login(redirect string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full h-full flex items-center justify-center\"><form method=\"post\" action=\"/login\" class=\"animate-login py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12\" data-signals-signing-in=\"false\" data-signals-error-message=\"''\" data-on-submit=\"evt.preventDefault();$signingIn=true;$errorMessage='';@post('/login',{contentType:'form'})\" data-on-datastar-sse=\"evt.detail.type == 'finished' && $errorMessage==''?window.location.href=window.location.href:$signingIn=$signingIn;\"><p class=\"text-2xl text-[#006400]\">Login</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full h-full flex items-center justify-center\"><form method=\"post\" action=\"/login\" class=\"animate-login py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12\" data-signals-signing-in=\"false\" data-signals-error-message=\"''\" data-on-submit=\"evt.preventDefault();$signingIn=true;$errorMessage='';@post('/login',{contentType:'form'})\" data-on-datastar-sse=\"evt.detail.type == 'finished' && $errorMessage==''?window.location.href=window.location.href:$signingIn=$signingIn;\"><p class=\"text-2xl text-primary\">Login</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -105,7 +105,7 @@ func buttonSubmit() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none w-full rounded-full py-2 px-4 bg-[#8A2BE2] text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-[#8A2BE2] focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr-disabled=\"$signingIn\"><span data-show=\"!$signingIn\">Submit</span> <span data-show=\"$signingIn\">Submitting</span> <span data-show=\"$signingIn\" class=\"animate-spin-2 w-5 h-5 border-2 border-dashed border-white rounded-full\"></span></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none w-full rounded-full py-2 px-4 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr-disabled=\"$signingIn\"><span data-show=\"!$signingIn\">Submit</span> <span data-show=\"$signingIn\">Submitting</span> <span data-show=\"$signingIn\" class=\"animate-spin-2 w-5 h-5 border-2 border-dashed border-white rounded-full\"></span></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
