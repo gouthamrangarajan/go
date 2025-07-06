@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func LoggedIn(next http.Handler) http.Handler {
+func LoggedInMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
 		if request.URL.Path == "/" || strings.HasPrefix(request.URL.Path, "/assets") ||
 			request.URL.Path == "/login" {
