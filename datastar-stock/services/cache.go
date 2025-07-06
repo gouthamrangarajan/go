@@ -11,7 +11,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func GetCachedData(ticker string, channel chan<- []models.CacheData) {
+func GetCachedData(ticker string, date string, channel chan<- []models.CacheData) {
 	response := []models.CacheData{}
 	ctx := context.Background()
 
@@ -22,7 +22,7 @@ func GetCachedData(ticker string, channel chan<- []models.CacheData) {
 		DB:       0,
 	})
 
-	result, err := rdb.Get(ctx, ticker+"_"+time.Now().Format("2006-01-02")).Result()
+	result, err := rdb.Get(ctx, ticker+"_"+date).Result()
 
 	if err != nil {
 		fmt.Printf("Error fetching %s data from Redis:%s\n", ticker, err)
@@ -37,12 +37,12 @@ func GetCachedData(ticker string, channel chan<- []models.CacheData) {
 		return
 	}
 	if len(response) > 0 {
-		fmt.Printf("Cached data for %s found\n", ticker)
+		fmt.Printf("Cached data for %s found for date %s\n", ticker, date)
 	}
 	channel <- response
 }
 
-func SetCachedData(ticker string, data []models.CacheData, channel chan<- string) {
+func SetCachedData(ticker string, date string, data []models.CacheData, channel chan<- string) {
 	ctx := context.Background()
 
 	rdb := redis.NewClient(&redis.Options{
@@ -59,7 +59,7 @@ func SetCachedData(ticker string, data []models.CacheData, channel chan<- string
 		return
 	}
 
-	err = rdb.Set(ctx, ticker+"_"+time.Now().Format("2006-01-02"), dataJSON, 48*time.Hour).Err()
+	err = rdb.Set(ctx, ticker+"_"+date, dataJSON, 48*time.Hour).Err()
 	if err != nil {
 		fmt.Println("Error setting data in Redis:", err)
 		channel <- "ERROR"

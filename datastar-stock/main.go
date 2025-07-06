@@ -106,10 +106,11 @@ func main() {
 		}
 
 		sse := datastar.NewSSE(responseWriter, request)
-		cachedDataChannel := make(chan []models.CacheData)
-		defer close(cachedDataChannel)
-		go services.GetCachedData(ticker, cachedDataChannel)
-		chartData := <-cachedDataChannel
+		cachedDataTodayChannel := make(chan []models.CacheData)
+		defer close(cachedDataTodayChannel)
+
+		go services.GetCachedData(ticker, time.Now().Format("2006-01-02"), cachedDataTodayChannel)
+		chartData := <-cachedDataTodayChannel
 
 		if (len(chartData)) == 0 {
 			alphavantageChannel := make(chan models.AlphavantageResponse)
@@ -123,12 +124,18 @@ func main() {
 			chartData = <-transformChannel
 
 			if len(chartData) == 0 { //error
-				sse.MergeFragmentTempl(components.CardError(ticker))
-				return
+				cachedDataPrevDayChannel := make(chan []models.CacheData)
+				defer close(cachedDataPrevDayChannel)
+				go services.GetCachedData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
+				chartData = <-cachedDataPrevDayChannel
+				if len(chartData) == 0 { //still no data
+					sse.MergeFragmentTempl(components.CardError(ticker))
+					return
+				}
 			} else {
 				setCacheChannel := make(chan string)
 				defer close(setCacheChannel)
-				go services.SetCachedData(ticker, chartData, setCacheChannel)
+				go services.SetCachedData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
 				<-setCacheChannel
 			}
 		}
