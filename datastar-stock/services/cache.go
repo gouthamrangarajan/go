@@ -25,7 +25,7 @@ func GetCachedData(ticker string, date string, channel chan<- []models.CacheData
 	result, err := rdb.Get(ctx, ticker+"_"+date).Result()
 
 	if err != nil {
-		fmt.Printf("Error fetching %s data from Redis:%s\n", ticker, err)
+		fmt.Printf("Error fetching %s data from Redis for date %s:%s\n", ticker, date, err)
 		channel <- response
 		return
 	}
@@ -65,6 +65,6 @@ func SetCachedData(ticker string, date string, data []models.CacheData, channel 
 		channel <- "ERROR"
 		return
 	}
-	fmt.Printf("Successfully cached data for %s\n", ticker)
+	fmt.Printf("Successfully cached data for %s & date %s\n", ticker, date)
 	channel <- "OK"
 }
