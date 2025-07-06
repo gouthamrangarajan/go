@@ -8,12 +8,13 @@ templ Recent(tickers []string) {
 			<form
 				class="relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 "
 				data-on-submit="evt.preventDefault()"
+				data-signals="{loading:false}"
 			>
 				@CurrentCountInp(5)
 				<select
 					name="newCount"
 					class="appearance-none outline-none w-full py-2 px-4 pr-6 "
-					data-on-change="@post('/home/recent/more',{contentType:'form'})"
+					data-on-change="$loading=true;@post('/home/recent/more',{contentType:'form'});"
 				>
 					<option value="5">Show 5 items</option>
 					<option value="10">Show 10 items</option>
@@ -21,9 +22,16 @@ templ Recent(tickers []string) {
 					<option value="20">Show 20 items</option>
 					<option value="25">Show 25 items</option>
 				</select>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="-z-10 size-5 text-slate-600 absolute top-2.5 right-1 ">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					class="-z-10 size-5 text-slate-600 absolute top-2.5 right-1 "
+					data-show="!$loading"
+				>
 					<path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd"></path>
 				</svg>
+				<span data-show="$loading" class="absolute top-2.5 right-1 animate-spin-2 w-5 h-5 border-2 border-dashed border-slate-600 rounded-full"></span>
 			</form>
 		</div>
 		<div id="recents" class="py-2 px-4 grid grid-cols-1 gap-2 lg:gap-4 lg:grid-cols-2">
@@ -34,4 +42,42 @@ templ Recent(tickers []string) {
 
 templ CurrentCountInp(val int) {
 	<input type="hidden" name="currentCount" value={ val } id="currentCountInp"/>
+}
+
+templ RecentError() {
+	@home() {
+		<div class="absolute top-0 right-0 flex justify-end pr-2 md:pr-4 md:py-1 md:px-3">
+			<form
+				class="relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 "
+				data-on-submit="evt.preventDefault()"
+				data-signals="{loading:false}"
+			>
+				@CurrentCountInp(0)
+				<select
+					name="newCount"
+					class="appearance-none outline-none w-full py-2 px-4 pr-6 "
+					data-on-change="$loading=true;@post('/home/recent/more',{contentType:'form'});"
+				>
+					<option value="5">Show 5 items</option>
+					<option value="10">Show 10 items</option>
+					<option value="15">Show 15 items</option>
+					<option value="20">Show 20 items</option>
+					<option value="25">Show 25 items</option>
+				</select>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					class="-z-10 size-5 text-slate-600 absolute top-2.5 right-1 "
+					data-show="!$loading"
+				>
+					<path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd"></path>
+				</svg>
+				<span data-show="$loading" class="absolute top-2.5 right-1 animate-spin-2 w-5 h-5 border-2 border-dashed border-slate-600 rounded-full"></span>
+			</form>
+		</div>
+		<div id="recents" class="py-2 px-4 grid grid-cols-1 gap-2 lg:gap-4 lg:grid-cols-2">
+			@shared.CardError()
+		</div>
+	}
 }

@@ -85,7 +85,7 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 			go services.GetCachedData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
 			chartData = <-cachedDataPrevDayChannel
 			if len(chartData) == 0 { //still no data
-				sse.MergeFragmentTempl(shared.CardError(ticker))
+				sse.MergeFragmentTempl(shared.CardTickerError(ticker))
 				return
 			}
 		} else {
@@ -145,9 +145,12 @@ func popularsDataHandler(responseWriter http.ResponseWriter, request *http.Reque
 	defer close(popularsChannel)
 	go services.GetPopulars(request.Context(), popularsChannel)
 	populars := <-popularsChannel
-
-	component := components.Populars(populars.Data)
+	component := components.PopularsError()
+	if len(populars.Data) > 0 {
+		component = components.Populars(populars.Data)
+	}
 	component.Render(request.Context(), responseWriter)
+
 }
 
 func recentDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -156,14 +159,18 @@ func recentDataHandler(responseWriter http.ResponseWriter, request *http.Request
 	go services.GetRecent(request.Context(), recentsChannel)
 	recents := <-recentsChannel
 
-	recentsToSend := make([]string, 5)
+	recentsToSend := []string{}
 	for idx, item := range recents {
 		if idx > 4 {
 			break
 		}
-		recentsToSend[idx] = strings.Trim(item.Ticker, " ")
+		recentsToSend = append(recentsToSend, strings.Trim(item.Ticker, " "))
 	}
-	component := components.Recent(recentsToSend)
+	component := components.RecentError()
+	if len(recentsToSend) > 0 {
+		component = components.Recent(recentsToSend)
+
+	}
 	component.Render(request.Context(), responseWriter)
 }
 
@@ -177,7 +184,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 		return
 	}
 	currentCount, err := strconv.Atoi(currentCountStr)
-	if err != nil || currentCount < 1 {
+	if err != nil || currentCount < 0 {
 		http.Error(responseWriter, "Invalid request", http.StatusBadRequest)
 		return
 	}
@@ -189,9 +196,14 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 	defer close(recentsChannel)
 	go services.GetRecent(request.Context(), recentsChannel)
 	recents := <-recentsChannel
-
+	if len(recents) == 0 {
+		// sse.MergeFragmentTempl(components.RecentError(), datastar.WithUseViewTransitions(true))
+		// sse.MergeFragmentTempl(components.CurrentCountInp(0))
+		sse.MergeSignals([]byte("{loading:false}"))
+		return
+	}
 	if numberOfItemsToSend > 0 {
-		recentsToSend := make([]string, numberOfItemsToSend)
+		recentsToSend := []string{}
 		recentsToSendIndex := 0
 		for idx, item := range recents {
 			if idx >= newCount {
@@ -199,7 +211,8 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			} else if idx+1 <= offset {
 				continue
 			}
-			recentsToSend[recentsToSendIndex] = strings.Trim(item.Ticker, " ")
+
+			recentsToSend = append(recentsToSend, strings.Trim(item.Ticker, " "))
 			recentsToSendIndex++
 		}
 		sse.MergeFragmentTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithMergeAppend(), datastar.WithUseViewTransitions(true))
@@ -215,4 +228,5 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 		}
 	}
 	sse.MergeFragmentTempl(components.CurrentCountInp(newCount))
+	sse.MergeSignals([]byte("{loading:false}"))
 }

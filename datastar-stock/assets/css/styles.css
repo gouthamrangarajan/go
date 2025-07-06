@@ -365,6 +365,9 @@
   .border-gray-600 {
     border-color: var(--color-gray-600);
   }
+  .border-slate-600 {
+    border-color: var(--color-slate-600);
+  }
   .border-white {
     border-color: var(--color-white);
   }
