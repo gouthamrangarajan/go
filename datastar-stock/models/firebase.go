@@ -28,6 +28,7 @@ type SignInResponse struct {
 	ExpiresIn    string `json:"expiresIn"`
 	LocalID      string `json:"localId"`
 	Registered   bool   `json:"registered"`
+	ErrorMessage string
 }
 
 type PopularsFromDb struct {

@@ -46,7 +46,7 @@ func main() {
 		go services.SignInEmailPassword(email, password, channel)
 		signInResponse := <-channel // Wait for the sign-in response
 
-		if email == "" || password == "" || signInResponse.IDToken == "ERROR" {
+		if email == "" || password == "" || signInResponse.ErrorMessage != "" {
 			sse := datastar.NewSSE(responseWriter, request)
 			sse.MergeSignals([]byte("{errorMessage:'Error. Invalid Credentials',signingIn:false}"))
 		} else {

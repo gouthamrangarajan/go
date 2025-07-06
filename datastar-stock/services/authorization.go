@@ -109,9 +109,7 @@ func GetExpiresIn(token string, ctx context.Context, channel chan<- int64) {
 	channel <- tokenParsed.Expires
 }
 func SignInEmailPassword(email, password string, channel chan<- models.SignInResponse) {
-	signInResponse := models.SignInResponse{
-		IDToken: "ERROR",
-	}
+	signInResponse := models.SignInResponse{}
 	signInUrl := os.Getenv("GOOGLE_IDENTITY_SIGNIN_URL")
 	jsonBody, err := json.Marshal(models.SignInRequest{
 		Email:             email,
@@ -120,30 +118,35 @@ func SignInEmailPassword(email, password string, channel chan<- models.SignInRes
 	})
 	if err != nil {
 		fmt.Println("Error marshalling sign-in request:", err)
+		signInResponse.ErrorMessage = err.Error()
 		channel <- signInResponse
 		return
 	}
 	resp, err := http.Post(signInUrl, "application/json", bytes.NewBuffer(jsonBody))
 	if err != nil {
 		fmt.Println("Error making sign-in request:", err)
+		signInResponse.ErrorMessage = err.Error()
 		channel <- signInResponse
 		return
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Sign-in failed with status code:", resp.StatusCode)
+		signInResponse.ErrorMessage = fmt.Sprintf("Sign-in failed with status code: %d", resp.StatusCode)
 		channel <- signInResponse
 		return
 	}
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
+		signInResponse.ErrorMessage = err.Error()
 		channel <- signInResponse
 		return
 	}
 	err = json.Unmarshal(bodyBytes, &signInResponse)
 	if err != nil {
 		fmt.Println("Error unmarshalling sign-in response:", err)
+		signInResponse.ErrorMessage = err.Error()
 		channel <- signInResponse
 		return
 	}
