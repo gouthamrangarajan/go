@@ -116,6 +116,7 @@ func GetRecent(ctx context.Context, channel chan<- []models.RecentFromDb) {
 
 	for _, doc := range docs {
 		recent := models.RecentFromDb{}
+		recent.Ticker = strings.TrimSpace(doc.Ref.ID)
 		if err := doc.DataTo(&recent); err != nil {
 			fmt.Println("Error converting document data in populars:", err)
 		} else {

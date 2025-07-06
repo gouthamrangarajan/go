@@ -2,6 +2,7 @@ package main
 
 import (
 	"datastar-stock/components"
+	"datastar-stock/components/shared"
 	"datastar-stock/models"
 	"datastar-stock/services"
 	"net/http"
@@ -84,7 +85,7 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 			go services.GetCachedData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
 			chartData = <-cachedDataPrevDayChannel
 			if len(chartData) == 0 { //still no data
-				sse.MergeFragmentTempl(components.CardError(ticker))
+				sse.MergeFragmentTempl(shared.CardError(ticker))
 				return
 			}
 		} else {
@@ -160,12 +161,58 @@ func recentDataHandler(responseWriter http.ResponseWriter, request *http.Request
 		if idx > 4 {
 			break
 		}
-		if strings.Trim(item.Ticker, " ") != "" {
-			recentsToSend[idx] = strings.Trim(item.Ticker, " ")
-		} else if strings.Trim(item.TickerLowerCase, " ") != "" {
-			recentsToSend[idx] = strings.Trim(item.TickerLowerCase, " ")
-		}
+		recentsToSend[idx] = strings.Trim(item.Ticker, " ")
 	}
 	component := components.Recent(recentsToSend)
 	component.Render(request.Context(), responseWriter)
+}
+
+func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *http.Request) {
+	newCountStr := strings.Trim(request.FormValue("newCount"), "")
+	currentCountStr := strings.Trim(request.FormValue("currentCount"), "")
+
+	newCount, err := strconv.Atoi(newCountStr)
+	if err != nil || newCount < 1 {
+		http.Error(responseWriter, "Invalid request", http.StatusBadRequest)
+		return
+	}
+	currentCount, err := strconv.Atoi(currentCountStr)
+	if err != nil || currentCount < 1 {
+		http.Error(responseWriter, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	offset := currentCount
+	numberOfItemsToSend := newCount - currentCount
+	sse := datastar.NewSSE(responseWriter, request)
+	recentsChannel := make(chan []models.RecentFromDb)
+	defer close(recentsChannel)
+	go services.GetRecent(request.Context(), recentsChannel)
+	recents := <-recentsChannel
+
+	if numberOfItemsToSend > 0 {
+		recentsToSend := make([]string, numberOfItemsToSend)
+		recentsToSendIndex := 0
+		for idx, item := range recents {
+			if idx >= newCount {
+				break
+			} else if idx+1 <= offset {
+				continue
+			}
+			recentsToSend[recentsToSendIndex] = strings.Trim(item.Ticker, " ")
+			recentsToSendIndex++
+		}
+		sse.MergeFragmentTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithMergeAppend(), datastar.WithUseViewTransitions(true))
+		sse.ExecuteScript(`document.getElementById('card_`+recentsToSend[0]+`').scrollIntoView({behavior: 'smooth', block: 'center'});`, datastar.WithExecuteScriptAutoRemove(true))
+	} else {
+		for idx := range currentCount - newCount {
+			if idx+newCount >= len(recents) {
+				break
+			}
+			tickerToRemove := strings.Trim(recents[idx+newCount].Ticker, " ")
+			// sse.ExecuteScript(`DisposeChart("chart_`+tickerToRemove+`")`, datastar.WithExecuteScriptAutoRemove(true))
+			sse.RemoveFragments(`#card_`+tickerToRemove, datastar.WithRemoveUseViewTransitions(true))
+		}
+	}
+	sse.MergeFragmentTempl(components.CurrentCountInp(newCount))
 }

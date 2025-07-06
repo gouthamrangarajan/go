@@ -9,26 +9,28 @@ templ home() {
 				style="view-transition-name:header"
 			>Stock API</a>
 		</header>
-		<div class="w-full flex items-center justify-center gap-2">
-			<a
-				class="appearance-none outline-none py-2 px-4 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80"
-				href="/home/populars"
-				style="view-transition-name:populars-menu"
-				data-on-click="window.location.href.endsWith('/home/populars')?evt.preventDefault() : evt.stopPropagation()"
-				data-class="{'shadow text-menu font-semibold':window.location.href.endsWith('/home/populars'),'text-slate-700':!window.location.href.endsWith('/home/populars')}"
-			>
-				Populars
-			</a>
-			<a
-				class="appearance-none outline-none py-2 px-4 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80"
-				href="/home/recent"
-				style="view-transition-name:recent-menu"
-				data-on-click="window.location.href.endsWith('/home/recent')?evt.preventDefault() : evt.stopPropagation()"
-				data-class="{'shadow text-menu font-semibold':window.location.href.endsWith('/home/recent'),'text-slate-700':!window.location.href.endsWith('/home/recent')}"
-			>
-				Recent
-			</a>
+		<div class="relative flex flex-col gap-2">
+			<div class="w-full flex items-center justify-start gap-2 pl-4 md:pl-0 md:justify-center">
+				<a
+					class="appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4"
+					href="/home/populars"
+					style="view-transition-name:populars-menu"
+					data-on-click="window.location.href.endsWith('/home/populars')?evt.preventDefault() : evt.stopPropagation()"
+					data-class="{'shadow text-menu font-semibold':window.location.href.endsWith('/home/populars'),'text-slate-700':!window.location.href.endsWith('/home/populars')}"
+				>
+					Populars
+				</a>
+				<a
+					class="appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4"
+					href="/home/recent"
+					style="view-transition-name:recent-menu"
+					data-on-click="window.location.href.endsWith('/home/recent')?evt.preventDefault() : evt.stopPropagation()"
+					data-class="{'shadow text-menu font-semibold':window.location.href.endsWith('/home/recent'),'text-slate-700':!window.location.href.endsWith('/home/recent')}"
+				>
+					Recent
+				</a>
+			</div>
+			{ children... }
 		</div>
-		{ children... }
 	}
 }

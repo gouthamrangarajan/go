@@ -36,7 +36,6 @@ type PopularsFromDb struct {
 }
 
 type RecentFromDb struct {
-	Ticker          string    `firestore:"Ticker"`
-	TickerLowerCase string    `firestore:"ticker"`
-	Date            time.Time `firestore:"date"`
+	Ticker string    `firestore:"Ticker"`
+	Date   time.Time `firestore:"date"`
 }

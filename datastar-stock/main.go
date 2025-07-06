@@ -31,6 +31,7 @@ func main() {
 	router.Get("/home/populars", popularsDataHandler)
 	router.Get("/home/recent", recentDataHandler)
 	router.Get("/data/{ticker}", tickerDataHandler)
+	router.Post("/home/recent/more", recentDataHandlerWithCount)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
