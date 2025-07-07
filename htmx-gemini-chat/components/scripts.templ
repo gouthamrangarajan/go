@@ -62,6 +62,7 @@ templ bodyScript() {
                 if(Alpine.store('data').addNewChatSessionProcessing){
                     Alpine.store('data').addNewChatSessionProcessing=false;
                     const newChatSessionId=document.getElementById("chatSessionId").value;
+                    Alpine.store('data').currentSessionId=newChatSessionId;
                     window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
                 } else if(Alpine.store('data').fullPageFetchProcessing){
                     Alpine.store('data').fullPageFetchProcessing=false;
@@ -69,6 +70,7 @@ templ bodyScript() {
                 }
                 else{   
                     const chatSessionId=document.getElementById("chatSessionId").value;
+                    Alpine.store('data').currentSessionId=chatSessionId;
                     const chatSessionIdParsed=parseInt(chatSessionId);                    
                      if(!window.location.pathname.endsWith("/"+chatSessionId)){
                         if(isNaN(chatSessionIdParsed) || chatSessionIdParsed==0){
@@ -118,6 +120,7 @@ templ bodyScript() {
                     currentMessageId:-1,
                     menuOpen:false,
                     errorMessages:[],
+                    currentSessionId:document.getElementById("chatSessionId").value,
                     openMenu(){                        
                         this.menuOpen=true;
                         htmx.process(document.getElementsByTagName('aside')[0]);
@@ -128,7 +131,7 @@ templ bodyScript() {
                     sendFullPageFetchEvent(ev,eventNameToDispatch){
                         ev.preventDefault();          
                         if( ev?.currentTarget?.href &&
-                            ev.currentTarget.href.endsWith("/"+document.getElementById("chatSessionId").value))
+                            ev.currentTarget.href.endsWith("/"+this.currentSessionId))
                         {
                             return;
                         }                
@@ -175,9 +178,8 @@ templ bodyScript() {
                             }
                         }),
                         this.$watch('$store.data.deleteChatSessionProcessing',(val)=>{                            
-                            if(val){
-                                const chatSessionId=document.getElementById("chatSessionId").value;
-                                if(window.location.pathname.endsWith("/"+chatSessionId)){
+                            if(val){                                
+                                if(window.location.pathname.endsWith("/"+this.$store.data.currentSessionId)){
                                     this.checkAndAbortStreaming();
                                 }else{
                                     const firstMenu=document.getElementsByClassName("menu")[0]
@@ -243,7 +245,7 @@ templ bodyScript() {
                             const fm=new FormData();
                             fm.append("prompt",this.prompt);
                             fm.append("imgBase64",this.imgBase64)
-                            fm.append("chatSessionId",document.getElementById("chatSessionId").value);                                                        
+                            fm.append("chatSessionId",this.$store.data.currentSessionId);                                                        
                             try{
                                 let decodedValueMerged ="";                                
                                 const resp= await fetch('/send',{
@@ -301,7 +303,8 @@ templ bodyScript() {
                                         }
                                         else if(decodedItem.includes("CHAT_SESSION_ID_INPUT")){ //chat session id intput
                                             decodedItem=decodedItem.replace("CHAT_SESSION_ID_INPUT\ndata: ","").trimEnd();
-                                            document.getElementById('chatSessionId').outerHTML=decodedItem;                                        
+                                            document.getElementById("chatSessionId").outerHTML=decodedItem;  
+                                            this.$store.data.currentSessionId=document.getElementById("chatSessionId").value; //update current session id in store                                      
                                         }
                                         else if(decodedItem.includes("MESSAGE")){ //streamed output is gemini message that needs to be appended to existing message                                         
                                             decodedItem=decodedItem.replace("MESSAGE\ndata: ",""); //no trim end required , if added will remove \n coming in data also
