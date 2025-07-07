@@ -305,7 +305,12 @@ templ bodyScript() {
                                             decodedItem=decodedItem.replace("CHAT_SESSION_ID_INPUT\ndata: ","").trimEnd();
                                             document.getElementById("chatSessionId").outerHTML=decodedItem;  
                                             this.$store.data.currentSessionId=document.getElementById("chatSessionId").value; //update current session id in store                                      
+                                            window.history.replaceState({},document.title,window.location.origin+"/"+this.$store.data.currentSessionId); 
                                         }
+                                        else if(decodedItem.includes("HELPER_TEXT")){
+                                            decodedItem=decodedItem.replace("HELPER_TEXT\ndata: ","").trimEnd();
+                                            document.getElementById("helper").outerHTML=decodedItem;  
+                                        }                                        
                                         else if(decodedItem.includes("MESSAGE")){ //streamed output is gemini message that needs to be appended to existing message                                         
                                             decodedItem=decodedItem.replace("MESSAGE\ndata: ",""); //no trim end required , if added will remove \n coming in data also
                                             decodedValueMerged += decodedItem;                                                 

@@ -94,6 +94,11 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	eventDataBuffer := new(bytes.Buffer)
+
+	components.HelperText(false).Render(context.Background(), eventDataBuffer)
+	sendMessageAndFlush("event: HELPER_TEXT\ndata: "+eventDataBuffer.String()+"\n\n", response)
+
+	eventDataBuffer.Reset()
 	components.UserMessageTemplate(userMessageId).Render(context.Background(), eventDataBuffer)
 	sendMessageAndFlush("event: USER_MESSAGE_TEMPLATE\ndata: "+eventDataBuffer.String()+"\n\n", response)
 

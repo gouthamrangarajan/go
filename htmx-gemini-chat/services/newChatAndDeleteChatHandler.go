@@ -63,19 +63,8 @@ func DeleteSessionHandler(response http.ResponseWriter, request *http.Request,
 	}
 	if chatSessionIdToDelete == chatSessionIdDataDisplayedInUI {
 		//change UI & return
-		sessions := GetChatSessionsViaChannel(userId)
-		if len(sessions) > 0 {
-			conversationsChannel := make(chan []models.ChatConversation)
-			defer close(conversationsChannel)
-			go GetChatConversations(userId, sessions[0].Id, conversationsChannel)
-			conversations := <-conversationsChannel
-			component := components.UIToReplaceDeleteChatSession(conversations, sessions[0].Id)
-			component.Render(request.Context(), response)
-		} else {
-			component := components.UIToReplaceDeleteChatSession([]models.ChatConversation{}, 0)
-			component.Render(request.Context(), response)
-		}
-
+		component := components.UIToReplaceDeleteChatSession([]models.ChatConversation{}, 0)
+		component.Render(request.Context(), response)
 		return
 	}
 	response.WriteHeader(http.StatusOK)

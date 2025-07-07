@@ -142,14 +142,13 @@ templ newChatButton() {
 		x-on:click="$store.data.checkAndSetAddNewProcessing($event,'ADD_NEW_CHAT_SESSION_EVENT')"
 		x-bind:disabled="$store.data.addNewChatSessionProcessing"
 	>
-		<template x-if="!$store.data.addNewChatSessionProcessing">
-			<span>New Chat</span>
-		</template>
-		<template x-if="$store.data.addNewChatSessionProcessing">
-			<div class="w-full flex justify-center items-center gap-1 flex-1">
-				<span class="h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-one"></span>
-				<span class="h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-two"></span>
-			</div>
-		</template>
+		<span x-show="!$store.data.addNewChatSessionProcessing">New Chat</span>
+		<div
+			class="w-full flex justify-center items-center gap-1 flex-1"
+			x-show="$store.data.addNewChatSessionProcessing"
+		>
+			<span class="h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-one"></span>
+			<span class="h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-two"></span>
+		</div>
 	</button>
 }

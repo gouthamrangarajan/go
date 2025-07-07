@@ -19,9 +19,7 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	if chatSessionId == 0 && len(sessions) > 0 {
-		chatSessionId = sessions[0].Id
-	}
+
 	if chatSessionId > 0 {
 		ftedSessions := make([]models.ChatSession, 0, 1)
 		for _, session := range sessions {

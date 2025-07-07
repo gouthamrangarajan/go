@@ -47,7 +47,7 @@ func chatInput(currentChatSessionId int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"submitMessage($event,'section')\" x-bind:disabled=\"$store.data.promptProcessing\"><template x-if=\"!$store.data.promptProcessing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\" style=\"view-transition-name:submit-button\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></template><template x-if=\"$store.data.promptProcessing\"><div class=\"flex items-center gap-1 flex-1\" style=\"view-transition-name:submit-button\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span></div></template></button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"submitMessage($event,'section')\" x-bind:disabled=\"$store.data.promptProcessing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" x-show=\"!$store.data.promptProcessing\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" x-show=\"$store.data.promptProcessing\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span></div></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -84,7 +84,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 47, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 49, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -102,7 +102,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 55, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 57, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {

@@ -7,7 +7,7 @@ templ Main(conversations []models.ChatConversation, sessions []models.ChatSessio
 		<main class="w-full h-full flex flex-col items-center pt-3 pb-48 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500" style="view-transition-name:main">
 			@menuBarButton()
 			<h1 class="text-2xl font-semibold text-cyan-700 dark:text-cyan-400" style="view-transition-name:header">Gemini Chat</h1>
-			@section(conversations, false)
+			@section(conversations, false, currentChatSessionId == 0)
 			@chatInput(currentChatSessionId)
 			@menu(sessions)
 			@errorToast()
@@ -22,16 +22,16 @@ templ NewChatSession(session models.ChatSession) {
 }
 
 templ UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatSessionIdForConversations int) {
-	@section(conversations, true)
+	@section(conversations, true, chatSessionIdForConversations == 0)
 	@ChatSessionIdInput(chatSessionIdForConversations, true)
 }
 
 templ SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConversation, isOob bool) {
-	@section(conversations, isOob)
+	@section(conversations, isOob, false)
 	@ChatSessionIdInput(sessionId, isOob)
 }
 
-templ section(conversations []models.ChatConversation, isOob bool) {
+templ section(conversations []models.ChatConversation, isOob bool, helperTextShow bool) {
 	if (isOob) {
 		<section
 			id="section"
@@ -47,6 +47,7 @@ templ section(conversations []models.ChatConversation, isOob bool) {
 				}
 			}
 		</section>
+		@HelperText(helperTextShow)
 	} else {
 		<section
 			id="section"
@@ -61,5 +62,23 @@ templ section(conversations []models.ChatConversation, isOob bool) {
 				}
 			}
 		</section>
+		@HelperText(helperTextShow)
+	}
+}
+
+templ HelperText(show bool) {
+	if show {
+		<div
+			id="helper"
+			class="w-full h-full flex items-center justify-center"
+			style="view-transition-name:helper"
+			hx-swap-oob="true"
+		>
+			<p class="text-xl text-lime-700 dark:text-lime-500">
+				<span class="text-amber-500 dark:text-amber-200 font-semibold">⚡</span> Instant Answers: Ask anything, get responses
+			</p>
+		</div>
+	} else {
+		<div id="helper" hx-swap-oob="true" style="view-transition-name:helper"></div>
 	}
 }

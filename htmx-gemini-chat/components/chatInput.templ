@@ -23,17 +23,19 @@ templ chatInput(currentChatSessionId int) {
 			x-on:click="submitMessage($event,'section')"
 			x-bind:disabled="$store.data.promptProcessing"
 		>
-			<template x-if="!$store.data.promptProcessing">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5" style="view-transition-name:submit-button">
-					<path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd"></path>
-				</svg>
-			</template>
-			<template x-if="$store.data.promptProcessing">
-				<div class="flex items-center gap-1 flex-1" style="view-transition-name:submit-button">
-					<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one"></span>
-					<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two"></span>
-				</div>
-			</template>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				fill="currentColor"
+				x-show="!$store.data.promptProcessing"
+				class="size-5"
+			>
+				<path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd"></path>
+			</svg>
+			<div class="flex items-center gap-1 flex-1" x-show="$store.data.promptProcessing">
+				<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one"></span>
+				<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two"></span>
+			</div>
 		</button>
 	</div>
 }

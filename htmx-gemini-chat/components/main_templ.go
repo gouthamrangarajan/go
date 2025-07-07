@@ -55,7 +55,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = section(conversations, false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = section(conversations, false, currentChatSessionId == 0).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -143,7 +143,7 @@ func UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatS
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = section(conversations, true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = section(conversations, true, chatSessionIdForConversations == 0).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -176,7 +176,7 @@ func SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConv
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = section(conversations, isOob).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = section(conversations, isOob, false).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -188,7 +188,7 @@ func SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConv
 	})
 }
 
-func section(conversations []models.ChatConversation, isOob bool) templ.Component {
+func section(conversations []models.ChatConversation, isOob bool, helperTextShow bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -231,6 +231,10 @@ func section(conversations []models.ChatConversation, isOob bool) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			templ_7745c5c3_Err = HelperText(helperTextShow).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		} else {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto flex flex-col gap-2  mt-2 py-1 px-3 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 xl:w-9/12\" style=\"view-transition-name:section\">")
 			if templ_7745c5c3_Err != nil {
@@ -250,6 +254,46 @@ func section(conversations []models.ChatConversation, isOob bool) templ.Componen
 				}
 			}
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</section>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = HelperText(helperTextShow).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		return nil
+	})
+}
+
+func HelperText(show bool) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		if show {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div id=\"helper\" class=\"w-full h-full flex items-center justify-center\" style=\"view-transition-name:helper\" hx-swap-oob=\"true\"><p class=\"text-xl text-lime-700 dark:text-lime-500\"><span class=\"text-amber-500 dark:text-amber-200 font-semibold\">⚡</span> Instant Answers: Ask anything, get responses</p></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div id=\"helper\" hx-swap-oob=\"true\" style=\"view-transition-name:helper\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

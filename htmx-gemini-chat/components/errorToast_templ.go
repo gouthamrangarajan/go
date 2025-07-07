@@ -29,7 +29,7 @@ func errorToast() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<template x-if=\"$store.data.errorMessages.length>0\"><div class=\"absolute bottom-2 left-8 flex flex-col gap-1\"><template x-for=\"(message,idx) in $store.data.errorMessages\"><p class=\"animate-slide-up flex items-start gap-2 py-2 px-4 rounded bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 font-semibold lg:bottom-4\" x-text=\"message\" x-bind:style=\"{viewTransitionName:'error-message-'+idx}\" :key=\"idx\"></p></template></div></template>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-2 left-8 flex flex-col gap-1\" x-show=\"$store.data.errorMessages.length>0\"><template x-for=\"(message,idx) in $store.data.errorMessages\"><p class=\"animate-slide-up flex items-start gap-2 py-2 px-4 rounded bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 font-semibold lg:bottom-4\" x-text=\"message\" x-bind:style=\"{viewTransitionName:'error-message-'+idx}\" :key=\"idx\"></p></template></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
