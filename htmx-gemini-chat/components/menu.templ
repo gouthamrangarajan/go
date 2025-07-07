@@ -92,7 +92,7 @@ templ MenuItem(session models.ChatSession) {
 			href={ templ.SafeURL(url) }
 			hx-get={ string(templ.SafeURL(url)) }
 			hx-boost="true"
-			hx-swap="outerHTML"
+			hx-swap="outerHTML transition:true"
 			hx-target="#section"
 			hx-trigger="FETCH_FULL_PAGE_EVENT"
 			hx-push-url="true"
