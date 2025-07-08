@@ -288,7 +288,7 @@ func HelperText(show bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if show {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div id=\"helper\" class=\"w-full h-full flex items-center justify-center\" style=\"view-transition-name:helper\" hx-swap-oob=\"true\"><p class=\"text-xl text-lime-700 dark:text-lime-500 font-semibold\"><span class=\"text-amber-500 dark:text-amber-200 font-bold\">⚡</span> Instant Answers: Ask anything, get responses</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div id=\"helper\" class=\"w-full h-full flex items-center justify-center\" style=\"view-transition-name:helper\" hx-swap-oob=\"true\"><p class=\"text-xl text-lime-700 dark:text-lime-500 font-semibold p-1 md:p-0\"><span class=\"text-amber-500 dark:text-amber-200 font-bold\">⚡</span> Instant Answers: Ask anything, get responses</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
