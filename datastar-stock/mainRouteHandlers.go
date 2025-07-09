@@ -234,7 +234,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.MergeFragmentTempl(components.AddRecent(), datastar.WithMergeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
 	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 }
 
