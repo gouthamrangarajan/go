@@ -277,6 +277,7 @@ func filterCompaniesBySearchTerm(companies []models.CompanyFromDb, searchTerm st
 func closeAddRecentHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
+	sse.RemoveFragments("#companies_tbody")
 	sse.RemoveFragments("#overlay", datastar.WithRemoveUseViewTransitions(true))
 }
 
