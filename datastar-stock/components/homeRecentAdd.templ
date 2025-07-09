@@ -35,7 +35,7 @@ templ AddRecent() {
 					name="search"
 					class="appearance-none outline-none w-full placeholder:text-slate-400"
 					placeholder="Ticker or Company Name"
-					data-on-input__debounce.500ms="$searching=true;@post('/companies/search', {contentType:'form'})"
+					data-on-input__debounce.1s="$searching=true;@post('/companies/search', {contentType:'form'})"
 				/>
 				<span data-show="$searching" class="animate-spin-2 w-6 h-6 border-2 border-dashed border-slate-600 rounded-full"></span>
 			</form>
