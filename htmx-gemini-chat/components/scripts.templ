@@ -138,10 +138,8 @@ templ bodyScript() {
                         }                
                         this.fullPageFetchProcessing=true;
                         this.closeMenu();                        
-                        if(eventNameToDispatch){ 
-                            setTimeout(()=>{
-                                currentTarget.dispatchEvent(new Event(eventNameToDispatch));
-                            },200);                                 
+                        if(eventNameToDispatch){                             
+                            currentTarget.dispatchEvent(new Event(eventNameToDispatch));                            
                         }                        
                         
                     },

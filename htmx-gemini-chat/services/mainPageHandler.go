@@ -4,6 +4,7 @@ import (
 	"htmx-gemini-chat/components"
 	"htmx-gemini-chat/models"
 	"net/http"
+	"time"
 )
 
 func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSessionId int) {
@@ -38,6 +39,7 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 		conversations = <-conversationsChannel
 	}
 	if request.Header.Get("HX-Request") == "true" {
+		time.Sleep(200 * time.Millisecond) // Simulate a delay for the sake of UX so that menu closes before the chat session is loaded
 		component := components.SectionAndChatSessionIdInput(chatSessionId, conversations, true)
 		component.Render(request.Context(), response)
 	} else {
