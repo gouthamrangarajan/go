@@ -18,6 +18,7 @@ import (
 )
 
 var dateLayout = "2006-01-02"
+var appStartDate, _ = time.Parse(os.Getenv("START_DATE"), dateLayout)
 
 func main() {
 	err := godotenv.Load()
@@ -27,6 +28,7 @@ func main() {
 		fmt.Println("Loaded .env file")
 	}
 	today := time.Now().Format(dateLayout)
+	// today = time.Date(2025, time.Now().Month(), 7, 0, 0, 0, 0, time.Now().Location()).Format(dateLayout)
 	userId := os.Getenv("SUPABASE_USER_ID")
 
 	channels := make([]chan []models.EventData, 14)
@@ -77,7 +79,7 @@ func main() {
 	// Below is for debugging purposes, to print the consolidated data
 	// fmt.Println("")
 	// for _, data := range consolidatedData {
-	// 	fmt.Printf("Task : %v, Frequency : %v\n", data.Task, data.Frequency)
+	// 	fmt.Printf("Task : %v, Frequency : %v, Date:%v, Exact:%v\n", data.Task, data.Frequency, data.Date, data.Exact)
 	// }
 }
 func GetCurrentDayDataForUser(userId string, currDateStr string, channel chan<- []models.EventData) {
@@ -192,7 +194,7 @@ func GetWeeklyDataForUserWithExactDate(userId string, currDateStr string, channe
 		if diff < 0 {
 			fmt.Printf("Skipping future event %v in weekly\n", event.Task)
 			continue
-		} else if diff%7 == 0 {
+		} else if diff > 7 && diff%7 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -302,7 +304,7 @@ func GetEveryTwoWeeksDataForUserWithExactDate(userId string, currDateStr string,
 			fmt.Printf("Skipping future event %v in every two weeks\n", event.Task)
 			continue
 		}
-		if diff%14 == 0 {
+		if diff > 14 && diff%14 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -417,7 +419,6 @@ func GetMonthlyDataForUserWithExactDate(userId string, currDateStr string, chann
 		return
 	}
 	dateToInclude := currDate
-	appStartDate := time.Date(2023, time.Month(1), 1, 0, 0, 0, 0, currDate.Location())
 	allMonthDates := services.NewHashSet[string]()
 	for {
 		if dateToInclude.Before(appStartDate) {
@@ -428,16 +429,6 @@ func GetMonthlyDataForUserWithExactDate(userId string, currDateStr string, chann
 	}
 	for _, event := range allResponse {
 		if allMonthDates.Contains(event.Date) {
-			eventDate, err := time.Parse(dateLayout, event.Date)
-			if err != nil {
-				fmt.Printf("Error parsing date %v\n", err.Error())
-				continue
-			}
-			diff := int(currDate.Sub(eventDate).Hours() / 24)
-			if diff < 0 {
-				fmt.Printf("Skipping future event %v in monthly\n", event.Task)
-				continue
-			}
 			stopAfter, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfter.Before(currDate) {
@@ -534,19 +525,18 @@ func GetQuarterlyDataForUserWithExactDate(userId string, currDateStr string, cha
 		channel <- ftedResponse
 		return
 	}
-	for _, event := range allResponse {
-		eventDate, err := time.Parse(dateLayout, event.Date)
-		if err != nil {
-			fmt.Printf("Error parsing date %v\n", err.Error())
-			continue
-		}
 
-		diff := int(currDate.Sub(eventDate).Hours() / 24)
-		if diff < 0 {
-			fmt.Printf("Skipping future event %v in quarterly\n", event.Task)
-			continue
+	quarterlyDates := services.NewHashSet[string]()
+	dateToInclude := currDate
+	for {
+		if dateToInclude.Before(appStartDate) {
+			break
 		}
-		if int(currDate.Sub(eventDate).Hours()/24/30)%3 == 0 {
+		quarterlyDates.Add(dateToInclude.Format(dateLayout))
+		dateToInclude = dateToInclude.AddDate(0, -3, 0)
+	}
+	for _, event := range allResponse {
+		if quarterlyDates.Contains(event.Date) {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -643,18 +633,18 @@ func GetHalfYearlyDataForUserWithExactDate(userId string, currDateStr string, ch
 		channel <- ftedResponse
 		return
 	}
+
+	halfYearlyDates := services.NewHashSet[string]()
+	dateToInclude := currDate
+	for {
+		if dateToInclude.Before(appStartDate) {
+			break
+		}
+		halfYearlyDates.Add(dateToInclude.Format(dateLayout))
+		dateToInclude = dateToInclude.AddDate(0, -6, 0)
+	}
 	for _, event := range allResponse {
-		eventDate, err := time.Parse(dateLayout, event.Date)
-		if err != nil {
-			fmt.Printf("Error parsing date %v\n", err.Error())
-			continue
-		}
-		diff := int(currDate.Sub(eventDate).Hours() / 24)
-		if diff < 0 {
-			fmt.Printf("Skipping future event %v in half yearly\n", event.Task)
-			continue
-		}
-		if int(currDate.Sub(eventDate).Hours()/24/30)%6 == 0 {
+		if halfYearlyDates.Contains(event.Date) {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -751,18 +741,18 @@ func GetYearlyDataForUserWithExactDate(userId string, currDateStr string, channe
 		channel <- ftedResponse
 		return
 	}
+
+	yearlyDates := services.NewHashSet[string]()
+	dateToInclude := currDate
+	for {
+		if dateToInclude.Before(appStartDate) {
+			break
+		}
+		yearlyDates.Add(dateToInclude.Format(dateLayout))
+		dateToInclude = dateToInclude.AddDate(0, -12, 0)
+	}
 	for _, event := range allResponse {
-		eventDate, err := time.Parse(dateLayout, event.Date)
-		if err != nil {
-			fmt.Printf("Error parsing date %v\n", err.Error())
-			continue
-		}
-		diff := int(currDate.Sub(eventDate).Hours() / 24)
-		if diff < 0 {
-			fmt.Printf("Skipping future event %v in yearly\n", event.Task)
-			continue
-		}
-		if int(currDate.Sub(eventDate).Hours()/24/30)%12 == 0 {
+		if yearlyDates.Contains(event.Date) {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
