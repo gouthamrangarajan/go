@@ -234,6 +234,8 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.MergeFragmentTempl(components.AddRecent(), datastar.WithMergeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
+	time.Sleep(300 * time.Millisecond)
+	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 }
 
 func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -274,6 +276,7 @@ func filterCompaniesBySearchTerm(companies []models.CompanyFromDb, searchTerm st
 
 func closeAddRecentHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
+	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 	sse.RemoveFragments("#overlay", datastar.WithRemoveUseViewTransitions(true))
 }
 
