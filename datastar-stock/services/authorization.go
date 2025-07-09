@@ -67,7 +67,7 @@ func VerifyToken(token string, ctx context.Context, channel chan<- string) {
 		channel <- "ERROR"
 		return
 	}
-	channel <- tokenParsed.Firebase.Identities["email"].([]interface{})[0].(string)
+	channel <- tokenParsed.Firebase.Identities["email"].([]any)[0].(string)
 }
 func GetExpiresIn(token string, ctx context.Context, channel chan<- int64) {
 	firebaseConfig := models.FirebaseConfig{
