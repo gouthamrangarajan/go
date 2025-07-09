@@ -16,7 +16,11 @@ import (
 	"google.golang.org/api/option"
 )
 
-func VerifyToken(token string, ctx context.Context, channel chan<- bool) {
+type contextKey string
+
+const UserIDKey contextKey = "userId"
+
+func VerifyToken(token string, ctx context.Context, channel chan<- string) {
 	firebaseConfig := models.FirebaseConfig{
 		Type:                    os.Getenv("FIREBASE_TYPE"),
 		ProjectID:               os.Getenv("FIREBASE_PROJECT_ID"),
@@ -33,7 +37,7 @@ func VerifyToken(token string, ctx context.Context, channel chan<- bool) {
 	firebaseConfigJson, firebaseConfigErr := json.Marshal(firebaseConfig)
 	if firebaseConfigErr != nil {
 		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
-		channel <- false
+		channel <- "ERROR"
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
@@ -42,28 +46,28 @@ func VerifyToken(token string, ctx context.Context, channel chan<- bool) {
 
 	if appErr != nil {
 		fmt.Println("Error initializing Firebase app:", appErr)
-		channel <- false
+		channel <- "ERROR"
 		return
 	}
 	auth, err := app.Auth(ctx)
 	if err != nil {
 		fmt.Println("Error getting Auth client:", err)
-		channel <- false
+		channel <- "ERROR"
 		return
 	}
 	tokenParsed, err := auth.VerifyIDToken(ctx, token)
 	if err != nil {
 		fmt.Println("Error verifying ID token:", err)
-		channel <- false
+		channel <- "ERROR"
 		return
 	}
 	timeParsed := time.Unix(tokenParsed.Expires, 0)
 	if time.Since(timeParsed) > 0 {
 		fmt.Println("Token has expired", token)
-		channel <- false
+		channel <- "ERROR"
 		return
 	}
-	channel <- true
+	channel <- tokenParsed.Firebase.Identities["email"].([]interface{})[0].(string)
 }
 func GetExpiresIn(token string, ctx context.Context, channel chan<- int64) {
 	firebaseConfig := models.FirebaseConfig{

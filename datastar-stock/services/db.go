@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	firebase "firebase.google.com/go/v4"
 	"golang.org/x/exp/slices"
@@ -14,8 +15,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func GetPopulars(ctx context.Context, channel chan<- models.PopularsFromDb) {
-	populars := models.PopularsFromDb{}
+func getFirebasConfigJson() ([]byte, error) {
 	firebaseConfig := models.FirebaseConfig{
 		Type:                    os.Getenv("FIREBASE_TYPE"),
 		ProjectID:               os.Getenv("FIREBASE_PROJECT_ID"),
@@ -30,6 +30,12 @@ func GetPopulars(ctx context.Context, channel chan<- models.PopularsFromDb) {
 		UniverseDomain:          os.Getenv("FIREBASE_UNIVERSE_DOMAIN"),
 	}
 	firebaseConfigJson, firebaseConfigErr := json.Marshal(firebaseConfig)
+	return firebaseConfigJson, firebaseConfigErr
+}
+
+func GetPopulars(ctx context.Context, channel chan<- models.PopularsFromDb) {
+	populars := models.PopularsFromDb{}
+	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
 	if firebaseConfigErr != nil {
 		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
 		channel <- populars
@@ -69,20 +75,7 @@ func GetPopulars(ctx context.Context, channel chan<- models.PopularsFromDb) {
 
 func GetRecent(ctx context.Context, channel chan<- []models.RecentFromDb) {
 	recents := []models.RecentFromDb{}
-	firebaseConfig := models.FirebaseConfig{
-		Type:                    os.Getenv("FIREBASE_TYPE"),
-		ProjectID:               os.Getenv("FIREBASE_PROJECT_ID"),
-		PrivateKeyID:            os.Getenv("FIREBASE_PRIVATE_KEY_ID"),
-		PrivateKey:              strings.ReplaceAll(os.Getenv("FIREBASE_PRIVATE_KEY"), "\\n", "\n"),
-		ClientEmail:             os.Getenv("FIREBASE_CLIENT_EMAIL"),
-		ClientID:                os.Getenv("FIREBASE_CLIENT_ID"),
-		AuthURI:                 os.Getenv("FIREBASE_AUTH_URI"),
-		TokenURI:                os.Getenv("FIREBASE_TOKEN_URI"),
-		AuthProviderX509CertURL: os.Getenv("FIREBASE_AUTH_PROVIDER_X509_CERT_URL"),
-		ClientX509CertURL:       os.Getenv("FIREBASE_CLIENT_X509_CERT_URL"),
-		UniverseDomain:          os.Getenv("FIREBASE_UNIVERSE_DOMAIN"),
-	}
-	firebaseConfigJson, firebaseConfigErr := json.Marshal(firebaseConfig)
+	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
 	if firebaseConfigErr != nil {
 		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
 		channel <- recents
@@ -132,4 +125,93 @@ func GetRecent(ctx context.Context, channel chan<- []models.RecentFromDb) {
 		}
 	})
 	channel <- recents
+}
+
+func AddRecent(ctx context.Context, ticker string, name string, channel chan<- bool) {
+
+	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
+		channel <- false
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Println("Error initializing Firebase app:", appErr)
+		channel <- false
+		return
+	}
+
+	fireStore, err := app.Firestore(ctx)
+
+	if err != nil {
+		fmt.Println("Error getting Firestore client:", err)
+		channel <- false
+		return
+	}
+	defer fireStore.Close()
+	result, err := fireStore.Collection("recentTickers").Doc(ticker).Set(ctx, models.RecentFromDb{
+		Ticker: ticker,
+		Name:   name,
+		Date:   time.Now(),
+		UserId: ctx.Value(UserIDKey).(string),
+	})
+
+	if err != nil {
+		fmt.Println("Error saving document in recent:", err)
+		channel <- false
+		return
+	}
+	if result == nil {
+		fmt.Println("No result returned after saving document in recent")
+		channel <- false
+		return
+	}
+	channel <- true
+}
+
+func GetAllCompanies(ctx context.Context, channel chan<- []models.CompanyFromDb) {
+	companiesCollection := []models.CompanyFromDb{}
+	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
+		channel <- companiesCollection
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Println("Error initializing Firebase app:", appErr)
+		channel <- companiesCollection
+		return
+	}
+
+	fireStore, err := app.Firestore(ctx)
+
+	if err != nil {
+		fmt.Println("Error getting Firestore client:", err)
+		channel <- companiesCollection
+		return
+	}
+	defer fireStore.Close()
+	doc, err := fireStore.Collection("companies").Doc("all").Get(ctx)
+
+	if err != nil {
+		fmt.Println("Error getting document in companies:", err)
+		channel <- companiesCollection
+		return
+	}
+
+	companiesData := models.CompaniesFromDb{}
+	if err := doc.DataTo(&companiesData); err != nil {
+		fmt.Println("Error converting document data in companies:", err)
+		channel <- companiesCollection
+		return
+	}
+	channel <- companiesData.Data
 }

@@ -20,24 +20,39 @@ default:
 }
 	}}
 	<div
-		class={ animation + " shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
+		class={ animation + " card shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
 		data-on-load={ "@get('/data/" + ticker + "')" }
-		data-on-resize__window__throttle.500ms.trail={ "ResizeChart('chart_" + ticker + "')" }
-		id={ "card_" + ticker }
-		style={ "view-transition-name:card_" + ticker }
+		data-on-resize__window__throttle.500ms.trail={ "ResizeChart('chart_" + ReplaceSpecialCharsInTicker(ticker) + "')" }
+		id={ "card_" + ReplaceSpecialCharsInTicker(ticker) }
+		style={ "view-transition-name:card-" + ReplaceSpecialCharsInTicker(ticker) }
 	>
-		<p class="w-full text-menu text-lg font-semibold">
+		<h3 class="w-full text-menu text-lg font-semibold">
 			{ ticker }
-		</p>
-		<div class="w-full h-96" id={ "chart_" + ticker }></div>
+		</h3>
+		<div class="w-full h-96" id={ "chart_" + ReplaceSpecialCharsInTicker(ticker) }></div>
+	</div>
+}
+
+templ CardToPrepend(ticker string) {
+	<div
+		class={ " card shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
+		data-on-load={ "@get('/data/" + ticker + "')" }
+		data-on-resize__window__throttle.500ms.trail={ "ResizeChart('chart_" + ReplaceSpecialCharsInTicker(ticker) + "')" }
+		id={ "card_" + ReplaceSpecialCharsInTicker(ticker) }
+		style={ "view-transition-name:card-" + ReplaceSpecialCharsInTicker(ticker) }
+	>
+		<h3 class="w-full text-menu text-lg font-semibold">
+			{ ticker }
+		</h3>
+		<div class="w-full h-96" id={ "chart_" + ReplaceSpecialCharsInTicker(ticker) }></div>
 	</div>
 }
 
 templ CardTickerError(ticker string) {
 	<div
-		class={ " shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
-		id={ "card_" + ticker }
-		style={ "view-transition-name:card_" + ticker }
+		class={ " card shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
+		id={ "card_" + ReplaceSpecialCharsInTicker(ticker) }
+		style={ "view-transition-name:card_" + ReplaceSpecialCharsInTicker(ticker) }
 	>
 		<p class="w-full text-menu font-semibold">
 			{ ticker }
@@ -53,7 +68,7 @@ templ CardTickerError(ticker string) {
 
 templ CardError() {
 	<div
-		class={ " shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
+		class={ " card shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
 	>
 		<p class="w-full text-menu font-semibold"></p>
 		<div class="flex flex-col gap-1 items-center justify-center text-red-500 h-96">

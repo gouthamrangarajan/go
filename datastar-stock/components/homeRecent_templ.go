@@ -43,7 +43,7 @@ func Recent(tickers []string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-0 right-0 flex justify-end pr-2 md:pr-4 md:py-1 md:px-3\"><form class=\"relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 \" data-on-submit=\"evt.preventDefault()\" data-signals=\"{loading:false}\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute -top-0.5 right-0 flex gap-2 justify-end pr-2 md:pr-4 md:py-1 md:px-3\"><button class=\"apperance-none outline-none cursor-pointer py-1 px-3 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg\" data-on-click=\"@get('/home/recent/add')\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg> <span class=\"hidden md:inline\">Add Recent</span></button><form class=\"relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 \" data-on-submit=\"evt.preventDefault()\" data-signals=\"{loading:false}\" id=\"recent_form\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -101,7 +101,7 @@ func CurrentCountInp(val int) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(val)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 44, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 54, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -148,7 +148,7 @@ func RecentError() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"absolute top-0 right-0 flex justify-end pr-2 md:pr-4 md:py-1 md:px-3\"><form class=\"relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 \" data-on-submit=\"evt.preventDefault()\" data-signals=\"{loading:false}\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"absolute top-0 right-0 flex justify-end pr-2 md:pr-4 md:py-1 md:px-3\"><form class=\"relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 \" data-on-submit=\"evt.preventDefault()\" data-signals=\"{loading:false}\" id=\"recent_form\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -1,0 +1,60 @@
+package shared
+
+import (
+	"datastar-stock/models"
+	"strings"
+)
+
+func ReplaceSpecialCharsInTicker(tikcer string) string {
+	// Replace special characters in ticker with empty string
+	replacer := strings.NewReplacer(".", "", "-", "", " ", "")
+	return replacer.Replace(tikcer)
+}
+
+templ CompaniesTable(companies []models.CompanyFromDb) {
+	<table class="w-full table-fixed text-left">
+		<thead>
+			<tr>
+				<th class="px-4 py-2 w-1/4 text-menu">Ticker</th>
+				<th class="px-4 py-2 w-1/2 text-menu">Name</th>
+				<th class="px-4 py-1 w-1/4"></th>
+			</tr>
+		</thead>
+		@CompaniesTbody(companies)
+	</table>
+}
+
+templ CompaniesTbody(companies []models.CompanyFromDb) {
+	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
+		for _, company := range companies {
+			<tr class="animate-result" style={ "view-transition-name:company-" + ReplaceSpecialCharsInTicker(company.Ticker) }>
+				<td class="px-4 py-2 w-1/4 text-slate-600 break-all">{ company.Ticker }</td>
+				<td class="px-4 py-2 w-1/2 text-slate-600 break-all">{ company.Name }</td>
+				<td class="px-4 py-2 w-1/4" data-signals={ "{adding_" + ReplaceSpecialCharsInTicker(company.Ticker) + ":false}" }>
+					<button
+						type="button"
+						class="appearance-none outline-none w-full rounded-lg py-1 px-3 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80 md:py-2 md:px-4"
+						data-on-click={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) + "=true;@post('/home/recent/add/" + company.Ticker + "/" + company.Name + "',{contentType:'form',selector:'#recent_form'})" }
+						data-attr-disabled={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
+					>
+						<span class="hidden md:inline">Submit</span>
+						<span data-show={ "!$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+								<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"></path>
+							</svg>
+						</span>
+						<span data-show={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) } class="animate-spin-2 w-5 h-5 border-2 border-dashed border-white rounded-full"></span>
+					</button>
+				</td>
+			</tr>
+		}
+	</tbody>
+}
+
+templ CompaniesTbodyEmpty() {
+	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
+		<tr class="animate-result" style={ "view-transition-name:company-not-found" }>
+			<td class="px-4 py-2 text-center text-red-600" colspan="3">No companies found...</td>
+		</tr>
+	</tbody>
+}

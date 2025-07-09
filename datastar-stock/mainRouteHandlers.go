@@ -101,7 +101,7 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 	go getEchartData(chartData, eChartDataChannel)
 	eChartData := <-eChartDataChannel
 
-	str := `LoadChart("chart_` + ticker + `",[` + eChartData.AxisData + `],[` + eChartData.ChartData + `])`
+	str := `LoadChart("chart_` + shared.ReplaceSpecialCharsInTicker(ticker) + `",[` + eChartData.AxisData + `],[` + eChartData.ChartData + `])`
 	sse.ExecuteScript(str, datastar.WithExecuteScriptAutoRemove(true))
 }
 func transformAlphavantageResponseToCacheData(response models.AlphavantageResponse, channel chan<- []models.CacheData) {
@@ -216,7 +216,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			recentsToSendIndex++
 		}
 		sse.MergeFragmentTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithMergeAppend(), datastar.WithUseViewTransitions(true))
-		sse.ExecuteScript(`document.getElementById('card_`+recentsToSend[0]+`').scrollIntoView({behavior: 'smooth', block: 'center'});`, datastar.WithExecuteScriptAutoRemove(true))
+		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0])+`').scrollIntoView({behavior: 'smooth', block: 'center'});`, datastar.WithExecuteScriptAutoRemove(true))
 	} else {
 		for idx := range currentCount - newCount {
 			if idx+newCount >= len(recents) {
@@ -224,9 +224,101 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			}
 			tickerToRemove := strings.Trim(recents[idx+newCount].Ticker, " ")
 			// sse.ExecuteScript(`DisposeChart("chart_`+tickerToRemove+`")`, datastar.WithExecuteScriptAutoRemove(true))
-			sse.RemoveFragments(`#card_`+tickerToRemove, datastar.WithRemoveUseViewTransitions(true))
+			sse.RemoveFragments(`#card_`+shared.ReplaceSpecialCharsInTicker(tickerToRemove), datastar.WithRemoveUseViewTransitions(true))
 		}
 	}
 	sse.MergeFragmentTempl(components.CurrentCountInp(newCount))
 	sse.MergeSignals([]byte("{loading:false}"))
+}
+
+func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.MergeFragmentTempl(components.AddRecent(), datastar.WithMergeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
+}
+
+func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	searchTerm := strings.Trim(request.FormValue("search"), "")
+	companies := []models.CompanyFromDb{}
+	if searchTerm != "" {
+		companiesChannel := make(chan []models.CompanyFromDb)
+		defer close(companiesChannel)
+		go services.GetAllCompanies(request.Context(), companiesChannel)
+		companies = <-companiesChannel
+		companies = filterCompaniesBySearchTerm(companies, searchTerm)
+	}
+	sse := datastar.NewSSE(responseWriter, request)
+	if len(companies) == 0 {
+		sse.MergeFragmentTempl(shared.CompaniesTbodyEmpty())
+	} else {
+		sse.MergeFragmentTempl(shared.CompaniesTbody(companies))
+	}
+	sse.MergeSignals([]byte("{searching:false}"))
+}
+
+func filterCompaniesBySearchTerm(companies []models.CompanyFromDb, searchTerm string) []models.CompanyFromDb {
+	filteredCompanies := []models.CompanyFromDb{}
+	searchTerm = strings.ToLower(searchTerm)
+
+	for _, company := range companies {
+		if strings.Contains(strings.ToLower(company.Name), searchTerm) || strings.Contains(strings.ToLower(company.Ticker), searchTerm) {
+			filteredCompanies = append(filteredCompanies, company)
+		}
+	}
+
+	sort.Slice(filteredCompanies, func(a, b int) bool {
+		return filteredCompanies[a].Name < filteredCompanies[b].Name
+	})
+
+	return filteredCompanies
+}
+
+func closeAddRecentHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.RemoveFragments("#overlay", datastar.WithRemoveUseViewTransitions(true))
+}
+
+func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	ticker := strings.Trim(chi.URLParam(request, "ticker"), "")
+	if ticker == "" {
+		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+		return
+	}
+	name := strings.Trim(chi.URLParam(request, "name"), "")
+
+	currentCountStr := strings.Trim(request.FormValue("currentCount"), "")
+	currentCount, _ := strconv.Atoi(currentCountStr)
+
+	recentFromDbChannel := make(chan []models.RecentFromDb)
+	defer close(recentFromDbChannel)
+	go services.GetRecent(request.Context(), recentFromDbChannel)
+	recents := <-recentFromDbChannel
+
+	recentWithCurrentCount := make([]models.RecentFromDb, currentCount)
+	recentAlreadyContainsTicker := false
+
+	for idx, item := range recents {
+		if idx >= currentCount {
+			break
+		}
+		recentWithCurrentCount[idx] = item
+		if item.Ticker == ticker {
+			recentAlreadyContainsTicker = true
+		}
+	}
+
+	addRecentToDbChannel := make(chan bool)
+	defer close(addRecentToDbChannel)
+	go services.AddRecent(request.Context(), ticker, name, addRecentToDbChannel)
+
+	sse := datastar.NewSSE(responseWriter, request)
+	if recentAlreadyContainsTicker {
+		sse.RemoveFragments("#card_" + shared.ReplaceSpecialCharsInTicker(ticker))
+	} else {
+		sse.RemoveFragments("#card_" + shared.ReplaceSpecialCharsInTicker(recentWithCurrentCount[len(recentWithCurrentCount)-1].Ticker))
+	}
+	sse.MergeFragmentTempl(shared.CardToPrepend(ticker), datastar.WithSelector(".card:first-child"), datastar.WithMergeBefore())
+
+	sse.MergeSignals([]byte("{adding_" + shared.ReplaceSpecialCharsInTicker(ticker) + ":false}"))
+
+	<-addRecentToDbChannel
 }

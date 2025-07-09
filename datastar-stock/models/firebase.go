@@ -36,6 +36,18 @@ type PopularsFromDb struct {
 }
 
 type RecentFromDb struct {
-	Ticker string    `firestore:"Ticker"`
+	Ticker string    `firestore:"ticker"`
 	Date   time.Time `firestore:"date"`
+	Name   string    `firestore:"name"`
+	UserId string    `firestore:"user"`
+}
+
+type CompanyFromDb struct {
+	Ticker string `firestore:"Ticker"`
+	Name   string `firestore:"Name"`
+	Id     int    `firestore:"id"`
+}
+
+type CompaniesFromDb struct {
+	Data []CompanyFromDb `firestore:"data"`
 }

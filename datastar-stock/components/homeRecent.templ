@@ -4,11 +4,21 @@ import "datastar-stock/components/shared"
 
 templ Recent(tickers []string) {
 	@home() {
-		<div class="absolute top-0 right-0 flex justify-end pr-2 md:pr-4 md:py-1 md:px-3">
+		<div class="absolute -top-0.5 right-0 flex gap-2 justify-end pr-2 md:pr-4 md:py-1 md:px-3">
+			<button
+				class="apperance-none outline-none cursor-pointer py-1 px-3 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg"
+				data-on-click="@get('/home/recent/add')"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+					<path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
+				</svg>
+				<span class="hidden md:inline">Add Recent</span>
+			</button>
 			<form
 				class="relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 "
 				data-on-submit="evt.preventDefault()"
 				data-signals="{loading:false}"
+				id="recent_form"
 			>
 				@CurrentCountInp(5)
 				<select
@@ -51,6 +61,7 @@ templ RecentError() {
 				class="relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 "
 				data-on-submit="evt.preventDefault()"
 				data-signals="{loading:false}"
+				id="recent_form"
 			>
 				@CurrentCountInp(0)
 				<select

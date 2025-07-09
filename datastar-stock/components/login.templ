@@ -1,31 +1,35 @@
 package components
 
-templ Login(redirect string) {
+templ LoginUI(redirect string) {
+	<div class="w-full h-full flex items-center justify-center">
+		<form
+			method="post"
+			action="/login"
+			class="animate-modal py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12"
+			data-signals-signing-in="false"
+			data-signals-error-message="''"
+			data-on-submit="evt.preventDefault();$signingIn=true;$errorMessage='';@post('/login',{contentType:'form'})"
+			data-on-datastar-sse="evt.detail.type == 'finished' && $errorMessage==''?window.location.href=window.location.href:$signingIn=$signingIn;"
+		>
+			<p class="text-2xl text-primary underline underline-offset-6">Login</p>
+			@loginResult()
+			<input type="hidden" name="redirect" value={ redirect }/>
+			<label class="flex flex-col gap-1 w-full">
+				<span class="text-gray-700">Email</span>
+				<input type="email" name="email" class="appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 " required/>
+			</label>
+			<label class="flex flex-col gap-1 w-full">
+				<span class="text-gray-700">Password</span>
+				<input type="password" name="password" class="appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50" required/>
+			</label>
+			@buttonSubmit()
+		</form>
+	</div>
+}
+
+templ LoginPage(redirect string) {
 	@layout() {
-		<div class="w-full h-full flex items-center justify-center">
-			<form
-				method="post"
-				action="/login"
-				class="animate-login py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12"
-				data-signals-signing-in="false"
-				data-signals-error-message="''"
-				data-on-submit="evt.preventDefault();$signingIn=true;$errorMessage='';@post('/login',{contentType:'form'})"
-				data-on-datastar-sse="evt.detail.type == 'finished' && $errorMessage==''?window.location.href=window.location.href:$signingIn=$signingIn;"
-			>
-				<p class="text-2xl text-primary">Login</p>
-				@loginResult()
-				<input type="hidden" name="redirect" value={ redirect }/>
-				<label class="flex flex-col gap-1 w-full">
-					<span class="text-gray-700">Email</span>
-					<input type="email" name="email" class="appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 " required/>
-				</label>
-				<label class="flex flex-col gap-1 w-full">
-					<span class="text-gray-700">Password</span>
-					<input type="password" name="password" class="appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50" required/>
-				</label>
-				@buttonSubmit()
-			</form>
-		</div>
+		@LoginUI(redirect)
 	}
 }
 

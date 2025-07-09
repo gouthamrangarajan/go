@@ -29,7 +29,6 @@ func GetCachedData(ticker string, date string, channel chan<- []models.CacheData
 		channel <- response
 		return
 	}
-	// fmt.Println("Fetched data from Redis:", result)
 	err = json.Unmarshal([]byte(result), &response)
 	if err != nil {
 		fmt.Println("Error unmarshalling data from Redis:", err)
