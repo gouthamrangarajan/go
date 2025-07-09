@@ -194,7 +194,7 @@ func GetWeeklyDataForUserWithExactDate(userId string, currDateStr string, channe
 		if diff < 0 {
 			fmt.Printf("Skipping future event %v in weekly\n", event.Task)
 			continue
-		} else if diff > 7 && diff%7 == 0 {
+		} else if (diff > 7 || diff == 0) && diff%7 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
@@ -304,7 +304,7 @@ func GetEveryTwoWeeksDataForUserWithExactDate(userId string, currDateStr string,
 			fmt.Printf("Skipping future event %v in every two weeks\n", event.Task)
 			continue
 		}
-		if diff > 14 && diff%14 == 0 {
+		if (diff > 14 || diff == 0) && diff%14 == 0 {
 			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 			if err == nil {
 				if stopAfterDate.Before(currDate) {
