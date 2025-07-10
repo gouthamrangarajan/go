@@ -4,7 +4,7 @@ import "datastar-stock/components/shared"
 
 templ Recent(tickers []string) {
 	@home() {
-		<div class="absolute -top-0.5 right-0 flex gap-2 justify-end pr-2 md:pr-4 md:py-1 md:px-3">
+		<div class="absolute top-10 right-0 flex gap-2 justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5">
 			<button
 				class="apperance-none outline-none cursor-pointer py-1 px-3 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg"
 				data-on-click="@get('/home/recent/add')"
@@ -44,7 +44,7 @@ templ Recent(tickers []string) {
 				<span data-show="$loading" class="absolute top-2.5 right-1 animate-spin-2 w-5 h-5 border-2 border-dashed border-slate-600 rounded-full"></span>
 			</form>
 		</div>
-		<div id="recents" class="py-2 px-4 grid grid-cols-1 gap-2 lg:gap-4 lg:grid-cols-2">
+		<div id="recents" class="py-2 px-4 grid grid-cols-1 gap-2 mt-12 md:mt-2 lg:gap-4 lg:grid-cols-2">
 			@shared.Cards(tickers)
 		</div>
 	}
@@ -56,7 +56,7 @@ templ CurrentCountInp(val int) {
 
 templ RecentError() {
 	@home() {
-		<div class="absolute top-0 right-0 flex justify-end pr-2 md:pr-4 md:py-1 md:px-3">
+		<div class="absolute top-10 right-0 flex gap-2 justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5">
 			<form
 				class="relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 "
 				data-on-submit="evt.preventDefault()"
@@ -87,7 +87,7 @@ templ RecentError() {
 				<span data-show="$loading" class="absolute top-2.5 right-1 animate-spin-2 w-5 h-5 border-2 border-dashed border-slate-600 rounded-full"></span>
 			</form>
 		</div>
-		<div id="recents" class="py-2 px-4 grid grid-cols-1 gap-2 lg:gap-4 lg:grid-cols-2">
+		<div id="recents" class="py-2 px-4 grid grid-cols-1 gap-2 mt-12 md:mt-2 lg:gap-4 lg:grid-cols-2">
 			@shared.CardError()
 		</div>
 	}
