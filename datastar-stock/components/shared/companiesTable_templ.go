@@ -40,7 +40,7 @@ func CompaniesTable(companies []models.CompanyFromDb) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<table class=\"w-full table-fixed text-left\"><thead><tr><th class=\"px-4 py-2 w-1/4 text-menu\">Ticker</th><th class=\"px-4 py-2 w-1/2 text-menu\">Name</th><th class=\"px-4 py-1 w-1/4\"></th></tr></thead>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<table class=\"w-full table-fixed text-left\"><thead><tr><th class=\"py-1 px-3 w-1/4 text-menu md:px-4 md:py-2 \">Ticker</th><th class=\"py-1 px-3 w-1/2 text-menu md:px-4 md:py-2\">Name</th><th class=\"py-1 px-3 md:px-4 md:py-2 w-1/4\"></th></tr></thead>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,40 +95,40 @@ func CompaniesTbody(companies []models.CompanyFromDb) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><td class=\"px-4 py-2 w-1/4 text-slate-600 break-all\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><td class=\"py-1 px-3 w-1/4 text-slate-600 break-all md:px-4 md:py-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(company.Ticker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 31, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 31, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td><td class=\"px-4 py-2 w-1/2 text-slate-600 break-all\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td><td class=\"py-1 px-3 w-1/2 text-slate-600 break-all md:px-4 md:py-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(company.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 32, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 32, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</td><td class=\"px-4 py-2 w-1/4\" data-signals=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</td><td class=\"py-1 px-3 w-1/4 md:px-4 md:py-2\" data-signals=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs("{adding_" + ReplaceSpecialCharsInTicker(company.Ticker) + ":false}")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 33, Col: 115}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 33, Col: 131}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

@@ -15,9 +15,9 @@ templ CompaniesTable(companies []models.CompanyFromDb) {
 	<table class="w-full table-fixed text-left">
 		<thead>
 			<tr>
-				<th class="px-4 py-2 w-1/4 text-menu">Ticker</th>
-				<th class="px-4 py-2 w-1/2 text-menu">Name</th>
-				<th class="px-4 py-1 w-1/4"></th>
+				<th class="py-1 px-3 w-1/4 text-menu md:px-4 md:py-2 ">Ticker</th>
+				<th class="py-1 px-3 w-1/2 text-menu md:px-4 md:py-2">Name</th>
+				<th class="py-1 px-3 md:px-4 md:py-2 w-1/4"></th>
 			</tr>
 		</thead>
 		@CompaniesTbody(companies)
@@ -28,9 +28,9 @@ templ CompaniesTbody(companies []models.CompanyFromDb) {
 	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
 		for _, company := range companies {
 			<tr class="animate-result" style={ "view-transition-name:company-" + ReplaceSpecialCharsInTicker(company.Ticker) }>
-				<td class="px-4 py-2 w-1/4 text-slate-600 break-all">{ company.Ticker }</td>
-				<td class="px-4 py-2 w-1/2 text-slate-600 break-all">{ company.Name }</td>
-				<td class="px-4 py-2 w-1/4" data-signals={ "{adding_" + ReplaceSpecialCharsInTicker(company.Ticker) + ":false}" }>
+				<td class="py-1 px-3 w-1/4 text-slate-600 break-all md:px-4 md:py-2">{ company.Ticker }</td>
+				<td class="py-1 px-3 w-1/2 text-slate-600 break-all md:px-4 md:py-2">{ company.Name }</td>
+				<td class="py-1 px-3 w-1/4 md:px-4 md:py-2" data-signals={ "{adding_" + ReplaceSpecialCharsInTicker(company.Ticker) + ":false}" }>
 					<button
 						type="button"
 						class="appearance-none outline-none w-full rounded-lg py-1 px-3 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80 md:py-2 md:px-4"
