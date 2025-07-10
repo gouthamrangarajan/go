@@ -329,7 +329,7 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 	} else {
 		sse.RemoveFragments("#card_" + shared.ReplaceSpecialCharsInTicker(recentWithCurrentCount[len(recentWithCurrentCount)-1].Ticker))
 	}
-	sse.MergeFragmentTempl(shared.CardToPrepend(ticker), datastar.WithSelector(".card:first-child"), datastar.WithMergeBefore())
+	sse.MergeFragmentTempl(shared.Card(ticker), datastar.WithSelector(".card:first-child"), datastar.WithMergeBefore())
 
 	sse.MergeSignals([]byte("{adding_" + shared.ReplaceSpecialCharsInTicker(ticker) + ":false}"))
 
