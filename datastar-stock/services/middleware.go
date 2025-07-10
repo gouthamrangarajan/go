@@ -25,6 +25,8 @@ func LoggedInMiddleware(next http.Handler) http.Handler {
 			fmt.Println("No cookie")
 			if request.Header.Get("Datastar-Request") == "true" {
 				sse := datastar.NewSSE(responseWriter, request)
+				sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
+				sse.RemoveFragments("#overlay")
 				sse.MergeFragmentTempl(components.LoginUI(request.URL.Path), datastar.WithUseViewTransitions(true), datastar.WithSelector("main"), datastar.WithMergeMode(datastar.FragmentMergeModeInner))
 				return
 			}
@@ -40,6 +42,8 @@ func LoggedInMiddleware(next http.Handler) http.Handler {
 			fmt.Println("invalid cookie")
 			if request.Header.Get("Datastar-Request") == "true" {
 				sse := datastar.NewSSE(responseWriter, request)
+				sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
+				sse.RemoveFragments("#overlay")
 				sse.MergeFragmentTempl(components.LoginUI(request.URL.Path), datastar.WithUseViewTransitions(true), datastar.WithSelector("main"), datastar.WithMergeMode(datastar.FragmentMergeModeInner))
 				return
 			}
