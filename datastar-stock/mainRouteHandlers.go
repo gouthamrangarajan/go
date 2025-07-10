@@ -89,7 +89,11 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 			go services.GetCachedData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
 			chartData = <-cachedDataPrevDayChannel
 			if len(chartData) == 0 { //still no data
-				sse.MergeFragmentTempl(shared.CardTickerError(ticker))
+				if apiData.ErrorMessage != "" && strings.Contains(strings.ToLower(apiData.ErrorMessage), "invalid api call") {
+					sse.MergeFragmentTempl(shared.CardTickerError(ticker, "Error! Invalid Ticker"))
+				} else {
+					sse.MergeFragmentTempl(shared.CardTickerError(ticker, "Error! Try again later"))
+				}
 				return
 			}
 		} else {

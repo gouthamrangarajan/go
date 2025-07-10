@@ -17,4 +17,5 @@ type AlphavantageResponseMetaData struct {
 type AlphavantageResponse struct {
 	MetaData        AlphavantageResponseMetaData                  `json:"Meta Data"`
 	TimeSeriesDaily map[string]AlphavantageResponseDailyStockData `json:"Time Series (Daily)"`
+	ErrorMessage    string                                        `json:"Error Message"`
 }

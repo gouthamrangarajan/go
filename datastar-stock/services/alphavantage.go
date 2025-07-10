@@ -20,18 +20,18 @@ func CallAlphavantageAPI(ticker string, channel chan<- models.AlphavantageRespon
 		return
 	}
 	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Error: received non-200 response from Alphavantage:", resp.StatusCode)
-		errBody, err := io.ReadAll(resp.Body) // Read the body to avoid resource leak
 		if err == nil {
-			fmt.Println("Error Response from Alphavantage:", string(errBody))
+			fmt.Println("Error Response from Alphavantage:", string(respBody))
 		}
 		channel <- response
 		return
 	}
-	json.NewDecoder(resp.Body).Decode(&response)
+	json.Unmarshal(respBody, &response)
 	if response.MetaData.Information == "" {
-		fmt.Println("Error: received invalid response from Alphavantage for ticker:", ticker)
+		fmt.Printf("Error: received invalid response from Alphavantage for ticker %v:, response:%v\n", ticker, string(respBody))
 		channel <- response
 		return
 	}
