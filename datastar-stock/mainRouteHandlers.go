@@ -65,6 +65,10 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 	cachedDataTodayChannel := make(chan []models.CacheData)
 	defer close(cachedDataTodayChannel)
 
+	waitForSetCache := false
+	setCacheChannel := make(chan string)
+	defer close(setCacheChannel)
+
 	go services.GetCachedData(ticker, time.Now().Format("2006-01-02"), cachedDataTodayChannel)
 	chartData := <-cachedDataTodayChannel
 
@@ -89,10 +93,8 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 				return
 			}
 		} else {
-			setCacheChannel := make(chan string)
-			defer close(setCacheChannel)
 			go services.SetCachedData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
-			<-setCacheChannel
+			waitForSetCache = true
 		}
 	}
 
@@ -103,6 +105,9 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 
 	str := `LoadChart("chart_` + shared.ReplaceSpecialCharsInTicker(ticker) + `",[` + eChartData.AxisData + `],[` + eChartData.ChartData + `])`
 	sse.ExecuteScript(str, datastar.WithExecuteScriptAutoRemove(true))
+	if waitForSetCache {
+		<-setCacheChannel
+	}
 }
 func transformAlphavantageResponseToCacheData(response models.AlphavantageResponse, channel chan<- []models.CacheData) {
 	chartData := make([]models.CacheData, 0)

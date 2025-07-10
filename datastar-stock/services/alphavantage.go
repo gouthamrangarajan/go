@@ -31,7 +31,7 @@ func CallAlphavantageAPI(ticker string, channel chan<- models.AlphavantageRespon
 	}
 	json.NewDecoder(resp.Body).Decode(&response)
 	if response.MetaData.Information == "" {
-		fmt.Println("Error: received empty response from Alphavantage for ticker:", ticker)
+		fmt.Println("Error: received invalid response from Alphavantage for ticker:", ticker)
 		channel <- response
 		return
 	}
