@@ -24,27 +24,35 @@ templ layout() {
 					if(!myChart) {
 						myChart = echarts.init(chartDom);
 					}
-					let option = {
-						xAxis: {
-							type: 'category',
-							boundaryGap: false,
-							data: xAxisData
+					let option = {						
+						xAxis: {						
+							data: xAxisData,							
 						},
-						yAxis: {
-							type: 'value'
+						yAxis: {							
+							startValue: Math.floor(Math.min(...yAxisData.map(item => item[2]))),														
 						},
 						series: [
-							{
+							{								
 								data: yAxisData,
-								type: 'line',								
-								type: "line",
-								smooth: true,
-								color: "#8A2BE2",
-								areaStyle: {
-									color: "rgba(138, 43, 226,0.3)",
-								},
-							}
-						],
+								type: 'candlestick',	
+								itemStyle: {
+									color: '#00c951', // Upward color
+									color0: '#fb2c36', // Downward color
+									borderColor:'#00a63e',
+									borderColor0:'#e7000b'
+								}
+							},
+							// {
+							// 	data: [...yAxisData.map(item => item[1])],
+							// 	type: 'line',								
+							// 	type: "line",
+							// 	smooth: true,
+							// 	color: "rgba(138, 43, 226,0.6)",
+							// 	// areaStyle: {
+							// 	// 	color: "rgba(138, 43, 226,0.3)",
+							// 	// },
+							// }
+						],						
 						tooltip: {
 							trigger: "axis",
 						},

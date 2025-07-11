@@ -140,10 +140,10 @@ func getEchartData(data []models.CacheData, channel chan<- models.EChartData) {
 	for idx, value := range data {
 		if idx == len(data)-1 {
 			eChartData.AxisData += `'` + value.Date + `'`
-			eChartData.ChartData += value.Close
+			eChartData.ChartData += `[` + value.Open + `,` + value.Close + `,` + value.Low + `,` + value.High + `]`
 		} else {
 			eChartData.AxisData += `'` + value.Date + `'` + ","
-			eChartData.ChartData += value.Close + ","
+			eChartData.ChartData += `[` + value.Open + `,` + value.Close + `,` + value.Low + `,` + value.High + `]` + ","
 		}
 	}
 	channel <- eChartData
