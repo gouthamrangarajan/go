@@ -11,9 +11,9 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func GetCachedData(ticker string, date string, channel chan<- []models.CacheData) {
-	response := []models.CacheData{}
+func GetCachedTickerData(ticker string, date string, channel chan<- []models.CacheData) {
 	ctx := context.Background()
+	response := []models.CacheData{}
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDRESS"),
@@ -41,9 +41,8 @@ func GetCachedData(ticker string, date string, channel chan<- []models.CacheData
 	channel <- response
 }
 
-func SetCachedData(ticker string, date string, data []models.CacheData, channel chan<- string) {
+func SetCachedTickerData(ticker string, date string, data []models.CacheData, channel chan<- string) {
 	ctx := context.Background()
-
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDRESS"),
 		Username: os.Getenv("REDIS_USERNAME"),
@@ -65,5 +64,61 @@ func SetCachedData(ticker string, date string, data []models.CacheData, channel 
 		return
 	}
 	fmt.Printf("Successfully cached data for %s & date %s\n", ticker, date)
+	channel <- "OK"
+}
+
+func GetCachedCompaniesData(channel chan<- []models.CompanyFromDb) {
+	ctx := context.Background()
+	response := []models.CompanyFromDb{}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_ADDRESS"),
+		Username: os.Getenv("REDIS_USERNAME"),
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
+	})
+
+	result, err := rdb.Get(ctx, "companies").Result()
+
+	if err != nil {
+		fmt.Printf("Error fetching companies data from Redis  %s\n", err)
+		channel <- response
+		return
+	}
+	err = json.Unmarshal([]byte(result), &response)
+	if err != nil {
+		fmt.Println("Error unmarshalling data from Redis:", err)
+		channel <- response
+		return
+	}
+	if len(response) > 0 {
+		fmt.Printf("Cached data for companies found\n")
+	}
+	channel <- response
+}
+
+func SetCachedCompaniesData(data []models.CompanyFromDb, channel chan<- string) {
+	ctx := context.Background()
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_ADDRESS"),
+		Username: os.Getenv("REDIS_USERNAME"),
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
+	})
+
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("Error marshalling data to JSON:", err)
+		channel <- "ERROR"
+		return
+	}
+
+	err = rdb.Set(ctx, "companies", dataJSON, 0).Err()
+	if err != nil {
+		fmt.Println("Error setting data in Redis:", err)
+		channel <- "ERROR"
+		return
+	}
+	fmt.Printf("Successfully cached data for companies count :%v\n", len(data))
 	channel <- "OK"
 }

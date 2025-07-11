@@ -69,7 +69,7 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 	setCacheChannel := make(chan string)
 	defer close(setCacheChannel)
 
-	go services.GetCachedData(ticker, time.Now().Format("2006-01-02"), cachedDataTodayChannel)
+	go services.GetCachedTickerData(ticker, time.Now().Format("2006-01-02"), cachedDataTodayChannel)
 	chartData := <-cachedDataTodayChannel
 
 	if (len(chartData)) == 0 {
@@ -86,7 +86,7 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 		if len(chartData) == 0 { //error
 			cachedDataPrevDayChannel := make(chan []models.CacheData)
 			defer close(cachedDataPrevDayChannel)
-			go services.GetCachedData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
+			go services.GetCachedTickerData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
 			chartData = <-cachedDataPrevDayChannel
 			if len(chartData) == 0 { //still no data
 				if apiData.ErrorMessage != "" && strings.Contains(strings.ToLower(apiData.ErrorMessage), "invalid api call") {
@@ -97,7 +97,7 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 				return
 			}
 		} else {
-			go services.SetCachedData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
+			go services.SetCachedTickerData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
 			waitForSetCache = true
 		}
 	}
@@ -250,11 +250,26 @@ func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Reques
 func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	searchTerm := strings.Trim(request.FormValue("search"), "")
 	companies := []models.CompanyFromDb{}
+
+	companiesSaveCacheChannel := make(chan string)
+	defer close(companiesSaveCacheChannel)
+	saveCacheCalled := false
+
 	if searchTerm != "" {
-		companiesChannel := make(chan []models.CompanyFromDb)
-		defer close(companiesChannel)
-		go services.GetAllCompanies(request.Context(), companiesChannel)
-		companies = <-companiesChannel
+		companiesCacheChannel := make(chan []models.CompanyFromDb)
+		defer close(companiesCacheChannel)
+		go services.GetCachedCompaniesData(companiesCacheChannel)
+		companies = <-companiesCacheChannel
+
+		if len(companies) == 0 {
+			companiesChannel := make(chan []models.CompanyFromDb)
+			defer close(companiesChannel)
+			go services.GetAllCompanies(request.Context(), companiesChannel)
+			companies = <-companiesChannel
+
+			go services.SetCachedCompaniesData(companies, companiesSaveCacheChannel)
+			saveCacheCalled = true
+		}
 		companies = filterCompaniesBySearchTerm(companies, searchTerm)
 	}
 	sse := datastar.NewSSE(responseWriter, request)
@@ -263,12 +278,14 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 	} else {
 		sse.PatchElementTempl(shared.CompaniesTbody(companies))
 	}
+	if saveCacheCalled {
+		<-companiesSaveCacheChannel
+	}
 }
 
 func filterCompaniesBySearchTerm(companies []models.CompanyFromDb, searchTerm string) []models.CompanyFromDb {
 	filteredCompanies := []models.CompanyFromDb{}
 	searchTerm = strings.ToLower(searchTerm)
-
 	for _, company := range companies {
 		if strings.Contains(strings.ToLower(company.Name), searchTerm) || strings.Contains(strings.ToLower(company.Ticker), searchTerm) {
 			filteredCompanies = append(filteredCompanies, company)
