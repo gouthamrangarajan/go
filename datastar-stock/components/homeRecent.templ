@@ -17,14 +17,14 @@ templ Recent(tickers []string) {
 			<form
 				class="relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 "
 				data-on-submit="evt.preventDefault()"
-				data-signals="{loading:false}"
 				id="recent_form"
 			>
 				@CurrentCountInp(5)
 				<select
 					name="newCount"
 					class="appearance-none outline-none w-full py-2 px-4 pr-6 "
-					data-on-change="$loading=true;@post('/home/recent/more',{contentType:'form'});"
+					data-indicator-loading
+					data-on-change="@post('/home/recent/more',{contentType:'form'});"
 				>
 					<option value="5">Show 5 items</option>
 					<option value="10">Show 10 items</option>

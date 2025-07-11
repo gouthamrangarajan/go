@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	datastar "github.com/starfederation/datastar/sdk/go"
+	"github.com/starfederation/datastar/sdk/go/datastar"
 )
 
 func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -33,7 +33,7 @@ func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	if email == "" || password == "" || signInResponse.ErrorMessage != "" {
 		sse := datastar.NewSSE(responseWriter, request)
-		sse.MergeSignals([]byte("{errorMessage:'Error. Invalid Credentials',signingIn:false}"))
+		sse.PatchSignals([]byte("{errorMessage:'Error. Invalid Credentials',signingIn:false}"))
 	} else {
 		expiresIn := time.Now().Add(55 * time.Minute) // Default to 1 hour
 		expiresInParsed, err := strconv.Atoi(signInResponse.ExpiresIn)
@@ -50,8 +50,8 @@ func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			Expires:  expiresIn,
 			SameSite: http.SameSiteLaxMode,
 		})
-		http.Redirect(responseWriter, request, redirect, http.StatusFound)
-		return
+		sse := datastar.NewSSE(responseWriter, request)
+		sse.ExecuteScript("window.location.href = window.location.href", datastar.WithExecuteScriptAutoRemove(true))
 	}
 }
 func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -90,9 +90,9 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 			chartData = <-cachedDataPrevDayChannel
 			if len(chartData) == 0 { //still no data
 				if apiData.ErrorMessage != "" && strings.Contains(strings.ToLower(apiData.ErrorMessage), "invalid api call") {
-					sse.MergeFragmentTempl(shared.CardTickerError(ticker, "Error! Invalid Ticker"))
+					sse.PatchElementTempl(shared.CardTickerError(ticker, "Error! Invalid Ticker"))
 				} else {
-					sse.MergeFragmentTempl(shared.CardTickerError(ticker, "Error! Try again later"))
+					sse.PatchElementTempl(shared.CardTickerError(ticker, "Error! Try again later"))
 				}
 				return
 			}
@@ -208,7 +208,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 	if len(recents) == 0 {
 		// sse.MergeFragmentTempl(components.RecentError(), datastar.WithUseViewTransitions(true))
 		// sse.MergeFragmentTempl(components.CurrentCountInp(0))
-		sse.MergeSignals([]byte("{loading:false}"))
+		sse.PatchSignals([]byte("{loading:false}"))
 		return
 	}
 	if numberOfItemsToSend > 0 {
@@ -224,8 +224,9 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			recentsToSend = append(recentsToSend, strings.Trim(item.Ticker, " "))
 			recentsToSendIndex++
 		}
-		sse.MergeFragmentTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithMergeAppend(), datastar.WithUseViewTransitions(true))
-		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0])+`').scrollIntoView({behavior: 'smooth', block: 'center'});`, datastar.WithExecuteScriptAutoRemove(true))
+		sse.PatchElementTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithModeAppend(), datastar.WithUseViewTransitions(true))
+		time.Sleep(300 * time.Millisecond) //wait for the cards to be rendered
+		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0])+`').scrollIntoView({behavior: 'smooth', block: 'nearest'});`, datastar.WithExecuteScriptAutoRemove(true))
 	} else {
 		for idx := range currentCount - newCount {
 			if idx+newCount >= len(recents) {
@@ -233,16 +234,15 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			}
 			tickerToRemove := strings.Trim(recents[idx+newCount].Ticker, " ")
 			// sse.ExecuteScript(`DisposeChart("chart_`+tickerToRemove+`")`, datastar.WithExecuteScriptAutoRemove(true))
-			sse.RemoveFragments(`#card_`+shared.ReplaceSpecialCharsInTicker(tickerToRemove), datastar.WithRemoveUseViewTransitions(true))
+			sse.RemoveElement(`#card_`+shared.ReplaceSpecialCharsInTicker(tickerToRemove), datastar.WithUseViewTransitions(true))
 		}
 	}
-	sse.MergeFragmentTempl(components.CurrentCountInp(newCount))
-	sse.MergeSignals([]byte("{loading:false}"))
+	sse.PatchElementTempl(components.CurrentCountInp(newCount))
 }
 
 func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.MergeFragmentTempl(components.AddRecent(), datastar.WithMergeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.AddRecent(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
 	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
 	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 }
@@ -259,11 +259,10 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 	}
 	sse := datastar.NewSSE(responseWriter, request)
 	if len(companies) == 0 {
-		sse.MergeFragmentTempl(shared.CompaniesTbodyEmpty())
+		sse.PatchElementTempl(shared.CompaniesTbodyEmpty())
 	} else {
-		sse.MergeFragmentTempl(shared.CompaniesTbody(companies))
+		sse.PatchElementTempl(shared.CompaniesTbody(companies))
 	}
-	sse.MergeSignals([]byte("{searching:false}"))
 }
 
 func filterCompaniesBySearchTerm(companies []models.CompanyFromDb, searchTerm string) []models.CompanyFromDb {
@@ -286,8 +285,8 @@ func filterCompaniesBySearchTerm(companies []models.CompanyFromDb, searchTerm st
 func closeAddRecentHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
-	sse.RemoveFragments("#companies_tbody")
-	sse.RemoveFragments("#overlay", datastar.WithRemoveUseViewTransitions(true))
+	sse.RemoveElement("#companies_tbody")
+	sse.RemoveElement("#overlay", datastar.WithUseViewTransitions(true))
 }
 
 func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -296,7 +295,6 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
 	}
-	name := strings.Trim(chi.URLParam(request, "name"), "")
 
 	currentCountStr := strings.Trim(request.FormValue("currentCount"), "")
 	currentCount, _ := strconv.Atoi(currentCountStr)
@@ -321,17 +319,14 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 
 	addRecentToDbChannel := make(chan bool)
 	defer close(addRecentToDbChannel)
-	go services.AddRecent(request.Context(), ticker, name, addRecentToDbChannel)
+	go services.AddRecent(request.Context(), ticker, addRecentToDbChannel)
 
 	sse := datastar.NewSSE(responseWriter, request)
 	if recentAlreadyContainsTicker {
-		sse.RemoveFragments("#card_" + shared.ReplaceSpecialCharsInTicker(ticker))
+		sse.RemoveElement("#card_" + shared.ReplaceSpecialCharsInTicker(ticker))
 	} else {
-		sse.RemoveFragments("#card_" + shared.ReplaceSpecialCharsInTicker(recentWithCurrentCount[len(recentWithCurrentCount)-1].Ticker))
+		sse.RemoveElement("#card_" + shared.ReplaceSpecialCharsInTicker(recentWithCurrentCount[len(recentWithCurrentCount)-1].Ticker))
 	}
-	sse.MergeFragmentTempl(shared.Card(ticker), datastar.WithSelector(".card:first-child"), datastar.WithMergeBefore())
-
-	sse.MergeSignals([]byte("{adding_" + shared.ReplaceSpecialCharsInTicker(ticker) + ":false}"))
-
+	sse.PatchElementTempl(shared.Card(ticker), datastar.WithSelector(".card:first-child"), datastar.WithModeBefore())
 	<-addRecentToDbChannel
 }

@@ -29,14 +29,14 @@ templ AddRecent() {
 			</div>
 			<form
 				class="w-full mt-6 py-2 px-4 flex gap-1 items-center rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30  focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-50 "
-				data-signals="{searching:false}"
 			>
 				<input
 					type="text"
 					name="search"
 					class="appearance-none outline-none w-full placeholder:text-slate-400"
 					placeholder="Ticker or Company Name"
-					data-on-input__debounce.1s="$searching=true;@post('/companies/search', {contentType:'form'})"
+					data-indicator-searching
+					data-on-input__debounce.1s="@post('/companies/search', {contentType:'form'})"
 				/>
 				<span data-show="$searching" class="animate-spin-2 w-6 h-6 border-2 border-dashed border-slate-600 rounded-full"></span>
 			</form>

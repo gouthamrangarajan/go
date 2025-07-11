@@ -5,10 +5,10 @@ import (
 	"strings"
 )
 
-func ReplaceSpecialCharsInTicker(tikcer string) string {
+func ReplaceSpecialCharsInTicker(ticker string) string {
 	// Replace special characters in ticker with empty string
 	replacer := strings.NewReplacer(".", "", "-", "", " ", "")
-	return replacer.Replace(tikcer)
+	return replacer.Replace(ticker)
 }
 
 templ CompaniesTable(companies []models.CompanyFromDb) {
@@ -30,11 +30,12 @@ templ CompaniesTbody(companies []models.CompanyFromDb) {
 			<tr class="animate-result" style={ "view-transition-name:company-" + ReplaceSpecialCharsInTicker(company.Ticker) }>
 				<td class="py-1 px-3 w-1/4 text-slate-600 break-all md:px-4 md:py-2">{ company.Ticker }</td>
 				<td class="py-1 px-3 w-1/2 text-slate-600 break-all md:px-4 md:py-2">{ company.Name }</td>
-				<td class="py-1 px-3 w-1/4 md:px-4 md:py-2" data-signals={ "{adding_" + ReplaceSpecialCharsInTicker(company.Ticker) + ":false}" }>
+				<td class="py-1 px-3 w-1/4 md:px-4 md:py-2">
 					<button
 						type="button"
 						class="appearance-none outline-none w-full rounded-lg py-1 px-3 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80 md:py-2 md:px-4"
-						data-on-click={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) + "=true;@post('/home/recent/add/" + company.Ticker + "/" + company.Name + "',{contentType:'form',selector:'#recent_form'})" }
+						data-on-click={ "@post('/home/recent/add/" + company.Ticker + "',{contentType:'form',selector:'#recent_form'})" }
+						data-indicator={ "adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
 						data-attr-disabled={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
 					>
 						<span class="hidden md:inline">Submit</span>

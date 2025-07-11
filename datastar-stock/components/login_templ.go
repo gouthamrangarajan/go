@@ -29,7 +29,7 @@ func LoginUI(redirect string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full h-full flex items-center justify-center\"><form method=\"post\" action=\"/login\" class=\"animate-modal py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12\" data-signals-signing-in=\"false\" data-signals-error-message=\"''\" data-on-submit=\"evt.preventDefault();$signingIn=true;$errorMessage='';@post('/login',{contentType:'form'})\" data-on-datastar-sse=\"evt.detail.type == 'finished' && $errorMessage==''?window.location.href=window.location.href:$signingIn=$signingIn;\"><p class=\"text-2xl text-primary underline underline-offset-6\">Login</p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full h-full flex items-center justify-center\"><form method=\"post\" action=\"/login\" class=\"animate-modal py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12\" data-indicator-signing-in=\"\" data-signals-error-message=\"''\" data-attr-disabled=\"$signingIn\" data-on-submit=\"evt.preventDefault();$errorMessage='';@post('/login',{contentType:'form'})\"><p class=\"text-2xl text-primary underline underline-offset-6\">Login</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

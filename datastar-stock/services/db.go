@@ -127,7 +127,7 @@ func GetRecent(ctx context.Context, channel chan<- []models.RecentFromDb) {
 	channel <- recents
 }
 
-func AddRecent(ctx context.Context, ticker string, name string, channel chan<- bool) {
+func AddRecent(ctx context.Context, ticker string, channel chan<- bool) {
 
 	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
 	if firebaseConfigErr != nil {
@@ -155,7 +155,6 @@ func AddRecent(ctx context.Context, ticker string, name string, channel chan<- b
 	defer fireStore.Close()
 	result, err := fireStore.Collection("recentTickers").Doc(ticker).Set(ctx, models.RecentFromDb{
 		Ticker: ticker,
-		Name:   name,
 		Date:   time.Now(),
 		UserId: ctx.Value(UserIDKey).(string),
 	})

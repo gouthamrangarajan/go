@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	datastar "github.com/starfederation/datastar/sdk/go"
+	"github.com/starfederation/datastar/sdk/go/datastar"
 )
 
 func LoggedInMiddleware(next http.Handler) http.Handler {
@@ -26,8 +26,8 @@ func LoggedInMiddleware(next http.Handler) http.Handler {
 			if request.Header.Get("Datastar-Request") == "true" {
 				sse := datastar.NewSSE(responseWriter, request)
 				sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
-				sse.RemoveFragments("#overlay")
-				sse.MergeFragmentTempl(components.LoginUI(request.URL.Path), datastar.WithUseViewTransitions(true), datastar.WithSelector("main"), datastar.WithMergeMode(datastar.FragmentMergeModeInner))
+				sse.RemoveElement("#overlay")
+				sse.PatchElementTempl(components.LoginUI(request.URL.Path), datastar.WithUseViewTransitions(true), datastar.WithSelector("main"), datastar.WithMode(datastar.ElementPatchModeInner))
 				return
 			}
 			loginComponent.Render(request.Context(), responseWriter)
@@ -43,8 +43,8 @@ func LoggedInMiddleware(next http.Handler) http.Handler {
 			if request.Header.Get("Datastar-Request") == "true" {
 				sse := datastar.NewSSE(responseWriter, request)
 				sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
-				sse.RemoveFragments("#overlay")
-				sse.MergeFragmentTempl(components.LoginUI(request.URL.Path), datastar.WithUseViewTransitions(true), datastar.WithSelector("main"), datastar.WithMergeMode(datastar.FragmentMergeModeInner))
+				sse.RemoveElement("#overlay")
+				sse.PatchElementTempl(components.LoginUI(request.URL.Path), datastar.WithUseViewTransitions(true), datastar.WithSelector("main"), datastar.WithMode(datastar.ElementPatchModeInner))
 				return
 			}
 			loginComponent.Render(request.Context(), responseWriter)
