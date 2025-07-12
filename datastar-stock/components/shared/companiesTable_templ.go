@@ -40,13 +40,20 @@ func CompaniesTable(companies []models.CompanyFromDb) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<table class=\"w-full table-fixed text-left\"><thead><tr><th class=\"py-1 px-3 w-1/4 text-menu md:px-4 md:py-2 \">Ticker</th><th class=\"py-1 px-3 w-1/2 text-menu md:px-4 md:py-2\">Name</th><th class=\"py-1 px-3 md:px-4 md:py-2 w-1/4\"></th></tr></thead>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<table class=\"w-full table-fixed text-left\"><thead><tr><th class=\"py-1 px-3 w-1/4 text-menu md:px-4 md:py-2 \">Ticker</th><th class=\"py-1 px-3 w-1/2 text-menu md:px-4 md:py-2\">Name</th><th class=\"py-1 px-3 md:px-4 md:py-2 w-1/4\"></th></tr></thead> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = CompaniesTbody(companies).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		if len(companies) == 0 {
+			templ_7745c5c3_Err = CompaniesTbodyHint().Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = CompaniesTbody(companies).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</table>")
 		if templ_7745c5c3_Err != nil {
@@ -89,7 +96,7 @@ func CompaniesTbody(companies []models.CompanyFromDb) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:company-" + ReplaceSpecialCharsInTicker(company.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 30, Col: 115}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 34, Col: 115}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -102,7 +109,7 @@ func CompaniesTbody(companies []models.CompanyFromDb) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(company.Ticker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 31, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 35, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -115,7 +122,7 @@ func CompaniesTbody(companies []models.CompanyFromDb) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(company.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 32, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 36, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -128,7 +135,7 @@ func CompaniesTbody(companies []models.CompanyFromDb) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs("@post('/home/recent/add/" + company.Ticker + "',{contentType:'form',selector:'#recent_form'})")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 37, Col: 117}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 41, Col: 117}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -141,7 +148,7 @@ func CompaniesTbody(companies []models.CompanyFromDb) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("adding_" + ReplaceSpecialCharsInTicker(company.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 38, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 42, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -154,7 +161,7 @@ func CompaniesTbody(companies []models.CompanyFromDb) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("$adding_" + ReplaceSpecialCharsInTicker(company.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 39, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 43, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -167,7 +174,7 @@ func CompaniesTbody(companies []models.CompanyFromDb) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("!$adding_" + ReplaceSpecialCharsInTicker(company.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 42, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 46, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -220,15 +227,57 @@ func CompaniesTbodyEmpty() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:company-not-found")
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:company-hint")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 57, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 61, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><td class=\"px-4 py-2 text-center text-red-600\" colspan=\"3\">No companies found...</td></tr></tbody>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func CompaniesTbodyHint() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var12 == nil {
+			templ_7745c5c3_Var12 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<tbody id=\"companies_tbody\" style=\"view-transition-name:companies-tbody\"><tr class=\"animate-result\" style=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var13 string
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:company-hint")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 69, Col: 72}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><td class=\"px-4 py-2 text-center text-secondary\" colspan=\"3\">Search to see results...</td></tr></tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

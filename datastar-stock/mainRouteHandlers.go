@@ -275,7 +275,9 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 		companies = filterCompaniesBySearchTerm(companies, searchTerm)
 	}
 	sse := datastar.NewSSE(responseWriter, request)
-	if len(companies) == 0 {
+	if searchTerm == "" {
+		sse.PatchElementTempl(shared.CompaniesTbodyHint())
+	} else if len(companies) == 0 {
 		sse.PatchElementTempl(shared.CompaniesTbodyEmpty())
 	} else {
 		sse.PatchElementTempl(shared.CompaniesTbody(companies))
@@ -348,4 +350,8 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 	}
 	sse.PatchElementTempl(shared.Card(ticker), datastar.WithSelector(".card:first-child"), datastar.WithModeBefore())
 	<-addRecentToDbChannel
+}
+func companiesPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	component := components.Companies()
+	component.Render(request.Context(), responseWriter)
 }

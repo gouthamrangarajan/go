@@ -20,7 +20,11 @@ templ CompaniesTable(companies []models.CompanyFromDb) {
 				<th class="py-1 px-3 md:px-4 md:py-2 w-1/4"></th>
 			</tr>
 		</thead>
-		@CompaniesTbody(companies)
+		if len(companies) == 0 {
+			@CompaniesTbodyHint()
+		} else {
+			@CompaniesTbody(companies)
+		}
 	</table>
 }
 
@@ -54,8 +58,16 @@ templ CompaniesTbody(companies []models.CompanyFromDb) {
 
 templ CompaniesTbodyEmpty() {
 	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
-		<tr class="animate-result" style={ "view-transition-name:company-not-found" }>
+		<tr class="animate-result" style={ "view-transition-name:company-hint" }>
 			<td class="px-4 py-2 text-center text-red-600" colspan="3">No companies found...</td>
+		</tr>
+	</tbody>
+}
+
+templ CompaniesTbodyHint() {
+	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
+		<tr class="animate-result" style={ "view-transition-name:company-hint" }>
+			<td class="px-4 py-2 text-center text-secondary" colspan="3">Search to see results...</td>
 		</tr>
 	</tbody>
 }

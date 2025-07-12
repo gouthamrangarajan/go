@@ -31,7 +31,7 @@ func header(location string) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		dashboardClass := ""
 		if location == "home" {
-			dashboardClass = "underline underline-offset-2"
+			dashboardClass = "underline underline-offset-6"
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"shadow w-full py-2 px-4 bg-white flex justify-between items-center\"><a class=\"appearance-none outline-none p-1 cursor-pointer text-primary text-2xl font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary\" href=\"/\" style=\"view-transition-name:header\">Stock API</a><nav class=\"flex items-center gap-2\">")
 		if templ_7745c5c3_Err != nil {

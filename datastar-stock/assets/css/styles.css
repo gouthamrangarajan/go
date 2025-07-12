@@ -505,6 +505,9 @@
   .text-red-600 {
     color: var(--color-red-600);
   }
+  .text-secondary {
+    color: var(--color-secondary);
+  }
   .text-slate-600 {
     color: var(--color-slate-600);
   }

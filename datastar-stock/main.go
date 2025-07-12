@@ -36,10 +36,7 @@ func main() {
 	router.Post("/home/recent/add/{ticker}", addRecentTickerHandler)
 	router.Post("/home/recent/add/close", closeAddRecentHandler)
 	router.Post("/companies/search", searchCompaniesHandler)
-	router.Get("/companies", func(responseWriter http.ResponseWriter, request *http.Request) {
-		component := components.Companies()
-		component.Render(request.Context(), responseWriter)
-	})
+	router.Get("/companies", companiesPageHandler)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
