@@ -758,12 +758,6 @@
       padding-right: calc(var(--spacing) * 4);
     }
   }
-  .md\:text-xl {
-    @media (width >= 48rem) {
-      font-size: var(--text-xl);
-      line-height: var(--tw-leading, var(--text-xl--line-height));
-    }
-  }
   .lg\:w-6\/12 {
     @media (width >= 64rem) {
       width: calc(6/12 * 100%);

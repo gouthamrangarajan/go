@@ -41,7 +41,7 @@ func header(location string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 = []any{"appearance-none outline-none p-1 cursor-pointer text-primary text-lg font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary  md:text-xl  " + dashboardClass}
+		var templ_7745c5c3_Var2 = []any{"appearance-none outline-none p-1 cursor-pointer text-primary text-lg font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary  " + dashboardClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -63,7 +63,7 @@ func header(location string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var4 = []any{"appearance-none outline-none p-1 cursor-pointer text-primary text-lg font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary  md:text-xl  " + companiesClass}
+		var templ_7745c5c3_Var4 = []any{"appearance-none outline-none p-1 cursor-pointer text-primary text-lg font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary  " + companiesClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
