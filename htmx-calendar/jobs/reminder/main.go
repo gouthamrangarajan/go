@@ -27,11 +27,12 @@ func main() {
 	} else {
 		fmt.Println("Loaded .env file")
 	}
+
 	today := time.Now().Format(dateLayout)
-	// today = time.Date(2025, time.Now().Month(), 7, 0, 0, 0, 0, time.Now().Location()).Format(dateLayout)
+	//today = time.Date(2025, 8, 3, 0, 0, 0, 0, time.Now().Location()).Format(dateLayout)
 	userId := os.Getenv("SUPABASE_USER_ID")
 
-	channels := make([]chan []models.EventData, 14)
+	channels := make([]chan []models.EventData, 16)
 
 	for idx := range channels {
 		channels[idx] = make(chan []models.EventData)
@@ -45,12 +46,14 @@ func main() {
 	go GetEveryTwoWeeksDataForUserSaturday(userId, today, channels[5])
 	go GetMonthlyDataForUserWithExactDate(userId, today, channels[6])
 	go GetMonthlyDataForUserFirstSaturday(userId, today, channels[7])
-	go GetQuarterlyDataForUserWithExactDate(userId, today, channels[8])
-	go GetQuarterlyDataForUserFirstSaturday(userId, today, channels[9])
-	go GetHalfYearlyDataForUserWithExactDate(userId, today, channels[10])
-	go GetHalfYearlyDataForUserFirstSaturday(userId, today, channels[11])
-	go GetYearlyDataForUserWithExactDate(userId, today, channels[12])
-	go GetYearlyDataForUserFirstSaturday(userId, today, channels[13])
+	go GetEveryTwoMonthsDataForUserWithExactDate(userId, today, channels[8])
+	go GetEveryTwoMonthsDataForUserFirstSaturday(userId, today, channels[9])
+	go GetQuarterlyDataForUserWithExactDate(userId, today, channels[10])
+	go GetQuarterlyDataForUserFirstSaturday(userId, today, channels[11])
+	go GetHalfYearlyDataForUserWithExactDate(userId, today, channels[12])
+	go GetHalfYearlyDataForUserFirstSaturday(userId, today, channels[13])
+	go GetYearlyDataForUserWithExactDate(userId, today, channels[14])
+	go GetYearlyDataForUserFirstSaturday(userId, today, channels[15])
 
 	consolidatedData := []models.EventData{}
 	dataIdIncludedHash := services.NewHashSet[string]()
@@ -117,7 +120,7 @@ func GetDailyDataForUser(userId string, currDateStr string, channel chan<- []mod
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("frequency", "Daily").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("frequency", services.AllowedFrequencies[1]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -168,7 +171,7 @@ func GetWeeklyDataForUserWithExactDate(userId string, currDateStr string, channe
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", "Weekly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", services.AllowedFrequencies[2]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -221,7 +224,7 @@ func GetWeeklyDataForUserSaturday(userId string, currDateStr string, channel cha
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("frequency", "Weekly").Neq("exact", "yes").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("frequency", services.AllowedFrequencies[2]).Neq("exact", "yes").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -276,7 +279,7 @@ func GetEveryTwoWeeksDataForUserWithExactDate(userId string, currDateStr string,
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", "Every two weeks").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", services.AllowedFrequencies[3]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -343,7 +346,7 @@ func GetEveryTwoWeeksDataForUserSaturday(userId string, currDateStr string, chan
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("frequency", "Every two weeks").Neq("exact", "yes").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("frequency", services.AllowedFrequencies[3]).Neq("exact", "yes").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -378,7 +381,7 @@ func GetEveryTwoWeeksDataForUserSaturday(userId string, currDateStr string, chan
 				stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
 				if err == nil {
 					if stopAfterDate.Before(currDate) {
-						fmt.Printf("Skipping event %v in alternate saturdays due to StopAfter\n", event.Task)
+						fmt.Printf("Skipping event %v in every two weeks saturdays due to StopAfter\n", event.Task)
 						continue
 					}
 				}
@@ -401,7 +404,7 @@ func GetMonthlyDataForUserWithExactDate(userId string, currDateStr string, chann
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", "Monthly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", services.AllowedFrequencies[4]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -454,7 +457,7 @@ func GetMonthlyDataForUserFirstSaturday(userId string, currDateStr string, chann
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", "Monthly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", services.AllowedFrequencies[4]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -495,6 +498,113 @@ func GetMonthlyDataForUserFirstSaturday(userId string, currDateStr string, chann
 	}
 	channel <- ftedResponse
 }
+func GetEveryTwoMonthsDataForUserWithExactDate(userId string, currDateStr string, channel chan<- []models.EventData) {
+	defer close(channel)
+	serviceRole := os.Getenv("SUPABASE_SERVICE_ROLE")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	allResponse := []models.EventData{}
+	ftedResponse := []models.EventData{}
+	client, err := supabase.NewClient(apiUrl, serviceRole, &supabase.ClientOptions{})
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- ftedResponse
+		return
+	}
+
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", services.AllowedFrequencies[5]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- ftedResponse
+		return
+	}
+	if err := json.Unmarshal(data, &allResponse); err != nil {
+		fmt.Printf("Error unmarshalling results %v\n", err.Error())
+	}
+
+	currDate, err := time.Parse(dateLayout, currDateStr)
+	if err != nil {
+		fmt.Printf("Error parsing current date %v\n", err.Error())
+		channel <- ftedResponse
+		return
+	}
+	dateToInclude := currDate
+	allMonthDates := services.NewHashSet[string]()
+	for {
+		if dateToInclude.Before(appStartDate) {
+			break
+		}
+		allMonthDates.Add(dateToInclude.Format(dateLayout))
+		dateToInclude = dateToInclude.AddDate(0, -2, 0)
+	}
+	for _, event := range allResponse {
+		if allMonthDates.Contains(event.Date) {
+			stopAfter, err := time.Parse(dateLayout, event.StopAfter)
+			if err == nil {
+				if stopAfter.Before(currDate) {
+					fmt.Printf("Skipping event %v in every two months due to StopAfter\n", event.Task)
+					continue
+				}
+			}
+			ftedResponse = append(ftedResponse, event)
+		}
+	}
+	channel <- ftedResponse
+}
+func GetEveryTwoMonthsDataForUserFirstSaturday(userId string, currDateStr string, channel chan<- []models.EventData) {
+	defer close(channel)
+	serviceRole := os.Getenv("SUPABASE_SERVICE_ROLE")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	allResponse := []models.EventData{}
+	ftedResponse := []models.EventData{}
+	client, err := supabase.NewClient(apiUrl, serviceRole, &supabase.ClientOptions{})
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- ftedResponse
+		return
+	}
+
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", services.AllowedFrequencies[5]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- ftedResponse
+		return
+	}
+	if err := json.Unmarshal(data, &allResponse); err != nil {
+		fmt.Printf("Error unmarshalling results %v\n", err.Error())
+	}
+
+	currDate, err := time.Parse(dateLayout, currDateStr)
+	if err != nil {
+		fmt.Printf("Error parsing current date %v\n", err.Error())
+		channel <- ftedResponse
+		return
+	}
+	if currDate.Weekday() == time.Saturday && currDate.Day() <= 7 && int(currDate.Month())%2 == 0 {
+		for _, event := range allResponse {
+			eventDate, err := time.Parse(dateLayout, event.Date)
+			if err != nil {
+				fmt.Printf("Error parsing date %v\n", err.Error())
+				continue
+			}
+			diff := int(currDate.Sub(eventDate).Hours() / 24)
+			if diff < 0 {
+				fmt.Printf("Skipping future event %v in in every two months\n", event.Task)
+				continue
+			}
+			stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
+			if err == nil {
+				if stopAfterDate.Before(currDate) {
+					fmt.Printf("Skipping event %v in every two months due to StopAfter\n", event.Task)
+					continue
+				}
+			}
+			ftedResponse = append(ftedResponse, event)
+		}
+	}
+	channel <- ftedResponse
+}
 func GetQuarterlyDataForUserWithExactDate(userId string, currDateStr string, channel chan<- []models.EventData) {
 	defer close(channel)
 	serviceRole := os.Getenv("SUPABASE_SERVICE_ROLE")
@@ -508,7 +618,7 @@ func GetQuarterlyDataForUserWithExactDate(userId string, currDateStr string, cha
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", "Quarterly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", services.AllowedFrequencies[6]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -562,7 +672,7 @@ func GetQuarterlyDataForUserFirstSaturday(userId string, currDateStr string, cha
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", "Quarterly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", services.AllowedFrequencies[6]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -616,7 +726,7 @@ func GetHalfYearlyDataForUserWithExactDate(userId string, currDateStr string, ch
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", "Half yearly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", services.AllowedFrequencies[7]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -670,7 +780,7 @@ func GetHalfYearlyDataForUserFirstSaturday(userId string, currDateStr string, ch
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", "Half yearly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", services.AllowedFrequencies[7]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -724,7 +834,7 @@ func GetYearlyDataForUserWithExactDate(userId string, currDateStr string, channe
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", "Yearly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Eq("exact", "yes").Eq("frequency", services.AllowedFrequencies[8]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
@@ -778,7 +888,7 @@ func GetYearlyDataForUserFirstSaturday(userId string, currDateStr string, channe
 		return
 	}
 
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", "Yearly").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).Eq("user_id", userId).Neq("exact", "yes").Eq("frequency", services.AllowedFrequencies[8]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())

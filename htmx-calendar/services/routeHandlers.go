@@ -152,7 +152,16 @@ func AddPage(responseWriter http.ResponseWriter, request *http.Request) {
 		if len(task) <= 3 {
 			errors = append(errors, "Task should be more than 3 characters")
 		}
-		if frequency == "Only once" && stopAfter != "" {
+		frequencyAllowed := false
+		for _, frequencyFromArray := range AllowedFrequencies {
+			if frequencyFromArray == frequency {
+				frequencyAllowed = true
+				break
+			}
+		}
+		if !frequencyAllowed {
+			errors = append(errors, "Frequency is not allowed")
+		} else if frequency == "Only once" && stopAfter != "" {
 			errors = append(errors, "Stop after is not allowed for only once frequency")
 		} else if frequency != "Only once" {
 			if stopAfter != "" {

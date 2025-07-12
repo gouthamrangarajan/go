@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+var AllowedFrequencies = []string{"Only once", "Daily", "Weekly", "Every two weeks", "Monthly", "Every two months", "Quarterly", "Half yearly", "Yearly"}
+
 func AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, date time.Time, isOob bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -202,7 +204,7 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 		var templ_7745c5c3_Var6 templ.SafeURL
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(mainPageUrl))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 73, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 75, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -215,7 +217,7 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(mainPageUrl)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 74, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 76, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -245,7 +247,7 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 							});
 						`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 117, Col: 7}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 119, Col: 7}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -258,7 +260,7 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format("2006-01-02"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 128, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 130, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -268,7 +270,7 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, item := range []string{"Only once", "Daily", "Weekly", "Every two weeks", "Monthly", "Quarterly", "Half yearly", "Yearly"} {
+		for _, item := range AllowedFrequencies {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<option value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -276,7 +278,7 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(item)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 153, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 155, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -289,7 +291,7 @@ func addEventPageModal(date time.Time, week int) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(item)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 153, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 155, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -337,7 +339,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully added task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 224, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 226, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -355,7 +357,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("Error adding task " + task + ". Please try again later.")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 242, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 244, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -403,7 +405,7 @@ func AddEventValidationError(errs []string) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 252, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEventPage.templ`, Line: 254, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {

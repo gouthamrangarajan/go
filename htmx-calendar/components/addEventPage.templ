@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var AllowedFrequencies = []string{"Only once", "Daily", "Weekly", "Every two weeks", "Monthly", "Every two months", "Quarterly", "Half yearly", "Yearly"}
+
 templ AddEventPage(calendarData [][7]time.Time, eventsData []models.EventData, date time.Time, isOob bool) {
 	if !isOob {
 		@layout() {
@@ -149,7 +151,7 @@ templ addEventPageModal(date time.Time, week int) {
 							name="frequency"
 							x-model="frequency"
 						>
-							for _,item:= range []string{"Only once", "Daily", "Weekly", "Every two weeks", "Monthly", "Quarterly", "Half yearly","Yearly"} {
+							for _,item:= range AllowedFrequencies {
 								<option value={ item }>{ item }</option>
 							}
 						</select>
