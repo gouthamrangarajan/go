@@ -4,9 +4,9 @@ import "datastar-stock/components/shared"
 
 templ Recent(tickers []string) {
 	@home("recent") {
-		<div class="absolute top-10 right-0 flex gap-2 justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5">
+		<div class="absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5">
 			<button
-				class="apperance-none outline-none cursor-pointer py-1 px-3 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80"
+				class="apperance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80"
 				data-on-click="@get('/home/recent/add')"
 				data-indicator-loading-add-recent
 				data-attr-disabled="$loadingAddRecent"

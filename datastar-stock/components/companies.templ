@@ -9,7 +9,7 @@ import (
 templ Companies(count int) {
 	@layout() {
 		@header("companies")
-		<div class="w-11/12 mx-auto flex items-center justify-start gap-2 py-2">
+		<div class="w-11/12 mx-auto flex items-center justify-between gap-2 py-2">
 			<div class="py-4 px-6 rounded h-24 w-64  bg-white flex flex-col items-start gap-2">
 				<div class="flex justify-between items-center text-slate-600 w-full">
 					<p class="font-semibold">Total Companies</p>
@@ -21,6 +21,24 @@ templ Companies(count int) {
 					{ strconv.Itoa(count) }
 				</p>
 			</div>
+			// <button
+			// 	class="apperance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80"
+			// 	data-on-click="@get('/home/companies/add')"
+			// 	data-indicator-loading-add-company
+			// 	data-attr-disabled="$loadingAddCompany"
+			// >
+			// 	<svg
+			// 		data-show="!$loadingAddCompany"
+			// 		xmlns="http://www.w3.org/2000/svg"
+			// 		viewBox="0 0 24 24"
+			// 		fill="currentColor"
+			// 		class="size-5"
+			// 	>
+			// 		<path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
+			// 	</svg>
+			// 	@shared.Spinner("$loadingAddCompany", "border-white")
+			// 	<span class="hidden md:inline">Add Company</span>
+			// </button>
 		</div>
 		<div class="w-11/12 mx-auto py-2 px-4 bg-white rounded md:py-4 md:px-6">
 			@shared.SearchCompanyInput("companies", "")
