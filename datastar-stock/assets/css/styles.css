@@ -285,9 +285,6 @@
   .h-5 {
     height: calc(var(--spacing) * 5);
   }
-  .h-6 {
-    height: calc(var(--spacing) * 6);
-  }
   .h-80 {
     height: calc(var(--spacing) * 80);
   }
@@ -305,9 +302,6 @@
   }
   .w-5 {
     width: calc(var(--spacing) * 5);
-  }
-  .w-6 {
-    width: calc(var(--spacing) * 6);
   }
   .w-10\/12 {
     width: calc(10/12 * 100%);
@@ -404,6 +398,9 @@
   .border-gray-600 {
     border-color: var(--color-gray-600);
   }
+  .border-red-600 {
+    border-color: var(--color-red-600);
+  }
   .border-slate-600 {
     border-color: var(--color-slate-600);
   }
@@ -430,6 +427,9 @@
   }
   .object-cover {
     object-fit: cover;
+  }
+  .p-1 {
+    padding: calc(var(--spacing) * 1);
   }
   .px-3 {
     padding-inline: calc(var(--spacing) * 3);

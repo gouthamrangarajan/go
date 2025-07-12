@@ -8,6 +8,8 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "datastar-stock/components/shared"
+
 func LoginUI(redirect string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -29,7 +31,7 @@ func LoginUI(redirect string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full h-full flex items-center justify-center\"><form method=\"post\" action=\"/login\" class=\"animate-modal py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12\" data-indicator-signing-in=\"\" data-signals-error-message=\"''\" data-attr-disabled=\"$signingIn\" data-on-submit=\"evt.preventDefault();$errorMessage='';@post('/login',{contentType:'form'})\"><p class=\"text-2xl text-primary underline underline-offset-6\">Login</p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full h-full flex items-center justify-center\"><form method=\"post\" action=\"/login\" class=\"animate-modal py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12\" data-signals-signing-in=\"false\" data-signals-error-message=\"''\" data-attr-disabled=\"$signingIn\" data-on-submit=\"$signingIn=true;evt.preventDefault();$errorMessage='';@post('/login',{contentType:'form'})\"><p class=\"text-2xl text-primary underline underline-offset-6\">Login</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -44,7 +46,7 @@ func LoginUI(redirect string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(redirect)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 16, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 18, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -134,7 +136,15 @@ func buttonSubmit() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none w-full rounded-full py-2 px-4 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr-disabled=\"$signingIn\"><span data-show=\"!$signingIn\">Submit</span> <span data-show=\"$signingIn\">Submitting</span> <span data-show=\"$signingIn\" class=\"animate-spin-2 w-5 h-5 border-2 border-dashed border-white rounded-full\"></span></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none w-full rounded-full py-2 px-4 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr-disabled=\"$signingIn\"><span data-show=\"!$signingIn\">Submit</span> <span data-show=\"$signingIn\">Submitting</span>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Spinner("$signingIn", "border-white").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -163,7 +173,7 @@ func loginResult() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p class=\" py-1 px-3 rounded w-full font-semibold\" data-class=\"{'animate-result bg-red-200 text-red-600':$errorMessage!=''}\" id=\"results\" data-text=\"$errorMessage\"></p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<p class=\" py-1 px-3 rounded w-full font-semibold\" data-class=\"{'animate-result bg-red-200 text-red-600':$errorMessage!=''}\" id=\"results\" data-text=\"$errorMessage\"></p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

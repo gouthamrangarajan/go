@@ -1,15 +1,17 @@
 package components
 
+import "datastar-stock/components/shared"
+
 templ LoginUI(redirect string) {
 	<div class="w-full h-full flex items-center justify-center">
 		<form
 			method="post"
 			action="/login"
 			class="animate-modal py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12"
-			data-indicator-signing-in=""
+			data-signals-signing-in="false"
 			data-signals-error-message="''"
 			data-attr-disabled="$signingIn"
-			data-on-submit="evt.preventDefault();$errorMessage='';@post('/login',{contentType:'form'})"
+			data-on-submit="$signingIn=true;evt.preventDefault();$errorMessage='';@post('/login',{contentType:'form'})"
 		>
 			<p class="text-2xl text-primary underline underline-offset-6">Login</p>
 			@loginResult()
@@ -42,7 +44,7 @@ templ buttonSubmit() {
 	>
 		<span data-show="!$signingIn">Submit</span>
 		<span data-show="$signingIn">Submitting</span>
-		<span data-show="$signingIn" class="animate-spin-2 w-5 h-5 border-2 border-dashed border-white rounded-full"></span>
+		@shared.Spinner("$signingIn", "border-white")
 	</button>
 }
 
