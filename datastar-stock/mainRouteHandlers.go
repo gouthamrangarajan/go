@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"datastar-stock/components"
 	"datastar-stock/components/shared"
 	"datastar-stock/models"
@@ -17,9 +18,9 @@ import (
 )
 
 func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	email := strings.Trim(request.FormValue("email"), "")
-	password := strings.Trim(request.FormValue("password"), "")
-	redirect := strings.Trim(request.FormValue("redirect"), "")
+	email := strings.TrimSpace(request.FormValue("email"))
+	password := request.FormValue("password")
+	redirect := strings.TrimSpace(request.FormValue("redirect"))
 	if redirect == "" {
 		redirect = "/home/populars"
 	}
@@ -55,7 +56,7 @@ func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 }
 func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	ticker := strings.Trim(chi.URLParam(request, "ticker"), "")
+	ticker := strings.TrimSpace(chi.URLParam(request, "ticker"))
 	if ticker == "" {
 		http.Error(responseWriter, "Ticker not provided", http.StatusBadRequest)
 		return
@@ -173,7 +174,7 @@ func recentDataHandler(responseWriter http.ResponseWriter, request *http.Request
 		if idx > 4 {
 			break
 		}
-		recentsToSend = append(recentsToSend, strings.Trim(item.Ticker, " "))
+		recentsToSend = append(recentsToSend, strings.TrimSpace(item.Ticker))
 	}
 	component := components.RecentError()
 	if len(recentsToSend) > 0 {
@@ -184,8 +185,8 @@ func recentDataHandler(responseWriter http.ResponseWriter, request *http.Request
 }
 
 func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *http.Request) {
-	newCountStr := strings.Trim(request.FormValue("newCount"), "")
-	currentCountStr := strings.Trim(request.FormValue("currentCount"), "")
+	newCountStr := strings.TrimSpace(request.FormValue("newCount"))
+	currentCountStr := strings.TrimSpace(request.FormValue("currentCount"))
 
 	newCount, err := strconv.Atoi(newCountStr)
 	if err != nil || newCount < 1 {
@@ -221,7 +222,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 				continue
 			}
 
-			recentsToSend = append(recentsToSend, strings.Trim(item.Ticker, " "))
+			recentsToSend = append(recentsToSend, strings.TrimSpace(item.Ticker))
 			recentsToSendIndex++
 		}
 		sse.PatchElementTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithModeAppend(), datastar.WithUseViewTransitions(true))
@@ -233,7 +234,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			if idx+newCount >= len(recents) {
 				break
 			}
-			tickerToRemove := strings.Trim(recents[idx+newCount].Ticker, " ")
+			tickerToRemove := strings.TrimSpace(recents[idx+newCount].Ticker)
 			// sse.ExecuteScript(`DisposeChart("chart_`+tickerToRemove+`")`, datastar.WithExecuteScriptAutoRemove(true))
 			sse.RemoveElement(`#card_`+shared.ReplaceSpecialCharsInTicker(tickerToRemove), datastar.WithUseViewTransitions(true))
 		}
@@ -248,39 +249,50 @@ func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Reques
 	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
 	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 }
-
-func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	searchTerm := strings.Trim(request.FormValue("search"), "")
+func getAllCompanies(ctx context.Context, companiesSaveCacheChannel chan string) ([]models.CompanyFromDb, bool) {
 	companies := []models.CompanyFromDb{}
+	companiesCacheChannel := make(chan []models.CompanyFromDb)
+	defer close(companiesCacheChannel)
+
+	saveCacheCalled := false
+
+	go services.GetCachedCompaniesData(companiesCacheChannel)
+	companies = <-companiesCacheChannel
+	if len(companies) == 0 {
+		companiesChannel := make(chan []models.CompanyFromDb)
+		defer close(companiesChannel)
+		go services.GetAllCompanies(ctx, companiesChannel)
+		companies = <-companiesChannel
+
+		go services.SetCachedCompaniesData(companies, companiesSaveCacheChannel)
+		saveCacheCalled = true
+	}
+	return companies, saveCacheCalled
+}
+func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	searchTerm := strings.TrimSpace(request.FormValue("search"))
+	page := strings.TrimSpace(request.FormValue("page"))
 
 	companiesSaveCacheChannel := make(chan string)
 	defer close(companiesSaveCacheChannel)
-	saveCacheCalled := false
+
+	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
 
 	if searchTerm != "" {
-		companiesCacheChannel := make(chan []models.CompanyFromDb)
-		defer close(companiesCacheChannel)
-		go services.GetCachedCompaniesData(companiesCacheChannel)
-		companies = <-companiesCacheChannel
-
-		if len(companies) == 0 {
-			companiesChannel := make(chan []models.CompanyFromDb)
-			defer close(companiesChannel)
-			go services.GetAllCompanies(request.Context(), companiesChannel)
-			companies = <-companiesChannel
-
-			go services.SetCachedCompaniesData(companies, companiesSaveCacheChannel)
-			saveCacheCalled = true
-		}
 		companies = filterCompaniesBySearchTerm(companies, searchTerm)
 	}
 	sse := datastar.NewSSE(responseWriter, request)
+	useViewTransition := true
+
+	if page == "home" {
+		useViewTransition = false
+	}
 	if searchTerm == "" {
-		sse.PatchElementTempl(shared.CompaniesTbodyHint())
+		sse.PatchElementTempl(shared.CompaniesTbodyHint(page), datastar.WithUseViewTransitions(useViewTransition))
 	} else if len(companies) == 0 {
-		sse.PatchElementTempl(shared.CompaniesTbodyEmpty())
+		sse.PatchElementTempl(shared.CompaniesTbodyEmpty(page), datastar.WithUseViewTransitions(useViewTransition))
 	} else {
-		sse.PatchElementTempl(shared.CompaniesTbody(companies))
+		sse.PatchElementTempl(shared.CompaniesTbody(companies, page), datastar.WithUseViewTransitions(useViewTransition))
 	}
 	if saveCacheCalled {
 		<-companiesSaveCacheChannel
@@ -311,13 +323,13 @@ func closeAddRecentHandler(responseWriter http.ResponseWriter, request *http.Req
 }
 
 func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	ticker := strings.Trim(chi.URLParam(request, "ticker"), "")
+	ticker := strings.TrimSpace(chi.URLParam(request, "ticker"))
 	if ticker == "" {
 		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	currentCountStr := strings.Trim(request.FormValue("currentCount"), "")
+	currentCountStr := strings.TrimSpace(request.FormValue("currentCount"))
 	currentCount, _ := strconv.Atoi(currentCountStr)
 
 	recentFromDbChannel := make(chan []models.RecentFromDb)
@@ -352,6 +364,13 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 	<-addRecentToDbChannel
 }
 func companiesPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	component := components.Companies()
+	companiesSaveCacheChannel := make(chan string)
+	defer close(companiesSaveCacheChannel)
+
+	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
+	if saveCacheCalled {
+		<-companiesSaveCacheChannel
+	}
+	component := components.Companies(len(companies))
 	component.Render(request.Context(), responseWriter)
 }

@@ -2,15 +2,15 @@ package components
 
 templ header(location string) {
 	{{ dashboardClass := "" }}
-	// {{ companiesClass := "" }}
+	{{ companiesClass := "" }}
 	{{if location == "home" {
 	dashboardClass = "underline underline-offset-6"
 }
 	}}
-	// 	{{if location == "companies" {
-	// 	companiesClass = "underline underline-offset-6"
-	// }
-	// 	}}
+	{{if location == "companies" {
+	companiesClass = "underline underline-offset-6"
+}
+	}}
 	<header class="shadow w-full py-2 px-4 bg-white flex justify-between items-center">
 		<a
 			class="appearance-none outline-none p-1 cursor-pointer text-primary text-2xl font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary"
@@ -19,21 +19,21 @@ templ header(location string) {
 		>Stock API</a>
 		<nav class="flex items-center gap-2">
 			<a
-				class={ "appearance-none outline-none p-1 cursor-pointer text-primary text-xl font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary " + dashboardClass }
+				class={ "appearance-none outline-none p-1 cursor-pointer text-primary text-lg font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary  md:text-xl  " + dashboardClass }
 				href="/home/populars"
 				style="view-transition-name:header-home"
 				data-on-click="window.location.pathname.startsWith('/home')?evt.preventDefault() : evt.stopPropagation()"
 			>
 				Dashboard
 			</a>
-			// <a
-			// 	class={ "appearance-none outline-none p-1 cursor-pointer text-primary text-xl font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary " + companiesClass }
-			// 	href="/companies"
-			// 	style="view-transition-name:header-companies"
-			// 	data-on-click="window.location.pathname.startsWith('/companies')?evt.preventDefault() : evt.stopPropagation()"
-			// >
-			// 	Companies
-			// </a>
+			<a
+				class={ "appearance-none outline-none p-1 cursor-pointer text-primary text-lg font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary  md:text-xl  " + companiesClass }
+				href="/companies"
+				style="view-transition-name:header-companies"
+				data-on-click="window.location.pathname.startsWith('/companies')?evt.preventDefault() : evt.stopPropagation()"
+			>
+				Companies
+			</a>
 		</nav>
 	</header>
 }

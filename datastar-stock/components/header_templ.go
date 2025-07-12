@@ -30,14 +30,18 @@ func header(location string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		dashboardClass := ""
+		companiesClass := ""
 		if location == "home" {
 			dashboardClass = "underline underline-offset-6"
+		}
+		if location == "companies" {
+			companiesClass = "underline underline-offset-6"
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"shadow w-full py-2 px-4 bg-white flex justify-between items-center\"><a class=\"appearance-none outline-none p-1 cursor-pointer text-primary text-2xl font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary\" href=\"/\" style=\"view-transition-name:header\">Stock API</a><nav class=\"flex items-center gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 = []any{"appearance-none outline-none p-1 cursor-pointer text-primary text-xl font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary " + dashboardClass}
+		var templ_7745c5c3_Var2 = []any{"appearance-none outline-none p-1 cursor-pointer text-primary text-lg font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary  md:text-xl  " + dashboardClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -55,7 +59,29 @@ func header(location string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" href=\"/home/populars\" style=\"view-transition-name:header-home\" data-on-click=\"window.location.pathname.startsWith('/home')?evt.preventDefault() : evt.stopPropagation()\">Dashboard</a></nav></header>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" href=\"/home/populars\" style=\"view-transition-name:header-home\" data-on-click=\"window.location.pathname.startsWith('/home')?evt.preventDefault() : evt.stopPropagation()\">Dashboard</a> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 = []any{"appearance-none outline-none p-1 cursor-pointer text-primary text-lg font-semibold transition-all duration-300 rounded hover:opacity-80 focus:ring-2 focus:ring-primary  md:text-xl  " + companiesClass}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<a class=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var4).String())
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 1, Col: 0}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" href=\"/companies\" style=\"view-transition-name:header-companies\" data-on-click=\"window.location.pathname.startsWith('/companies')?evt.preventDefault() : evt.stopPropagation()\">Companies</a></nav></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -32,7 +32,7 @@ func AddRecent() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"overlay\" class=\"bg-black/30 absolute top-0 left-0 w-full h-full flex items-center justify-center\" style=\"view-transition-name:overlay\"><dialog open class=\"py-4 px-6 animate-modal rounded flex flex-col mx-auto h-96 w-11/12 md:w-9/12 lg:w-7/12 xl:w-6/12\" style=\"view-transition-name:modal\" id=\"modal\"><div class=\"flex justify-between items-center\"><h1 class=\"text-xl text-primary underline underline-offset-2\">Add</h1><button class=\"appearance-none outline-none p-1 flex cursor-pointer text-red-600 transition duration-300 rounded-full focus:ring-2 focus:ring-red-600 disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@post('/home/recent/add/close')\" aria-label=\"close\" data-indicator-closing-add-recent data-attr-disabled=\"$closingAddRecent\"><svg data-show=\"!$closingAddRecent\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"overlay\" class=\"bg-black/30 absolute top-0 left-0 w-full h-full flex items-center justify-center\" style=\"view-transition-name:overlay\"><dialog open class=\"py-2 px-4 animate-modal rounded flex flex-col mx-auto h-96 w-11/12 md:py-4 md:px-4 md:w-9/12 lg:w-7/12 xl:w-6/12\" style=\"view-transition-name:modal\" id=\"modal\"><div class=\"flex justify-between items-center\"><h1 class=\"text-xl text-primary underline underline-offset-2\">Add</h1><button class=\"appearance-none outline-none p-1 flex cursor-pointer text-red-600 transition duration-300 rounded-full focus:ring-2 focus:ring-red-600 disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@post('/home/recent/add/close')\" aria-label=\"close\" data-indicator-closing-add-recent data-attr-disabled=\"$closingAddRecent\"><svg data-show=\"!$closingAddRecent\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -40,19 +40,19 @@ func AddRecent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</button></div><form class=\"w-full mt-6 py-2 px-4 flex gap-1 items-center rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30  focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-80 \"><input type=\"text\" name=\"search\" class=\"appearance-none outline-none w-full placeholder:text-slate-400\" placeholder=\"Ticker or Company Name\" data-indicator-searching-company data-on-input__debounce.1s=\"@post('/companies/search', {contentType:'form'})\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Spinner("$searchingCompany", "border-slate-600").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.SearchCompanyInput("home", "mt-6").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</form><div class=\"mt-2 w-full h-80 overflow-x-hidden overflow-y-auto scrollbar-thin scroll-smooth scrollbar-track-transparent scrollbar-thumb-[#8A2BE2]\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mt-2 w-full h-80 overflow-x-hidden overflow-y-auto scrollbar-thin scroll-smooth scrollbar-track-transparent scrollbar-thumb-[#8A2BE2]\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.CompaniesTable([]models.CompanyFromDb{}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.CompaniesTable([]models.CompanyFromDb{}, "home", "").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
