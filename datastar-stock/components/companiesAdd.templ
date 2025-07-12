@@ -1,9 +1,8 @@
 package components
 
 import "datastar-stock/components/shared"
-import "datastar-stock/models"
 
-templ AddRecent() {
+templ AddCompany() {
 	<div
 		id="overlay"
 		class="bg-black/30 absolute top-0 left-0 w-full h-full flex items-center justify-center"
@@ -11,21 +10,21 @@ templ AddRecent() {
 	>
 		<dialog
 			open
-			class="py-2 px-4 animate-modal rounded flex flex-col mx-auto h-96 w-11/12 md:py-4 md:px-4 md:w-9/12 lg:w-7/12 xl:w-6/12"
+			class="py-2 px-4 animate-modal rounded flex flex-col mx-auto w-11/12 md:py-4 md:px-4 md:w-9/12 lg:w-7/12 xl:w-6/12"
 			style="view-transition-name:modal"
 			id="modal"
 		>
 			<div class="flex justify-between items-center">
-				<h1 class="text-xl text-primary underline underline-offset-6">Add Watchlist</h1>
+				<h1 class="text-xl text-primary underline underline-offset-6">Add Company</h1>
 				<button
 					class="appearance-none outline-none p-1 flex cursor-pointer text-red-600 transition duration-300 rounded-full focus:ring-2 focus:ring-red-600 disabled:cursor-not-allowed disabled:opacity-80"
-					data-on-click="@post('/home/recent/add/close')"
+					data-on-click="@post('/companies/add/close')"
 					aria-label="close"
-					data-indicator-closing-add-recent
-					data-attr-disabled="$closingAddRecent"
+					data-indicator-closing-add-company
+					data-attr-disabled="$closingAddCompany"
 				>
 					<svg
-						data-show="!$closingAddRecent"
+						data-show="!$closingAddCompany"
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
 						fill="currentColor"
@@ -33,12 +32,8 @@ templ AddRecent() {
 					>
 						<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
 					</svg>
-					@shared.Spinner("$closingAddRecent", "border-red-600")
+					@shared.Spinner("$closingAddCompany", "border-red-600")
 				</button>
-			</div>
-			@shared.SearchCompanyInput("home", "mt-6")
-			<div class="mt-2 w-full h-80 overflow-x-hidden overflow-y-auto scrollbar-thin scroll-smooth scrollbar-track-transparent scrollbar-thumb-[#8A2BE2]">
-				@shared.CompaniesTable([]models.CompanyFromDb{}, "home", "")
 			</div>
 		</dialog>
 	</div>

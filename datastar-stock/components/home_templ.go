@@ -75,7 +75,7 @@ func home(location string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" href=\"/home/populars\" style=\"view-transition-name:populars-menu\" data-on-click=\"window.location.href.endsWith('/home/populars')?evt.preventDefault() : evt.stopPropagation()\">Populars</a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" href=\"/home/populars\" style=\"view-transition-name:populars-menu\" data-on-click=\"window.location.href.endsWith('/home/populars')?evt.preventDefault() : evt.stopPropagation()\">Your Populars</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -97,7 +97,7 @@ func home(location string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" href=\"/home/recent\" style=\"view-transition-name:recent-menu\" data-on-click=\"window.location.href.endsWith('/home/recent')?evt.preventDefault() : evt.stopPropagation()\">Recent</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" href=\"/home/recent\" style=\"view-transition-name:recent-menu\" data-on-click=\"window.location.href.endsWith('/home/recent')?evt.preventDefault() : evt.stopPropagation()\">Watchlist</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

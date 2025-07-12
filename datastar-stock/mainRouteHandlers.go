@@ -374,3 +374,15 @@ func companiesPageHandler(responseWriter http.ResponseWriter, request *http.Requ
 	component := components.Companies(len(companies))
 	component.Render(request.Context(), responseWriter)
 }
+
+func addCompanyUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(components.AddCompany(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
+	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
+	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
+}
+func closeAddCompanyHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
+	sse.RemoveElement("#overlay", datastar.WithUseViewTransitions(true))
+}

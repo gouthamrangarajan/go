@@ -37,6 +37,8 @@ func main() {
 	router.Post("/home/recent/add/close", closeAddRecentHandler)
 	router.Post("/companies/search", searchCompaniesHandler)
 	router.Get("/companies", companiesPageHandler)
+	router.Get("/companies/add", addCompanyUIHandler)
+	router.Post("/companies/add/close", closeAddCompanyHandler)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)

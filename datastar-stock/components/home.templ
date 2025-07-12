@@ -21,7 +21,7 @@ templ home(location string) {
 					style="view-transition-name:populars-menu"
 					data-on-click="window.location.href.endsWith('/home/populars')?evt.preventDefault() : evt.stopPropagation()"
 				>
-					Populars
+					Your Populars
 				</a>
 				<a
 					class={ "appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4 " + recentClass }
@@ -29,7 +29,7 @@ templ home(location string) {
 					style="view-transition-name:recent-menu"
 					data-on-click="window.location.href.endsWith('/home/recent')?evt.preventDefault() : evt.stopPropagation()"
 				>
-					Recent
+					Watchlist
 				</a>
 			</div>
 			{ children... }
