@@ -225,8 +225,9 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			recentsToSendIndex++
 		}
 		sse.PatchElementTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithModeAppend(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.CurrentCountInp(newCount))
 		time.Sleep(300 * time.Millisecond) //wait for the cards to be rendered
-		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0])+`').scrollIntoView({behavior: 'smooth', block: 'nearest'});`, datastar.WithExecuteScriptAutoRemove(true))
+		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0])+`')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});`, datastar.WithExecuteScriptAutoRemove(true))
 	} else {
 		for idx := range currentCount - newCount {
 			if idx+newCount >= len(recents) {
@@ -236,8 +237,9 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			// sse.ExecuteScript(`DisposeChart("chart_`+tickerToRemove+`")`, datastar.WithExecuteScriptAutoRemove(true))
 			sse.RemoveElement(`#card_`+shared.ReplaceSpecialCharsInTicker(tickerToRemove), datastar.WithUseViewTransitions(true))
 		}
+		sse.PatchElementTempl(components.CurrentCountInp(newCount))
 	}
-	sse.PatchElementTempl(components.CurrentCountInp(newCount))
+
 }
 
 func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Request) {

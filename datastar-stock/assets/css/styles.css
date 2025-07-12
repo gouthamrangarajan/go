@@ -621,16 +621,6 @@
       }
     }
   }
-  .focus\:underline {
-    &:focus {
-      text-decoration-line: underline;
-    }
-  }
-  .focus\:underline-offset-2 {
-    &:focus {
-      text-underline-offset: 2px;
-    }
-  }
   .focus\:ring-2 {
     &:focus {
       --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
@@ -645,6 +635,11 @@
   .focus\:ring-menu {
     &:focus {
       --tw-ring-color: var(--color-menu);
+    }
+  }
+  .focus\:ring-primary {
+    &:focus {
+      --tw-ring-color: var(--color-primary);
     }
   }
   .focus\:ring-red-600 {

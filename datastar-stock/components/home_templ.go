@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func home() templ.Component {
+func home(location string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -41,7 +41,63 @@ func home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"shadow w-full py-2 px-4 bg-white\"><a class=\"appearance-none outline-none cursor-pointer text-primary text-2xl font-semibold transition-all duration-300 hover:opacity-80 focus:underline focus:underline-offset-2\" href=\"/\" style=\"view-transition-name:header\">Stock API</a></header><div class=\"relative flex flex-col\"><div class=\"w-full flex items-center justify-start gap-2 pl-4 lg:pl-0 lg:justify-center\"><a class=\"appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4\" href=\"/home/populars\" style=\"view-transition-name:populars-menu\" data-on-click=\"window.location.href.endsWith('/home/populars')?evt.preventDefault() : evt.stopPropagation()\" data-class=\"{'shadow text-menu font-semibold':window.location.href.endsWith('/home/populars'),'text-slate-700':!window.location.href.endsWith('/home/populars')}\">Populars</a> <a class=\"appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4\" href=\"/home/recent\" style=\"view-transition-name:recent-menu\" data-on-click=\"window.location.href.endsWith('/home/recent')?evt.preventDefault() : evt.stopPropagation()\" data-class=\"{'shadow text-menu font-semibold':window.location.href.endsWith('/home/recent'),'text-slate-700':!window.location.href.endsWith('/home/recent')}\">Recent</a></div>")
+			popularsClass := "text-slate-700"
+			recentClass := "text-slate-700"
+			if location == "populars" {
+				popularsClass = "shadow text-menu font-semibold"
+			}
+			if location == "recent" {
+				recentClass = "shadow text-menu font-semibold"
+			}
+			templ_7745c5c3_Err = header("home").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, " <div class=\"relative flex flex-col\"><div class=\"w-full flex items-center justify-start gap-2 pl-4 lg:pl-0 lg:justify-center\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 = []any{"appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4 " + popularsClass}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<a class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var3).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/home.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" href=\"/home/populars\" style=\"view-transition-name:populars-menu\" data-on-click=\"window.location.href.endsWith('/home/populars')?evt.preventDefault() : evt.stopPropagation()\">Populars</a> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 = []any{"appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4 " + recentClass}
+			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<a class=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var5).String())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/home.templ`, Line: 1, Col: 0}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" href=\"/home/recent\" style=\"view-transition-name:recent-menu\" data-on-click=\"window.location.href.endsWith('/home/recent')?evt.preventDefault() : evt.stopPropagation()\">Recent</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -49,7 +105,7 @@ func home() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
