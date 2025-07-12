@@ -282,11 +282,11 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 		companies = filterCompaniesBySearchTerm(companies, searchTerm)
 	}
 	sse := datastar.NewSSE(responseWriter, request)
-	useViewTransition := true
+	useViewTransition := false
 
-	if page == "home" {
-		useViewTransition = false
-	}
+	// if page == "home" {
+	// 	useViewTransition = false
+	// }
 	if searchTerm == "" {
 		sse.PatchElementTempl(shared.CompaniesTbodyHint(page), datastar.WithUseViewTransitions(useViewTransition))
 	} else if len(companies) == 0 {
