@@ -53,8 +53,12 @@ templ CompaniesTable(companies []models.CompanyFromDb, page string, class string
 
 templ CompaniesTbody(companies []models.CompanyFromDb, page string) {
 	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
-		for _, company := range companies {
-			<tr class="animate-result" style={ "view-transition-name:company-" + ReplaceSpecialCharsInTicker(company.Ticker) }>
+		for idx, company := range companies {
+			{{backgroundClass:=""}}
+			if idx%2 != 0 {
+				{{backgroundClass = "bg-gray-100"}}
+			} 
+			<tr class={"animate-result "+backgroundClass} style={ "view-transition-name:company-" + ReplaceSpecialCharsInTicker(company.Ticker) }>
 				<td class="py-1 px-3  text-slate-600 break-all md:px-4 md:py-2">{ company.Ticker }</td>
 				<td class="py-1 px-3 text-slate-600 break-all md:px-4 md:py-2">{ company.Name }</td>
 				if page == "home" {
