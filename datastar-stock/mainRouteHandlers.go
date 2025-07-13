@@ -368,17 +368,21 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 	<-addRecentToDbChannel
 }
 func companiesPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	component := components.Companies()
+	component.Render(request.Context(), responseWriter)
+}
+func companiesCountHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	companiesSaveCacheChannel := make(chan string)
 	defer close(companiesSaveCacheChannel)
-
 	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
+
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(components.CompaniesCount(len(companies)), datastar.WithUseViewTransitions(true))
+
 	if saveCacheCalled {
 		<-companiesSaveCacheChannel
 	}
-	component := components.Companies(len(companies))
-	component.Render(request.Context(), responseWriter)
 }
-
 func addCompanyUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchElementTempl(components.AddCompany(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
@@ -437,9 +441,9 @@ func addCompanyHandler(responseWriter http.ResponseWriter, request *http.Request
 	} else {
 		sse.PatchElementTempl(shared.FormSubmitResult(`Ticker `+ticker+` successfully added`, false))
 		sse.PatchElementTempl(components.CompaniesCount(len(companies)))
-		sse.ExecuteScript("document.getElementById('addCompanyForm').reset();", datastar.WithExecuteScriptAutoRemove(true))
+		sse.ExecuteScript("document.getElementById('addCompanyForm')?.reset();", datastar.WithExecuteScriptAutoRemove(true))
 		sse.PatchElementTempl(shared.CompaniesTbodyHint("companies"))
-		sse.ExecuteScript("document.getElementById('companySearchForm').reset();", datastar.WithExecuteScriptAutoRemove(true))
+		sse.ExecuteScript("document.getElementById('companySearchForm')?.reset();", datastar.WithExecuteScriptAutoRemove(true))
 	}
 	<-saveCacheChannel
 }
