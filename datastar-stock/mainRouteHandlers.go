@@ -34,7 +34,8 @@ func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	if email == "" || password == "" || signInResponse.ErrorMessage != "" {
 		sse := datastar.NewSSE(responseWriter, request)
-		sse.PatchSignals([]byte("{errorMessage:'Error. Invalid Credentials',signingIn:false}"))
+		sse.PatchElementTempl(shared.FormSubmitEmptyResult(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(shared.FormSubmitResult("Error! Please provide valid Email & Password", true), datastar.WithUseViewTransitions(true))
 	} else {
 		expiresIn := time.Now().Add(55 * time.Minute) // Default to 1 hour
 		expiresInParsed, err := strconv.Atoi(signInResponse.ExpiresIn)
@@ -52,6 +53,9 @@ func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			SameSite: http.SameSiteLaxMode,
 		})
 		sse := datastar.NewSSE(responseWriter, request)
+		sse.PatchElementTempl(shared.FormSubmitEmptyResult(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(shared.FormSubmitResult("Successfully logged in.", false), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.LoginInSubmitBtn(true), datastar.WithUseViewTransitions(true))
 		sse.ExecuteScript("window.location.href = window.location.href", datastar.WithExecuteScriptAutoRemove(true))
 	}
 }
@@ -391,10 +395,51 @@ func addCompanyHandler(responseWriter http.ResponseWriter, request *http.Request
 	name := strings.TrimSpace(request.FormValue("name"))
 	ticker := strings.ToUpper(strings.TrimSpace(request.FormValue("ticker")))
 	sse := datastar.NewSSE(responseWriter, request)
-	if name == "" || ticker == "" {
-		sse.PatchSignals([]byte("{errorMessage:'Error! Please provide valid Name & Ticker',addingCompany:false}"))
+
+	sse.PatchElementTempl(shared.FormSubmitEmptyResult())
+	if name == "" || ticker == "" || len(ticker) < 3 {
+		sse.PatchElementTempl(shared.FormSubmitResult("Error! Please provide valid Ticker & Name", true))
 		return
 	}
-	sse.PatchSignals([]byte("{errorMessage:'Error! Please provide valid Name & Ticker',addingCompany:false}"))
 
+	saveCacheDuringGetChannel := make(chan string)
+	defer close(saveCacheDuringGetChannel)
+
+	companies, saveCacheCalledDuringGet := getAllCompanies(request.Context(), saveCacheDuringGetChannel)
+	if saveCacheCalledDuringGet {
+		<-saveCacheDuringGetChannel
+	}
+	maxId := 1
+	for _, company := range companies {
+		if company.Ticker == ticker {
+			sse.PatchElementTempl(shared.FormSubmitResult("Error! Ticker already exists", true))
+			return
+		} else if company.Id > maxId {
+			maxId = company.Id
+		}
+	}
+	company := models.CompanyFromDb{Id: maxId + 1, Ticker: ticker, Name: name}
+
+	companies = append(companies, company)
+
+	saveDbChannel := make(chan bool)
+	defer close(saveDbChannel)
+	go services.SetAllCompanies(request.Context(), companies, saveDbChannel)
+
+	saveCacheChannel := make(chan string)
+	defer close(saveCacheChannel)
+	go services.SetCachedCompaniesData(companies, saveCacheChannel)
+
+	saveDbSuccessful := <-saveDbChannel
+
+	if !saveDbSuccessful {
+		sse.PatchElementTempl(shared.FormSubmitResult("Error! Please try again later", true))
+	} else {
+		sse.PatchElementTempl(shared.FormSubmitResult(`Ticker `+ticker+` successfully added`, false))
+		sse.PatchElementTempl(components.CompaniesCount(len(companies)))
+		sse.ExecuteScript("document.getElementById('addCompanyForm').reset();", datastar.WithExecuteScriptAutoRemove(true))
+		sse.PatchElementTempl(shared.CompaniesTbodyHint("companies"))
+		sse.ExecuteScript("document.getElementById('companySearchForm').reset();", datastar.WithExecuteScriptAutoRemove(true))
+	}
+	<-saveCacheChannel
 }

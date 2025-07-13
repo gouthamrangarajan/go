@@ -40,13 +40,9 @@ templ AddCompany() {
 				data-on-submit="evt.preventDefault();$errorMessage='';@post('/companies/add',{contentType:'form'})"
 				data-signals-error-message="''"
 				data-indicator-adding-company
+				id="addCompanyForm"
 			>
-				<p
-					class=" py-1 px-3 rounded w-full font-semibold"
-					data-class="{'animate-result bg-red-200 text-red-600':$errorMessage!=''}"
-					id="results"
-					data-text="$errorMessage"
-				></p>
+				@shared.FormSubmitEmptyResult()
 				<label class="flex flex-col gap-1 w-full">
 					<span class="text-gray-700">Ticker</span>
 					<input type="text" name="ticker" class="appearance-none outline-none py-1 px-3 rounded uppercase transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 " required/>

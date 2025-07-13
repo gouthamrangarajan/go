@@ -1,0 +1,22 @@
+package shared
+
+templ FormSubmitResult(message string, isError bool) {
+	if isError {
+		<p
+			class="animate-result py-1 px-3 rounded w-full font-semibold bg-red-200 text-red-600"
+			id="results"
+		>{ message }</p>
+	} else {
+		<p
+			class="animate-result py-1 px-3 rounded w-full font-semibold bg-green-200 text-green-600"
+			id="results"
+		>{ message }</p>
+	}
+}
+
+templ FormSubmitEmptyResult() {
+	<p
+		class=" py-1 px-3 rounded w-full font-semibold"
+		id="results"
+	></p>
+}

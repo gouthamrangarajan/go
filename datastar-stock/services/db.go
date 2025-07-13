@@ -214,3 +214,45 @@ func GetAllCompanies(ctx context.Context, channel chan<- []models.CompanyFromDb)
 	}
 	channel <- companiesData.Data
 }
+
+func SetAllCompanies(ctx context.Context, data []models.CompanyFromDb, channel chan<- bool) {
+	dbData := models.CompaniesFromDb{Data: data}
+	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
+		channel <- false
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Println("Error initializing Firebase app:", appErr)
+		channel <- false
+		return
+	}
+
+	fireStore, err := app.Firestore(ctx)
+
+	if err != nil {
+		fmt.Println("Error getting Firestore client:", err)
+		channel <- false
+		return
+	}
+	defer fireStore.Close()
+	result, err := fireStore.Collection("companies").Doc("all").Set(ctx, dbData)
+
+	if err != nil {
+		fmt.Println("Error saving documents in companies:", err)
+		channel <- false
+		return
+	}
+
+	if result == nil {
+		fmt.Println("No result returned after saving documents in companies")
+		channel <- false
+		return
+	}
+	channel <- true
+}
