@@ -31,36 +31,28 @@ func LoginUI(redirect string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full h-full flex items-center justify-center\"><form method=\"post\" action=\"/login\" class=\"animate-modal py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12\" data-signals-signing-in=\"false\" data-signals-error-message=\"''\" data-attr-disabled=\"$signingIn\" data-on-submit=\"$signingIn=true;evt.preventDefault();$errorMessage='';@post('/login',{contentType:'form'})\"><p class=\"text-2xl text-primary underline underline-offset-6\">Login</p>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = loginResult().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<input type=\"hidden\" name=\"redirect\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"w-full h-full flex items-center justify-center\"><form method=\"post\" action=\"/login\" class=\"animate-modal py-2 px-4 flex flex-col gap-4 items-start justify-center rounded bg-white shadow mx-auto w-10/12 md:w-8/12 lg:w-6/12 xl:w-5/12\" data-signals-signing-in=\"false\" data-signals-error-message=\"''\" data-attr-disabled=\"$signingIn\" data-on-submit=\"$signingIn=true;evt.preventDefault();$errorMessage='';@post('/login',{contentType:'form'})\"><p class=\"text-2xl text-primary underline underline-offset-6\">Login</p><p class=\" py-1 px-3 rounded w-full font-semibold\" data-class=\"{'animate-result bg-red-200 text-red-600':$errorMessage!=''}\" id=\"results\" data-text=\"$errorMessage\"></p><input type=\"hidden\" name=\"redirect\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(redirect)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 18, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 23, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"> <label class=\"flex flex-col gap-1 w-full\"><span class=\"text-gray-700\">Email</span> <input type=\"email\" name=\"email\" class=\"appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 \" required></label> <label class=\"flex flex-col gap-1 w-full\"><span class=\"text-gray-700\">Password</span> <input type=\"password\" name=\"password\" class=\"appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50\" required></label>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <label class=\"flex flex-col gap-1 w-full\"><span class=\"text-gray-700\">Email</span> <input type=\"email\" name=\"email\" class=\"appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 \" required></label> <label class=\"flex flex-col gap-1 w-full\"><span class=\"text-gray-700\">Password</span> <input type=\"password\" name=\"password\" class=\"appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50\" required></label> <button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none w-full rounded-full py-2 px-4 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr-disabled=\"$signingIn\"><span data-show=\"!$signingIn\">Submit</span> <span data-show=\"$signingIn\">Submitting</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = buttonSubmit().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Spinner("$signingIn", "border-white").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</button></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,72 +100,6 @@ func LoginPage(redirect string) templ.Component {
 			return nil
 		})
 		templ_7745c5c3_Err = layout().Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func buttonSubmit() templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none w-full rounded-full py-2 px-4 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr-disabled=\"$signingIn\"><span data-show=\"!$signingIn\">Submit</span> <span data-show=\"$signingIn\">Submitting</span>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = shared.Spinner("$signingIn", "border-white").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</button>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func loginResult() templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var6 == nil {
-			templ_7745c5c3_Var6 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<p class=\" py-1 px-3 rounded w-full font-semibold\" data-class=\"{'animate-result bg-red-200 text-red-600':$errorMessage!=''}\" id=\"results\" data-text=\"$errorMessage\"></p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

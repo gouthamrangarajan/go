@@ -164,7 +164,15 @@ func RecentError() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"absolute top-10 right-0 flex gap-2 justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5\"><form class=\"relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 \" data-on-submit=\"evt.preventDefault()\" data-signals=\"{loading:false}\" id=\"recent_form\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5\"><button class=\"apperance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@get('/home/recent/add')\" data-indicator-loading-add-recent data-attr-disabled=\"$loadingAddRecent\"><svg data-show=\"!$loadingAddRecent\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = shared.Spinner("$loadingAddRecent", "border-white").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span class=\"hidden md:inline\">Add Watchlist</span></button><form class=\"relative bg-white transition duration-300 rounded-lg focus-within:ring-2 focus-within:ring-menu hover:opacity-80 \" data-on-submit=\"evt.preventDefault()\" id=\"recent_form\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -172,7 +180,15 @@ func RecentError() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<select name=\"newCount\" class=\"appearance-none outline-none w-full py-2 px-4 pr-6 \" data-on-change=\"$loading=true;@post('/home/recent/more',{contentType:'form'});\"><option value=\"5\">Show 5 items</option> <option value=\"10\">Show 10 items</option> <option value=\"15\">Show 15 items</option> <option value=\"20\">Show 20 items</option> <option value=\"25\">Show 25 items</option></select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"-z-10 size-5 text-slate-600 absolute top-2.5 right-1 \" data-show=\"!$loading\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg> <span data-show=\"$loading\" class=\"absolute top-2.5 right-1 animate-spin-2 w-5 h-5 border-2 border-dashed border-slate-600 rounded-full\"></span></form></div><div id=\"recents\" class=\"py-2 px-4 grid grid-cols-1 gap-2 mt-12 md:mt-2 lg:gap-4 lg:grid-cols-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<select name=\"newCount\" class=\"appearance-none outline-none w-full py-2 px-4 pr-6 \" data-indicator-fetching-recent data-on-change=\"@post('/home/recent/more',{contentType:'form'});\"><option value=\"5\">Show 5 items</option> <option value=\"10\">Show 10 items</option> <option value=\"15\">Show 15 items</option> <option value=\"20\">Show 20 items</option> <option value=\"25\">Show 25 items</option></select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"-z-10 size-5 text-slate-600 absolute top-2.5 right-1 \" data-show=\"!$fetchingRecent\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = shared.Spinner("$fetchingRecent", "border-slate-600 absolute top-2.5 right-1").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</form></div><div id=\"recents\" class=\"py-2 px-4 grid grid-cols-1 gap-2 mt-12 md:mt-2 lg:gap-4 lg:grid-cols-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -180,7 +196,7 @@ func RecentError() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -39,7 +39,15 @@ func AddCompany() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</button></div></dialog></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</button></div><form class=\"mt-6 flex flex-col gap-4 w-full\" data-on-submit=\"evt.preventDefault();$errorMessage='';@post('/companies/add',{contentType:'form'})\" data-signals-error-message=\"''\" data-indicator-adding-company><p class=\" py-1 px-3 rounded w-full font-semibold\" data-class=\"{'animate-result bg-red-200 text-red-600':$errorMessage!=''}\" id=\"results\" data-text=\"$errorMessage\"></p><label class=\"flex flex-col gap-1 w-full\"><span class=\"text-gray-700\">Ticker</span> <input type=\"text\" name=\"ticker\" class=\"appearance-none outline-none py-1 px-3 rounded uppercase transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 \" required></label> <label class=\"flex flex-col gap-1 w-full\"><span class=\"text-gray-700\">Name</span> <input type=\"text\" name=\"name\" class=\"appearance-none outline-none py-1 px-3 rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 \" required></label> <button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none w-full rounded-full py-2 px-4 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr-disabled=\"$addingCompany\"><span data-show=\"!$addingCompany\">Submit</span> <span data-show=\"$addingCompany\">Submitting</span>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Spinner("$addingCompany", "border-white").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</button></form></dialog></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

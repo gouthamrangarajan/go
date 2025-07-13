@@ -386,3 +386,15 @@ func closeAddCompanyHandler(responseWriter http.ResponseWriter, request *http.Re
 	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 	sse.RemoveElement("#overlay", datastar.WithUseViewTransitions(true))
 }
+
+func addCompanyHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	name := strings.TrimSpace(request.FormValue("name"))
+	ticker := strings.ToUpper(strings.TrimSpace(request.FormValue("ticker")))
+	sse := datastar.NewSSE(responseWriter, request)
+	if name == "" || ticker == "" {
+		sse.PatchSignals([]byte("{errorMessage:'Error! Please provide valid Name & Ticker',addingCompany:false}"))
+		return
+	}
+	sse.PatchSignals([]byte("{errorMessage:'Error! Please provide valid Name & Ticker',addingCompany:false}"))
+
+}
