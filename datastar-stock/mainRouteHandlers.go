@@ -277,23 +277,24 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 	searchTerm := strings.TrimSpace(request.FormValue("search"))
 	page := strings.TrimSpace(request.FormValue("page"))
 
-	companiesSaveCacheChannel := make(chan string)
-	defer close(companiesSaveCacheChannel)
-
-	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
-
-	if searchTerm != "" {
-		companies = filterCompaniesBySearchTerm(companies, searchTerm)
-	}
-	sse := datastar.NewSSE(responseWriter, request)
 	useViewTransition := false
 
 	// if page == "home" {
 	// 	useViewTransition = false
 	// }
-	if searchTerm == "" {
+
+	sse := datastar.NewSSE(responseWriter, request)
+	if searchTerm == "" || len(searchTerm) < 3 {
 		sse.PatchElementTempl(shared.CompaniesTbodyHint(page), datastar.WithUseViewTransitions(useViewTransition))
-	} else if len(companies) == 0 {
+		return
+	}
+
+	companiesSaveCacheChannel := make(chan string)
+	defer close(companiesSaveCacheChannel)
+
+	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
+	companies = filterCompaniesBySearchTerm(companies, searchTerm)
+	if len(companies) == 0 {
 		sse.PatchElementTempl(shared.CompaniesTbodyEmpty(page), datastar.WithUseViewTransitions(useViewTransition))
 	} else {
 		sse.PatchElementTempl(shared.CompaniesTbody(companies, page), datastar.WithUseViewTransitions(useViewTransition))
@@ -301,6 +302,7 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 	if saveCacheCalled {
 		<-companiesSaveCacheChannel
 	}
+
 }
 
 func filterCompaniesBySearchTerm(companies []models.CompanyFromDb, searchTerm string) []models.CompanyFromDb {
