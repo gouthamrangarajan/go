@@ -208,6 +208,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 		}
 		sse.PatchElementTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithModeAppend(), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(components.CurrentCountInp(newCount))
+		time.Sleep(300 * time.Millisecond) // wait for card to be available
 		for idx, tickerInRecent := range recentsToSend {
 			ticketDataHandlerWithSSE(tickerInRecent, sse)
 			if idx == 0 {
