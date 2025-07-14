@@ -288,8 +288,14 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 	// }
 
 	sse := datastar.NewSSE(responseWriter, request)
+	if page == "companies" {
+		sse.PatchElementTempl(shared.LoadMoreNoAction())
+	}
 	if searchTerm == "" || len(searchTerm) < 3 {
 		sse.PatchElementTempl(shared.CompaniesTbodyHint(page), datastar.WithUseViewTransitions(useViewTransition))
+		if page == "companies" && searchTerm == "" {
+			sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/0')"))
+		}
 		return
 	}
 
@@ -388,6 +394,35 @@ func companiesCountHandler(responseWriter http.ResponseWriter, request *http.Req
 	if saveCacheCalled {
 		<-companiesSaveCacheChannel
 	}
+}
+func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	offsetStr := strings.TrimSpace(chi.URLParam(request, "offset"))
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil || offset < 0 {
+		offset = 0
+	}
+
+	companiesSaveCacheChannel := make(chan string)
+	defer close(companiesSaveCacheChannel)
+
+	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
+
+	if offset >= len(companies) {
+		offset = len(companies) - 1
+	}
+
+	endIndex := offset + 25
+	if endIndex > len(companies) {
+		endIndex = len(companies)
+	}
+
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(shared.CompaniesTr(companies[offset:endIndex], "companies"), datastar.WithSelectorID("companies_tbody"), datastar.WithModeAppend())
+	sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/" + strconv.Itoa(endIndex) + "')"))
+	if saveCacheCalled {
+		<-companiesSaveCacheChannel
+	}
+
 }
 func addCompanyUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)

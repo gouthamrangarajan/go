@@ -42,10 +42,14 @@ templ Companies() {
 				<span class="hidden md:inline">Add Company</span>
 			</button>
 		</div>
-		<div class="w-11/12 mx-auto py-2 px-4 bg-white rounded md:py-4 md:px-6"
-			style="view-transition-name:companies-container">
+		<div
+			class="w-11/12 mx-auto py-2 px-4 bg-white rounded md:py-4 md:px-6"
+			style="view-transition-name:companies-container"
+			id="companiesContainer"
+		>
 			@shared.SearchCompanyInput("companies", "")
 			@shared.CompaniesTable(make([]models.CompanyFromDb, 0), "companies", "")
+			@shared.LoadMore("@get('/companies/all/0')")
 		</div>
 	}
 }

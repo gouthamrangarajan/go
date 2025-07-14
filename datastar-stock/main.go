@@ -34,6 +34,7 @@ func main() {
 	router.Post("/home/recent/add/close", closeAddRecentHandler)
 	router.Post("/companies/search", searchCompaniesHandler)
 	router.Get("/companies", companiesPageHandler)
+	router.Get("/companies/all/{offset}", companiesAllDataHandler)
 	router.Get("/companies/count", companiesCountHandler)
 	router.Get("/companies/add", addCompanyUIHandler)
 	router.Post("/companies/add/close", closeAddCompanyHandler)

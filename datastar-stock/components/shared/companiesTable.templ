@@ -53,45 +53,49 @@ templ CompaniesTable(companies []models.CompanyFromDb, page string, class string
 
 templ CompaniesTbody(companies []models.CompanyFromDb, page string) {
 	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
-		for idx, company := range companies {
-			{{backgroundClass:=""}}
-			if idx%2 != 0 {
-				{{backgroundClass = "bg-gray-100"}}
-			} 
-			<tr class={"animate-result "+backgroundClass} style={ "view-transition-name:company-" + ReplaceSpecialCharsInTicker(company.Ticker) }>
-				<td class="py-1 px-3  text-slate-600 break-all md:px-4 md:py-2">{ company.Ticker }</td>
-				<td class="py-1 px-3 text-slate-600 break-all md:px-4 md:py-2">{ company.Name }</td>
-				if page == "home" {
-					<td class="py-1 px-3  md:px-4 md:py-2">
-						<button
-							type="button"
-							class="appearance-none outline-none w-full rounded-lg py-1 px-3 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80 md:py-2 md:px-4"
-							data-on-click={ "@post('/home/recent/add/" + company.Ticker + "',{contentType:'form',selector:'#recent_form'})" }
-							data-indicator={ "adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
-							data-attr-disabled={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
-						>
-							<span class="hidden md:inline">Submit</span>
-							<span data-show={ "!$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }>
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-									<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"></path>
-								</svg>
-							</span>
-							@Spinner("$adding_"+ReplaceSpecialCharsInTicker(company.Ticker), "border-white")
-						</button>
-					</td>
-				}
-			</tr>
-		}
+		@CompaniesTr(companies, page)
 	</tbody>
+}
+
+templ CompaniesTr(companies []models.CompanyFromDb, page string) {
+	for idx, company := range companies {
+		{{ backgroundClass := "" }}
+		if idx%2 != 0 {
+			{{ backgroundClass = "bg-gray-100" }}
+		}
+		<tr class={ "animate-result " + backgroundClass } style={ "view-transition-name:company-" + ReplaceSpecialCharsInTicker(company.Ticker) }>
+			<td class="py-1 px-3  text-slate-600 break-all md:px-4 md:py-2">{ company.Ticker }</td>
+			<td class="py-1 px-3 text-slate-600 break-all md:px-4 md:py-2">{ company.Name }</td>
+			if page == "home" {
+				<td class="py-1 px-3  md:px-4 md:py-2">
+					<button
+						type="button"
+						class="appearance-none outline-none w-full rounded-lg py-1 px-3 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80 md:py-2 md:px-4"
+						data-on-click={ "@post('/home/recent/add/" + company.Ticker + "',{contentType:'form',selector:'#recent_form'})" }
+						data-indicator={ "adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
+						data-attr-disabled={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
+					>
+						<span class="hidden md:inline">Submit</span>
+						<span data-show={ "!$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+								<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"></path>
+							</svg>
+						</span>
+						@Spinner("$adding_"+ReplaceSpecialCharsInTicker(company.Ticker), "border-white")
+					</button>
+				</td>
+			}
+		</tr>
+	}
 }
 
 templ CompaniesTbodyEmpty(page string) {
 	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
 		<tr class="animate-result" style={ "view-transition-name:company-hint" }>
 			if page=="home" {
-				<td class="px-4 py-2 text-center text-red-600" colspan="3">No companies found...</td>
+				<td class="px-4 py-2 text-center text-red-600" colspan="3">No companies found</td>
 			} else {
-				<td class="px-4 py-2 text-center text-red-600" colspan="2">No companies found...</td>
+				<td class="px-4 py-2 text-center text-red-600" colspan="2">No companies found</td>
 			}
 		</tr>
 	</tbody>
@@ -101,9 +105,9 @@ templ CompaniesTbodyHint(page string) {
 	<tbody id="companies_tbody" style="view-transition-name:companies-tbody">
 		<tr class="animate-result" style={ "view-transition-name:company-hint" }>
 			if page=="home" {
-				<td class="px-4 py-2 text-center text-secondary" colspan="3">Search to see results...</td>
+				<td class="px-4 py-2 text-center text-secondary" colspan="3">Enter 3+ characters to search for companies</td>
 			} else {
-				<td class="px-4 py-2 text-center text-secondary" colspan="2">Search to see results...</td>
+				<td class="px-4 py-2 text-center text-secondary" colspan="2">Enter 3+ characters to search for companies</td>
 			}
 		</tr>
 	</tbody>
