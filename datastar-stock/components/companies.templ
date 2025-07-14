@@ -12,8 +12,6 @@ templ Companies() {
 		<div class="w-11/12 mx-auto flex items-center justify-between gap-2 py-2">
 			<div
 				class="py-4 px-6 rounded h-24 w-64  bg-white flex flex-col items-start gap-2"
-				data-on-load="@get('/companies/count')"
-				data-indicator-loading-companies-count
 			>
 				<div class="flex justify-between items-center text-slate-600 w-full">
 					<p class="font-semibold">Total Companies</p>
@@ -60,7 +58,7 @@ templ companiesCountLoader() {
 		style="view-transition-name:companies-count"
 		class="text-xl font-semibold text-menu flex"
 	>
-		@shared.Spinner("$loadingCompaniesCount", "border-3 border-menu w-8 h-8")
+		@shared.Spinner("", "border-2 border-menu w-7 h-7")
 	</p>
 }
 

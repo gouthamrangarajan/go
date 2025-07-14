@@ -1,8 +1,14 @@
 package shared
 
 templ Spinner(dataShowSignal string, class string) {
-	<span
-		data-show={ dataShowSignal }
-		class={ `animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + class }
-	></span>
+	if dataShowSignal == "" {
+		<span
+			class={ `animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + class }
+		></span>
+	} else {
+		<span
+			data-show={ dataShowSignal }
+			class={ `animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + class }
+		></span>
+	}
 }

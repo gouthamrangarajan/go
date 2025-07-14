@@ -2,8 +2,22 @@ package shared
 
 templ Cards(tickers []string) {
 	for _, ticker := range tickers {
-		@Card(ticker)
+		@cardNoDataLoad(ticker)
 	}
+}
+
+templ cardNoDataLoad(ticker string) {
+	<div
+		class={ " card shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
+		data-on-resize__window__throttle.500ms.trail={ "ResizeChart('chart_" + ReplaceSpecialCharsInTicker(ticker) + "')" }
+		id={ "card_" + ReplaceSpecialCharsInTicker(ticker) }
+		style={ "view-transition-name:card-" + ReplaceSpecialCharsInTicker(ticker) }
+	>
+		<h3 class="w-full text-menu text-lg font-semibold">
+			{ ticker }
+		</h3>
+		<div class="w-full h-96" id={ "chart_" + ReplaceSpecialCharsInTicker(ticker) }></div>
+	</div>
 }
 
 templ Card(ticker string) {
