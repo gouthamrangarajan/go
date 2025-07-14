@@ -413,7 +413,7 @@ func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.R
 		return
 	}
 
-	endIndex := offset + 25
+	endIndex := offset + 100
 	if endIndex > len(companies) {
 		endIndex = len(companies)
 	}
