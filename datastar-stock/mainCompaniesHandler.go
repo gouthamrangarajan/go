@@ -7,6 +7,7 @@ import (
 	"datastar-stock/models"
 	"datastar-stock/services"
 	"net/http"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -101,6 +102,12 @@ func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.R
 		offset = 0
 	}
 
+	limitStr := os.Getenv("COMPANIES_LIMIT")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		limit = 100 // default limit
+	}
+
 	companiesSaveCacheChannel := make(chan string)
 	defer close(companiesSaveCacheChannel)
 
@@ -114,7 +121,7 @@ func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.R
 		sse.PatchElementTempl(components.CompaniesCount(len(companies)), datastar.WithUseViewTransitions(true))
 	}
 
-	endIndex := offset + 100
+	endIndex := offset + limit
 	if endIndex > len(companies) {
 		endIndex = len(companies)
 	}
