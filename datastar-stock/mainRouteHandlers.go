@@ -407,8 +407,10 @@ func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.R
 
 	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
 
+	sse := datastar.NewSSE(responseWriter, request)
 	if offset >= len(companies) {
-		offset = len(companies) - 1
+		sse.PatchElementTempl(shared.LoadMoreNoAction())
+		return
 	}
 
 	endIndex := offset + 25
@@ -416,7 +418,6 @@ func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.R
 		endIndex = len(companies)
 	}
 
-	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchElementTempl(shared.CompaniesTr(companies[offset:endIndex], "companies"), datastar.WithSelectorID("companies_tbody"), datastar.WithModeAppend())
 	sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/" + strconv.Itoa(endIndex) + "')"))
 	if saveCacheCalled {
