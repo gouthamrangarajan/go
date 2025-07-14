@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"datastar-stock/components"
 	"datastar-stock/services"
 
 	"github.com/go-chi/chi/v5"
@@ -23,13 +22,11 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Compress(5))
 	router.Use(services.LoggedInMiddleware)
-	router.Get("/", func(responseWriter http.ResponseWriter, request *http.Request) {
-		component := components.Landing()
-		component.Render(request.Context(), responseWriter)
-	})
+
+	router.Get("/", landingPageHandler)
 	router.Post("/login", loginHandler)
-	router.Get("/home/populars", popularsDataHandler)
-	router.Get("/home/recent", recentDataHandler)
+	router.Get("/home/populars", popularsPageHandler)
+	router.Get("/home/recent", recentPageHandler)
 	router.Get("/data/{ticker}", tickerDataHandler)
 	router.Post("/home/recent/more", recentDataHandlerWithCount)
 	router.Get("/home/recent/add", addRecentUIHandler)

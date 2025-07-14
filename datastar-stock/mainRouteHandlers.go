@@ -17,6 +17,10 @@ import (
 	"github.com/starfederation/datastar/sdk/go/datastar"
 )
 
+func landingPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	component := components.Landing()
+	component.Render(request.Context(), responseWriter)
+}
 func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	email := strings.TrimSpace(request.FormValue("email"))
 	password := request.FormValue("password")
@@ -154,7 +158,7 @@ func getEchartData(data []models.CacheData, channel chan<- models.EChartData) {
 	channel <- eChartData
 }
 
-func popularsDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func popularsPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	popularsChannel := make(chan models.PopularsFromDb)
 	defer close(popularsChannel)
 	go services.GetPopulars(request.Context(), popularsChannel)
@@ -167,7 +171,7 @@ func popularsDataHandler(responseWriter http.ResponseWriter, request *http.Reque
 
 }
 
-func recentDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func recentPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	recentsChannel := make(chan []models.RecentFromDb)
 	defer close(recentsChannel)
 	go services.GetRecent(request.Context(), recentsChannel)
