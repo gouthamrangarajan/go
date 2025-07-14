@@ -58,7 +58,7 @@ func SearchCompanyInput(page string, class string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" id=\"companySearchForm\"><input type=\"text\" name=\"search\" class=\"appearance-none outline-none w-full placeholder:text-slate-400\" placeholder=\"Ticker or Company Name\" data-indicator-searching-company data-on-input__debounce.1s=\"@post('/companies/search', {contentType:'form'})\"> <input type=\"hidden\" name=\"page\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" id=\"companySearchForm\"><input type=\"text\" name=\"search\" class=\"appearance-none outline-none w-full placeholder:text-slate-400\" placeholder=\"Ticker or Company Name\" data-indicator-searching-company data-on-input__debounce.300ms=\"@post('/companies/search', {contentType:'form'})\"> <input type=\"hidden\" name=\"page\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

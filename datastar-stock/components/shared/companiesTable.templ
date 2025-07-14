@@ -22,7 +22,7 @@ templ SearchCompanyInput(page string, class string) {
 			class="appearance-none outline-none w-full placeholder:text-slate-400"
 			placeholder="Ticker or Company Name"
 			data-indicator-searching-company
-			data-on-input__debounce.1s="@post('/companies/search', {contentType:'form'})"
+			data-on-input__debounce.300ms="@post('/companies/search', {contentType:'form'})"
 		/>
 		<input type="hidden" name="page" value={ page }/>
 		@Spinner("$searchingCompany", "border-slate-600")
