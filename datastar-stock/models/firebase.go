@@ -32,7 +32,9 @@ type SignInResponse struct {
 }
 
 type PopularsFromDb struct {
-	Data []string `firestore:"data"`
+	Data   []string  `firestore:"data"`
+	Date   time.Time `firestore:"date"`
+	UserId string    `firestore:"user"`
 }
 
 type RecentFromDb struct {

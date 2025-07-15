@@ -4,13 +4,27 @@ import "datastar-stock/components/shared"
 import "strings"
 
 templ Populars(tickers []string) {
-	{{ tickersForRequest := strings.Join(tickers, "||") }}
 	@home("populars") {
+		@PopularsContainers(tickers, true)
+	}
+}
+
+templ PopularsContainers(tickers []string, loadData bool) {
+	{{ tickersForRequest := strings.Join(tickers, "||") }}
+	if loadData {
 		<div
 			class="py-2 px-4 grid grid-cols-1 gap-2 mt-2 lg:gap-4 lg:grid-cols-2"
 			data-on-load={ "@get('/data/multiple/" + tickersForRequest + "')" }
+			id="populars"
 		>
-			@shared.Cards(tickers)
+			@shared.Cards(tickers, "populars")
+		</div>
+	} else {
+		<div
+			class="py-2 px-4 grid grid-cols-1 gap-2 mt-2 lg:gap-4 lg:grid-cols-2"
+			id="populars"
+		>
+			@shared.Cards(tickers, "populars")
 		</div>
 	}
 }

@@ -72,6 +72,47 @@ func GetPopulars(ctx context.Context, channel chan<- models.PopularsFromDb) {
 	}
 	channel <- populars
 }
+func SetPopulars(ctx context.Context, populars models.PopularsFromDb, channel chan<- bool) {
+	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
+		channel <- false
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Println("Error initializing Firebase app:", appErr)
+		channel <- false
+		return
+	}
+
+	fireStore, err := app.Firestore(ctx)
+
+	if err != nil {
+		fmt.Println("Error getting Firestore client:", err)
+		channel <- false
+		return
+	}
+	defer fireStore.Close()
+
+	populars.Date = time.Now()
+	populars.UserId = ctx.Value(UserIDKey).(string)
+	result, err := fireStore.Collection("populars").Doc("tickers").Set(ctx, populars)
+	if err != nil {
+		fmt.Println("Error setting document in populars:", err)
+		channel <- false
+		return
+	}
+	if result == nil {
+		fmt.Println("No result returned after saving documents in populars")
+		channel <- false
+		return
+	}
+	channel <- true
+}
 
 func GetRecent(ctx context.Context, channel chan<- []models.RecentFromDb) {
 	recents := []models.RecentFromDb{}
@@ -128,7 +169,6 @@ func GetRecent(ctx context.Context, channel chan<- []models.RecentFromDb) {
 }
 
 func AddRecent(ctx context.Context, ticker string, channel chan<- bool) {
-
 	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
 	if firebaseConfigErr != nil {
 		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)

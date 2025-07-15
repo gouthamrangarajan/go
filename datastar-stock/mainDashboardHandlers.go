@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"datastar-stock/components"
 	"datastar-stock/components/shared"
 	"datastar-stock/models"
 	"datastar-stock/services"
+	"fmt"
 	"net/http"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -130,20 +133,58 @@ func getEchartData(data []models.CacheData, channel chan<- models.EChartData) {
 	}
 	channel <- eChartData
 }
-
-func popularsPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func getPopulars(ctx context.Context) models.PopularsFromDb {
 	popularsChannel := make(chan models.PopularsFromDb)
 	defer close(popularsChannel)
-	go services.GetPopulars(request.Context(), popularsChannel)
+	go services.GetPopulars(ctx, popularsChannel)
 	populars := <-popularsChannel
+	return populars
+}
+func popularsPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	populars := getPopulars(request.Context())
 	component := components.PopularsError()
 	if len(populars.Data) > 0 {
 		component = components.Populars(populars.Data)
 	}
 	component.Render(request.Context(), responseWriter)
-
 }
-
+func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	ticker := strings.TrimSpace(chi.URLParam(request, "ticker"))
+	incrementDecrementIndicator := strings.TrimSpace(chi.URLParam(request, "incrementDecrementIndicator"))
+	if ticker == "" || (incrementDecrementIndicator != "increase" && incrementDecrementIndicator != "decrease") {
+		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+		return
+	}
+	populars := getPopulars(request.Context())
+	idx := slices.Index(populars.Data, ticker)
+	if idx == -1 {
+		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+		return
+	}
+	if incrementDecrementIndicator == "increase" {
+		if idx == 0 {
+			http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+			return
+		}
+		populars.Data[idx], populars.Data[idx-1] = populars.Data[idx-1], populars.Data[idx]
+	} else {
+		if idx == len(populars.Data)-1 {
+			http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+			return
+		}
+		populars.Data[idx], populars.Data[idx+1] = populars.Data[idx+1], populars.Data[idx]
+	}
+	fmt.Println(populars.Data)
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(components.PopularsContainers(populars.Data, false), datastar.WithUseViewTransitions(true))
+	saveChannel := make(chan bool)
+	go services.SetPopulars(request.Context(), populars, saveChannel)
+	time.Sleep(300 * time.Millisecond) // wait for cards to be available
+	for _, tickerInPopulars := range populars.Data {
+		ticketDataHandlerWithSSE(tickerInPopulars, sse)
+	}
+	<-saveChannel
+}
 func recentPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	recentsChannel := make(chan []models.RecentFromDb)
 	defer close(recentsChannel)
@@ -206,9 +247,9 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 			recentsToSend = append(recentsToSend, strings.TrimSpace(item.Ticker))
 			recentsToSendIndex++
 		}
-		sse.PatchElementTempl(shared.Cards(recentsToSend), datastar.WithSelectorID("recents"), datastar.WithModeAppend(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(shared.Cards(recentsToSend, "recent"), datastar.WithSelectorID("recents"), datastar.WithModeAppend(), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(components.CurrentCountInp(newCount))
-		time.Sleep(300 * time.Millisecond) // wait for card to be available
+		time.Sleep(300 * time.Millisecond) // wait for cards to be available
 		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0])+`')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});`, datastar.WithExecuteScriptAutoRemove(true))
 		for _, tickerInRecent := range recentsToSend {
 			ticketDataHandlerWithSSE(tickerInRecent, sse)

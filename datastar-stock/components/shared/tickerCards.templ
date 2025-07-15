@@ -1,21 +1,28 @@
 package shared
 
-templ Cards(tickers []string) {
-	for _, ticker := range tickers {
-		@cardNoDataLoad(ticker)
+import "strconv"
+
+templ Cards(tickers []string, page string) {
+	for idx, ticker := range tickers {
+		@cardNoDataLoad(idx, ticker, page, len(tickers))
 	}
 }
 
-templ cardNoDataLoad(ticker string) {
+templ cardNoDataLoad(index int, ticker string, page string, totalNoOfTickers int) {
 	<div
 		class={ " card shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
 		data-on-resize__window__throttle.500ms.trail={ "ResizeChart('chart_" + ReplaceSpecialCharsInTicker(ticker) + "')" }
 		id={ "card_" + ReplaceSpecialCharsInTicker(ticker) }
 		style={ "view-transition-name:card-" + ReplaceSpecialCharsInTicker(ticker) }
 	>
-		<h3 class="w-full text-menu text-lg font-semibold">
-			{ ticker }
-		</h3>
+		<div class="flex gap-2 items-center w-full">
+			if page == "populars" {
+				@tickerSequenceChanger(index, ticker, totalNoOfTickers)
+			}
+			<h3 class=" text-menu text-lg font-semibold">
+				{ ticker }
+			</h3>
+		</div>
 		<div class="w-full h-96" id={ "chart_" + ReplaceSpecialCharsInTicker(ticker) }></div>
 	</div>
 }
@@ -28,10 +35,34 @@ templ Card(ticker string) {
 		id={ "card_" + ReplaceSpecialCharsInTicker(ticker) }
 		style={ "view-transition-name:card-" + ReplaceSpecialCharsInTicker(ticker) }
 	>
-		<h3 class="w-full text-menu text-lg font-semibold">
+		<h3 class=" text-menu text-lg font-semibold">
 			{ ticker }
 		</h3>
 		<div class="w-full h-96" id={ "chart_" + ReplaceSpecialCharsInTicker(ticker) }></div>
+	</div>
+}
+
+templ tickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
+	<div class="flex flex-col items-center">
+		<button
+			class="apperance-none outline-none cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-80"
+			data-attr-disabled={ strconv.Itoa(index) + "==0" }
+			data-on-click={ strconv.Itoa(index) + "!=0 && @post('/home/populars/priority/increase/" + ticker + "')" }
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+				<path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd"></path>
+			</svg>
+		</button>
+		<p class=" text-slate-700">#{ strconv.Itoa(index+1) }</p>
+		<button
+			class="apperance-none outline-none cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-80"
+			data-attr-disabled={ strconv.Itoa(index+1) + "==" + strconv.Itoa(totalNoOfTickers) }
+			data-on-click={ strconv.Itoa(index+1) + "!=" + strconv.Itoa(totalNoOfTickers) + " && @post('/home/populars/priority/decrease/" + ticker + "')" }
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+				<path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z" clip-rule="evenodd"></path>
+			</svg>
+		</button>
 	</div>
 }
 

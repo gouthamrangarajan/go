@@ -26,6 +26,7 @@ func main() {
 	router.Get("/", landingPageHandler)
 	router.Post("/login", loginHandler)
 	router.Get("/home/populars", popularsPageHandler)
+	router.Post("/home/populars/priority/{incrementDecrementIndicator}/{ticker}", popularsPriorityIncrementDecrementHandler)
 	router.Get("/home/recent", recentPageHandler)
 	router.Get("/data/{ticker}", tickerDataHandler)
 	router.Get("/data/multiple/{tickers}", multipleTickerDataHandler)

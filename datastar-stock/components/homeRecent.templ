@@ -62,7 +62,7 @@ templ Recent(tickers []string) {
 			class="py-2 px-4 grid grid-cols-1 gap-2 mt-12 md:mt-2 lg:gap-4 lg:grid-cols-2"
 			data-on-load={ "@get('/data/multiple/" + tickersForRequest + "')" }
 		>
-			@shared.Cards(tickers)
+			@shared.Cards(tickers, "recent")
 		</div>
 	}
 }
