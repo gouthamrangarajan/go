@@ -65,7 +65,7 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 	if page == "companies" {
 		sse.PatchElementTempl(shared.LoadMoreNoAction())
 	}
-	if searchTerm != "" && len(searchTerm) < 3 {
+	if len(searchTerm) < 3 && !(page == "companies" && searchTerm == "") {
 		sse.PatchElementTempl(shared.CompaniesTbodyHint(page), datastar.WithUseViewTransitions(useViewTransition))
 		return
 	}
