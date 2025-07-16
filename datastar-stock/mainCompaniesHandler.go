@@ -51,11 +51,8 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 	if page == "companies" {
 		sse.PatchElementTempl(shared.LoadMoreNoAction())
 	}
-	if searchTerm == "" || len(searchTerm) < 3 {
+	if searchTerm != "" && len(searchTerm) < 3 {
 		sse.PatchElementTempl(shared.CompaniesTbodyHint(page), datastar.WithUseViewTransitions(useViewTransition))
-		if page == "companies" && searchTerm == "" {
-			sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/0')"))
-		}
 		return
 	}
 
@@ -63,11 +60,25 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 	defer close(companiesSaveCacheChannel)
 
 	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
-	companies = filterCompaniesBySearchTerm(companies, searchTerm)
-	if len(companies) == 0 {
-		sse.PatchElementTempl(shared.CompaniesTbodyEmpty(page), datastar.WithUseViewTransitions(useViewTransition))
+	if page == "companies" && searchTerm == "" {
+		limitStr := os.Getenv("COMPANIES_LIMIT")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit <= 0 {
+			limit = 100 // default limit
+		}
+		endIndex := 0 + limit
+		if endIndex > len(companies) {
+			endIndex = len(companies)
+		}
+		sse.PatchElementTempl(shared.CompaniesTr(companies[0:endIndex], "companies"), datastar.WithSelectorID("companies_tbody"), datastar.WithModeAppend())
+		sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/" + strconv.Itoa(endIndex) + "')"))
 	} else {
-		sse.PatchElementTempl(shared.CompaniesTbody(companies, page), datastar.WithUseViewTransitions(useViewTransition))
+		companies = filterCompaniesBySearchTerm(companies, searchTerm)
+		if len(companies) == 0 {
+			sse.PatchElementTempl(shared.CompaniesTbodyEmpty(page), datastar.WithUseViewTransitions(useViewTransition))
+		} else {
+			sse.PatchElementTempl(shared.CompaniesTbody(companies, page), datastar.WithUseViewTransitions(useViewTransition))
+		}
 	}
 	if saveCacheCalled {
 		<-companiesSaveCacheChannel
@@ -95,6 +106,7 @@ func companiesPageHandler(responseWriter http.ResponseWriter, request *http.Requ
 	component := components.Companies()
 	component.Render(request.Context(), responseWriter)
 }
+
 func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	offsetStr := strings.TrimSpace(chi.URLParam(request, "offset"))
 	offset, err := strconv.Atoi(offsetStr)
@@ -194,7 +206,18 @@ func addCompanyHandler(responseWriter http.ResponseWriter, request *http.Request
 		sse.ExecuteScript("document.getElementById('addCompanyForm')?.reset();", datastar.WithExecuteScriptAutoRemove(true))
 		sse.PatchElementTempl(shared.CompaniesTbodyHint("companies"))
 		sse.ExecuteScript("document.getElementById('companySearchForm')?.reset();", datastar.WithExecuteScriptAutoRemove(true))
-		sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/0')"))
+
+		limitStr := os.Getenv("COMPANIES_LIMIT")
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil || limit <= 0 {
+			limit = 100 // default limit
+		}
+		endIndex := 0 + limit
+		if endIndex > len(companies) {
+			endIndex = len(companies)
+		}
+		sse.PatchElementTempl(shared.CompaniesTr(companies[0:endIndex], "companies"), datastar.WithSelectorID("companies_tbody"), datastar.WithModeAppend())
+		sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/" + strconv.Itoa(endIndex) + "')"))
 	}
 	<-saveCacheChannel
 }
