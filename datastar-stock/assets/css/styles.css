@@ -285,6 +285,9 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
+  .h-3 {
+    height: calc(var(--spacing) * 3);
+  }
   .h-5 {
     height: calc(var(--spacing) * 5);
   }
@@ -308,6 +311,9 @@
   }
   .w-1\/4 {
     width: calc(1/4 * 100%);
+  }
+  .w-3 {
+    width: calc(var(--spacing) * 3);
   }
   .w-3\/4 {
     width: calc(3/4 * 100%);
@@ -421,6 +427,9 @@
   }
   .border-red-600 {
     border-color: var(--color-red-600);
+  }
+  .border-secondary {
+    border-color: var(--color-secondary);
   }
   .border-slate-600 {
     border-color: var(--color-slate-600);

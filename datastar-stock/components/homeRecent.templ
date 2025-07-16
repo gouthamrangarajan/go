@@ -2,10 +2,16 @@ package components
 
 import (
 	"datastar-stock/components/shared"
+	"datastar-stock/models"
 	"strings"
 )
 
-templ Recent(tickers []string) {
+templ Recent(items []models.TickerCard) {
+	{{ tickers := make([]string, len(items)) }}
+	{{for idx, item := range items {
+	tickers[idx] = item.Ticker
+}
+	}}
 	{{ tickersForRequest := strings.Join(tickers, "||") }}
 	@home("recent") {
 		<div class="absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5">
@@ -62,7 +68,7 @@ templ Recent(tickers []string) {
 			class="py-2 px-4 grid grid-cols-1 gap-2 mt-12 md:mt-2 lg:gap-4 lg:grid-cols-2"
 			data-on-load={ "@get('/data/multiple/" + tickersForRequest + "')" }
 		>
-			@shared.Cards(tickers, "recent")
+			@shared.Cards(items, "recent")
 		</div>
 	}
 }

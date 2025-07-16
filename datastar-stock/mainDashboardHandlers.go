@@ -144,7 +144,14 @@ func popularsPageHandler(responseWriter http.ResponseWriter, request *http.Reque
 	populars := getPopulars(request.Context())
 	component := components.PopularsError()
 	if len(populars.Data) > 0 {
-		component = components.Populars(populars.Data)
+		cardList := make([]models.TickerCard, len(populars.Data))
+		for idx, ticker := range populars.Data {
+			cardList[idx] = models.TickerCard{
+				Ticker: ticker,
+				Name:   "",
+			}
+		}
+		component = components.Populars(cardList)
 	}
 	component.Render(request.Context(), responseWriter)
 }
@@ -176,7 +183,14 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 	}
 	fmt.Println(populars.Data)
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.PatchElementTempl(components.PopularsContainers(populars.Data, false), datastar.WithUseViewTransitions(true))
+	cardList := make([]models.TickerCard, len(populars.Data))
+	for idx, ticker := range populars.Data {
+		cardList[idx] = models.TickerCard{
+			Ticker: ticker,
+			Name:   "",
+		}
+	}
+	sse.PatchElementTempl(components.PopularsContainers(cardList, false), datastar.WithUseViewTransitions(true))
 	saveChannel := make(chan bool)
 	go services.SetPopulars(request.Context(), populars, saveChannel)
 	time.Sleep(300 * time.Millisecond) // wait for cards to be available
@@ -191,17 +205,16 @@ func recentPageHandler(responseWriter http.ResponseWriter, request *http.Request
 	go services.GetRecent(request.Context(), recentsChannel)
 	recents := <-recentsChannel
 
-	recentsToSend := []string{}
+	recentsToSend := []models.TickerCard{}
 	for idx, item := range recents {
 		if idx > 4 {
 			break
 		}
-		recentsToSend = append(recentsToSend, strings.TrimSpace(item.Ticker))
+		recentsToSend = append(recentsToSend, models.TickerCard{Ticker: strings.TrimSpace(item.Ticker), Name: strings.TrimSpace(item.Name)})
 	}
 	component := components.RecentError()
 	if len(recentsToSend) > 0 {
 		component = components.Recent(recentsToSend)
-
 	}
 	component.Render(request.Context(), responseWriter)
 }
@@ -235,7 +248,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 		return
 	}
 	if numberOfItemsToSend > 0 {
-		recentsToSend := []string{}
+		recentsToSend := []models.TickerCard{}
 		recentsToSendIndex := 0
 		for idx, item := range recents {
 			if idx >= newCount {
@@ -244,15 +257,15 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 				continue
 			}
 
-			recentsToSend = append(recentsToSend, strings.TrimSpace(item.Ticker))
+			recentsToSend = append(recentsToSend, models.TickerCard{Ticker: strings.TrimSpace(item.Ticker), Name: strings.TrimSpace(item.Name)})
 			recentsToSendIndex++
 		}
 		sse.PatchElementTempl(shared.Cards(recentsToSend, "recent"), datastar.WithSelectorID("recents"), datastar.WithModeAppend(), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(components.CurrentCountInp(newCount))
 		time.Sleep(300 * time.Millisecond) // wait for cards to be available
-		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0])+`')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});`, datastar.WithExecuteScriptAutoRemove(true))
+		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0].Ticker)+`')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});`, datastar.WithExecuteScriptAutoRemove(true))
 		for _, tickerInRecent := range recentsToSend {
-			ticketDataHandlerWithSSE(tickerInRecent, sse)
+			ticketDataHandlerWithSSE(tickerInRecent.Ticker, sse)
 		}
 	} else {
 		for idx := range currentCount - newCount {
@@ -283,9 +296,14 @@ func closeAddRecentHandler(responseWriter http.ResponseWriter, request *http.Req
 
 func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	ticker := strings.TrimSpace(chi.URLParam(request, "ticker"))
+	company := strings.TrimSpace(chi.URLParam(request, "company"))
 	if ticker == "" {
 		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
+	}
+	if company != "" {
+		replacer := strings.NewReplacer("||", "/")
+		company = replacer.Replace(company)
 	}
 
 	currentCountStr := strings.TrimSpace(request.FormValue("currentCount"))
@@ -311,7 +329,7 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 
 	addRecentToDbChannel := make(chan bool)
 	defer close(addRecentToDbChannel)
-	go services.AddRecent(request.Context(), ticker, addRecentToDbChannel)
+	go services.AddRecent(request.Context(), ticker, company, addRecentToDbChannel)
 
 	sse := datastar.NewSSE(responseWriter, request)
 	if recentAlreadyContainsTicker {
@@ -319,6 +337,6 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 	} else {
 		sse.RemoveElement("#card_" + shared.ReplaceSpecialCharsInTicker(recentWithCurrentCount[len(recentWithCurrentCount)-1].Ticker))
 	}
-	sse.PatchElementTempl(shared.Card(ticker), datastar.WithSelector(".card:first-child"), datastar.WithModeBefore())
+	sse.PatchElementTempl(shared.Card(models.TickerCard{Ticker: ticker, Name: company}), datastar.WithSelector(".card:first-child"), datastar.WithModeBefore())
 	<-addRecentToDbChannel
 }

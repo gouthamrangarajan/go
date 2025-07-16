@@ -41,6 +41,7 @@ type RecentFromDb struct {
 	Ticker string    `firestore:"ticker"`
 	Date   time.Time `firestore:"date"`
 	UserId string    `firestore:"user"`
+	Name   string    `firestore:"name"`
 }
 
 type CompanyFromDb struct {

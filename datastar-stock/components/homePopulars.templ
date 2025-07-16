@@ -2,14 +2,20 @@ package components
 
 import "datastar-stock/components/shared"
 import "strings"
+import "datastar-stock/models"
 
-templ Populars(tickers []string) {
+templ Populars(items []models.TickerCard) {
 	@home("populars") {
-		@PopularsContainers(tickers, true)
+		@PopularsContainers(items, true)
 	}
 }
 
-templ PopularsContainers(tickers []string, loadData bool) {
+templ PopularsContainers(items []models.TickerCard, loadData bool) {
+	{{ tickers := make([]string, len(items)) }}
+	{{for idx, item := range items {
+	tickers[idx] = item.Ticker
+}
+	}}
 	{{ tickersForRequest := strings.Join(tickers, "||") }}
 	if loadData {
 		<div
@@ -17,14 +23,14 @@ templ PopularsContainers(tickers []string, loadData bool) {
 			data-on-load={ "@get('/data/multiple/" + tickersForRequest + "')" }
 			id="populars"
 		>
-			@shared.Cards(tickers, "populars")
+			@shared.Cards(items, "populars")
 		</div>
 	} else {
 		<div
 			class="py-2 px-4 grid grid-cols-1 gap-2 mt-2 lg:gap-4 lg:grid-cols-2"
 			id="populars"
 		>
-			@shared.Cards(tickers, "populars")
+			@shared.Cards(items, "populars")
 		</div>
 	}
 }

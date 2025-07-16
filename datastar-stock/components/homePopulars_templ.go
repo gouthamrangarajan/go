@@ -10,8 +10,9 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "datastar-stock/components/shared"
 import "strings"
+import "datastar-stock/models"
 
-func Populars(tickers []string) templ.Component {
+func Populars(items []models.TickerCard) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -44,7 +45,7 @@ func Populars(tickers []string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = PopularsContainers(tickers, true).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = PopularsContainers(items, true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -58,7 +59,7 @@ func Populars(tickers []string) templ.Component {
 	})
 }
 
-func PopularsContainers(tickers []string, loadData bool) templ.Component {
+func PopularsContainers(items []models.TickerCard, loadData bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -79,6 +80,10 @@ func PopularsContainers(tickers []string, loadData bool) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		tickers := make([]string, len(items))
+		for idx, item := range items {
+			tickers[idx] = item.Ticker
+		}
 		tickersForRequest := strings.Join(tickers, "||")
 		if loadData {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"py-2 px-4 grid grid-cols-1 gap-2 mt-2 lg:gap-4 lg:grid-cols-2\" data-on-load=\"")
@@ -88,7 +93,7 @@ func PopularsContainers(tickers []string, loadData bool) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("@get('/data/multiple/" + tickersForRequest + "')")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopulars.templ`, Line: 17, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopulars.templ`, Line: 23, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -98,7 +103,7 @@ func PopularsContainers(tickers []string, loadData bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.Cards(tickers, "populars").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.Cards(items, "populars").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -111,7 +116,7 @@ func PopularsContainers(tickers []string, loadData bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.Cards(tickers, "populars").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.Cards(items, "populars").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

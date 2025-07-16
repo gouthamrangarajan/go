@@ -32,7 +32,7 @@ func main() {
 	router.Get("/data/multiple/{tickers}", multipleTickerDataHandler)
 	router.Post("/home/recent/more", recentDataHandlerWithCount)
 	router.Get("/home/recent/add", addRecentUIHandler)
-	router.Post("/home/recent/add/{ticker}", addRecentTickerHandler)
+	router.Post("/home/recent/add/{ticker}/{company}", addRecentTickerHandler)
 	router.Post("/home/recent/add/close", closeAddRecentHandler)
 	router.Post("/companies/search", searchCompaniesHandler)
 	router.Get("/companies", companiesPageHandler)
