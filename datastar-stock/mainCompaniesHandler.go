@@ -37,6 +37,19 @@ func getAllCompanies(ctx context.Context, companiesSaveCacheChannel chan string)
 	}
 	return companies, saveCacheCalled
 }
+func sseZeroOffsetCompaniesList(sse *datastar.ServerSentEventGenerator, companies []models.CompanyFromDb) {
+	limitStr := os.Getenv("COMPANIES_LIMIT")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		limit = 100 // default limit
+	}
+	endIndex := 0 + limit
+	if endIndex > len(companies) {
+		endIndex = len(companies)
+	}
+	sse.PatchElementTempl(shared.CompaniesTr(companies[0:endIndex], "companies"), datastar.WithSelectorID("companies_tbody"), datastar.WithModeAppend())
+	sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/" + strconv.Itoa(endIndex) + "')"))
+}
 func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	searchTerm := strings.TrimSpace(request.FormValue("search"))
 	page := strings.TrimSpace(request.FormValue("page"))
@@ -61,17 +74,7 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 
 	companies, saveCacheCalled := getAllCompanies(request.Context(), companiesSaveCacheChannel)
 	if page == "companies" && searchTerm == "" {
-		limitStr := os.Getenv("COMPANIES_LIMIT")
-		limit, err := strconv.Atoi(limitStr)
-		if err != nil || limit <= 0 {
-			limit = 100 // default limit
-		}
-		endIndex := 0 + limit
-		if endIndex > len(companies) {
-			endIndex = len(companies)
-		}
-		sse.PatchElementTempl(shared.CompaniesTr(companies[0:endIndex], "companies"), datastar.WithSelectorID("companies_tbody"), datastar.WithModeAppend())
-		sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/" + strconv.Itoa(endIndex) + "')"))
+		sseZeroOffsetCompaniesList(sse, companies)
 	} else {
 		companies = filterCompaniesBySearchTerm(companies, searchTerm)
 		if len(companies) == 0 {
@@ -207,17 +210,7 @@ func addCompanyHandler(responseWriter http.ResponseWriter, request *http.Request
 		sse.PatchElementTempl(shared.CompaniesTbodyHint("companies"))
 		sse.ExecuteScript("document.getElementById('companySearchForm')?.reset();", datastar.WithExecuteScriptAutoRemove(true))
 
-		limitStr := os.Getenv("COMPANIES_LIMIT")
-		limit, err := strconv.Atoi(limitStr)
-		if err != nil || limit <= 0 {
-			limit = 100 // default limit
-		}
-		endIndex := 0 + limit
-		if endIndex > len(companies) {
-			endIndex = len(companies)
-		}
-		sse.PatchElementTempl(shared.CompaniesTr(companies[0:endIndex], "companies"), datastar.WithSelectorID("companies_tbody"), datastar.WithModeAppend())
-		sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/" + strconv.Itoa(endIndex) + "')"))
+		sseZeroOffsetCompaniesList(sse, companies)
 	}
 	<-saveCacheChannel
 }
