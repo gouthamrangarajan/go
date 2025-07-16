@@ -118,7 +118,7 @@ func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.R
 		sse.PatchElementTempl(shared.LoadMoreNoAction())
 		return
 	} else if offset == 0 {
-		sse.PatchElementTempl(components.CompaniesCount(len(companies)), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.CompaniesCount(len(companies)))
 	}
 
 	endIndex := offset + limit
@@ -194,6 +194,7 @@ func addCompanyHandler(responseWriter http.ResponseWriter, request *http.Request
 		sse.ExecuteScript("document.getElementById('addCompanyForm')?.reset();", datastar.WithExecuteScriptAutoRemove(true))
 		sse.PatchElementTempl(shared.CompaniesTbodyHint("companies"))
 		sse.ExecuteScript("document.getElementById('companySearchForm')?.reset();", datastar.WithExecuteScriptAutoRemove(true))
+		sse.PatchElementTempl(shared.LoadMore("@get('/companies/all/0')"))
 	}
 	<-saveCacheChannel
 }
