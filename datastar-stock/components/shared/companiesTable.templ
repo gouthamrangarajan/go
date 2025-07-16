@@ -10,10 +10,15 @@ func ReplaceSpecialCharsInTicker(ticker string) string {
 	replacer := strings.NewReplacer(".", "", "-", "", " ", "")
 	return replacer.Replace(ticker)
 }
-func replaceForwardSlash(name string) string {
+func replaceSpecialCharsInName(name string) string {
 	// Replace forward slashes in name with empty string
-	replacer := strings.NewReplacer("/", "||")
-	return replacer.Replace(name)
+	replacer1 := strings.NewReplacer("/", "||")
+	replaced := replacer1.Replace(name)
+	replacer2 := strings.NewReplacer("$", "|||") //e.g ALP.P.Q
+	replaced = replacer2.Replace(replaced)
+	replacer3 := strings.NewReplacer("%", "||||") //e.g ALP.P.Q
+	replaced = replacer3.Replace(replaced)
+	return replaced
 }
 
 templ SearchCompanyInput(page string, class string) {
@@ -76,7 +81,7 @@ templ CompaniesTr(companies []models.CompanyFromDb, page string) {
 					<button
 						type="button"
 						class="appearance-none outline-none w-full rounded-lg py-1 px-3 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80 md:py-2 md:px-4"
-						data-on-click={ "@post('/home/recent/add/" + company.Ticker + "/" + replaceForwardSlash(company.Name) + "',{contentType:'form',selector:'#recent_form'})" }
+						data-on-click={ "@post('/home/recent/add/" + company.Ticker + "/" + replaceSpecialCharsInName(company.Name) + "',{contentType:'form',selector:'#recent_form'})" }
 						data-indicator={ "adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
 						data-attr-disabled={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
 					>

@@ -57,7 +57,7 @@ func home(location string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 = []any{"appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4 " + popularsClass}
+			var templ_7745c5c3_Var3 = []any{"appearance-none outline-none cursor-pointer py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4 " + popularsClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -79,7 +79,7 @@ func home(location string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 = []any{"appearance-none outline-none py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4 " + recentClass}
+			var templ_7745c5c3_Var5 = []any{"appearance-none outline-none cursor-pointer py-1 px-3 transition duration-300 rounded-lg text-lg bg-white focus:ring-2 focus:ring-menu hover:opacity-80 md:py-2 md:px-4 " + recentClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

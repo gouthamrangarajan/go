@@ -32,7 +32,7 @@ func getAllCompanies(ctx context.Context, companiesSaveCacheChannel chan string)
 		go services.GetAllCompanies(ctx, companiesChannel)
 		companies = <-companiesChannel
 
-		go services.SetCachedCompaniesData(companies, companiesSaveCacheChannel)
+		go services.SetCacheCompaniesData(companies, companiesSaveCacheChannel)
 		saveCacheCalled = true
 	}
 	return companies, saveCacheCalled
@@ -186,7 +186,7 @@ func addCompanyHandler(responseWriter http.ResponseWriter, request *http.Request
 
 	saveCacheChannel := make(chan string)
 	defer close(saveCacheChannel)
-	go services.SetCachedCompaniesData(companies, saveCacheChannel)
+	go services.SetCacheCompaniesData(companies, saveCacheChannel)
 
 	saveDbSuccessful := <-saveDbChannel
 

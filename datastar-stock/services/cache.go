@@ -41,7 +41,7 @@ func GetCachedTickerData(ticker string, date string, channel chan<- []models.Cac
 	channel <- response
 }
 
-func SetCachedTickerData(ticker string, date string, data []models.CacheData, channel chan<- string) {
+func SetCacheTickerData(ticker string, date string, data []models.CacheData, channel chan<- string) {
 	ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDRESS"),
@@ -97,7 +97,7 @@ func GetCachedCompaniesData(channel chan<- []models.CompanyFromDb) {
 	channel <- response
 }
 
-func SetCachedCompaniesData(data []models.CompanyFromDb, channel chan<- string) {
+func SetCacheCompaniesData(data []models.CompanyFromDb, channel chan<- string) {
 	ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDRESS"),
@@ -120,5 +120,61 @@ func SetCachedCompaniesData(data []models.CompanyFromDb, channel chan<- string) 
 		return
 	}
 	fmt.Printf("Successfully cached data for companies count :%v\n", len(data))
+	channel <- "OK"
+}
+
+func GetCachedPopularsData(channel chan<- []string) {
+	ctx := context.Background()
+	response := []string{}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_ADDRESS"),
+		Username: os.Getenv("REDIS_USERNAME"),
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
+	})
+
+	result, err := rdb.Get(ctx, "populars").Result()
+
+	if err != nil {
+		fmt.Printf("Error fetching populars data from Redis %v\n", err)
+		channel <- response
+		return
+	}
+	err = json.Unmarshal([]byte(result), &response)
+	if err != nil {
+		fmt.Println("Error unmarshalling data from Redis:", err)
+		channel <- response
+		return
+	}
+	if len(response) > 0 {
+		fmt.Printf("Cached data for populars found\n")
+	}
+	channel <- response
+}
+
+func SetCachePopularsData(data []string, channel chan<- string) {
+	ctx := context.Background()
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_ADDRESS"),
+		Username: os.Getenv("REDIS_USERNAME"),
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
+	})
+
+	dataJSON, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("Error marshalling data to JSON:", err)
+		channel <- "ERROR"
+		return
+	}
+
+	err = rdb.Set(ctx, "populars", dataJSON, 48*time.Hour).Err()
+	if err != nil {
+		fmt.Println("Error setting data in Redis:", err)
+		channel <- "ERROR"
+		return
+	}
+	fmt.Printf("Successfully cached data for populars\n")
 	channel <- "OK"
 }

@@ -16,7 +16,7 @@ templ Recent(items []models.TickerCard) {
 	@home("recent") {
 		<div class="absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5">
 			<button
-				class="apperance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80"
 				data-on-click="@get('/home/recent/add')"
 				data-indicator-loading-add-recent
 				data-attr-disabled="$loadingAddRecent"
@@ -41,7 +41,7 @@ templ Recent(items []models.TickerCard) {
 				@CurrentCountInp(5)
 				<select
 					name="newCount"
-					class="appearance-none outline-none w-full py-2 px-4 pr-6 "
+					class="appearance-none outline-none cursor-pointer w-full py-2 px-4 pr-6 "
 					data-indicator-fetching-recent
 					data-on-change="@post('/home/recent/more',{contentType:'form'});"
 				>
@@ -81,7 +81,7 @@ templ RecentError() {
 	@home("recent") {
 		<div class="absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5">
 			<button
-				class="apperance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80"
 				data-on-click="@get('/home/recent/add')"
 				data-indicator-loading-add-recent
 				data-attr-disabled="$loadingAddRecent"
@@ -106,7 +106,7 @@ templ RecentError() {
 				@CurrentCountInp(0)
 				<select
 					name="newCount"
-					class="appearance-none outline-none w-full py-2 px-4 pr-6 "
+					class="appearance-none outline-none cursor-pointer w-full py-2 px-4 pr-6 "
 					data-indicator-fetching-recent
 					data-on-change="@post('/home/recent/more',{contentType:'form'});"
 				>

@@ -72,7 +72,7 @@ func GetPopulars(ctx context.Context, channel chan<- models.PopularsFromDb) {
 	}
 	channel <- populars
 }
-func SetPopulars(ctx context.Context, populars models.PopularsFromDb, channel chan<- bool) {
+func SetPopulars(ctx context.Context, populars []string, channel chan<- bool) {
 	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
 	if firebaseConfigErr != nil {
 		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
@@ -98,9 +98,12 @@ func SetPopulars(ctx context.Context, populars models.PopularsFromDb, channel ch
 	}
 	defer fireStore.Close()
 
-	populars.Date = time.Now()
-	populars.UserId = ctx.Value(UserIDKey).(string)
-	result, err := fireStore.Collection("populars").Doc("tickers").Set(ctx, populars)
+	popularsData := models.PopularsFromDb{
+		Data:   populars,
+		Date:   time.Now(),
+		UserId: ctx.Value(UserIDKey).(string)}
+
+	result, err := fireStore.Collection("populars").Doc("tickers").Set(ctx, popularsData)
 	if err != nil {
 		fmt.Println("Error setting document in populars:", err)
 		channel <- false

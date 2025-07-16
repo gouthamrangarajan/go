@@ -6,7 +6,6 @@ import (
 	"datastar-stock/components/shared"
 	"datastar-stock/models"
 	"datastar-stock/services"
-	"fmt"
 	"net/http"
 	"slices"
 	"sort"
@@ -64,7 +63,7 @@ func ticketDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenera
 				return
 			}
 		} else {
-			go services.SetCachedTickerData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
+			go services.SetCacheTickerData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
 			waitForSetCache = true
 		}
 	}
@@ -76,6 +75,12 @@ func ticketDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenera
 
 	str := `LoadChart("chart_` + shared.ReplaceSpecialCharsInTicker(ticker) + `",[` + eChartData.AxisData + `],[` + eChartData.ChartData + `])`
 	sse.ExecuteScript(str, datastar.WithExecuteScriptAutoRemove(true))
+	populars := getPopulars(sse.Context())
+	if slices.Contains(populars, ticker) {
+		sse.PatchElementTempl(shared.TickerIsInPopularUI(ticker))
+	} else {
+		sse.PatchElementTempl(shared.TickerIsNotInPopularUI(ticker))
+	}
 	if waitForSetCache {
 		<-setCacheChannel
 	}
@@ -133,19 +138,32 @@ func getEchartData(data []models.CacheData, channel chan<- models.EChartData) {
 	}
 	channel <- eChartData
 }
-func getPopulars(ctx context.Context) models.PopularsFromDb {
+func getPopulars(ctx context.Context) []string {
+	popularsCacheChannel := make(chan []string)
+	defer close(popularsCacheChannel)
+	go services.GetCachedPopularsData(popularsCacheChannel)
+	popularsCache := <-popularsCacheChannel
+	if len(popularsCache) > 0 {
+		return popularsCache
+	}
 	popularsChannel := make(chan models.PopularsFromDb)
 	defer close(popularsChannel)
 	go services.GetPopulars(ctx, popularsChannel)
 	populars := <-popularsChannel
-	return populars
+
+	popularsCacheSaveChannel := make(chan string)
+	defer close(popularsCacheSaveChannel)
+
+	go services.SetCachePopularsData(populars.Data, popularsCacheSaveChannel)
+	<-popularsCacheSaveChannel
+	return populars.Data
 }
 func popularsPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	populars := getPopulars(request.Context())
 	component := components.PopularsError()
-	if len(populars.Data) > 0 {
-		cardList := make([]models.TickerCard, len(populars.Data))
-		for idx, ticker := range populars.Data {
+	if len(populars) > 0 {
+		cardList := make([]models.TickerCard, len(populars))
+		for idx, ticker := range populars {
 			cardList[idx] = models.TickerCard{
 				Ticker: ticker,
 				Name:   "",
@@ -163,7 +181,7 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 		return
 	}
 	populars := getPopulars(request.Context())
-	idx := slices.Index(populars.Data, ticker)
+	idx := slices.Index(populars, ticker)
 	if idx == -1 {
 		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
@@ -173,18 +191,17 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 			http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 			return
 		}
-		populars.Data[idx], populars.Data[idx-1] = populars.Data[idx-1], populars.Data[idx]
+		populars[idx], populars[idx-1] = populars[idx-1], populars[idx]
 	} else {
-		if idx == len(populars.Data)-1 {
+		if idx == len(populars)-1 {
 			http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 			return
 		}
-		populars.Data[idx], populars.Data[idx+1] = populars.Data[idx+1], populars.Data[idx]
+		populars[idx], populars[idx+1] = populars[idx+1], populars[idx]
 	}
-	fmt.Println(populars.Data)
 	sse := datastar.NewSSE(responseWriter, request)
-	cardList := make([]models.TickerCard, len(populars.Data))
-	for idx, ticker := range populars.Data {
+	cardList := make([]models.TickerCard, len(populars))
+	for idx, ticker := range populars {
 		cardList[idx] = models.TickerCard{
 			Ticker: ticker,
 			Name:   "",
@@ -193,11 +210,17 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 	sse.PatchElementTempl(components.PopularsContainers(cardList, false), datastar.WithUseViewTransitions(true))
 	saveChannel := make(chan bool)
 	go services.SetPopulars(request.Context(), populars, saveChannel)
+
+	popularsCacheSaveChannel := make(chan string)
+	defer close(popularsCacheSaveChannel)
+	go services.SetCachePopularsData(populars, popularsCacheSaveChannel)
+
 	time.Sleep(300 * time.Millisecond) // wait for cards to be available
-	for _, tickerInPopulars := range populars.Data {
+	for _, tickerInPopulars := range populars {
 		ticketDataHandlerWithSSE(tickerInPopulars, sse)
 	}
 	<-saveChannel
+	<-popularsCacheSaveChannel
 }
 func recentPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	recentsChannel := make(chan []models.RecentFromDb)
@@ -302,8 +325,12 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 		return
 	}
 	if company != "" {
-		replacer := strings.NewReplacer("||", "/")
-		company = replacer.Replace(company)
+		replacer1 := strings.NewReplacer("||||", "%")
+		replacer2 := strings.NewReplacer("|||", "$")
+		replacer3 := strings.NewReplacer("||", "/")
+		company = replacer1.Replace(company)
+		company = replacer2.Replace(company)
+		company = replacer3.Replace(company)
 	}
 
 	currentCountStr := strings.TrimSpace(request.FormValue("currentCount"))

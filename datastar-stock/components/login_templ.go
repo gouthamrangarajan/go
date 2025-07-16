@@ -90,7 +90,7 @@ func LoginInSubmitBtn(inactive bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if inactive {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none w-full rounded-full py-2 px-4 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" disabled style=\"view-transition-name: submit-btn\"><span>Submit</span></button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button type=\"submit\" id=\"submit\" class=\"appearance-none outline-none  w-full rounded-full py-2 px-4 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80\" disabled style=\"view-transition-name: submit-btn\"><span>Submit</span></button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -21,11 +21,14 @@ templ cardNoDataLoad(index int, item models.TickerCard, page string, totalNoOfIt
 				@tickerSequenceChanger(index, item.Ticker, totalNoOfItems)
 			}
 			<div class="flex flex-col gap-1">
-				<h3 class=" text-menu text-lg font-semibold">
-					{ item.Ticker }
-				</h3>
+				<div class="flex gap-2 items-center">
+					<h3 class=" text-menu text-lg font-semibold">
+						{ item.Ticker }
+					</h3>
+					@TickerIsNotInPopularUI(item.Ticker)
+				</div>
 				if item.Name!="" {
-					<p class="text-slate-600">
+					<p class="text-slate-600 break-all">
 						{ item.Name }
 					</p>
 				}
@@ -44,10 +47,13 @@ templ Card(item models.TickerCard) {
 		style={ "view-transition-name:card-" + ReplaceSpecialCharsInTicker(item.Ticker) }
 	>
 		<div class="flex flex-col gap-2 w-full">
-			<h3 class=" text-menu text-lg font-semibold">
-				{ item.Ticker }
-			</h3>
-			<p class="text-slate-600">
+			<div class="flex gap-2 items-center">
+				<h3 class=" text-menu text-lg font-semibold">
+					{ item.Ticker }
+				</h3>
+				@TickerIsNotInPopularUI(item.Ticker)
+			</div>
+			<p class="text-slate-600 break-all">
 				{ item.Name }
 			</p>
 		</div>
@@ -58,7 +64,7 @@ templ Card(item models.TickerCard) {
 templ tickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
 	<div class="flex flex-col items-center">
 		<button
-			class="apperance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-80"
+			class="appearance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-80"
 			data-indicator={ "priority_increase_" + ReplaceSpecialCharsInTicker(ticker) }
 			data-attr-disabled={ strconv.Itoa(index) + "==0 || $priority_increase_" + ReplaceSpecialCharsInTicker(ticker) }
 			data-on-click={ strconv.Itoa(index) + "!=0 && @post('/home/populars/priority/increase/" + ticker + "')" }
@@ -76,7 +82,7 @@ templ tickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
 		</button>
 		<p class=" text-slate-700">#{ strconv.Itoa(index+1) }</p>
 		<button
-			class="apperance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-80"
+			class="appearance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-80"
 			data-indicator={ "priority_decrease_" + ReplaceSpecialCharsInTicker(ticker) }
 			data-attr-disabled={ strconv.Itoa(index+1) + "==" + strconv.Itoa(totalNoOfTickers) + " || $priority_decrease_" + ReplaceSpecialCharsInTicker(ticker) }
 			data-on-click={ strconv.Itoa(index+1) + "!=" + strconv.Itoa(totalNoOfTickers) + " && @post('/home/populars/priority/decrease/" + ticker + "')" }
@@ -93,6 +99,21 @@ templ tickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
 			@Spinner("$priority_decrease_"+ReplaceSpecialCharsInTicker(ticker), "w-3 h-3 border-secondary")
 		</button>
 	</div>
+}
+
+templ TickerIsInPopularUI(ticker string) {
+	<button
+		class="appearance-none outline-none cursor-pointer p-1 -mt-1 text-orange-600 transition duration-300 rounded-full focus:ring-2 focus:ring-orange-600"
+		id={ "tickerPopular_" + ReplaceSpecialCharsInTicker(ticker) }
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+			<path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+		</svg>
+	</button>
+}
+
+templ TickerIsNotInPopularUI(ticker string) {
+	<div id={ "tickerPopular_" + ReplaceSpecialCharsInTicker(ticker) }></div>
 }
 
 templ CardTickerError(ticker string, errorMessage string) {
