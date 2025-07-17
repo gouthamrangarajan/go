@@ -1,4 +1,4 @@
-## data star stock
+## DATA STAR Stock
 
 Simple tool for tracking stock using Golang & Data star
 
@@ -61,7 +61,7 @@ To get started , follow these steps:
 
 To run the application, use the following command:
 
-Open your browser and navigate to `http://http://127.0.0.1:7331/` to start chatting!
+Open your browser and navigate to `http://http://127.0.0.1:7331/`
 
 ![screenshot](populars.png)
 ![screenshot](watchlist.png)
