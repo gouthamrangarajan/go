@@ -20,6 +20,7 @@ templ Recent(items []models.TickerCard) {
 				data-on-click="@get('/home/recent/add')"
 				data-indicator-loading-add-recent
 				data-attr-disabled="$loadingAddRecent"
+				style="view-transition-name:action-button"
 			>
 				<svg
 					data-show="!$loadingAddRecent"
@@ -85,6 +86,7 @@ templ RecentError() {
 				data-on-click="@get('/home/recent/add')"
 				data-indicator-loading-add-recent
 				data-attr-disabled="$loadingAddRecent"
+				style="view-transition-name:action-button"
 			>
 				<svg
 					data-show="!$loadingAddRecent"

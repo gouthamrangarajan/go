@@ -52,7 +52,7 @@ func Recent(items []models.TickerCard) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5\"><button class=\"appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@get('/home/recent/add')\" data-indicator-loading-add-recent data-attr-disabled=\"$loadingAddRecent\"><svg data-show=\"!$loadingAddRecent\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5\"><button class=\"appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@get('/home/recent/add')\" data-indicator-loading-add-recent data-attr-disabled=\"$loadingAddRecent\" style=\"view-transition-name:action-button\"><svg data-show=\"!$loadingAddRecent\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -83,7 +83,7 @@ func Recent(items []models.TickerCard) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("@get('/data/multiple/" + tickersForRequest + "')")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 69, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 70, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -139,7 +139,7 @@ func CurrentCountInp(val int) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(val)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 77, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 78, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -186,7 +186,7 @@ func RecentError() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5\"><button class=\"appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@get('/home/recent/add')\" data-indicator-loading-add-recent data-attr-disabled=\"$loadingAddRecent\"><svg data-show=\"!$loadingAddRecent\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"absolute top-10 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3 md:-top-0.5\"><button class=\"appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@get('/home/recent/add')\" data-indicator-loading-add-recent data-attr-disabled=\"$loadingAddRecent\" style=\"view-transition-name:action-button\"><svg data-show=\"!$loadingAddRecent\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

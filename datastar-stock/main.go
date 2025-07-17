@@ -26,6 +26,8 @@ func main() {
 	router.Get("/", landingPageHandler)
 	router.Post("/login", loginHandler)
 	router.Get("/home/populars", popularsPageHandler)
+	router.Get("/home/populars/configure", popularsConfigureUIHandler)
+	router.Post("/home/populars/configure/close", closeConfigurePopularsHandler)
 	router.Post("/home/populars/priority/{incrementDecrementIndicator}/{ticker}", popularsPriorityIncrementDecrementHandler)
 	router.Get("/home/recent", recentPageHandler)
 	router.Get("/data/{ticker}", tickerDataHandler)

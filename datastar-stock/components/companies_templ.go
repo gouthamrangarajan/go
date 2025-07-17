@@ -59,7 +59,7 @@ func Companies() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><button class=\"appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@get('/companies/add')\" data-indicator-loading-add-company data-attr-disabled=\"$loadingAddCompany\"><svg data-show=\"!$loadingAddCompany\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><button class=\"appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@get('/companies/add')\" data-indicator-loading-add-company data-attr-disabled=\"$loadingAddCompany\" style=\"view-transition-name:action-button\"><svg data-show=\"!$loadingAddCompany\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -162,7 +162,7 @@ func CompaniesCount(count int) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(count))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/companies.templ`, Line: 71, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/companies.templ`, Line: 72, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {

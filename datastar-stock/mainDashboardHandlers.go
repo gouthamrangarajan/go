@@ -222,6 +222,17 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 	<-saveChannel
 	<-popularsCacheSaveChannel
 }
+func popularsConfigureUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(components.PopularsConfigure(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
+	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
+	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
+}
+func closeConfigurePopularsHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
+	sse.RemoveElement("#overlay", datastar.WithUseViewTransitions(true))
+}
 func recentPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	recentsChannel := make(chan []models.RecentFromDb)
 	defer close(recentsChannel)
