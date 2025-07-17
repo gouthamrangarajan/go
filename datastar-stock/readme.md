@@ -13,6 +13,7 @@ Simple tool for tracking stock using Golang & Data star
 - Golang, templ & chi
 - Tailwind, Open Props
 - Firebase Auth & Firestore Db
+- Redis
 - Alphavantage API
 - Echarts
 
