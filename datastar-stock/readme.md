@@ -7,7 +7,7 @@ Simple tool for tracking stock using Golang & Data star
 - SSE (server sent events) using data star
 - Candlestick charts visualization of past 6 months NYSE & NASDAQ stocks
 
-### Models/Library/Frameworks used
+### Library & Frameworks used
 
 - Data Star
 - Golang, templ & chi
