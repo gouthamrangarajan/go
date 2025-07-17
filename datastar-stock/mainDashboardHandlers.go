@@ -328,9 +328,11 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 		replacer1 := strings.NewReplacer("||||", "%")
 		replacer2 := strings.NewReplacer("|||", "$")
 		replacer3 := strings.NewReplacer("||", "/")
+		replacer4 := strings.NewReplacer("%20", " ")
 		company = replacer1.Replace(company)
 		company = replacer2.Replace(company)
 		company = replacer3.Replace(company)
+		company = replacer4.Replace(company)
 	}
 
 	currentCountStr := strings.TrimSpace(request.FormValue("currentCount"))
