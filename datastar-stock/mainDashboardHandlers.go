@@ -356,24 +356,14 @@ func closeAddRecentHandler(responseWriter http.ResponseWriter, request *http.Req
 }
 
 func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	ticker := strings.TrimSpace(chi.URLParam(request, "ticker"))
-	company := strings.TrimSpace(chi.URLParam(request, "company"))
+	ticker := strings.TrimSpace(request.FormValue("ticker"))
+	company := strings.TrimSpace(request.FormValue("company"))
 	if ticker == "" {
 		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
 	}
-	if company != "" {
-		replacer1 := strings.NewReplacer("||||", "%")
-		replacer2 := strings.NewReplacer("|||", "$")
-		replacer3 := strings.NewReplacer("||", "/")
-		replacer4 := strings.NewReplacer("%20", " ")
-		company = replacer1.Replace(company)
-		company = replacer2.Replace(company)
-		company = replacer3.Replace(company)
-		company = replacer4.Replace(company)
-	}
 
-	currentCountStr := strings.TrimSpace(request.FormValue("currentCount"))
+	currentCountStr := strings.TrimSpace(request.FormValue("currentCountInRecent"))
 	currentCount, _ := strconv.Atoi(currentCountStr)
 
 	recentFromDbChannel := make(chan []models.RecentFromDb)

@@ -10,16 +10,6 @@ func ReplaceSpecialCharsInTicker(ticker string) string {
 	replacer := strings.NewReplacer(".", "", "-", "", " ", "")
 	return replacer.Replace(ticker)
 }
-func replaceSpecialCharsInName(name string) string {
-	// Replace forward slashes in name with empty string
-	replacer1 := strings.NewReplacer("/", "||")
-	replaced := replacer1.Replace(name)
-	replacer2 := strings.NewReplacer("$", "|||") //e.g ALP.P.Q
-	replaced = replacer2.Replace(replaced)
-	replacer3 := strings.NewReplacer("%", "||||") //e.g ALP.P.Q
-	replaced = replacer3.Replace(replaced)
-	return replaced
-}
 
 templ SearchCompanyInput(page string, class string) {
 	<form
@@ -78,21 +68,28 @@ templ CompaniesTr(companies []models.CompanyFromDb, page string) {
 			<td class="py-1 px-3 text-slate-600 break-all md:px-4 md:py-2">{ company.Name }</td>
 			if page == "home" {
 				<td class="py-1 px-3  md:px-4 md:py-2">
-					<button
-						type="button"
-						class="appearance-none outline-none w-full rounded-lg py-1 px-3 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80 md:py-2 md:px-4"
-						data-on-click={ "@post('/home/recent/add/" + company.Ticker + "/" + replaceSpecialCharsInName(company.Name) + "',{contentType:'form',selector:'#recent_form'})" }
+					<form
+						class="appearance-none outline-none"
 						data-indicator={ "adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
-						data-attr-disabled={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
+						data-on-submit={ "@post('/home/recent/add" + "',{contentType:'form'})" }
 					>
-						<span class="hidden md:inline">Submit</span>
-						<span data-show={ "!$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-								<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"></path>
-							</svg>
-						</span>
-						@Spinner("$adding_"+ReplaceSpecialCharsInTicker(company.Ticker), "border-white")
-					</button>
+						<input type="hidden" name="ticker" value={ company.Ticker }/>
+						<input type="hidden" name="company" value={ company.Name }/>
+						<input type="hidden" name="currentCountInRecent" value="0"/>
+						<button
+							type="submit"
+							class="appearance-none outline-none w-full rounded-lg py-1 px-3 bg-secondary text-white cursor-pointer transition duration-300 flex gap-2 items-center justify-center focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80 md:py-2 md:px-4"
+							data-attr-disabled={ "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }
+						>
+							<span class="hidden md:inline">Submit</span>
+							<span data-show={ "!$adding_" + ReplaceSpecialCharsInTicker(company.Ticker) }>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+									<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"></path>
+								</svg>
+							</span>
+							@Spinner("$adding_"+ReplaceSpecialCharsInTicker(company.Ticker), "border-white")
+						</button>
+					</form>
 				</td>
 			}
 		</tr>

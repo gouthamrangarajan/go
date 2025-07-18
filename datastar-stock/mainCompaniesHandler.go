@@ -82,6 +82,7 @@ func searchCompaniesHandler(responseWriter http.ResponseWriter, request *http.Re
 			sse.PatchElementTempl(shared.CompaniesTbodyEmpty(page), datastar.WithUseViewTransitions(useViewTransition))
 		} else {
 			sse.PatchElementTempl(shared.CompaniesTbody(companies, page), datastar.WithUseViewTransitions(useViewTransition))
+			sse.ExecuteScript("document.getElementsByName('currentCountInRecent').forEach(el=>el.value=document.getElementsByName('currentCount')[0]?.value)", datastar.WithExecuteScriptAutoRemove(true))
 		}
 	}
 	if saveCacheCalled {
