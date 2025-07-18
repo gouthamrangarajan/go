@@ -62,43 +62,49 @@ templ Card(item models.TickerCard) {
 }
 
 templ tickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
-	<div class="flex flex-col items-center">
+	<form
+		class="flex flex-col items-center"
+		data-indicator={ "priority_change_" + ReplaceSpecialCharsInTicker(ticker) }
+		data-on-submit={ "evt.preventDefault();@post('/home/populars/priority/change', {contentType:'form'})" }
+	>
 		<button
-			class="appearance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-80"
-			data-indicator={ "priority_increase_" + ReplaceSpecialCharsInTicker(ticker) }
-			data-attr-disabled={ strconv.Itoa(index) + "==0 || $priority_increase_" + ReplaceSpecialCharsInTicker(ticker) }
-			data-on-click={ strconv.Itoa(index) + "!=0 && @post('/home/populars/priority/increase/" + ticker + "')" }
+			type="submit"
+			name="incrementDecrementIndicator"
+			value="increase"
+			class="appearance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-50"
+			data-attr-disabled={ strconv.Itoa(index) + "==0 || $priority_change_" + ReplaceSpecialCharsInTicker(ticker) }
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
 				fill="currentColor"
 				class="size-5"
-				data-show={ "!$priority_increase_" + ReplaceSpecialCharsInTicker(ticker) }
 			>
 				<path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd"></path>
 			</svg>
-			@Spinner("$priority_increase_"+ReplaceSpecialCharsInTicker(ticker), "w-3 h-3 border-secondary")
 		</button>
-		<p class=" text-slate-700">#{ strconv.Itoa(index+1) }</p>
+		<p class=" text-slate-700 flex gap-1 items-center">
+			<span data-show={ "!$priority_change_" + ReplaceSpecialCharsInTicker(ticker) }>#{ strconv.Itoa(index+1) }</span>
+			@Spinner("$priority_change_"+ReplaceSpecialCharsInTicker(ticker), " border-secondary")
+		</p>
+		<input type="hidden" name="ticker" value={ ticker }/>
 		<button
-			class="appearance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-80"
-			data-indicator={ "priority_decrease_" + ReplaceSpecialCharsInTicker(ticker) }
-			data-attr-disabled={ strconv.Itoa(index+1) + "==" + strconv.Itoa(totalNoOfTickers) + " || $priority_decrease_" + ReplaceSpecialCharsInTicker(ticker) }
-			data-on-click={ strconv.Itoa(index+1) + "!=" + strconv.Itoa(totalNoOfTickers) + " && @post('/home/populars/priority/decrease/" + ticker + "')" }
+			type="submit"
+			name="incrementDecrementIndicator"
+			value="decrease"
+			class="appearance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-50"
+			data-attr-disabled={ strconv.Itoa(index+1) + "==" + strconv.Itoa(totalNoOfTickers) + " || $priority_change_" + ReplaceSpecialCharsInTicker(ticker) }
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 20 20"
 				fill="currentColor"
 				class="size-5"
-				data-show={ "!$priority_decrease_" + ReplaceSpecialCharsInTicker(ticker) }
 			>
 				<path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z" clip-rule="evenodd"></path>
 			</svg>
-			@Spinner("$priority_decrease_"+ReplaceSpecialCharsInTicker(ticker), "w-3 h-3 border-secondary")
 		</button>
-	</div>
+	</form>
 }
 
 templ TickerIsInPopularUI(ticker string) {

@@ -1,6 +1,10 @@
 package components
 
-import "datastar-stock/components/shared"
+import (
+	"datastar-stock/components/shared"
+	"datastar-stock/models"
+	"strconv"
+)
 
 templ PopularsConfigure() {
 	<div
@@ -45,6 +49,38 @@ templ PopularsConfigure() {
 					@shared.Spinner("$closingConfigurePopulars", "border-red-600")
 				</button>
 			</div>
+			<div class="mt-3 flex flex-col gap-2 w-full pb-10 lg:flex-row lg:items-start lg:justify-between">
+				<div class="flex flex-col gap-2 w-full">
+					<div class="w-full flex items-center justify-between">
+						<h2 class="text-lg text-menu font-semibold">Your Populars</h2>
+						<span id="availablePopularsCount"></span>
+					</div>
+					<div id="popularsConfigure" class="flex flex-col gap-2"></div>
+				</div>
+				<div class="flex flex-col gap-2 w-full">
+					<h2 class="text-lg text-menu font-semibold">Recent Watchlist</h2>
+					<div id="recentPopularsConfigure" class="flex flex-col gap-2 pb-4 h-80 overflow-x-hidden overflow-y-auto scrollbar-thin scroll-smooth scrollbar-track-transparent scrollbar-thumb-[#8A2BE2]"></div>
+				</div>
+			</div>
 		</dialog>
 	</div>
+}
+
+templ PopularsConfigureCards(items []models.TickerCard, section string) {
+	for _, item := range items {
+		@PopularsConfigureCard(item, section)
+	}
+}
+
+templ PopularsConfigureCard(item models.TickerCard, section string) {
+	<div class="py-2 px-4 rounded shadow flex flex-col gap-1 cursor-pointer transition duration-300 hover:shadow-lg hover:shadow-secondary/30" style={ "view-transition-name:populars-configure-" + item.Ticker }>
+		<p class="text-lg text-slate-700">{ item.Ticker }</p>
+		<p class="text-sm text-slate-500">{ item.Name }</p>
+	</div>
+}
+
+templ AvailablePopularsCount(count int) {
+	<span class="rounded-full py-0.5 px-2.5 bg-slate-200 text-slate-800 text-sm font-semibold" id="availablePopularsCount">
+		{ strconv.Itoa(count) }/5
+	</span>
 }

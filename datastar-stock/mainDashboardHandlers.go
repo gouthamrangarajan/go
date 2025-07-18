@@ -174,8 +174,9 @@ func popularsPageHandler(responseWriter http.ResponseWriter, request *http.Reque
 	component.Render(request.Context(), responseWriter)
 }
 func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	ticker := strings.TrimSpace(chi.URLParam(request, "ticker"))
-	incrementDecrementIndicator := strings.TrimSpace(chi.URLParam(request, "incrementDecrementIndicator"))
+	ticker := strings.TrimSpace(request.FormValue("ticker"))
+	incrementDecrementIndicator := strings.TrimSpace(request.FormValue("incrementDecrementIndicator"))
+
 	if ticker == "" || (incrementDecrementIndicator != "increase" && incrementDecrementIndicator != "decrease") {
 		http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 		return
@@ -223,10 +224,36 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 	<-popularsCacheSaveChannel
 }
 func popularsConfigureUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	channel := make(chan []models.RecentFromDb)
+	go services.GetRecent(request.Context(), channel)
+
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchElementTempl(components.PopularsConfigure(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
 	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
 	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
+
+	populars := getPopulars(request.Context()) // prefetch populars data
+	popularsToSend := make([]models.TickerCard, len(populars))
+	for idx, ticker := range populars {
+		popularsToSend[idx] = models.TickerCard{
+			Ticker: strings.TrimSpace(ticker),
+			Name:   "",
+		}
+	}
+	sse.PatchElementTempl(components.PopularsConfigureCards(popularsToSend, "populars"), datastar.WithSelectorID("popularsConfigure"), datastar.WithModeAppend())
+	sse.PatchElementTempl(components.AvailablePopularsCount(len(populars)))
+	recents := <-channel
+	recentsToSend := []models.TickerCard{}
+	for _, item := range recents {
+		if len(recentsToSend) > 24 {
+			break
+		}
+		if slices.Contains(populars, strings.TrimSpace(item.Ticker)) {
+			continue
+		}
+		recentsToSend = append(recentsToSend, models.TickerCard{Ticker: strings.TrimSpace(item.Ticker), Name: strings.TrimSpace(item.Name)})
+	}
+	sse.PatchElementTempl(components.PopularsConfigureCards(recentsToSend, "recent"), datastar.WithSelectorID("recentPopularsConfigure"), datastar.WithModeAppend())
 }
 func closeConfigurePopularsHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)

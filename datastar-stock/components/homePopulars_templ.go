@@ -45,7 +45,7 @@ func Populars(items []models.TickerCard) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute -top-0.5 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "                    ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -166,7 +166,7 @@ func PopularsError() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"absolute -top-0.5 right-0 flex gap-2 items-center justify-end pr-2 md:pr-4 md:py-1 md:px-3\"></div><div class=\"py-2 px-4 grid grid-cols-1 gap-2 mt-2 lg:gap-4 lg:grid-cols-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "           <div class=\"py-2 px-4 grid grid-cols-1 gap-2 mt-2 lg:gap-4 lg:grid-cols-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
