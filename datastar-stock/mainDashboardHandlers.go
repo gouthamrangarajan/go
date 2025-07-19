@@ -210,6 +210,7 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 	}
 	sse.PatchElementTempl(components.PopularsContainers(cardList, false), datastar.WithUseViewTransitions(true))
 	saveChannel := make(chan bool)
+	defer close(saveChannel)
 	go services.SetPopulars(request.Context(), populars, saveChannel)
 
 	popularsCacheSaveChannel := make(chan string)
@@ -225,6 +226,7 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 }
 func popularsConfigureUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	channel := make(chan []models.RecentFromDb)
+	defer close(channel)
 	go services.GetRecent(request.Context(), channel)
 
 	sse := datastar.NewSSE(responseWriter, request)
@@ -242,6 +244,9 @@ func popularsConfigureUIHandler(responseWriter http.ResponseWriter, request *htt
 	}
 	sse.PatchElementTempl(components.PopularsConfigureCards(popularsToSend, "populars"), datastar.WithSelectorID("popularsConfigure"), datastar.WithModeAppend())
 	sse.PatchElementTempl(components.AvailablePopularsCount(len(populars)))
+	if len(populars) == 5 {
+		sse.PatchSignals([]byte("{allowPopularsAdd:false}"))
+	}
 	recents := <-channel
 	recentsToSend := []models.TickerCard{}
 	for _, item := range recents {
@@ -259,6 +264,56 @@ func closeConfigurePopularsHandler(responseWriter http.ResponseWriter, request *
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 	sse.RemoveElement("#overlay", datastar.WithUseViewTransitions(true))
+}
+func addPopularTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	tickerToBeAdded := strings.TrimSpace(request.FormValue("ticker"))
+	if tickerToBeAdded == "" {
+		http.Error(responseWriter, "Ticker not provided", http.StatusBadRequest)
+		return
+	}
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.RemoveElement("#popularsConfigure_" + shared.ReplaceSpecialCharsInTicker(tickerToBeAdded))
+	sse.PatchElementTempl(components.PopularsConfigureCard(models.TickerCard{Ticker: tickerToBeAdded, Name: ""}, "populars"), datastar.WithSelectorID("popularsConfigure"), datastar.WithModeAppend())
+	// sse.PatchSignals([]byte("{allowPopularsAdd:false}"))
+	// sse.PatchSignals([]byte("{allowPopularsRemove:true}"))
+}
+func removePopularTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	tickerToBeAdded := strings.TrimSpace(request.FormValue("ticker"))
+	if tickerToBeAdded == "" {
+		http.Error(responseWriter, "Ticker not provided", http.StatusBadRequest)
+		return
+	}
+	populars := getPopulars(request.Context())
+	if len(populars) == 1 {
+		http.Error(responseWriter, "There should be at least one ticker in populars", http.StatusBadRequest)
+		return
+	}
+	if !slices.Contains(populars, tickerToBeAdded) {
+		http.Error(responseWriter, "Ticker not in populars", http.StatusBadRequest)
+		return
+	}
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.RemoveElement("#popularsConfigure_" + shared.ReplaceSpecialCharsInTicker(tickerToBeAdded))
+	// sse.PatchElementTempl(components.PopularsConfigureCard(models.TickerCard{Ticker: tickerToBeAdded, Name: ""}, "populars"), datastar.WithSelectorID("popularsConfigure"), datastar.WithModeAppend())
+
+	populars = slices.Delete(populars, slices.Index(populars, tickerToBeAdded), slices.Index(populars, tickerToBeAdded)+1)
+	if len(populars) == 1 {
+		sse.PatchSignals([]byte("{allowPopularsRemove:false}"))
+	}
+	sse.PatchElementTempl(components.AvailablePopularsCount(len(populars)))
+	sse.RemoveElement("#card_" + shared.ReplaceSpecialCharsInTicker(tickerToBeAdded))
+
+	saveChannel := make(chan bool)
+	defer close(saveChannel)
+	go services.SetPopulars(request.Context(), populars, saveChannel)
+
+	popularsCacheSaveChannel := make(chan string)
+	defer close(popularsCacheSaveChannel)
+	go services.SetCachePopularsData(populars, popularsCacheSaveChannel)
+
+	<-saveChannel
+	<-popularsCacheSaveChannel
+
 }
 func recentPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	recentsChannel := make(chan []models.RecentFromDb)

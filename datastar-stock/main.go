@@ -30,6 +30,8 @@ func main() {
 	router.Post("/home/populars/configure/close", closeConfigurePopularsHandler)
 	// router.Post("/home/populars/configure/{ticker}/")
 	router.Post("/home/populars/priority/change", popularsPriorityIncrementDecrementHandler)
+	router.Post("/home/populars/add", addPopularTickerHandler)
+	router.Post("/home/populars/remove", removePopularTickerHandler)
 	router.Get("/home/recent", recentPageHandler)
 	router.Get("/data/{ticker}", tickerDataHandler)
 	router.Get("/data/multiple/{tickers}", multipleTickerDataHandler)
