@@ -18,7 +18,7 @@ templ cardNoDataLoad(index int, item models.TickerCard, page string, totalNoOfIt
 	>
 		<div class="flex gap-2 items-center w-full">
 			if page == "populars" {
-				@tickerSequenceChanger(index, item.Ticker, totalNoOfItems)
+				@TickerSequenceChanger(index, item.Ticker, totalNoOfItems)
 			}
 			<div class="flex flex-col gap-1">
 				<div class="flex gap-2 items-center">
@@ -46,26 +46,32 @@ templ Card(item models.TickerCard) {
 		id={ "card_" + ReplaceSpecialCharsInTicker(item.Ticker) }
 		style={ "view-transition-name:card-" + ReplaceSpecialCharsInTicker(item.Ticker) }
 	>
-		<div class="flex flex-col gap-2 w-full">
-			<div class="flex gap-2 items-center">
-				<h3 class=" text-menu text-lg font-semibold">
-					{ item.Ticker }
-				</h3>
-				@TickerIsNotInPopularUI(item.Ticker)
+		<div class="flex gap-2 items-center w-full">
+			<form class="hidden" id={ "cardSequenceChangerForm_" + ReplaceSpecialCharsInTicker(item.Ticker) }></form>
+			<div class="flex flex-col gap-1">
+				<div class="flex gap-2 items-center">
+					<h3 class=" text-menu text-lg font-semibold">
+						{ item.Ticker }
+					</h3>
+					@TickerIsNotInPopularUI(item.Ticker)
+				</div>
+				if item.Name!="" {
+					<p class="text-slate-600 break-all">
+						{ item.Name }
+					</p>
+				}
 			</div>
-			<p class="text-slate-600 break-all">
-				{ item.Name }
-			</p>
 		</div>
 		<div class="w-full h-96" id={ "chart_" + ReplaceSpecialCharsInTicker(item.Ticker) }></div>
 	</div>
 }
 
-templ tickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
+templ TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
 	<form
 		class="flex flex-col items-center"
 		data-indicator={ "priority_change_" + ReplaceSpecialCharsInTicker(ticker) }
 		data-on-submit={ "evt.preventDefault();@post('/home/populars/priority/change', {contentType:'form'})" }
+		id={ "cardSequenceChangerForm_" + ReplaceSpecialCharsInTicker(ticker) }
 	>
 		<button
 			type="submit"

@@ -271,15 +271,37 @@ func addPopularTickerHandler(responseWriter http.ResponseWriter, request *http.R
 		http.Error(responseWriter, "Ticker not provided", http.StatusBadRequest)
 		return
 	}
+	populars := getPopulars(request.Context())
+	if len(populars) == 5 {
+		http.Error(responseWriter, "Populars already has 5 Tickers", http.StatusBadRequest)
+		return
+	}
+
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.RemoveElement("#popularsConfigure_" + shared.ReplaceSpecialCharsInTicker(tickerToBeAdded))
 	sse.PatchElementTempl(components.PopularsConfigureCard(models.TickerCard{Ticker: tickerToBeAdded, Name: ""}, "populars"), datastar.WithSelectorID("popularsConfigure"), datastar.WithModeAppend())
-	// sse.PatchSignals([]byte("{allowPopularsAdd:false}"))
-	// sse.PatchSignals([]byte("{allowPopularsRemove:true}"))
+
+	populars = append(populars, tickerToBeAdded)
+	saveChannel := make(chan bool)
+	defer close(saveChannel)
+	go services.SetPopulars(request.Context(), populars, saveChannel)
+
+	popularsCacheSaveChannel := make(chan string)
+	defer close(popularsCacheSaveChannel)
+	go services.SetCachePopularsData(populars, popularsCacheSaveChannel)
+
+	if len(populars) == 5 {
+		sse.PatchSignals([]byte("{allowPopularsAdd:false}"))
+	}
+	sse.PatchElementTempl(components.AvailablePopularsCount(len(populars)))
+	sse.PatchElementTempl(shared.Card(models.TickerCard{Ticker: tickerToBeAdded, Name: ""}), datastar.WithSelector("#populars"), datastar.WithModeAppend())
+	sse.PatchElementTempl(shared.TickerSequenceChanger(len(populars)-1, tickerToBeAdded, len(populars)))
+	<-saveChannel
+	<-popularsCacheSaveChannel
 }
 func removePopularTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	tickerToBeAdded := strings.TrimSpace(request.FormValue("ticker"))
-	if tickerToBeAdded == "" {
+	tickerToBeRemoved := strings.TrimSpace(request.FormValue("ticker"))
+	if tickerToBeRemoved == "" {
 		http.Error(responseWriter, "Ticker not provided", http.StatusBadRequest)
 		return
 	}
@@ -288,21 +310,17 @@ func removePopularTickerHandler(responseWriter http.ResponseWriter, request *htt
 		http.Error(responseWriter, "There should be at least one ticker in populars", http.StatusBadRequest)
 		return
 	}
-	if !slices.Contains(populars, tickerToBeAdded) {
+	if !slices.Contains(populars, tickerToBeRemoved) {
 		http.Error(responseWriter, "Ticker not in populars", http.StatusBadRequest)
 		return
 	}
+
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.RemoveElement("#popularsConfigure_" + shared.ReplaceSpecialCharsInTicker(tickerToBeAdded))
-	// sse.PatchElementTempl(components.PopularsConfigureCard(models.TickerCard{Ticker: tickerToBeAdded, Name: ""}, "populars"), datastar.WithSelectorID("popularsConfigure"), datastar.WithModeAppend())
+	sse.RemoveElement("#popularsConfigure_" + shared.ReplaceSpecialCharsInTicker(tickerToBeRemoved))
 
-	populars = slices.Delete(populars, slices.Index(populars, tickerToBeAdded), slices.Index(populars, tickerToBeAdded)+1)
-	if len(populars) == 1 {
-		sse.PatchSignals([]byte("{allowPopularsRemove:false}"))
-	}
-	sse.PatchElementTempl(components.AvailablePopularsCount(len(populars)))
-	sse.RemoveElement("#card_" + shared.ReplaceSpecialCharsInTicker(tickerToBeAdded))
-
+	// populars = slices.Delete(populars, slices.Index(populars, tickerToBeAdded), slices.Index(populars, tickerToBeAdded)+1)
+	indexToBeRemoved := slices.Index(populars, tickerToBeRemoved)
+	populars = append(populars[:indexToBeRemoved], populars[indexToBeRemoved+1:]...)
 	saveChannel := make(chan bool)
 	defer close(saveChannel)
 	go services.SetPopulars(request.Context(), populars, saveChannel)
@@ -310,6 +328,17 @@ func removePopularTickerHandler(responseWriter http.ResponseWriter, request *htt
 	popularsCacheSaveChannel := make(chan string)
 	defer close(popularsCacheSaveChannel)
 	go services.SetCachePopularsData(populars, popularsCacheSaveChannel)
+
+	if len(populars) == 1 {
+		sse.PatchSignals([]byte("{allowPopularsRemove:false}"))
+	}
+	sse.PatchSignals([]byte("{allowPopularsAdd:true}"))
+	sse.PatchElementTempl(components.AvailablePopularsCount(len(populars)))
+	sse.RemoveElement("#card_" + shared.ReplaceSpecialCharsInTicker(tickerToBeRemoved))
+
+	for idx, tickerInPopulars := range populars {
+		sse.PatchElementTempl(shared.TickerSequenceChanger(idx, tickerInPopulars, len(populars)))
+	}
 
 	<-saveChannel
 	<-popularsCacheSaveChannel
