@@ -65,6 +65,7 @@ To run the application, use the following command:
 Open your browser and navigate to `http://http://127.0.0.1:7331/`
 
 ![screenshot](populars.png)
+![screenshot](configure_populars.png)
 ![screenshot](watchlist.png)
 ![screenshot](add_watchlist.png)
 ![screenshot](companies.png)
