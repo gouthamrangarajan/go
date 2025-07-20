@@ -296,6 +296,7 @@ func addPopularTickerHandler(responseWriter http.ResponseWriter, request *http.R
 	sse.PatchElementTempl(components.AvailablePopularsCount(len(populars)))
 	sse.PatchElementTempl(shared.Card(models.TickerCard{Ticker: tickerToBeAdded, Name: ""}), datastar.WithSelector("#populars"), datastar.WithModeAppend())
 	sse.PatchElementTempl(shared.TickerSequenceChanger(len(populars)-1, tickerToBeAdded, len(populars)))
+	sse.PatchElementTempl(shared.TickerSequenceChanger(len(populars)-2, populars[len(populars)-2], len(populars)))
 	<-saveChannel
 	<-popularsCacheSaveChannel
 }
