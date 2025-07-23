@@ -25,6 +25,7 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 	}
 
 	sse := datastar.NewSSE(responseWriter, request)
+	// sse.PatchElementTempl(shared.ChartScript())
 	ticketDataHandlerWithSSE(ticker, sse)
 }
 func ticketDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenerator) {
@@ -97,7 +98,7 @@ func multipleTickerDataHandler(responseWriter http.ResponseWriter, request *http
 		return
 	}
 	sse := datastar.NewSSE(responseWriter, request)
-
+	// sse.PatchElementTempl(shared.ChartScript())
 	for _, ticker := range tickerList {
 		ticketDataHandlerWithSSE(ticker, sse)
 	}
@@ -216,7 +217,7 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 	popularsCacheSaveChannel := make(chan string)
 	defer close(popularsCacheSaveChannel)
 	go services.SetCachePopularsData(populars, popularsCacheSaveChannel)
-
+	// sse.PatchElementTempl(shared.ChartScript())
 	time.Sleep(300 * time.Millisecond) // wait for cards to be available
 	for _, tickerInPopulars := range populars {
 		ticketDataHandlerWithSSE(tickerInPopulars, sse)
@@ -230,9 +231,8 @@ func popularsConfigureUIHandler(responseWriter http.ResponseWriter, request *htt
 	go services.GetRecent(request.Context(), channel)
 
 	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(shared.ModalScript())
 	sse.PatchElementTempl(components.PopularsConfigure(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
-	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
-	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 
 	populars := getPopulars(request.Context()) // prefetch populars data
 	popularsToSend := make([]models.TickerCard, len(populars))
@@ -262,7 +262,6 @@ func popularsConfigureUIHandler(responseWriter http.ResponseWriter, request *htt
 }
 func closeConfigurePopularsHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 	sse.RemoveElement("#overlay", datastar.WithUseViewTransitions(true))
 }
 func addPopularTickerHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -408,6 +407,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 		}
 		sse.PatchElementTempl(shared.Cards(recentsToSend, "recent"), datastar.WithSelectorID("recents"), datastar.WithModeAppend(), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(components.CurrentCountInp(newCount))
+		// sse.PatchElementTempl(shared.ChartScript())
 		time.Sleep(300 * time.Millisecond) // wait for cards to be available
 		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0].Ticker)+`')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});`, datastar.WithExecuteScriptAutoRemove(true))
 		for _, tickerInRecent := range recentsToSend {
@@ -428,14 +428,12 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 
 func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(shared.ModalScript())
 	sse.PatchElementTempl(components.AddRecent(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
-	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
-	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 }
 
 func closeAddRecentHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 	sse.RemoveElement("#companies_tbody")
 	sse.RemoveElement("#overlay", datastar.WithUseViewTransitions(true))
 }

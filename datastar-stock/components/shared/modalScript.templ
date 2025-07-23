@@ -1,0 +1,67 @@
+package shared
+
+templ ModalScript() {
+	<script type="text/javascript" id="modalScript">
+        function executeModalScript(abortSignal){     
+            const modal = document.querySelector('dialog[open]');          
+            if(!modal){return;}
+            const focusableElements = modal.querySelectorAll('a[href]:not(:disabled), button:not(:disabled), input:not(:disabled):not([type="hidden"]), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])');
+            if (focusableElements.length === 0){
+                modal.focus();
+            }
+            else{
+                focusableElements[0].focus(); 
+            }
+            const firstElement = focusableElements[0];
+            window.addEventListener('keydown', function(event) {            
+                if (event.key === 'Tab') {                
+                    const modal = document.querySelector('dialog[open]');
+                    if (!modal) {
+                        return;
+                    }					
+                    const focusableElements = modal.querySelectorAll('a[href]:not(:disabled), button:not(:disabled), input:not(:disabled):not([type="hidden"]), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])');
+                    if (focusableElements.length === 0){
+                        modal.focus();
+                        event.preventDefault();
+                        return;
+                    }
+                    const firstElement = focusableElements[0];
+                    const lastElement = focusableElements[focusableElements.length - 1];
+                    if (event.shiftKey) { // Shift + Tab
+                        if (document.activeElement === firstElement) {
+                            event.preventDefault();							
+                            lastElement.focus();
+                            return;
+                        }
+                    } else { // Tab
+                        if (document.activeElement === lastElement) {
+                            event.preventDefault();
+                            firstElement.focus();
+                            return;
+                        }
+                    }
+                    if (!modal.contains(document.activeElement)){
+                        event.preventDefault();
+                        firstElement.focus();
+                        return;
+                    }
+                }
+            }, {signal: abortSignal});
+            window.addEventListener('focus',function(event){
+                const modal = document.querySelector('dialog[open]');
+                if (!modal) {
+                    return;
+                }					
+                const focusableElements = modal.querySelectorAll('a[href]:not(:disabled), button:not(:disabled), input:not(:disabled):not([type="hidden"]), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])');
+                if (focusableElements.length === 0){
+                    event.preventDefault();
+                    modal.focus(); 
+                    return;
+                }
+                const firstElement = focusableElements[0];
+                event.preventDefault();		
+                firstElement.focus();
+            }, {signal: abortSignal});              
+        }            					
+    </script>
+}

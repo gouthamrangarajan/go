@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/starfederation/datastar/sdk/go/datastar"
@@ -140,13 +139,11 @@ func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.R
 }
 func addCompanyUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(shared.ModalScript())
 	sse.PatchElementTempl(components.AddCompany(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
-	time.Sleep(300 * time.Millisecond) // wait for the modal to be available
-	sse.ExecuteScript("confineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 }
 func closeAddCompanyHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.ExecuteScript("removeConfineFocusToModal()", datastar.WithExecuteScriptAutoRemove(true))
 	sse.RemoveElement("#overlay", datastar.WithUseViewTransitions(true))
 }
 

@@ -35,7 +35,7 @@ func PopularsConfigure() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"overlay\" class=\"bg-black/30 absolute top-0 left-0 w-full h-full flex items-center justify-center\" style=\"view-transition-name:overlay\"><dialog open class=\"py-2 px-4 animate-modal rounded flex flex-col mx-auto w-11/12 md:py-4 md:px-4 lg:w-10/12 xl:w-9/12\" style=\"view-transition-name:modal\" id=\"modal\" data-signals-allow-populars-add=\"true\" data-signals-allow-populars-remove=\"true\"><div class=\"flex justify-between items-start w-full\"><div class=\"flex flex-col w-full gap-1\"><div class=\"flex items-center gap-2\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6 text-yellow-600 mt-0.25\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z\"></path></svg><h1 class=\"text-xl text-primary underline underline-offset-6\">Configure Your Populars</h1></div><p class=\"text-slate-600 text-sm\">Select up to 5 stocks from your watchlist</p></div><button class=\"appearance-none outline-none p-1 flex cursor-pointer text-red-600 transition duration-300 rounded-full focus:ring-2 focus:ring-red-600 disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"@post('/home/populars/configure/close')\" aria-label=\"close\" data-indicator-closing-configure-populars data-attr-disabled=\"$closingConfigurePopulars\"><svg data-show=\"!$closingConfigurePopulars\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"overlay\" class=\"bg-black/30 absolute top-0 left-0 w-full h-full flex items-center justify-center\" style=\"view-transition-name:overlay\" data-signals=\"{_abortController:new AbortController}\" data-on-load=\"executeModalScript($_abortController.signal)\"><dialog open class=\"py-2 px-4 animate-modal rounded flex flex-col mx-auto w-11/12 md:py-4 md:px-4 lg:w-10/12 xl:w-9/12\" style=\"view-transition-name:modal\" id=\"modal\" data-signals-allow-populars-add=\"true\" data-signals-allow-populars-remove=\"true\"><div class=\"flex justify-between items-start w-full\"><div class=\"flex flex-col w-full gap-1\"><div class=\"flex items-center gap-2\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6 text-yellow-600 mt-0.25\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z\"></path></svg><h1 class=\"text-xl text-primary underline underline-offset-6\">Configure Your Populars</h1></div><p class=\"text-slate-600 text-sm\">Select up to 5 stocks from your watchlist</p></div><button class=\"appearance-none outline-none p-1 flex cursor-pointer text-red-600 transition duration-300 rounded-full focus:ring-2 focus:ring-red-600 disabled:cursor-not-allowed disabled:opacity-80\" data-on-click=\"$_abortController.abort();@post('/home/populars/configure/close')\" aria-label=\"close\" data-indicator-closing-configure-populars data-attr-disabled=\"$closingConfigurePopulars\"><svg data-show=\"!$closingConfigurePopulars\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -111,7 +111,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("addingPopulars_" + shared.ReplaceSpecialCharsInTicker(item.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 81, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 83, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -124,7 +124,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("popularsConfigure_" + shared.ReplaceSpecialCharsInTicker(item.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 83, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 85, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -137,7 +137,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Ticker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 85, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 87, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -150,7 +150,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:populars-configure-" + item.Ticker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 89, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 91, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -163,7 +163,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("$addingPopulars_" + shared.ReplaceSpecialCharsInTicker(item.Ticker) + "|| !$allowPopularsAdd")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 90, Col: 119}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 92, Col: 119}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -176,7 +176,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(item.Ticker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 93, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 95, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -189,7 +189,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(item.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 94, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 96, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -215,7 +215,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("removingPopulars_" + shared.ReplaceSpecialCharsInTicker(item.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 102, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 104, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -228,7 +228,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("popularsConfigure_" + shared.ReplaceSpecialCharsInTicker(item.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 104, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 106, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -241,7 +241,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(item.Ticker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 106, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 108, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -254,7 +254,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(item.Ticker)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 108, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 110, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -267,7 +267,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(item.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 109, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 111, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -280,7 +280,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("$removingPopulars_" + shared.ReplaceSpecialCharsInTicker(item.Ticker) + "|| !$allowPopularsRemove")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 115, Col: 124}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 117, Col: 124}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -293,7 +293,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs("!$removingPopulars_" + shared.ReplaceSpecialCharsInTicker(item.Ticker))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 118, Col: 88}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 120, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -344,7 +344,7 @@ func AvailablePopularsCount(count int) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(count))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 134, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homePopularsConfigure.templ`, Line: 136, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {

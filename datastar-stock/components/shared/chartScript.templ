@@ -1,0 +1,70 @@
+package shared
+
+templ ChartScript() {
+	<script type="text/javascript" id="chartScript">
+        function LoadChart(id,xAxisData,yAxisData){		
+            let chartDom = document.getElementById(id);	
+            let myChart=echarts.getInstanceByDom(chartDom);				
+            if(!myChart) {
+                myChart = echarts.init(chartDom);
+            }
+            let option = {						
+                xAxis: {						
+                    data: xAxisData,							
+                },
+                yAxis: {							
+                    startValue: Math.floor(Math.min(...yAxisData.map(item => item[2]))),														
+                },
+                series: [
+                    {								
+                        data: yAxisData,
+                        type: 'candlestick',	
+                        itemStyle: {
+                            color: '#00c951', // Upward color
+                            color0: '#fb2c36', // Downward color
+                            borderColor:'#00a63e',
+                            borderColor0:'#e7000b'
+                        }
+                    },
+                    // {
+                    // 	data: [...yAxisData.map(item => item[1])],
+                    // 	type: 'line',								
+                    // 	type: "line",
+                    // 	smooth: true,
+                    // 	color: "rgba(138, 43, 226,0.6)",
+                    // 	// areaStyle: {
+                    // 	// 	color: "rgba(138, 43, 226,0.3)",
+                    // 	// },
+                    // }
+                ],						
+                tooltip: {
+                    trigger: "axis",
+                },
+                toolbox: {
+                    feature: {
+                        restore: {},
+                    },
+                },						
+                dataZoom: [
+                    {
+                        type: "inside",
+                        start: xAxisData.length - 100,
+                        end: xAxisData.length,
+                    },
+                    {
+                        start: xAxisData.length - 100,
+                        end: xAxisData.length,
+                    },
+                ]
+            };
+            option && myChart.setOption(option);
+        }			
+        function ResizeChart(id){
+            let chartDom = document.getElementById(id);	
+            let myChart=echarts.getInstanceByDom(chartDom);				
+            if(myChart) {
+                myChart.resize();
+            }
+        }				       				    	
+    </script>
+}
