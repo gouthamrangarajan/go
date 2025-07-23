@@ -231,7 +231,7 @@ func popularsConfigureUIHandler(responseWriter http.ResponseWriter, request *htt
 	go services.GetRecent(request.Context(), channel)
 
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.PatchElementTempl(shared.ModalScript())
+	// sse.PatchElementTempl(shared.ModalScript())
 	sse.PatchElementTempl(components.PopularsConfigure(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
 
 	populars := getPopulars(request.Context()) // prefetch populars data
@@ -428,7 +428,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 
 func addRecentUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.PatchElementTempl(shared.ModalScript())
+	// sse.PatchElementTempl(shared.ModalScript())
 	sse.PatchElementTempl(components.AddRecent(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
 }
 

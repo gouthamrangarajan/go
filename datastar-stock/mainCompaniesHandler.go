@@ -139,7 +139,7 @@ func companiesAllDataHandler(responseWriter http.ResponseWriter, request *http.R
 }
 func addCompanyUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.PatchElementTempl(shared.ModalScript())
+	// sse.PatchElementTempl(shared.ModalScript())
 	sse.PatchElementTempl(components.AddCompany(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
 }
 func closeAddCompanyHandler(responseWriter http.ResponseWriter, request *http.Request) {
