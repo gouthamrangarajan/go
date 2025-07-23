@@ -234,6 +234,7 @@ func popularsConfigureUIHandler(responseWriter http.ResponseWriter, request *htt
 	// sse.PatchElementTempl(shared.ModalScript())
 	sse.PatchElementTempl(components.PopularsConfigure(), datastar.WithModeAppend(), datastar.WithSelector("body"), datastar.WithUseViewTransitions(true))
 
+	time.Sleep(300 * time.Millisecond)         // wait for the modal to be available
 	populars := getPopulars(request.Context()) // prefetch populars data
 	popularsToSend := make([]models.TickerCard, len(populars))
 	for idx, ticker := range populars {
