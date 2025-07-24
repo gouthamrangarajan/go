@@ -68,7 +68,7 @@ func Recent(items []models.TickerCard) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<select name=\"newCount\" class=\"appearance-none outline-none cursor-pointer w-full py-2 px-4 pr-6 \" data-indicator-fetching-recent data-on-change=\"@post('/home/recent/more',{contentType:'form'});\"><option value=\"5\">Show 5 items</option> <option value=\"10\">Show 10 items</option> <option value=\"15\">Show 15 items</option> <option value=\"20\">Show 20 items</option> <option value=\"25\">Show 25 items</option></select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"-z-10 size-5 text-slate-600 absolute top-2.5 right-1 \" data-show=\"!$fetchingRecent\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<select name=\"newCount\" class=\"appearance-none outline-none cursor-pointer w-full py-2 px-4 pr-6 \" data-indicator-fetching-recent data-on-change=\"@post('/home/recent/more',{contentType:'form'});\"><option value=\"5\">Show 5 items</option> <option value=\"10\">Show 10 items</option> <option value=\"15\">Show 15 items</option> <option value=\"20\">Show 20 items</option> <option value=\"25\">Show 25 items</option> <option value=\"40\">Show 40 items</option> <option value=\"50\">Show 50 items</option></select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"-z-10 size-5 text-slate-600 absolute top-2.5 right-1 \" data-show=\"!$fetchingRecent\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -83,7 +83,7 @@ func Recent(items []models.TickerCard) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("@get('/data/multiple/" + tickersForRequest + "')")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 70, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 72, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -139,7 +139,7 @@ func CurrentCountInp(val int) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(val)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 78, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/homeRecent.templ`, Line: 80, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
