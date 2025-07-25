@@ -9,8 +9,10 @@ templ bodyScript() {
             window.addEventListener("popstate",(event)=>{
                 ABORT_CONTROLLER.abort();
                 ABORT_CONTROLLER=new AbortController();
+                Alpine.store('data').fullPageFetchProcessing=true;
                 setTimeout(()=>{
                     Alpine.store('data').currentSessionId=document.getElementById("chatSessionId").value;
+                    Alpine.store('data').fullPageFetchProcessing=false;
                 },1);
             },{signal:ABORT_CONTROLLER.signal})          
             function addErrorMessage(message){
@@ -111,7 +113,7 @@ templ bodyScript() {
                   evt.preventDefault();
                   const confirmationResult=window.confirm(msg);
                   if(confirmationResult){
-                    evt.detail.issueRequest(true)
+                    evt.detail.issueRequest(true);
                   }
                   else if(Alpine.store('data').deleteChatSessionProcessing){
                     Alpine.store('data').deleteChatSessionProcessing=false;                                                      
