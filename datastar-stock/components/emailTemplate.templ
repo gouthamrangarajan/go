@@ -38,9 +38,9 @@ templ EmailTemplate(priceData []models.EmailPopularsPriceData) {
 							>
 								<span
 									style="color:#62748e;font-weight:600;"
-								>{ strconv.FormatFloat(item.Price,'f',2,64) }</span><span>&nbsp;</span>
+								>${ strconv.FormatFloat(item.Price,'f',2,64) }</span><span>&nbsp;</span>
 								<br/>
-								<span style="color:#62748e">Prev: { strconv.FormatFloat(item.PrevPrice,'f',2,64) }</span><span>&nbsp;</span>
+								<span style="color:#62748e">Prev: ${ strconv.FormatFloat(item.PrevPrice,'f',2,64) }</span><span>&nbsp;</span>
 							</td>
 							<td
 								style="padding-inline:1rem;padding-block:0.5rem;"

@@ -28,9 +28,7 @@ func main() {
 	go services.GetCachedPopularsData(popularsChannel)
 	populars := <-popularsChannel
 	// fmt.Println(populars)
-
 	// populars = []string{"NFLX", "META"}
-
 	channels := make([]chan []models.CacheData, len(populars))
 	for idx := range channels {
 		channels[idx] = make(chan []models.CacheData)
