@@ -169,7 +169,7 @@ func SetCachePopularsData(data []string, channel chan<- string) {
 		return
 	}
 
-	err = rdb.Set(ctx, "populars", dataJSON, 48*time.Hour).Err()
+	err = rdb.Set(ctx, "populars", dataJSON, 0).Err()
 	if err != nil {
 		fmt.Println("Error setting data in Redis:", err)
 		channel <- "ERROR"

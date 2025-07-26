@@ -26,9 +26,9 @@ func tickerDataHandler(responseWriter http.ResponseWriter, request *http.Request
 
 	sse := datastar.NewSSE(responseWriter, request)
 	// sse.PatchElementTempl(shared.ChartScript())
-	ticketDataHandlerWithSSE(ticker, sse)
+	tickerDataHandlerWithSSE(ticker, sse)
 }
-func ticketDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenerator) {
+func tickerDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenerator) {
 	cachedDataTodayChannel := make(chan []models.CacheData)
 	defer close(cachedDataTodayChannel)
 
@@ -100,7 +100,7 @@ func multipleTickerDataHandler(responseWriter http.ResponseWriter, request *http
 	sse := datastar.NewSSE(responseWriter, request)
 	// sse.PatchElementTempl(shared.ChartScript())
 	for _, ticker := range tickerList {
-		ticketDataHandlerWithSSE(ticker, sse)
+		tickerDataHandlerWithSSE(ticker, sse)
 	}
 
 }
@@ -220,7 +220,7 @@ func popularsPriorityIncrementDecrementHandler(responseWriter http.ResponseWrite
 	// sse.PatchElementTempl(shared.ChartScript())
 	time.Sleep(300 * time.Millisecond) // wait for cards to be available
 	for _, tickerInPopulars := range populars {
-		ticketDataHandlerWithSSE(tickerInPopulars, sse)
+		tickerDataHandlerWithSSE(tickerInPopulars, sse)
 	}
 	<-saveChannel
 	<-popularsCacheSaveChannel
@@ -412,7 +412,7 @@ func recentDataHandlerWithCount(responseWriter http.ResponseWriter, request *htt
 		time.Sleep(300 * time.Millisecond) // wait for cards to be available
 		sse.ExecuteScript(`document.getElementById('card_`+shared.ReplaceSpecialCharsInTicker(recentsToSend[0].Ticker)+`')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});`, datastar.WithExecuteScriptAutoRemove(true))
 		for _, tickerInRecent := range recentsToSend {
-			ticketDataHandlerWithSSE(tickerInRecent.Ticker, sse)
+			tickerDataHandlerWithSSE(tickerInRecent.Ticker, sse)
 		}
 	} else {
 		for idx := range currentCount - newCount {
