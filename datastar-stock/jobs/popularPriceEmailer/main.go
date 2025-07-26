@@ -63,6 +63,8 @@ func main() {
 		}
 		if emailData[idx].Price >= emailData[idx].PrevPrice {
 			emailData[idx].IsIncrease = true
+		} else {
+			emailData[idx].IsIncrease = false
 		}
 	}
 	emailStrBuffer := new(bytes.Buffer)

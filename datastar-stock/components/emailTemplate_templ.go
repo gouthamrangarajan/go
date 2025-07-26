@@ -46,7 +46,7 @@ func EmailTemplate(priceData []models.EmailPopularsPriceData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><span style=\"font-size:20px;line-height:1.4;font-weight:600;margin-bottom:0.5rem;color:#006400\">Daily price changes</span><hr style=\"background-color:oklch(0.592 0.249 0.584)\"><table style=\"width:100%;text-align:left\"><thead><tr><th style=\"padding-inline:1rem;padding-block:0.5rem;font-size:18px;line-height:1.55;color:#8A2BE2;\">Ticker</th><th style=\"padding-inline:1rem;padding-block:0.5rem;font-size:18px;line-height:1.55;color:#8A2BE2;\">Price</th><th></th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><span style=\"font-size:20px;line-height:1.4;font-weight:600;margin-bottom:0.5rem;color:#006400\">Daily price changes</span><hr style=\"background-color:#8A2BE2\"><table style=\"width:100%;text-align:left\"><thead><tr><th style=\"padding-inline:1rem;padding-block:0.5rem;font-size:18px;line-height:1.55;color:#8A2BE2;\">Ticker</th><th style=\"padding-inline:1rem;padding-block:0.5rem;font-size:18px;line-height:1.55;color:#8A2BE2;\">Price</th><th></th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,12 +108,12 @@ func EmailTemplate(priceData []models.EmailPopularsPriceData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if item.IsIncrease {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span style=\"color:oklch(62.7% 0.194 149.214);font-weight:600;\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span style=\"color:#00a63e;font-weight:600;\" style=\"width:24px;height:24px;\">↑\t\t\t\t\t\t\t\t\t</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span style=\"font-weight:600;color:oklch(57.7% 0.245 27.325);\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M12 2.25a.75.75 0 0 1 .75.75v16.19l6.22-6.22a.75.75 0 1 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 1 1 1.06-1.06l6.22 6.22V3a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg></span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span style=\"font-weight:600;color:#e7000b;\" style=\"width:24px;height:24px;\">↓\t\t\t\t\t\t\t\t\t</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
