@@ -1,0 +1,68 @@
+package components
+
+import "datastar-stock/models"
+import "strconv"
+
+templ EmailTemplate(priceData []models.EmailPopularsPriceData) {
+	{{ bodyStyle := "font-family:ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\",\"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"" }}
+	<html>
+		<body style={ bodyStyle }>
+			<span
+				style="font-size:20px;line-height:1.4;font-weight:600;margin-bottom:0.5rem;color:#006400"
+			>Daily price changes</span>
+			<hr style="background-color:oklch(0.592 0.249 0.584)"/>
+			<table style="width:100%;text-align:left">
+				<thead>
+					<tr>
+						<th style="padding-inline:1rem;padding-block:0.5rem;font-size:18px;line-height:1.55;color:#8A2BE2;">Ticker</th>
+						<th
+							style="padding-inline:1rem;padding-block:0.5rem;font-size:18px;line-height:1.55;color:#8A2BE2;"
+						>Price</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, item := range priceData {
+						<tr>
+							<td
+								style="padding-inline:1rem;padding-block:0.5rem;"
+							>
+								<span
+									style="color:#4682B4;font-weight:600"
+								>{ item.Ticker }</span><span>&nbsp;</span>
+								<br/>
+								<span style="color:#62748e">Date: { item.Date }</span><span>&nbsp;</span>
+							</td>
+							<td
+								style="padding-inline:1rem;padding-block:0.5rem;"
+							>
+								<span
+									style="color:#62748e;font-weight:600;"
+								>{ strconv.FormatFloat(item.Price,'f',2,64) }</span><span>&nbsp;</span>
+								<br/>
+								<span style="color:#62748e">Prev: { strconv.FormatFloat(item.PrevPrice,'f',2,64) }</span><span>&nbsp;</span>
+							</td>
+							<td
+								style="padding-inline:1rem;padding-block:0.5rem;"
+							>
+								if item.IsIncrease {
+									<span style="color:oklch(62.7% 0.194 149.214);font-weight:600;">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+											<path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd"></path>
+										</svg>
+									</span>
+								} else {
+									<span style="font-weight:600;color:oklch(57.7% 0.245 27.325);">
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+											<path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v16.19l6.22-6.22a.75.75 0 1 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 1 1 1.06-1.06l6.22 6.22V3a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
+										</svg>
+									</span>
+								}
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</body>
+	</html>
+}

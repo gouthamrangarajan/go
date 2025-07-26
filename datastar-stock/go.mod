@@ -51,6 +51,7 @@ require (
 	github.com/igrmk/treemap/v2 v2.0.1 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
+	github.com/resend/resend-go/v2 v2.21.0 // indirect
 	github.com/samber/lo v1.47.0 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.5.0 // indirect
 	github.com/starfederation/datastar v1.0.0-RC.1 // indirect
