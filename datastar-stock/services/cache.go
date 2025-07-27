@@ -194,7 +194,7 @@ func CacheRefreshToken(idToken string, refreshToken string, channel chan<- strin
 		channel <- "ERROR"
 		return
 	}
-	fmt.Printf("Successfully cached data for refresh token for id token %v\n", idToken)
+	fmt.Printf("Successfully cached data for refresh token for id token\n")
 	channel <- "OK"
 }
 
