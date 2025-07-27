@@ -31,6 +31,20 @@ type SignInResponse struct {
 	ErrorMessage string
 }
 
+type SignInRefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token"`
+	GrantType    string `json:"grant_type"`
+}
+type SignInRefreshTokenResponse struct {
+	IDToken      string `json:"id_token"`
+	Email        string
+	UserId       string `json:"user_id"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    string `json:"expires_in"`
+	TokenType    string `json:"token_type"`
+	ErrorMessage string
+}
+
 type PopularsFromDb struct {
 	Data   []string  `firestore:"data"`
 	Date   time.Time `firestore:"date"`

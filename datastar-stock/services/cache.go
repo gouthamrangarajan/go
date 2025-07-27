@@ -178,3 +178,42 @@ func SetCachePopularsData(data []string, channel chan<- string) {
 	fmt.Printf("Successfully cached data for populars\n")
 	channel <- "OK"
 }
+
+func CacheRefreshToken(idToken string, refreshToken string, channel chan<- string) {
+	ctx := context.Background()
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_ADDRESS"),
+		Username: os.Getenv("REDIS_USERNAME"),
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
+	})
+
+	err := rdb.Set(ctx, idToken, refreshToken, 24*time.Hour).Err()
+	if err != nil {
+		fmt.Println("Error setting data in Redis:", err)
+		channel <- "ERROR"
+		return
+	}
+	fmt.Printf("Successfully cached data for refresh token for id token %v\n", idToken)
+	channel <- "OK"
+}
+
+func GetCachedRefreshToken(idToken string, channel chan<- string) {
+	ctx := context.Background()
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_ADDRESS"),
+		Username: os.Getenv("REDIS_USERNAME"),
+		Password: os.Getenv("REDIS_PASSWORD"),
+		DB:       0,
+	})
+
+	result, err := rdb.Get(ctx, idToken).Result()
+
+	if err != nil {
+		fmt.Printf("Error fetching refresh token from Redis  %s\n", err)
+		channel <- ""
+		return
+	}
+	channel <- result
+}

@@ -7,7 +7,6 @@ import (
 	"datastar-stock/services"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -38,11 +37,12 @@ func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		sse.PatchElementTempl(shared.FormSubmitEmptyResult(), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(shared.FormSubmitResult("Error! Please provide valid Email & Password", true), datastar.WithUseViewTransitions(true))
 	} else {
-		expiresIn := time.Now().Add(55 * time.Minute) // Default to 1 hour
-		expiresInParsed, err := strconv.Atoi(signInResponse.ExpiresIn)
-		if err == nil {
-			expiresIn = time.Now().Add(time.Duration(expiresInParsed-120) * time.Second) // add expiry 2 mins lesser , expiresin is seconds
-		}
+		expiresIn := time.Now().Add(24 * 60 * time.Minute) // Default to 1 day
+		// expiresIn := time.Now().Add(55 * time.Minute) // Default to 1 hour
+		// expiresInParsed, err := strconv.Atoi(signInResponse.ExpiresIn)
+		// if err == nil {
+		// 	expiresIn = time.Now().Add(time.Duration(expiresInParsed-120) * time.Second) // add expiry 2 mins lesser , expiresin is seconds
+		// }
 
 		http.SetCookie(responseWriter, &http.Cookie{
 			Name:     "token",
@@ -53,10 +53,13 @@ func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			Expires:  expiresIn,
 			SameSite: http.SameSiteLaxMode,
 		})
+		channel := make(chan string)
+		go services.CacheRefreshToken(signInResponse.IDToken, signInResponse.RefreshToken, channel)
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(shared.FormSubmitEmptyResult(), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(shared.FormSubmitResult("Successfully logged in.", false), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(components.LoginInSubmitBtn(true), datastar.WithUseViewTransitions(true))
 		sse.ExecuteScript("window.location.href = window.location.href", datastar.WithExecuteScriptAutoRemove(true))
+		<-channel
 	}
 }
