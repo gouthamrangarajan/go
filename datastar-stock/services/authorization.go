@@ -58,6 +58,10 @@ func VerifyToken(token string, ctx context.Context, channel chan<- string) {
 	tokenParsed, err := auth.VerifyIDToken(ctx, token)
 	if err != nil {
 		fmt.Println("Error verifying ID token:", err)
+		if strings.Contains(err.Error(), "ID token has expired at") {
+			channel <- "TOKEN EXPIRED"
+			return
+		}
 		channel <- "ERROR"
 		return
 	}
