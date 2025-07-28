@@ -26,7 +26,7 @@ func MainPage(w http.ResponseWriter, r *http.Request) {
 		go services.GetGroceryListViaChannel(databaseUrl, authToken, sort, groceriesChannel)
 		groceries := <-groceriesChannel
 		items, _ := tranformGroceryList(groceries, false)
-		components.MainEl(items, sort, suggestions).Render(r.Context(), w)
+		components.MainEl(os.Getenv("LOCATION"), items, sort, suggestions).Render(r.Context(), w)
 		// comp := components.MainEl(items, sort, suggestions)
 		// templ.Handler(comp).ServeHTTP(w, r)
 	}
@@ -50,7 +50,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookie)
 		groceries := <-groceriesChannel
 		items, _ := tranformGroceryList(groceries, true)
-		components.SectionEl(items, sort, true, suggestions).Render(r.Context(), w)
+		components.SectionEl(os.Getenv("LOCATION"), items, sort, true, suggestions).Render(r.Context(), w)
 	}
 }
 

@@ -1,6 +1,6 @@
 package components
 
-templ addItemForm() {
+templ addItemForm(location string) {
 	<form
 		method="POST"
 		hx-post="/add"
@@ -20,12 +20,21 @@ templ addItemForm() {
 		x-bind:disabled="$store.data.newItemProcessing || $store.data.processing"
 		class="flex-1 flex items-center py-2 px-4 rounded border-2 border-slate-300 transition duration-300 focus-within:border-slate-600 "
 	>
-		<input
-			class="appearance-none outline-none flex-1 placeholder:text-slate-500"
-			placeholder="e.g. Costco Apples"
-			name="item"
-			x-model="$store.data.newItem"
-		/>
+		if location == "NJ" {
+			<input
+				class="appearance-none outline-none flex-1 placeholder:text-slate-500"
+				placeholder="e.g. Costco Apples"
+				name="item"
+				x-model="$store.data.newItem"
+			/>
+		} else {
+			<input
+				class="appearance-none outline-none flex-1 placeholder:text-slate-500"
+				placeholder="e.g. Apples"
+				name="item"
+				x-model="$store.data.newItem"
+			/>
+		}
 		<button
 			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-green-600 hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600"
 			type="submit"
