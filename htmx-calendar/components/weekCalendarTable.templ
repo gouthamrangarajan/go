@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var dateLayout = "2006-01-02"
+
 templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string, week int) {
 	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
 	{{ heightClass := "h-8 lg:h-14 xl:h-16" }}
@@ -41,6 +43,17 @@ templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 							>
 								if displayAll {
 									for _,event := range filterDateEvents(eventsData,calendarData[0][idx]) {
+										{{ allowDelete := active }}
+										{{
+											stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
+										}}
+										if !allowDelete && event.Frequency!=AllowedFrequencies[0] {
+											if err!=nil {
+												{{ allowDelete = true }}
+											} else if stopAfterDate.After(time.Now()) {
+												{{ allowDelete = true }}
+											}
+										}
 										<div
 											draggable={ "true" }
 											data-id={ event.Id }
@@ -49,7 +62,7 @@ templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 											style="view-transition-name:none"
 										>
 											<span class="flex-1 truncate">{ event.Task }</span>
-											if active {
+											if allowDelete {
 												<button
 													name="eventId"
 													value={ event.Id }
@@ -84,9 +97,10 @@ func generateWeekTdClass(row int, col int, from string) string {
 		animationClass = "animate-slide-left"
 	}
 	borderBottomClass := "border-b-2 "
-	if row == 6 {
+	switch row {
+	case 6:
 		borderBottomClass = ""
-	} else if row == 0 {
+	case 0:
 		borderBottomClass = "border-y-2 "
 	}
 	if col != 0 {
