@@ -12,24 +12,39 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func MainPage(w http.ResponseWriter, r *http.Request) {
+//	func MainPage(w http.ResponseWriter, r *http.Request) {
+//		sort := r.URL.Query().Get("sort")
+//		suggestions := r.URL.Query().Get("suggestions")
+//		valid := services.ValidateUserIdInCookie(r)
+//		if !valid {
+//			components.MainElForLogin(sort, suggestions).Render(r.Context(), w)
+//		} else {
+//			authToken := os.Getenv("TURSO_AUTH_TOKEN")
+//			databaseUrl := os.Getenv("TURSO_DATABASE_URL")
+//			groceriesChannel := make(chan []models.Grocery)
+//			defer close(groceriesChannel)
+//			go services.GetGroceryListViaChannel(databaseUrl, authToken, sort, groceriesChannel)
+//			groceries := <-groceriesChannel
+//			items, _ := tranformGroceryList(groceries, false)
+//			components.MainEl(os.Getenv("LOCATION"), items, sort, suggestions).Render(r.Context(), w)
+//			// comp := components.MainEl(items, sort, suggestions)
+//			// templ.Handler(comp).ServeHTTP(w, r)
+//		}
+//	}
+func MainPageWithChi(w http.ResponseWriter, r *http.Request) {
 	sort := r.URL.Query().Get("sort")
 	suggestions := r.URL.Query().Get("suggestions")
-	valid := services.ValidateUserIdInCookie(r)
-	if !valid {
-		components.MainElForLogin(sort, suggestions).Render(r.Context(), w)
-	} else {
-		authToken := os.Getenv("TURSO_AUTH_TOKEN")
-		databaseUrl := os.Getenv("TURSO_DATABASE_URL")
-		groceriesChannel := make(chan []models.Grocery)
-		defer close(groceriesChannel)
-		go services.GetGroceryListViaChannel(databaseUrl, authToken, sort, groceriesChannel)
-		groceries := <-groceriesChannel
-		items, _ := tranformGroceryList(groceries, false)
-		components.MainEl(os.Getenv("LOCATION"), items, sort, suggestions).Render(r.Context(), w)
-		// comp := components.MainEl(items, sort, suggestions)
-		// templ.Handler(comp).ServeHTTP(w, r)
-	}
+
+	authToken := os.Getenv("TURSO_AUTH_TOKEN")
+	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
+	groceriesChannel := make(chan []models.Grocery)
+	defer close(groceriesChannel)
+	go services.GetGroceryListViaChannel(databaseUrl, authToken, sort, groceriesChannel)
+	groceries := <-groceriesChannel
+	items, _ := tranformGroceryList(groceries, false)
+	components.MainEl(os.Getenv("LOCATION"), items, sort, suggestions).Render(r.Context(), w)
+	// comp := components.MainEl(items, sort, suggestions)
+	// templ.Handler(comp).ServeHTTP(w, r)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {

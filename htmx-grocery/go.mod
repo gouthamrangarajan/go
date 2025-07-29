@@ -13,4 +13,5 @@ require (
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/coder/websocket v1.8.13 // indirect
+	github.com/go-chi/chi/v5 v5.2.2 // indirect
 )

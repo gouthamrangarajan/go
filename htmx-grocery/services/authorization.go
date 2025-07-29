@@ -4,8 +4,10 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"htmx-grocery/components"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -67,13 +69,25 @@ func ValidateUserIdInCookie(r *http.Request) bool {
 	return string(userIdFromCookie) == userIdFromConfig
 }
 
-func Middleware(next func(w http.ResponseWriter, r *http.Request)) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if ValidateUserIdInCookie(r) {
-			next(w, r)
+func ChiMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
+		if strings.HasPrefix(request.URL.Path, "/assets") || request.URL.Path == "/login" {
+			next.ServeHTTP(responseWriter, request)
+			return
+		}
+		if ValidateUserIdInCookie(request) {
+			next.ServeHTTP(responseWriter, request)
+			return
+		}
+
+		if request.Method == "GET" && request.URL.Path == "/" {
+			sort := request.URL.Query().Get("sort")
+			suggestions := request.URL.Query().Get("suggestions")
+			components.MainElForLogin(sort, suggestions).Render(request.Context(), responseWriter)
+
 		} else {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Unauthorized"))
+			http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+			return
 		}
 	})
 }
