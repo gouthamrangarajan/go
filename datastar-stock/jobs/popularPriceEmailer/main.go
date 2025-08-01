@@ -73,6 +73,9 @@ func main() {
 	defer close(emailChannel)
 	go sendEmail(os.Getenv("EMAIL_TO"), os.Getenv("EMAIL_FROM"), emailStrBuffer.String(), os.Getenv("EMAIL_SUBJECT"), os.Getenv("RESEND_API_KEY"), emailChannel)
 	fmt.Println(<-emailChannel)
+
+	//For debugging uncommen the below
+	//fmt.Println(emailStrBuffer.String())
 }
 
 func getData(ticker string, channel chan<- []models.CacheData) {
