@@ -50,7 +50,7 @@ func main() {
 		emailData[idx] = models.EmailPopularsPriceData{
 			Ticker: ticker,
 		}
-		if len(popularsDict[ticker]) > 2 {
+		if len(popularsDict[ticker]) >= 2 {
 			latestDayData := popularsDict[ticker][len(popularsDict[ticker])-1]
 			prevDayData := popularsDict[ticker][len(popularsDict[ticker])-2]
 			emailData[idx].Date = latestDayData.Date
