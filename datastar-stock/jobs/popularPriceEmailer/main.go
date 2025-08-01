@@ -50,21 +50,26 @@ func main() {
 		emailData[idx] = models.EmailPopularsPriceData{
 			Ticker: ticker,
 		}
-		if len(popularsDict[ticker]) >= 2 {
+		if len(popularsDict[ticker]) >= 1 {
 			latestDayData := popularsDict[ticker][len(popularsDict[ticker])-1]
-			prevDayData := popularsDict[ticker][len(popularsDict[ticker])-2]
 			emailData[idx].Date = latestDayData.Date
 			if val, err := strconv.ParseFloat(latestDayData.Close, 64); err == nil {
 				emailData[idx].Price = val
 			}
-			if val, err := strconv.ParseFloat(prevDayData.Close, 64); err == nil {
-				emailData[idx].PrevPrice = val
-			}
-			if emailData[idx].Price >= emailData[idx].PrevPrice {
-				emailData[idx].IsIncrease = true
+			if len(popularsDict[ticker]) >= 2 {
+				prevDayData := popularsDict[ticker][len(popularsDict[ticker])-2]
+				if val, err := strconv.ParseFloat(prevDayData.Close, 64); err == nil {
+					emailData[idx].PrevPrice = val
+				}
+				if emailData[idx].Price >= emailData[idx].PrevPrice {
+					emailData[idx].IsIncrease = true
+				} else {
+					emailData[idx].IsIncrease = false
+				}
 			} else {
-				emailData[idx].IsIncrease = false
+				emailData[idx].IsIncrease = true
 			}
+
 		}
 	}
 	emailStrBuffer := new(bytes.Buffer)
