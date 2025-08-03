@@ -534,6 +534,9 @@
   .text-left {
     text-align: left;
   }
+  .font-\(family-name\:--font-neo-grotesque\) {
+    font-family: var(--font-neo-grotesque);
+  }
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
