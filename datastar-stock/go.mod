@@ -6,7 +6,7 @@ toolchain go1.24.5
 
 require (
 	firebase.google.com/go/v4 v4.16.1
-	github.com/a-h/templ v0.3.906
+	github.com/a-h/templ v0.3.924
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/redis/go-redis/v9 v9.11.0
