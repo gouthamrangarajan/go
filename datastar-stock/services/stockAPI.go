@@ -63,6 +63,8 @@ func CallFMPAPI(ticker string, channel chan<- []models.FMPResponse) {
 	json.Unmarshal(respBody, &response)
 	if len(response) > 0 {
 		fmt.Printf("Successfully fetched data from FMP API for ticker %s\n", ticker)
+	} else {
+		fmt.Printf("Invalid Response for Ticker %v from FMP API:%v\n", ticker, string(respBody))
 	}
 	channel <- response
 }
@@ -79,6 +81,7 @@ func CallTwelveDataAPI(ticker string, channel chan<- models.TwelveDataResponse) 
 	}
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
+
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Error: received non-200 response from Twelve Data API:", resp.StatusCode)
 		if err == nil {
@@ -90,6 +93,8 @@ func CallTwelveDataAPI(ticker string, channel chan<- models.TwelveDataResponse) 
 	json.Unmarshal(respBody, &response)
 	if len(response.Values) > 0 {
 		fmt.Printf("Successfully fetched data from Twelve Data API for ticker %s\n", ticker)
+	} else {
+		fmt.Printf("Invalid Response for Ticker %v from Twelve Data API:%v\n", ticker, string(respBody))
 	}
 	channel <- response
 }
