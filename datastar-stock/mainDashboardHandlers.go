@@ -8,7 +8,6 @@ import (
 	"datastar-stock/services"
 	"net/http"
 	"slices"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -40,27 +39,18 @@ func tickerDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenera
 	chartData := <-cachedDataTodayChannel
 
 	if (len(chartData)) == 0 {
-		alphavantageChannel := make(chan models.AlphavantageResponse)
-		defer close(alphavantageChannel)
-		go services.CallAlphavantageAPI(ticker, alphavantageChannel)
-		apiData := <-alphavantageChannel
-
-		transformChannel := make(chan []models.CacheData)
-		defer close(transformChannel)
-		go transformAlphavantageResponseToCacheData(apiData, transformChannel)
-		chartData = <-transformChannel
-
-		if len(chartData) == 0 { //error
+		chartData = services.CallStockApisInPriority(ticker)
+		if len(chartData) == 0 { //error in both api calls
 			cachedDataPrevDayChannel := make(chan []models.CacheData)
 			defer close(cachedDataPrevDayChannel)
 			go services.GetCachedTickerData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
 			chartData = <-cachedDataPrevDayChannel
 			if len(chartData) == 0 { //still no data
-				if apiData.ErrorMessage != "" && strings.Contains(strings.ToLower(apiData.ErrorMessage), "invalid api call") {
-					sse.PatchElementTempl(shared.CardTickerError(ticker, "Error! Invalid Ticker"))
-				} else {
-					sse.PatchElementTempl(shared.CardTickerError(ticker, "Error! Try again later"))
-				}
+				// if apiData.ErrorMessage != "" && strings.Contains(strings.ToLower(apiData.ErrorMessage), "invalid api call") {
+				// 	sse.PatchElementTempl(shared.CardTickerError(ticker, "Error! Invalid Ticker"))
+				// } else {
+				sse.PatchElementTempl(shared.CardTickerError(ticker, "Error! Try again later"))
+				// }
 				return
 			}
 		} else {
@@ -103,26 +93,6 @@ func multipleTickerDataHandler(responseWriter http.ResponseWriter, request *http
 		tickerDataHandlerWithSSE(ticker, sse)
 	}
 
-}
-func transformAlphavantageResponseToCacheData(response models.AlphavantageResponse, channel chan<- []models.CacheData) {
-	chartData := make([]models.CacheData, 0)
-	dates := make([]string, 0, len(response.TimeSeriesDaily))
-	for date := range response.TimeSeriesDaily {
-		dates = append(dates, date)
-	}
-	sort.Strings(dates)
-	for _, date := range dates {
-		dailyData := response.TimeSeriesDaily[date]
-		chartData = append(chartData, models.CacheData{
-			Date:   date,
-			Close:  dailyData.Close,
-			Open:   dailyData.Open,
-			High:   dailyData.High,
-			Low:    dailyData.Low,
-			Volume: dailyData.Volume,
-		})
-	}
-	channel <- chartData
 }
 
 func getEchartData(data []models.CacheData, channel chan<- models.EChartData) {

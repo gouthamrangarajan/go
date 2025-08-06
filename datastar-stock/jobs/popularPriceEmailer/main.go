@@ -8,7 +8,6 @@ import (
 	"datastar-stock/services"
 	"fmt"
 	"os"
-	"sort"
 	"strconv"
 	"time"
 
@@ -89,27 +88,8 @@ func getData(ticker string, channel chan<- []models.CacheData) {
 	setCacheChannel := make(chan string)
 	defer close(setCacheChannel)
 
-	chartData := make([]models.CacheData, 0)
-	alphavantageChannel := make(chan models.AlphavantageResponse)
-	defer close(alphavantageChannel)
-	go services.CallAlphavantageAPI(ticker, alphavantageChannel)
-	apiData := <-alphavantageChannel
-	dates := make([]string, 0, len(apiData.TimeSeriesDaily))
-	for date := range apiData.TimeSeriesDaily {
-		dates = append(dates, date)
-	}
-	sort.Strings(dates)
-	for _, date := range dates {
-		dailyData := apiData.TimeSeriesDaily[date]
-		chartData = append(chartData, models.CacheData{
-			Date:   date,
-			Close:  dailyData.Close,
-			Open:   dailyData.Open,
-			High:   dailyData.High,
-			Low:    dailyData.Low,
-			Volume: dailyData.Volume,
-		})
-	}
+	chartData := services.CallStockApisInPriority(ticker)
+
 	if len(chartData) > 0 {
 		go services.SetCacheTickerData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
 		waitForSetCache = true
