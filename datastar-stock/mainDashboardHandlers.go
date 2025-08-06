@@ -6,7 +6,6 @@ import (
 	"datastar-stock/components/shared"
 	"datastar-stock/models"
 	"datastar-stock/services"
-	"math/rand"
 	"net/http"
 	"slices"
 	"sort"
@@ -41,11 +40,6 @@ func tickerDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenera
 	chartData := <-cachedDataTodayChannel
 
 	if (len(chartData)) == 0 {
-
-		source := rand.NewSource(time.Now().UnixNano())
-		random := rand.New(source)
-		time.Sleep(time.Duration(random.Intn(3)+3) * time.Second) // to avoid hitting rate limits of alphavantage API
-
 		alphavantageChannel := make(chan models.AlphavantageResponse)
 		defer close(alphavantageChannel)
 		go services.CallAlphavantageAPI(ticker, alphavantageChannel)
