@@ -15,6 +15,8 @@ Simple tool for tracking stock using Golang & Data star
 - Firebase Auth & Firestore Db
 - Redis
 - Alphavantage API
+- Financial Modelling Prep API
+- Twelve Data API
 - Echarts
 
 ### Installation
@@ -34,6 +36,8 @@ To get started , follow these steps:
    - ALPAVANTAGE_URL
    - COMPANIES_LIMIT
    - ENVIRONMENT
+   - FINANCIAL_MODELLING_PREP_API_KEY
+   - FINANCIAL_MODELLING_PREP_URL
    - FIREBASE_TYPE
    - FIREBASE_PROJECT_ID
    - FIREBASE_PRIVATE_KEY_ID
@@ -49,6 +53,8 @@ To get started , follow these steps:
    - REDIS_ADDRESS
    - REDIS_PASSWORD
    - REDIS_USERNAME
+   - TWELVE_DATA_API_KEY
+   - TWELVE_DATA_URL
 4. Use Go & Templ (Terminal 1)
    ```bash
     templ generate --watch --proxy="http://localhost:3000" --cmd="go run ."
