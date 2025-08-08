@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-var imgRegex = regexp.MustCompile(`^data:(image/(gif|png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
+var imgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
 
 // ALGO
 // Step 1: Validate data, e.g empty prompt, invalid chatSessionId, invalid imagedata etc.

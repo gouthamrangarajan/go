@@ -266,7 +266,11 @@ templ bodyScript() {
                                 });                        
                                 if(!resp.ok){
                                     this.setProcessing(false);
-                                    addErrorMessage('Error! Please try again later');     
+                                    if (resp.status==400){
+                                        addErrorMessage('Bad request');
+                                    } else{
+                                        addErrorMessage('Error! Please try again later');     
+                                    }
                                     return;
                                 }                                   
                                 const reader = resp.body.getReader();
