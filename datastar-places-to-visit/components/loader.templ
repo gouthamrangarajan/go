@@ -1,0 +1,22 @@
+package components
+
+templ loader(dataShowSignal string, class string, containerClass string) {
+	if dataShowSignal != "" {
+		<div
+			class={ "absolute top-0 left-0 w-full h-full flex items-center justify-center " + containerClass }
+			data-show={ dataShowSignal }
+		>
+			<span
+				class={ "border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + class }
+			></span>
+		</div>
+	} else {
+		<div
+			class={ "absolute top-0 left-0 w-full h-full flex items-center justify-center " + containerClass }
+		>
+			<span
+				class={ "border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + class }
+			></span>
+		</div>
+	}
+}

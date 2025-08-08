@@ -1,0 +1,38 @@
+@import "tailwindcss";
+@plugin 'tailwind-scrollbar';
+
+
+@theme {
+    --color-primary: #1E293B;
+    --color-secondary: #666666;
+    --color-action: #2980B9;
+    --color-action-light: #3498DB;
+}
+
+.animate-spin-2 {
+    animation: spin-2 2s var(--ease-spring-3) infinite;
+}
+
+@keyframes spin-2 {
+    from {
+        transform: rotate(0);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-results {
+    animation: results 0.2s var(--ease-in-1);
+}
+
+@keyframes results {
+    from {
+        transform: scaleY(0);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
+}

@@ -1,0 +1,69 @@
+package components
+
+import "datastar-placestovisit/models"
+
+templ placesSearchCard() {
+	<div class="py-2 px-4 rounded-xl bg-white w-full mx-auto h-48 pt-10 md:py-6 md:px-8 md:pt-16">
+		<form
+			class="relative flex flex-col items-center gap-2 w-full md:flex-row"
+			data-on-submit="evt.preventDefault()"
+		>
+			<div class="w-full flex items-center gap-1 relative rounded-lg border-2 border-slate-300 py-2 px-4 transition duration-300 text-slate-600 focus-within:ring-2 focus-within:ring-slate-300 md:flex-1">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+					<path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd"></path>
+				</svg>
+				<input
+					type="text"
+					name="srchTxt"
+					placeholder="Manhattan / New York / United States"
+					class="appearance-none outline-none flex-1 text-primary placeholder:text-slate-500"
+					data-on-input__debounce.300ms="@get('/search',{contentType:'form'})"
+					data-indicator="fetchingCities"
+				/>
+				<div class="relative w-6 h-6" data-show="$fetchingCities">
+					@loader("$fetchingCities", "", "")
+				</div>
+			</div>
+			<button
+				type="button"
+				name="placeNearMe"
+				value="yes"
+				class="appearance-none outline-none cursor-pointer flex gap-1 items-center py-2 px-4 rounded-lg bg-action text-white transition duration-300 hover:bg-action-light focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-white"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+					<path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd"></path>
+				</svg>
+				<span>Get Places Near Me</span>
+			</button>
+			@PlacesSearchResults(make([]models.WorldCities, 0))
+		</form>
+	</div>
+}
+
+templ PlacesSearchResults(data []models.WorldCities) {
+	<ul
+		class="appearance-none outline-none animate-results origin-top z-10 absolute top-12 left-0 w-full h-48 shadow rounded-lg bg-white border border-slate-300 transition duration-300 overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-track-action-light/30 scrollbar-thumb-action focus:ring-2 focus:ring-slate-300 md:w-10/12 lg:w-8/12 xl:w-7/12"
+		data-show="$showSearchResults"
+		id="searchResults"
+		tabindex="0"
+	>
+		for _,record :=range data {
+			<li>
+				<a
+					class="apperance-none outline-none py-2 px-4 pr-5 w-full flex gap-1 items-center justify-between cursor-pointer transition duration-300 hover:bg-slate-200 focus:bg-slate-200"
+					href={ "/" + record.Lat + "/" + record.Lng }
+					data-on-click={ "evt.preventDefault();@get('/" + record.Lat + "/" + record.Lng + "')" }
+				>
+					<span class="flex flex-col w-1/3"><span class="text-slate-600 text-sm">City</span><span class="break-all">{ record.City }</span></span>
+					<span class="flex flex-col w-1/3"><span class="text-slate-600 text-sm">State</span><span class="break-all">{ record.State }</span></span>
+					<span class="flex flex-col w-1/3"><span class="text-slate-600 text-sm">Country</span><span class="break-all">{ record.Country }</span></span>
+				</a>
+			</li>
+		}
+		if len(data) == 0 {
+			<li class="appearance-none outline-none text-center text-red-600 py-2 px-4">
+				No data found matching the search criteria
+			</li>
+		}
+	</ul>
+}
