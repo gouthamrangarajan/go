@@ -31,6 +31,7 @@ func main() {
 	compressedRouter.Get("/", func(response http.ResponseWriter, request *http.Request) {
 		services.MainPageHandler(response, request, 0)
 	})
+	compressedRouter.Get("/search", services.SearchMenuHandler)
 	compressedRouter.Get("/{sessionId}", func(response http.ResponseWriter, request *http.Request) {
 		sessionIdStr := chi.URLParam(request, "sessionId")
 		sessionId, err := strconv.Atoi(sessionIdStr)

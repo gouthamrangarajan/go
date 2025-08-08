@@ -4,6 +4,7 @@ import (
 	"htmx-gemini-chat/components"
 	"htmx-gemini-chat/models"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -60,4 +61,24 @@ func MarkdownSrcHandler(sessionId int, conversationId int, response http.Respons
 	conversation := <-conversationChannel
 	response.Header().Set("Cache-Control", "public, max-age=31536000, immutable") // 1 year (31536000 seconds), immutable
 	response.Write([]byte(conversation.Message))
+}
+
+func SearchMenuHandler(response http.ResponseWriter, request *http.Request) {
+	userId, ok := request.Context().Value(UserIDKey).(string)
+	if !ok {
+		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	sessions := GetChatSessionsViaChannel(userId)
+	if request.URL.Query().Get("srchTxt") != "" {
+		srchTxt := strings.TrimSpace(request.URL.Query().Get("srchTxt"))
+		ftedSessions := []models.ChatSession{}
+		for _, session := range sessions {
+			if strings.Contains(strings.ToLower(session.Title), strings.ToLower(srchTxt)) {
+				ftedSessions = append(ftedSessions, session)
+			}
+		}
+		sessions = ftedSessions
+	}
+	components.MenuContainer(sessions).Render(request.Context(), response)
 }
