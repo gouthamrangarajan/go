@@ -90,3 +90,7 @@
 [x-cloak] {
     display: none !important;
 }
+
+#searchIndicator.htmx-request {
+    display: flex;
+}

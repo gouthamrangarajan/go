@@ -170,8 +170,13 @@ templ searchMenu() {
 			hx-get="/search"
 			hx-target="#ul_menu"
 			hx-swap="outerHTML transition:true"
+			hx-indicator="#searchIndicator"
 			class="appearance-none outline-none flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400"
 			placeholder="Find your past conversations..."
 		/>
+		<div class="items-center gap-1 hidden" id="searchIndicator">
+			<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one"></span>
+			<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two"></span>
+		</div>
 	</div>
 }
