@@ -144,6 +144,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 						concatenatedStr = strings.Replace(concatenatedStr, place+"||", "", 1) // remove processed place
 						allData = append(allData, singleData)
 						sendMarkerToUI(sse, singleData, len(allData))
+						sse.PatchSignals([]byte("{loadingMap:false}"))
 					}
 				}
 			} else {
