@@ -8,10 +8,8 @@ templ Main() {
 			data-signals-loadingMap="true"
 		>
 			@header()
-			<div class="flex flex-col gap-3 w-full md:flex-col-reverse">
-				@mapCard()
-				@placesSearchCard()
-			</div>
+			@placesSearchCard()
+			@mapCard()
 			@errorContainer()
 		</main>
 	}

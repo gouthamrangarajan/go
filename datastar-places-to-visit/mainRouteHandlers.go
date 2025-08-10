@@ -58,10 +58,7 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
 		if lat == "" || lng == "" {
 			if request.Header.Get("datastar-request") == "true" {
 				sse := datastar.NewSSE(responseWriter, request)
-				errorId := rand.Int()
-				sse.PatchElementTempl(components.ErrorMessage(errorId, "Error: Invalid city selection."), datastar.WithModeAppend(), datastar.WithSelectorID("errorContainer"), datastar.WithUseViewTransitions(true))
-				time.Sleep(3 * time.Second)
-				sse.RemoveElement("#error-"+strconv.Itoa(errorId), datastar.WithUseViewTransitions(true))
+				showAndHideErrorMessage(sse, "Error: Invalid city selection.")
 			} else {
 				http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 				return
@@ -114,10 +111,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 	}
 	for str := range geminiAiChannel {
 		if str == "ERROR" {
-			errorId := rand.Int()
-			sse.PatchElementTempl(components.ErrorMessage(errorId, "Error: Please try again later."), datastar.WithModeAppend(), datastar.WithSelectorID("errorContainer"), datastar.WithUseViewTransitions(true))
-			time.Sleep(3 * time.Second)
-			sse.RemoveElement("#error-"+strconv.Itoa(errorId), datastar.WithUseViewTransitions(true))
+			showAndHideErrorMessage(sse, "Error: Please try again later.")
 		} else {
 			concatenatedStr += str
 			places := strings.Split(concatenatedStr, "||")
@@ -172,8 +166,13 @@ func sendMarkerToUI(sse *datastar.ServerSentEventGenerator, data models.TourismS
 
 func showGettingCoordinatesError(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
+	showAndHideErrorMessage(sse, "Error: Please enable location service & click on allow Know your location.")
+}
+func showAndHideErrorMessage(sse *datastar.ServerSentEventGenerator, message string) {
 	errorId := rand.Int()
-	sse.PatchElementTempl(components.ErrorMessage(errorId, "Error: Please enable location service & click on allow Know your location."), datastar.WithModeAppend(), datastar.WithSelectorID("errorContainer"), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.ErrorMessage(errorId, message), datastar.WithModeAppend(), datastar.WithSelectorID("errorContainer"), datastar.WithUseViewTransitions(true))
 	time.Sleep(3 * time.Second)
+	sse.PatchElementTempl(components.ErrorMessageAnimateOut(errorId, message))
+	time.Sleep(2 * time.Millisecond)
 	sse.RemoveElement("#error-"+strconv.Itoa(errorId), datastar.WithUseViewTransitions(true))
 }

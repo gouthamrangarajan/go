@@ -49,7 +49,7 @@ func Main() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex flex-col gap-3 w-full md:flex-col-reverse\">")
+			templ_7745c5c3_Err = placesSearchCard().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -57,19 +57,11 @@ func Main() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = placesSearchCard().Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 			templ_7745c5c3_Err = errorContainer().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -104,7 +96,7 @@ func header() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex flex-col gap-1 text-center w-full mx-auto shrink-0\"><h1 class=\"text-3xl font-bold text-primary lg:text-4xl\">Discover Amazing Places</h1><p class=\"text-secondary\">Explore 40,000+ cities worldwide with AI-powered recommendations</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-col gap-1 text-center w-full mx-auto shrink-0\"><h1 class=\"text-3xl font-bold text-primary lg:text-4xl\">Discover Amazing Places</h1><p class=\"text-secondary\">Explore 40,000+ cities worldwide with AI-powered recommendations</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -133,7 +125,7 @@ func mapCard() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"py-2 px-4 flex flex-col gap-1  shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-100 md:py-6 md:px-8 md:h-116 lg:h-136\" data-on-load=\"@get('/map/initialize')\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\"><h2 class=\"text-xl text-secondary w-full text-center font-semibold lg:text-2xl\">Places to Visit</h2><div id=\"map\" class=\"h-full w-full\" data-class=\"{'z-0':$loadingMap}\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"py-2 px-4 flex flex-col gap-1  shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-100 md:py-6 md:px-8 md:h-116 lg:h-136\" data-on-load=\"@get('/map/initialize')\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\"><h2 class=\"text-xl text-secondary w-full text-center font-semibold lg:text-2xl\">Places to Visit</h2><div id=\"map\" class=\"h-full w-full\" data-class=\"{'z-0':$loadingMap}\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -141,7 +133,7 @@ func mapCard() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"text-sm text-primary\">* Zoom out in the map if you don't see any locations 😊...</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span class=\"text-sm text-primary\">* Zoom out in the map if you don't see any locations 😊...</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

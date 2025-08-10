@@ -18,3 +18,13 @@ templ ErrorMessage(id int, message string) {
 		{ message }
 	</p>
 }
+
+templ ErrorMessageAnimateOut(id int, message string) {
+	<p
+		class="animate-error-out bg-white py-2 px-4 rounded text-red-600 font-semibold shadow-2xl"
+		style={ "view-transition-name:error-" + strconv.Itoa(id) + ";" }
+		id={ "error-" + strconv.Itoa(id) }
+	>
+		{ message }
+	</p>
+}
