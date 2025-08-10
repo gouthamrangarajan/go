@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func getTourismPlacesGeminiAPI(city string, lat string, lng string, channel chan string) {
+func getTourismPlacesGeminiAPI(lat string, lng string, channel chan string) {
 	defer close(channel)
 	geminiRequest := models.GeminiRequest{
 		Contents: []models.GeminiRequestContent{},
@@ -22,11 +22,8 @@ func getTourismPlacesGeminiAPI(city string, lat string, lng string, channel chan
 		Parts: []models.GeminiRequestContentPart{},
 	})
 	text := `What are the top ` + os.Getenv("NO_OF_PLACES") + ` tourism places to visit in the world `
-	if city != "" {
-		text += ` in the city ` + city
-	}
-	text += ` at latitude ` + lat + ` and longitude ` + lng + `?`
-	text += `Please provide the name, latitude, and longitude of each place.
+	text += ` near latitude ` + lat + ` and longitude ` + lng + `?`
+	text += `Please provide the name, latitude, and longitude of each spot.
 			 Separate the name, latitude and longitude with a '|'. 
 			 Separate the places with a '||'. 
 			 Do not include any other information or formatting.`
