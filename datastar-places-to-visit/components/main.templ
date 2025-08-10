@@ -23,7 +23,7 @@ templ header() {
 
 templ mapCard() {
 	<div
-		class="py-2 px-4 flex flex-col gap-1 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-120  md:py-6 md:px-8  lg:h-136"
+		class="py-2 px-4 flex flex-col gap-1 grow-0 shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-112  md:py-6 md:px-8  lg:h-136 lg:grow-1"
 		data-on-load="@get('/map/initialize')"
 		data-class="{'z-0':$showSearchResults}"
 		data-on-click="$showSearchResults=false"
