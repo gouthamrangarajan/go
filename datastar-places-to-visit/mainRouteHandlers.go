@@ -129,7 +129,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 					}
 					place = strings.TrimSuffix(place, "data:END")
 					parts := strings.Split(place, "|")
-					if len(parts) < 3 {
+					if len(parts) < 4 {
 						continue // skip if not in expected format
 					}
 					singleData = models.TourismSpots{
