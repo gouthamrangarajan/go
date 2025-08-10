@@ -1,14 +1,11 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"datastar-placestovisit/components"
 	"datastar-placestovisit/models"
 	"datastar-placestovisit/services"
-	"encoding/json"
 	"fmt"
-	"io"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -59,7 +56,16 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
 
 	if lng != "com.chrome.devtools.json" { //during debugging this value comes
 		if lat == "" || lng == "" {
-			http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+			if request.Header.Get("datastar-request") == "true" {
+				sse := datastar.NewSSE(responseWriter, request)
+				errorId := rand.Int()
+				sse.PatchElementTempl(components.ErrorMessage(errorId, "Error: Invalid city selection."), datastar.WithModeAppend(), datastar.WithSelectorID("errorContainer"), datastar.WithUseViewTransitions(true))
+				time.Sleep(3 * time.Second)
+				sse.RemoveElement("#error-"+strconv.Itoa(errorId), datastar.WithUseViewTransitions(true))
+			} else {
+				http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+				return
+			}
 		} else {
 			sse := datastar.NewSSE(responseWriter, request)
 			getPlacesSSE(sse, city, lat, lng)
@@ -108,7 +114,10 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 	}
 	for str := range geminiAiChannel {
 		if str == "ERROR" {
-			//handle error
+			errorId := rand.Int()
+			sse.PatchElementTempl(components.ErrorMessage(errorId, "Error: Please try again later."), datastar.WithModeAppend(), datastar.WithSelectorID("errorContainer"), datastar.WithUseViewTransitions(true))
+			time.Sleep(3 * time.Second)
+			sse.RemoveElement("#error-"+strconv.Itoa(errorId), datastar.WithUseViewTransitions(true))
 		} else {
 			concatenatedStr += str
 			places := strings.Split(concatenatedStr, "||")
@@ -161,82 +170,10 @@ func sendMarkerToUI(sse *datastar.ServerSentEventGenerator, data models.TourismS
 	sse.ExecuteScript(markerAndPopupScript, datastar.WithExecuteScriptAutoRemove(true))
 }
 
-func getTourismPlacesGeminiAPI(city string, lat string, lng string, channel chan string) {
-	defer close(channel)
-	geminiRequest := models.GeminiRequest{
-		Contents: []models.GeminiRequestContent{},
-	}
-	geminiRequest.Contents = append(geminiRequest.Contents, models.GeminiRequestContent{
-		Role:  "user",
-		Parts: []models.GeminiRequestContentPart{},
-	})
-	text := `What are the top ` + os.Getenv("NO_OF_PLACES") + ` tourism places to visit in the world `
-	if city != "" {
-		text += ` in the city ` + city
-	}
-	text += ` at latitude ` + lat + ` and longitude ` + lng + `?`
-	text += `Please provide the name, latitude, and longitude of each place.
-			 Separate the name, latitude and longitude with a '|'. 
-			 Separate the places with a '||'. 
-			 Do not include any other information or formatting.`
-	geminiRequest.Contents[0].Parts = append(geminiRequest.Contents[0].Parts, models.GeminiRequestContentPart{
-		Text: &text,
-	})
-	url := os.Getenv("GEMINI_STREAMING_URL") + os.Getenv("GEMINI_KEY")
-	jsonData, err := json.Marshal(geminiRequest)
-	if err != nil {
-		fmt.Printf("Error marshalling Gemini request: %v\n", err.Error())
-		channel <- "ERROR"
-		return
-	}
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		fmt.Printf("Error making request to Gemini API: %v\n", err.Error())
-		channel <- "ERROR"
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Gemini API returned non-200 status code: %v\n", resp.StatusCode)
-		errorMessage, err := io.ReadAll(resp.Body)
-		if err == nil {
-			fmt.Printf("Error message from Gemini API: %s\n", errorMessage)
-		}
-		channel <- "ERROR"
-		return
-	}
-
-	scanner := bufio.NewScanner(resp.Body)
-	txt := ""
-	for scanner.Scan() {
-		var responseParsed models.GeminiResponse
-		line := scanner.Text()
-		txtInLoop := line
-		if strings.HasPrefix(line, "data: ") {
-			txtInLoop = strings.TrimPrefix(line, "data: ")
-		}
-		txt += txtInLoop
-		err = json.Unmarshal([]byte(txt), &responseParsed)
-		if err == nil {
-			channel <- *responseParsed.Candidates[0].Content.Parts[0].Text
-			txt = ""
-		}
-	}
-	channel <- "data:END||"
+func showGettingCoordinatesError(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	errorId := rand.Int()
+	sse.PatchElementTempl(components.ErrorMessage(errorId, "Error: Please enable location service & click on allow Know your location."), datastar.WithModeAppend(), datastar.WithSelectorID("errorContainer"), datastar.WithUseViewTransitions(true))
+	time.Sleep(3 * time.Second)
+	sse.RemoveElement("#error-"+strconv.Itoa(errorId), datastar.WithUseViewTransitions(true))
 }
-
-// var markers map[string][]string = map[string][]string{
-// 	"Central Park":                       {"40.7851", "-73.9683"},
-// 	"The Metropolitan Museum of Art":     {"40.7794", "-73.9632"},
-// 	"American Museum of Natural History": {"40.7822", "-73.9731"},
-// 	// "The Guggenheim Museum":              {"40.7829", "-73.9599"},
-// 	// "Strawberry Fields":                  {"40.7754", "-73.9744"},
-// }
-// index := 0
-// markerAndPopupScript := ""
-// for markerKey, markerValues := range markers {
-// 	markerAndPopupScript += `let marker` + strconv.Itoa(index+1) + `=L.marker([` + markerValues[0] + `,` + markerValues[1] + `]).addTo(map);`
-// 	markerAndPopupScript += `marker` + strconv.Itoa(index+1) + `.bindPopup("<b>` + markerKey + `</b>");`
-// 	index++
-// }
-// sse.ExecuteScript(markerAndPopupScript, datastar.WithExecuteScriptAutoRemove(true))

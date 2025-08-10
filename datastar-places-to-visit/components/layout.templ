@@ -25,6 +25,7 @@ templ layout() {
 						el.dispatchEvent(new CustomEvent('gotcoordinates',{detail:{lat,lng}}));
 					},(error)=>{
 						console.error('Error getting location: '+error.message);
+						el.dispatchEvent(new CustomEvent('coordinateserror',{}));
 					});
 			 	}
 			 }

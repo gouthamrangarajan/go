@@ -29,5 +29,6 @@ func main() {
 	router.Get("/map/initialize", initializeMap)
 	router.Get("/search", searchCityStateCountry)
 	router.Get("/{city}/{lat}/{lng}", getPlaces)
+	router.Post("/coordinates/error", showGettingCoordinatesError)
 	http.ListenAndServe(":3000", router)
 }

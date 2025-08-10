@@ -37,7 +37,7 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script src=\"/assets/js/datastar.min.js\" type=\"module\"></script><script src=\"/assets/js/leaflet.min.js\" type=\"text/javascript\"></script><script type=\"text/javascript\">\n\t\t\t function getGeoLocation(el){\n\t\t\t\tif(navigator.geolocation){\n\t\t\t\t\tnavigator.geolocation.getCurrentPosition((position)=>{\n\t\t\t\t\t\tconst lat=position.coords.latitude.toFixed(4);\n\t\t\t\t\t\tconst lng=position.coords.longitude.toFixed(4);\t\n\t\t\t\t\t\tel.dispatchEvent(new CustomEvent('gotcoordinates',{detail:{lat,lng}}));\n\t\t\t\t\t},(error)=>{\n\t\t\t\t\t\tconsole.error('Error getting location: '+error.message);\n\t\t\t\t\t});\n\t\t\t \t}\n\t\t\t }\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script src=\"/assets/js/datastar.min.js\" type=\"module\"></script><script src=\"/assets/js/leaflet.min.js\" type=\"text/javascript\"></script><script type=\"text/javascript\">\n\t\t\t function getGeoLocation(el){\n\t\t\t\tif(navigator.geolocation){\n\t\t\t\t\tnavigator.geolocation.getCurrentPosition((position)=>{\n\t\t\t\t\t\tconst lat=position.coords.latitude.toFixed(4);\n\t\t\t\t\t\tconst lng=position.coords.longitude.toFixed(4);\t\n\t\t\t\t\t\tel.dispatchEvent(new CustomEvent('gotcoordinates',{detail:{lat,lng}}));\n\t\t\t\t\t},(error)=>{\n\t\t\t\t\t\tconsole.error('Error getting location: '+error.message);\n\t\t\t\t\t\tel.dispatchEvent(new CustomEvent('coordinateserror',{}));\n\t\t\t\t\t});\n\t\t\t \t}\n\t\t\t }\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

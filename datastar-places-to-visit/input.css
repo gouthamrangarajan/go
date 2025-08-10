@@ -50,3 +50,18 @@
         transform: scaleY(0);
     }
 }
+
+.animate-error {
+    animation: error 2s var(--ease-spring-3);
+}
+
+@keyframes error {
+    0% {
+        transform: translateY(-100%);
+    }
+
+
+    100% {
+        transform: translateY(0);
+    }
+}
