@@ -57,11 +57,13 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
 	lat := strings.TrimSpace(chi.URLParam(request, "lat"))
 	lng := strings.TrimSpace(chi.URLParam(request, "lng"))
 
-	if lat == "" || lng == "" {
-		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
-	} else {
-		sse := datastar.NewSSE(responseWriter, request)
-		getPlacesSSE(sse, city, lat, lng)
+	if lng != "com.chrome.devtools.json" { //during debugging this value comes
+		if lat == "" || lng == "" {
+			http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+		} else {
+			sse := datastar.NewSSE(responseWriter, request)
+			getPlacesSSE(sse, city, lat, lng)
+		}
 	}
 }
 func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat string, lng string) {

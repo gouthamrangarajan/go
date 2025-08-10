@@ -16,6 +16,19 @@ templ layout() {
 			{ children... }
 			<script src="/assets/js/datastar.min.js" type="module"></script>
 			<script src="/assets/js/leaflet.min.js" type="text/javascript"></script>
+			<script type="text/javascript">
+			 function getGeoLocation(el){
+				if(navigator.geolocation){
+					navigator.geolocation.getCurrentPosition((position)=>{
+						const lat=position.coords.latitude.toFixed(4);
+						const lng=position.coords.longitude.toFixed(4);	
+						el.dispatchEvent(new CustomEvent('gotcoordinates',{detail:{lat,lng}}));
+					},(error)=>{
+						console.error('Error getting location: '+error.message);
+					});
+			 	}
+			 }
+			</script>
 		</body>
 	</html>
 }
