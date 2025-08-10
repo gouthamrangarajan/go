@@ -137,7 +137,7 @@ func InsertMultipleSpot(spots []models.TourismSpots, nearCity string, nearLat st
 	}
 	defer transaction.Rollback()
 
-	statement, err := transaction.Prepare("INSERT INTO spots (name,lat,lng,near_city,near_lat,near_lng,added) VALUES (?,?,?,?,?,?,?)")
+	statement, err := transaction.Prepare("INSERT INTO spots (name,description,lat,lng,near_city,near_lat,near_lng,added) VALUES (?,?,?,?,?,?,?,?)")
 	if err != nil {
 		fmt.Printf("Unable to prepare db transaction statement %v\n", err.Error())
 		channel <- "ERROR"
@@ -147,7 +147,7 @@ func InsertMultipleSpot(spots []models.TourismSpots, nearCity string, nearLat st
 
 	for _, row := range spots {
 		fmt.Printf("Inserting %v data\n", row.Name)
-		_, err := statement.Exec(row.Name, row.Lat, row.Lng, nearCity, nearLat, nearLng, time.Now().Unix())
+		_, err := statement.Exec(row.Name, row.Description, row.Lat, row.Lng, nearCity, nearLat, nearLng, time.Now().Unix())
 		if err != nil {
 			// Handle error
 			fmt.Printf("Error inserting %v into spots %v\n", row.Name, err.Error())
@@ -174,7 +174,7 @@ func GetSpots(lat string, lng string, channel chan []models.TourismSpots) {
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT id,name,lat,lng,near_city,near_lat,near_lng,added FROM spots WHERE near_lat = ? AND near_lng = ? AND active=1", lat, lng)
+	rows, err := db.Query("SELECT id,name,description,lat,lng,near_city,near_lat,near_lng,added FROM spots WHERE near_lat = ? AND near_lng = ? AND active=1", lat, lng)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		channel <- response
@@ -184,7 +184,7 @@ func GetSpots(lat string, lng string, channel chan []models.TourismSpots) {
 
 	for rows.Next() {
 		var item models.TourismSpots
-		if err := rows.Scan(&item.Id, &item.Name, &item.Lat, &item.Lng, &item.NearCity, &item.NearLat, &item.NearLng, &item.UnixTime); err != nil {
+		if err := rows.Scan(&item.Id, &item.Name, &item.Description, &item.Lat, &item.Lng, &item.NearCity, &item.NearLat, &item.NearLng, &item.UnixTime); err != nil {
 			fmt.Println("Error scanning row:", err)
 		} else {
 			response = append(response, item)
@@ -205,7 +205,7 @@ func InactivateSpots(lat string, lng string, channel chan int) {
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("UPDATE spots SET active=0 WHERE lat = ? AND lng = ?", lat, lng)
+	result, err := db.Exec("UPDATE spots SET active=0 WHERE near_lat = ? AND near_lng = ?", lat, lng)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		channel <- 0

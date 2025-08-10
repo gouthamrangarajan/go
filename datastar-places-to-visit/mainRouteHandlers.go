@@ -129,9 +129,10 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 						continue // skip if not in expected format
 					}
 					singleData = models.TourismSpots{
-						Name: parts[0],
-						Lat:  parts[1],
-						Lng:  parts[2],
+						Name:        parts[0],
+						Description: parts[1],
+						Lat:         parts[2],
+						Lng:         parts[3],
 					}
 					key := singleData.Name + "_" + singleData.Lat + "_" + singleData.Lng
 					if _, ok := itemAlreadyExists[key]; !ok {

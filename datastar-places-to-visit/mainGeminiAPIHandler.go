@@ -23,8 +23,8 @@ func getTourismPlacesGeminiAPI(lat string, lng string, channel chan string) {
 	})
 	text := `What are the top ` + os.Getenv("NO_OF_PLACES") + ` tourism places to visit in the world `
 	text += ` near latitude ` + lat + ` and longitude ` + lng + `?`
-	text += `Please provide the name, latitude, and longitude of each spot.
-			 Separate the name, latitude and longitude with a '|'. 
+	text += `Please provide the name, a short description about the spot, latitude, and longitude of each spot.
+			 Separate the name, description, latitude and longitude with a '|'. 
 			 Separate the places with a '||'. 
 			 Do not include any other information or formatting.`
 	geminiRequest.Contents[0].Parts = append(geminiRequest.Contents[0].Parts, models.GeminiRequestContentPart{

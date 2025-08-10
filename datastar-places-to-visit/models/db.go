@@ -10,12 +10,13 @@ type WorldCities struct {
 }
 
 type TourismSpots struct {
-	Id       int
-	Name     string
-	Lat      string
-	Lng      string
-	NearCity string
-	NearLat  string
-	NearLng  string
-	UnixTime int64
+	Id          int
+	Name        string
+	Description string
+	Lat         string
+	Lng         string
+	NearCity    string
+	NearLat     string
+	NearLng     string
+	UnixTime    int64
 }
