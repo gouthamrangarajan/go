@@ -69,7 +69,13 @@ func getTourismPlacesGeminiAPI(city string, lat string, lng string, channel chan
 		txt += txtInLoop
 		err = json.Unmarshal([]byte(txt), &responseParsed)
 		if err == nil {
-			channel <- *responseParsed.Candidates[0].Content.Parts[0].Text
+			if len(responseParsed.Candidates) == 0 ||
+				len(responseParsed.Candidates[0].Content.Parts) == 0 {
+				fmt.Printf("Unexpected format found in response: %s\n", txt)
+
+			} else {
+				channel <- *responseParsed.Candidates[0].Content.Parts[0].Text
+			}
 			txt = ""
 		}
 	}
