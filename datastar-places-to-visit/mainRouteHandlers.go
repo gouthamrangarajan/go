@@ -166,7 +166,7 @@ func sendMarkerToUI(sse *datastar.ServerSentEventGenerator, data models.TourismS
 
 func showGettingCoordinatesError(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
-	showAndHideErrorMessage(sse, "Error: Please enable location service & click on allow Know your location.")
+	showAndHideErrorMessage(sse, "Location access required. Please enable location services and click 'Allow' to continue.")
 }
 func showAndHideErrorMessage(sse *datastar.ServerSentEventGenerator, message string) {
 	errorId := rand.Int()
