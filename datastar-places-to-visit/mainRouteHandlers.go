@@ -96,7 +96,6 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 
 	geminiAiChannel := make(chan string)
 	go getTourismPlacesGeminiAPI(city, lat, lng, geminiAiChannel)
-	sse.ExecuteScript("if(map){map.setView(["+lat+","+lng+"], 12);}", datastar.WithExecuteScriptAutoRemove(true))
 	allData = []models.TourismSpots{}
 	singleData := models.TourismSpots{}
 	concatenatedStr := ""
