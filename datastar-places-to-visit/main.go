@@ -28,6 +28,6 @@ func main() {
 	})
 	router.Get("/map/initialize", initializeMap)
 	router.Get("/search", searchCityStateCountry)
-	router.Get("/{lat}/{lng}", setMap)
+	router.Get("/{city}/{lat}/{lng}", getPlaces)
 	http.ListenAndServe(":3000", router)
 }

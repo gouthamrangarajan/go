@@ -24,7 +24,7 @@
 }
 
 .animate-results {
-    animation: results 0.2s var(--ease-in-1);
+    animation: results 0.2s var(--ease-in-1) forwards;
 }
 
 @keyframes results {
@@ -34,5 +34,19 @@
 
     to {
         transform: scaleY(1);
+    }
+}
+
+.animate-results-out {
+    animation: results-out 0.2s var(--ease-out-1) forwards;
+}
+
+@keyframes results-out {
+    from {
+        transform: scaleY(1);
+    }
+
+    to {
+        transform: scaleY(0);
     }
 }

@@ -41,7 +41,7 @@ func Main() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full h-full flex flex-col gap-3 container mx-auto py-2 px-4\" data-signals-showSearchResults=\"false\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full h-full flex flex-col gap-3 container mx-auto py-2 px-4\" data-signals-showSearchResults=\"false\" data-signals-loadingMap=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -121,7 +121,7 @@ func mapCard() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"py-2 px-4 flex flex-col gap-1 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-120  md:py-6 md:px-8  lg:h-136\" data-on-load=\"@get('/map/initialize')\" data-indicator=\"loadingMap\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\"><h2 class=\"text-2xl text-secondary w-full text-center font-semibold\">Places to Visit</h2><div id=\"map\" class=\"h-full w-full\" data-class=\"{'z-0':$loadingMap}\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"py-2 px-4 flex flex-col gap-1 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-120  md:py-6 md:px-8  lg:h-136\" data-on-load=\"@get('/map/initialize')\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\"><h2 class=\"text-2xl text-secondary w-full text-center font-semibold\">Places to Visit</h2><div id=\"map\" class=\"h-full w-full\" data-class=\"{'z-0':$loadingMap}\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -129,7 +129,7 @@ func mapCard() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span class=\"text-sm text-primary\">* Zoom out in the map if you don't see any locations 😊...</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

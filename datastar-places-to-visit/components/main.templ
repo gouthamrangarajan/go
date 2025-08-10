@@ -5,6 +5,7 @@ templ Main() {
 		<main
 			class="w-full h-full flex flex-col gap-3 container mx-auto py-2 px-4"
 			data-signals-showSearchResults="false"
+			data-signals-loadingMap="true"
 		>
 			@header()
 			@placesSearchCard()
@@ -24,7 +25,6 @@ templ mapCard() {
 	<div
 		class="py-2 px-4 flex flex-col gap-1 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-120  md:py-6 md:px-8  lg:h-136"
 		data-on-load="@get('/map/initialize')"
-		data-indicator="loadingMap"
 		data-class="{'z-0':$showSearchResults}"
 		data-on-click="$showSearchResults=false"
 	>
@@ -35,5 +35,6 @@ templ mapCard() {
 			data-class="{'z-0':$loadingMap}"
 		></div>
 		@loader("$loadingMap", "border-3 w-16 h-16", "")
+		<span class="text-sm text-primary">* Zoom out in the map if you don't see any locations 😊...</span>
 	</div>
 }

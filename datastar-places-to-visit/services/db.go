@@ -5,6 +5,7 @@ import (
 	"datastar-placestovisit/models"
 	"fmt"
 	"os"
+	"time"
 
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
@@ -116,4 +117,109 @@ func SearchWorldCity(search string, channel chan []models.WorldCities) {
 		fmt.Println("Error during rows iteration:", err)
 	}
 	channel <- response
+}
+
+func InsertMultipleSpot(spots []models.TourismSpots, nearCity string, nearLat string, nearLng string, channel chan string) {
+	success := "SUCCESS"
+	db, err := getDb()
+	if err != nil {
+		fmt.Printf("Unable to get db %v\n", err.Error())
+		channel <- "ERROR"
+		return
+	}
+	defer db.Close()
+
+	transaction, err := db.Begin()
+	if err != nil {
+		fmt.Printf("Unable to get db transaction %v\n", err.Error())
+		channel <- "ERROR"
+		return
+	}
+	defer transaction.Rollback()
+
+	statement, err := transaction.Prepare("INSERT INTO spots (name,lat,lng,near_city,near_lat,near_lng,added) VALUES (?,?,?,?,?,?,?)")
+	if err != nil {
+		fmt.Printf("Unable to prepare db transaction statement %v\n", err.Error())
+		channel <- "ERROR"
+		return
+	}
+	defer statement.Close()
+
+	for _, row := range spots {
+		fmt.Printf("Inserting %v data\n", row.Name)
+		_, err := statement.Exec(row.Name, row.Lat, row.Lng, nearCity, nearLat, nearLng, time.Now().Unix())
+		if err != nil {
+			// Handle error
+			fmt.Printf("Error inserting %v into spots %v\n", row.Name, err.Error())
+			success = "PARTIAL"
+		}
+	}
+
+	err = transaction.Commit()
+
+	if err != nil {
+		fmt.Printf("Unable to commit transaction for inserting spots %v\n", err.Error())
+		channel <- "ERROR"
+		return
+	}
+	channel <- success
+}
+
+func GetSpots(lat string, lng string, channel chan []models.TourismSpots) {
+	var response []models.TourismSpots
+	db, err := getDb()
+	if err != nil {
+		fmt.Printf("Unable to get db %v\n", err.Error())
+		channel <- response
+		return
+	}
+	defer db.Close()
+	rows, err := db.Query("SELECT id,name,lat,lng,near_city,near_lat,near_lng,added FROM spots WHERE near_lat = ? AND near_lng = ? AND active=1", lat, lng)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		channel <- response
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item models.TourismSpots
+		if err := rows.Scan(&item.Id, &item.Name, &item.Lat, &item.Lng, &item.NearCity, &item.NearLat, &item.NearLng, &item.UnixTime); err != nil {
+			fmt.Println("Error scanning row:", err)
+		} else {
+			response = append(response, item)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Error during rows iteration:", err)
+	}
+	channel <- response
+}
+
+func InactivateSpots(lat string, lng string, channel chan int) {
+	db, err := getDb()
+	if err != nil {
+		fmt.Printf("Unable to get db %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	defer db.Close()
+	result, err := db.Exec("UPDATE spots SET active=0 WHERE lat = ? AND lng = ?", lat, lng)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		channel <- 0
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		fmt.Printf("Unable to get rows affected after inactivate spots %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	if rowsAffected <= 0 {
+		fmt.Printf("No rows were updated during inactivate spots for lat %v lng %v\n", lat, lng)
+	}
+	channel <- int(rowsAffected)
 }
