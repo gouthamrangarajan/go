@@ -16,8 +16,12 @@
     --spacing: 0.25rem;
     --text-sm: 0.875rem;
     --text-sm--line-height: calc(1.25 / 0.875);
+    --text-xl: 1.25rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
     --text-4xl: 2.25rem;
     --text-4xl--line-height: calc(2.5 / 2.25);
     --font-weight-semibold: 600;
@@ -277,8 +281,8 @@
   .h-48 {
     height: calc(var(--spacing) * 48);
   }
-  .h-120 {
-    height: calc(var(--spacing) * 120);
+  .h-100 {
+    height: calc(var(--spacing) * 100);
   }
   .h-full {
     height: 100%;
@@ -297,6 +301,9 @@
   }
   .flex-1 {
     flex: 1;
+  }
+  .shrink-0 {
+    flex-shrink: 0;
   }
   .origin-top {
     transform-origin: top;
@@ -318,6 +325,9 @@
   }
   .items-center {
     align-items: center;
+  }
+  .items-start {
+    align-items: flex-start;
   }
   .justify-between {
     justify-content: space-between;
@@ -404,17 +414,17 @@
   .font-\(family-name\:--font-neo-grotesque\) {
     font-family: var(--font-neo-grotesque);
   }
-  .text-2xl {
-    font-size: var(--text-2xl);
-    line-height: var(--tw-leading, var(--text-2xl--line-height));
-  }
-  .text-4xl {
-    font-size: var(--text-4xl);
-    line-height: var(--tw-leading, var(--text-4xl--line-height));
+  .text-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
   }
   .text-sm {
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .text-xl {
+    font-size: var(--text-xl);
+    line-height: var(--tw-leading, var(--text-xl--line-height));
   }
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);
@@ -562,6 +572,11 @@
       opacity: 70%;
     }
   }
+  .md\:h-116 {
+    @media (width >= 48rem) {
+      height: calc(var(--spacing) * 116);
+    }
+  }
   .md\:w-10\/12 {
     @media (width >= 48rem) {
       width: calc(10/12 * 100%);
@@ -600,6 +615,18 @@
   .lg\:w-8\/12 {
     @media (width >= 64rem) {
       width: calc(8/12 * 100%);
+    }
+  }
+  .lg\:text-2xl {
+    @media (width >= 64rem) {
+      font-size: var(--text-2xl);
+      line-height: var(--tw-leading, var(--text-2xl--line-height));
+    }
+  }
+  .lg\:text-4xl {
+    @media (width >= 64rem) {
+      font-size: var(--text-4xl);
+      line-height: var(--tw-leading, var(--text-4xl--line-height));
     }
   }
   .xl\:w-7\/12 {

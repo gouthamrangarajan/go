@@ -41,7 +41,7 @@ func Main() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full h-full flex flex-col gap-3 container mx-auto py-2 px-4 relative\" data-signals-showSearchResults=\"false\" data-signals-loadingMap=\"true\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full h-full flex flex-col gap-3 container mx-auto py-2 px-4 relative items-start\" data-signals-showSearchResults=\"false\" data-signals-loadingMap=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -96,7 +96,7 @@ func header() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-col gap-1 text-center w-full mx-auto\"><h1 class=\"text-4xl font-bold text-primary\">Discover Amazing Places</h1><p class=\"text-secondary\">Explore 40,000+ cities worldwide with AI-powered recommendations</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-col gap-1 text-center w-full mx-auto shrink-0\"><h1 class=\"text-3xl font-bold text-primary lg:text-4xl\">Discover Amazing Places</h1><p class=\"text-secondary\">Explore 40,000+ cities worldwide with AI-powered recommendations</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -125,7 +125,7 @@ func mapCard() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"py-2 px-4 flex flex-col gap-1  shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-120 md:py-6 md:px-8 lg:h-136\" data-on-load=\"@get('/map/initialize')\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\"><h2 class=\"text-2xl text-secondary w-full text-center font-semibold\">Places to Visit</h2><div id=\"map\" class=\"h-full w-full\" data-class=\"{'z-0':$loadingMap}\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"py-2 px-4 flex flex-col gap-1  shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-100 md:py-6 md:px-8 md:h-116 lg:h-136\" data-on-load=\"@get('/map/initialize')\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\"><h2 class=\"text-xl text-secondary w-full text-center font-semibold lg:text-2xl\">Places to Visit</h2><div id=\"map\" class=\"h-full w-full\" data-class=\"{'z-0':$loadingMap}\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
