@@ -97,7 +97,7 @@ func SearchWorldCity(search string, channel chan []models.WorldCities) {
 	defer db.Close()
 	rows, err := db.Query("SELECT id,city,state,country,lat,lng FROM world_cities WHERE city LIKE ? OR state LIKE ? or country LIKE ? LIMIT 25", searchString, searchString, searchString)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- response
 		return
 	}
@@ -107,14 +107,14 @@ func SearchWorldCity(search string, channel chan []models.WorldCities) {
 		var item models.WorldCities
 
 		if err := rows.Scan(&item.Id, &item.City, &item.State, &item.Country, &item.Lat, &item.Lng); err != nil {
-			fmt.Println("Error scanning row:", err)
+			fmt.Printf("Error scanning row:%v\n", err.Error())
 		} else {
 			response = append(response, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Println("Error during rows iteration:", err)
+		fmt.Printf("Error during rows iteration:%v\n", err.Error())
 	}
 	channel <- response
 }
@@ -176,7 +176,7 @@ func GetSpots(lat string, lng string, channel chan []models.TourismSpots) {
 	defer db.Close()
 	rows, err := db.Query("SELECT id,name,description,lat,lng,near_city,near_lat,near_lng,added FROM spots WHERE near_lat = ? AND near_lng = ? AND active=1", lat, lng)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- response
 		return
 	}
@@ -185,14 +185,14 @@ func GetSpots(lat string, lng string, channel chan []models.TourismSpots) {
 	for rows.Next() {
 		var item models.TourismSpots
 		if err := rows.Scan(&item.Id, &item.Name, &item.Description, &item.Lat, &item.Lng, &item.NearCity, &item.NearLat, &item.NearLng, &item.UnixTime); err != nil {
-			fmt.Println("Error scanning row:", err)
+			fmt.Printf("Error scanning row:%v\n", err.Error())
 		} else {
 			response = append(response, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Println("Error during rows iteration:", err)
+		fmt.Printf("Error during rows iteration:%v\n", err.Error())
 	}
 	channel <- response
 }
@@ -207,7 +207,7 @@ func InactivateSpots(lat string, lng string, channel chan int) {
 	defer db.Close()
 	result, err := db.Exec("UPDATE spots SET active=0 WHERE near_lat = ? AND near_lng = ?", lat, lng)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
+		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0
 		return
 	}
