@@ -42,6 +42,7 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
+	time.Sleep(200 * time.Millisecond) //wait for tab to be available
 	sse.ExecuteScript(`if(!map){var map = L.map('map').setView([`+defaultLtd+`,`+defaultLng+`], 12);}`, datastar.WithExecuteScriptAutoRemove(true))
 	sse.ExecuteScript(`L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 19,
@@ -67,6 +68,7 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
 		} else {
 			sse := datastar.NewSSE(responseWriter, request)
 			sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
+			time.Sleep(200 * time.Millisecond) //wait for tab to be available
 			getPlacesSSE(sse, city, lat, lng)
 		}
 	}
