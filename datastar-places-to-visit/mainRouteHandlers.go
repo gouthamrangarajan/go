@@ -41,6 +41,7 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
 	sse.ExecuteScript(`if(!map){var map = L.map('map').setView([`+defaultLtd+`,`+defaultLng+`], 12);}`, datastar.WithExecuteScriptAutoRemove(true))
 	sse.ExecuteScript(`L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 19,
@@ -65,6 +66,7 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 		} else {
 			sse := datastar.NewSSE(responseWriter, request)
+			sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
 			getPlacesSSE(sse, city, lat, lng)
 		}
 	}
@@ -72,7 +74,6 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
 func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat string, lng string) {
 	dbInactivateChannel := make(chan int)
 	waitForInactivate := false
-	sse.PatchSignals([]byte("{loadingMap:true}"))
 	sse.ExecuteScript("if(map){map.setView(["+lat+","+lng+"], 12);}", datastar.WithExecuteScriptAutoRemove(true))
 
 	dbChannel := make(chan []models.TourismSpots)
@@ -94,6 +95,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 			for index, data := range allData {
 				sendMarkerToUI(sse, data, index+1)
 			}
+			sendTableDataToUI(sse, allData)
 			sse.PatchSignals([]byte("{loadingMap:false}"))
 			return
 		}
@@ -147,6 +149,9 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 			}
 		}
 	}
+	if len(allData) > 0 {
+		sendTableDataToUI(sse, allData)
+	}
 	sse.PatchSignals([]byte("{loadingMap:false}"))
 	if waitForInactivate {
 		<-dbInactivateChannel
@@ -163,6 +168,9 @@ func sendMarkerToUI(sse *datastar.ServerSentEventGenerator, data models.TourismS
 	markerAndPopupScript += `else { marker` + strconv.Itoa(markerId) + `=L.marker([` + data.Lat + `,` + data.Lng + `]).addTo(map); `
 	markerAndPopupScript += `marker` + strconv.Itoa(markerId) + `.bindPopup("<b>` + data.Name + `</b>");}`
 	sse.ExecuteScript(markerAndPopupScript, datastar.WithExecuteScriptAutoRemove(true))
+}
+func sendTableDataToUI(sse *datastar.ServerSentEventGenerator, allData []models.TourismSpots) {
+	sse.PatchElementTempl(components.PlacesTableRows(allData), datastar.WithModeAppend(), datastar.WithSelectorID("tableViewTbody"), datastar.WithUseViewTransitions(true))
 }
 
 func showGettingCoordinatesError(responseWriter http.ResponseWriter, request *http.Request) {
