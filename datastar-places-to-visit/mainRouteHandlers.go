@@ -138,7 +138,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 						Lat:         parts[2],
 						Lng:         parts[3],
 					}
-					key := singleData.Name + "_" + singleData.Lat + "_" + singleData.Lng
+					key := singleData.Name
 					if _, ok := itemAlreadyExists[key]; !ok {
 						itemAlreadyExists[key] = true
 						concatenatedStr = strings.Replace(concatenatedStr, place+"||", "", 1) // remove processed place
