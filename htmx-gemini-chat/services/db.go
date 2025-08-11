@@ -42,7 +42,7 @@ func InsertUser(userId string, channel chan<- int) {
 	}
 	channel <- int(rowsAffected)
 }
-func GetAllChatSessionsForAdmin(channel chan<- []models.ChatSession) {
+func GetAllChatSessionsForJob(channel chan<- []models.ChatSession) {
 	var data []models.ChatSession = []models.ChatSession{}
 	db, err := createDb()
 	if err != nil {

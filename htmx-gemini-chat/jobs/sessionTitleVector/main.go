@@ -17,7 +17,7 @@ func main() {
 	}
 	fmt.Println("Starting the session title vector job...")
 	getAllChatSessionsChannel := make(chan []models.ChatSession)
-	go services.GetAllChatSessionsForAdmin(getAllChatSessionsChannel)
+	go services.GetAllChatSessionsForJob(getAllChatSessionsChannel)
 	allSessions := <-getAllChatSessionsChannel
 	fmt.Printf("Total sessions: %d\n", len(allSessions))
 	geminiEmbeddingChannels := make([]chan models.GeminiEmbeddingResponse, len(allSessions))
