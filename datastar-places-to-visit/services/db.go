@@ -5,6 +5,7 @@ import (
 	"datastar-placestovisit/models"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
@@ -165,7 +166,7 @@ func InsertMultipleSpot(spots []models.TourismSpots, nearCity string, nearLat st
 	channel <- success
 }
 
-func GetSpots(lat string, lng string, channel chan []models.TourismSpots) {
+func GetSpots(lat string, lng string, limit int, channel chan []models.TourismSpots) {
 	var response []models.TourismSpots
 	db, err := getDb()
 	if err != nil {
@@ -174,7 +175,7 @@ func GetSpots(lat string, lng string, channel chan []models.TourismSpots) {
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT id,name,description,lat,lng,near_city,near_lat,near_lng,added FROM spots WHERE near_lat = ? AND near_lng = ? AND active=1", lat, lng)
+	rows, err := db.Query("SELECT id,name,description,lat,lng,near_city,near_lat,near_lng,added FROM spots WHERE near_lat = ? AND near_lng = ? AND active=1 LIMIT ?", lat, lng, strconv.Itoa(limit))
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- response

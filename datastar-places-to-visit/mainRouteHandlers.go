@@ -76,10 +76,14 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
 func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat string, lng string) {
 	dbInactivateChannel := make(chan int)
 	waitForInactivate := false
+	noOfPlaces, err := strconv.Atoi(os.Getenv("NO_OF_PLACES"))
+	if err != nil {
+		noOfPlaces = 5
+	}
 	sse.ExecuteScript("if(map){map.setView(["+lat+","+lng+"], 12);}", datastar.WithExecuteScriptAutoRemove(true))
 
 	dbChannel := make(chan []models.TourismSpots)
-	go services.GetSpots(lat, lng, dbChannel)
+	go services.GetSpots(lat, lng, noOfPlaces, dbChannel)
 	allData := <-dbChannel
 	if len(allData) > 0 {
 		noOfDaysToCachePlacesInt, err := strconv.Atoi(os.Getenv("NO_OF_DAYS_TO_CACHE_SPOTS"))
@@ -104,15 +108,12 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 	}
 
 	geminiAiChannel := make(chan string)
-	go getTourismPlacesGeminiAPI(lat, lng, geminiAiChannel)
+	go getTourismPlacesGeminiAPI(lat, lng, noOfPlaces, geminiAiChannel)
 	allData = []models.TourismSpots{}
 	singleData := models.TourismSpots{}
 	concatenatedStr := ""
 	itemAlreadyExists := map[string]bool{}
-	noOfPlaces, err := strconv.Atoi(os.Getenv("NO_OF_PLACES"))
-	if err != nil {
-		noOfPlaces = 5
-	}
+
 	for str := range geminiAiChannel {
 		if str == "ERROR" {
 			showAndHideErrorMessage(sse, "Error: Please try again later.")
