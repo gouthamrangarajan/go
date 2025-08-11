@@ -1,8 +1,9 @@
 package models
 
 type ChatSession struct {
-	Id    int
-	Title string
+	Id          int
+	Title       string
+	TitleVector []float32
 }
 type ChatConversation struct {
 	Id        int

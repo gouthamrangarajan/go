@@ -26,3 +26,17 @@ type GeminiResponse struct {
 		Content GeminiRequestContent
 	} `json:"candidates"`
 }
+type GeminiEmbeddingRequestConfig struct {
+	OutputDimension int `json:"output_dimensionality"`
+}
+type GeminiEmbeddingRequest struct {
+	Model   string               `json:"model"`
+	Content GeminiRequestContent `json:"content"`
+	// Config  GeminiEmbeddingRequestConfig `json:"embedding_config"`
+}
+
+type GeminiEmbeddingResponse struct {
+	Embedding struct {
+		Values []float32 `json:"values"`
+	} `json:"embedding"`
+}
