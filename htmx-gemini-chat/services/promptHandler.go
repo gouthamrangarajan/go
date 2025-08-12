@@ -319,17 +319,7 @@ func CallGeminiEmbedding(request models.GeminiEmbeddingRequest, channel chan<- m
 }
 
 func callGeminiEmbeddingAndUpdateSessionTitleVector(sessionId int, sessionTitle string, completedChannel chan bool) {
-	geminiRequestParts := []models.GeminiRequestParts{}
-	geminiRequestParts = append(geminiRequestParts, models.GeminiRequestParts{
-		Text: &sessionTitle,
-	})
-
-	request := models.GeminiEmbeddingRequest{
-		// Config: models.GeminiEmbeddingRequestConfig{OutputDimension: 768},
-		Content: models.GeminiRequestContent{
-			Role:  "user",
-			Parts: geminiRequestParts,
-		}}
+	request := GenerateGeminiEmbeddingRequest(sessionTitle)
 	embeddingAPIChannel := make(chan models.GeminiEmbeddingResponse)
 	defer close(embeddingAPIChannel)
 	go CallGeminiEmbedding(request, embeddingAPIChannel)

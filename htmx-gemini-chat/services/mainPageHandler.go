@@ -69,16 +69,21 @@ func SearchMenuHandler(response http.ResponseWriter, request *http.Request) {
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	sessions := GetChatSessionsViaChannel(userId)
-	if request.URL.Query().Get("srchTxt") != "" {
-		srchTxt := strings.TrimSpace(request.URL.Query().Get("srchTxt"))
-		ftedSessions := []models.ChatSession{}
-		for _, session := range sessions {
-			if strings.Contains(strings.ToLower(session.Title), strings.ToLower(srchTxt)) {
-				ftedSessions = append(ftedSessions, session)
-			}
-		}
-		sessions = ftedSessions
+	var sessions []models.ChatSession
+	srchTxt := strings.TrimSpace(request.URL.Query().Get("srchTxt"))
+	if srchTxt != "" {
+		embeddingRequest := GenerateGeminiEmbeddingRequest(srchTxt)
+		embeddingChannel := make(chan models.GeminiEmbeddingResponse)
+		defer close(embeddingChannel)
+		go CallGeminiEmbedding(embeddingRequest, embeddingChannel)
+		embeddingResponse := <-embeddingChannel
+
+		chatSessionsChannel := make(chan []models.ChatSession)
+		defer close(chatSessionsChannel)
+		go SearchChatSessions(userId, embeddingResponse.Embedding.Values, chatSessionsChannel)
+		sessions = <-chatSessionsChannel
+	} else {
+		sessions = GetChatSessionsViaChannel(userId)
 	}
 	components.MenuContainer(sessions).Render(request.Context(), response)
 }

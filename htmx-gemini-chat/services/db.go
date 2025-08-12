@@ -62,14 +62,14 @@ func GetAllChatSessionsForJob(channel chan<- []models.ChatSession) {
 		var item models.ChatSession
 
 		if err := rows.Scan(&item.Id, &item.Title); err != nil {
-			fmt.Println("Error scanning row:", err)
+			fmt.Printf("Error scanning row:%v\n", err.Error())
 		} else {
 			data = append(data, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Println("Error during rows iteration:", err)
+		fmt.Printf("Error during rows iteration:%v\n", err.Error())
 	}
 	channel <- data
 }
@@ -85,13 +85,13 @@ func UpdateChatSessionTitleVector(sessionId int, titleVector []float32, channel 
 		return
 	}
 	defer db.Close()
-	vectorStr, err := json.Marshal(titleVector)
+	vectorStrBytes, err := json.Marshal(titleVector)
 	if err != nil {
 		fmt.Printf("Error marshalling title vector: %v\n", err.Error())
 		channel <- 0
 		return
 	}
-	result, err := db.Exec("UPDATE chat_sessions SET title_vector = vector32(?) WHERE session_id = ?", string(vectorStr), sessionId)
+	result, err := db.Exec("UPDATE chat_sessions SET title_vector = vector32(?) WHERE session_id = ?", string(vectorStrBytes), sessionId)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0
@@ -113,7 +113,7 @@ func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT session_id,title FROM chat_sessions WHERE user_id = ?", userId)
+	rows, err := db.Query("SELECT session_id,title FROM chat_sessions WHERE user_id = ? ORDER BY session_id", userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- data
@@ -125,18 +125,59 @@ func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 		var item models.ChatSession
 
 		if err := rows.Scan(&item.Id, &item.Title); err != nil {
-			fmt.Println("Error scanning row:", err)
+			fmt.Printf("Error scanning row:%v\n", err.Error())
 		} else {
 			data = append(data, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Println("Error during rows iteration:", err)
+		fmt.Printf("Error during rows iteration:%v\n", err.Error())
 	}
 	channel <- data
 }
+func SearchChatSessions(userId string, searchVector []float32, channel chan<- []models.ChatSession) {
+	var data []models.ChatSession = []models.ChatSession{}
+	if len(searchVector) == 0 {
+		fmt.Printf("Ignoring search title due to empty vector\n")
+		channel <- data
+		return
+	}
+	db, err := createDb()
+	if err != nil {
+		channel <- data
+		return
+	}
+	defer db.Close()
+	vectorStrBytes, err := json.Marshal(searchVector)
+	if err != nil {
+		fmt.Printf("Error marshalling search title query vector: %v\n", err.Error())
+		channel <- data
+		return
+	}
+	rows, err := db.Query("SELECT session_id,title FROM chat_sessions WHERE user_id = ? AND vector_distance_cos(title_vector, vector32(?)) < 0.4 ORDER BY vector_distance_cos(title_vector, vector32(?))", userId, string(vectorStrBytes), string(vectorStrBytes))
+	if err != nil {
+		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		channel <- data
+		return
+	}
+	defer rows.Close()
 
+	for rows.Next() {
+		var item models.ChatSession
+
+		if err := rows.Scan(&item.Id, &item.Title); err != nil {
+			fmt.Printf("Error scanning row:%v\n", err.Error())
+		} else {
+			data = append(data, item)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Printf("Error during rows iteration:%v\n", err.Error())
+	}
+	channel <- data
+}
 func InsertChatSession(userId string, title string, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
@@ -223,14 +264,14 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 		var item models.ChatConversation
 
 		if err := rows.Scan(&item.Id, &item.SessionId, &item.Message, &item.Sender, &item.ImgData); err != nil {
-			fmt.Println("Error scanning row:", err)
+			fmt.Printf("Error scanning row:%v\n", err.Error())
 		} else {
 			data = append(data, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Println("Error during rows iteration:", err)
+		fmt.Printf("Error during rows iteration:%v\n", err.Error())
 	}
 	channel <- data
 }

@@ -138,3 +138,17 @@ func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 	geminiRequest.Contents = append(geminiRequest.Contents, promptToGeminiRequestContent)
 	return geminiRequest, err
 }
+
+func GenerateGeminiEmbeddingRequest(srchTxt string) models.GeminiEmbeddingRequest {
+	geminiRequestParts := []models.GeminiRequestParts{}
+	geminiRequestParts = append(geminiRequestParts, models.GeminiRequestParts{
+		Text: &srchTxt,
+	})
+
+	return models.GeminiEmbeddingRequest{
+		// Config: models.GeminiEmbeddingRequestConfig{OutputDimension: 768},
+		Content: models.GeminiRequestContent{
+			Role:  "user",
+			Parts: geminiRequestParts,
+		}}
+}

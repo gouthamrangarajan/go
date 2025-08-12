@@ -24,17 +24,7 @@ func main() {
 	dbUpdateChannels := make([]chan int, len(allSessions))
 
 	for idx, session := range allSessions {
-		geminiRequestParts := []models.GeminiRequestParts{}
-		geminiRequestParts = append(geminiRequestParts, models.GeminiRequestParts{
-			Text: &session.Title,
-		})
-
-		request := models.GeminiEmbeddingRequest{
-			// Config: models.GeminiEmbeddingRequestConfig{OutputDimension: 768},
-			Content: models.GeminiRequestContent{
-				Role:  "user",
-				Parts: geminiRequestParts,
-			}}
+		request := services.GenerateGeminiEmbeddingRequest(session.Title)
 		geminiEmbeddingChannels[idx] = make(chan models.GeminiEmbeddingResponse)
 		defer close(geminiEmbeddingChannels[idx])
 		go services.CallGeminiEmbedding(request, geminiEmbeddingChannels[idx])
