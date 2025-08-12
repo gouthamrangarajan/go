@@ -73,38 +73,7 @@ func GetAllChatSessionsForJob(channel chan<- []models.ChatSession) {
 	}
 	channel <- data
 }
-func UpdateChatSessionTitleVector(sessionId int, titleVector []float32, channel chan<- int) {
-	if len(titleVector) == 0 {
-		fmt.Printf("Ignoring title vector update for session id: %d due to empty vector\n", sessionId)
-		channel <- 0
-		return
-	}
-	db, err := createDb()
-	if err != nil {
-		channel <- 0
-		return
-	}
-	defer db.Close()
-	vectorStrBytes, err := json.Marshal(titleVector)
-	if err != nil {
-		fmt.Printf("Error marshalling title vector: %v\n", err.Error())
-		channel <- 0
-		return
-	}
-	result, err := db.Exec("UPDATE chat_sessions SET title_vector = vector32(?) WHERE session_id = ?", string(vectorStrBytes), sessionId)
-	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
-		channel <- 0
-		return
-	}
-	rowsAffected, errUpdate := result.RowsAffected()
-	if errUpdate != nil {
-		fmt.Printf("Error updating title vector : %v\n", errUpdate.Error())
-		channel <- 0
-		return
-	}
-	channel <- int(rowsAffected)
-}
+
 func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 	var data []models.ChatSession = []models.ChatSession{}
 	db, err := createDb()
@@ -155,7 +124,8 @@ func SearchChatSessions(userId string, searchVector []float32, channel chan<- []
 		channel <- data
 		return
 	}
-	rows, err := db.Query("SELECT session_id,title FROM chat_sessions WHERE user_id = ? AND vector_distance_cos(title_vector, vector32(?)) < 0.4 ORDER BY vector_distance_cos(title_vector, vector32(?))", userId, string(vectorStrBytes), string(vectorStrBytes))
+	vectorStr := string(vectorStrBytes)
+	rows, err := db.Query("SELECT session_id,title FROM chat_sessions WHERE user_id = ? AND vector_distance_cos(title_vector, vector32(?)) < 0.5 ORDER BY vector_distance_cos(title_vector, vector32(?))", userId, vectorStr, vectorStr)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- data
@@ -216,6 +186,39 @@ func UpdateChatSessionTitle(userId string, sessionId int, title string, channel 
 	rowsAffected, errUpdate := result.RowsAffected()
 	if errUpdate != nil {
 		fmt.Printf("Error updating title : %v\n", errUpdate.Error())
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
+
+func UpdateChatSessionTitleVector(sessionId int, titleVector []float32, channel chan<- int) {
+	if len(titleVector) == 0 {
+		fmt.Printf("Ignoring title vector update for session id: %d due to empty vector\n", sessionId)
+		channel <- 0
+		return
+	}
+	db, err := createDb()
+	if err != nil {
+		channel <- 0
+		return
+	}
+	defer db.Close()
+	vectorStrBytes, err := json.Marshal(titleVector)
+	if err != nil {
+		fmt.Printf("Error marshalling title vector: %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	result, err := db.Exec("UPDATE chat_sessions SET title_vector = vector32(?) WHERE session_id = ?", string(vectorStrBytes), sessionId)
+	if err != nil {
+		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	rowsAffected, errUpdate := result.RowsAffected()
+	if errUpdate != nil {
+		fmt.Printf("Error updating title vector : %v\n", errUpdate.Error())
 		channel <- 0
 		return
 	}
