@@ -71,10 +71,12 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetr
 			}
 		} else {
 			sse := datastar.NewSSE(responseWriter, request)
-			sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
+			sse.PatchElementTempl(components.PlacesSearchInput(city), datastar.WithUseViewTransitions(true))
 			sse.PatchElementTempl(components.RetryButton(city, lat, lng))
+			sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
 			time.Sleep(200 * time.Millisecond) //wait for tab to be available
 			getPlacesSSE(sse, city, lat, lng, isRetry)
+
 		}
 	}
 }
