@@ -32,7 +32,7 @@ func mapCard() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"py-2 px-4 flex flex-col gap-2  shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-100 md:py-6 md:px-8 md:h-116 lg:h-136\" data-on-load=\"localStorage.getItem('default')?@get(localStorage.getItem('default')):@get('/map/initialize');\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\" data-signals-selectedTab=\"'mapView'\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"py-6 px-8 flex flex-col gap-2  shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-116 md:h-136\" data-on-load=\"localStorage.getItem('default')?@get(localStorage.getItem('default')):@get('/map/initialize');\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\" data-signals-selectedTab=\"'mapView'\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
