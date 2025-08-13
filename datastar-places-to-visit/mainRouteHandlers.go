@@ -25,17 +25,48 @@ func searchCityStateCountry(responseWriter http.ResponseWriter, request *http.Re
 	SSE.PatchElementTempl(components.PlacesSearchResults(data))
 	SSE.PatchSignals([]byte("{showSearchResults:true}"))
 }
-
+func parseLatAndLng(lat, lng string) bool {
+	if _, err := strconv.ParseFloat(lat, 32); err != nil {
+		return false
+	}
+	if _, err := strconv.ParseFloat(lng, 32); err != nil {
+		return false
+	}
+	return true
+}
 func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
-	defaultCity := os.Getenv("DEFAULT_CITY")
-	if defaultCity == "" {
+	defaultVal := strings.TrimSpace(chi.URLParam(request, "default"))
+	defaultCity := ""
+	defaultLat := ""
+	defaultLng := ""
+	if defaultVal != "" {
+		parts := strings.Split(defaultVal, "||")
+		if len(parts) == 3 {
+			defaultCity = strings.TrimSpace(parts[0])
+			defaultLat = strings.TrimSpace(parts[1])
+			defaultLng = strings.TrimSpace(parts[2])
+		}
+	}
+	parseDefaultLatLngSuccess := parseLatAndLng(defaultLat, defaultLng)
+	if !parseDefaultLatLngSuccess {
+		defaultLat = ""
+		defaultLng = ""
+	}
+	if defaultCity == "" && defaultLat == "" {
+		defaultCity = os.Getenv("DEFAULT_CITY")
+	}
+	if defaultCity == "" && defaultLat == "" {
 		defaultCity = "Manhattan"
 	}
-	defaultLat := os.Getenv("DEFAULT_LAT")
+	if defaultLat == "" {
+		defaultLat = os.Getenv("DEFAULT_LAT")
+	}
 	if defaultLat == "" {
 		defaultLat = "40.7834"
 	}
-	defaultLng := os.Getenv("DEFAULT_LNG")
+	if defaultLng == "" {
+		defaultLng = os.Getenv("DEFAULT_LNG")
+	}
 	if defaultLng == "" {
 		defaultLng = "-73.9662"
 	}
@@ -43,6 +74,12 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
 	sse.PatchElementTempl(components.RetryButton(defaultCity, defaultLat, defaultLng))
+	if parseDefaultLatLngSuccess {
+		sse.PatchElementTempl(components.SetDefaultCheckbox(true, defaultCity, defaultLat, defaultLng), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.PlacesSearchInput(defaultCity), datastar.WithUseViewTransitions(true))
+	} else {
+		sse.PatchElementTempl(components.SetDefaultCheckbox(false, defaultCity, defaultLat, defaultLng), datastar.WithUseViewTransitions(true))
+	}
 	time.Sleep(200 * time.Millisecond) //wait for tab to be available
 	sse.ExecuteScript(`if(!map){var map = L.map('map').setView([`+defaultLat+`,`+defaultLng+`], 12);}`, datastar.WithExecuteScriptAutoRemove(true))
 	sse.ExecuteScript(`L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -50,6 +87,7 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 		}).addTo(map);`, datastar.WithExecuteScriptAutoRemove(true))
 	getPlacesSSE(sse, defaultCity, defaultLat, defaultLng, false)
+
 	sse.PatchSignals([]byte("{loadingMap:false}"))
 }
 func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetry bool) {
@@ -73,6 +111,7 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetr
 			sse := datastar.NewSSE(responseWriter, request)
 			sse.PatchElementTempl(components.PlacesSearchInput(city), datastar.WithUseViewTransitions(true))
 			sse.PatchElementTempl(components.RetryButton(city, lat, lng))
+			sse.PatchElementTempl(components.SetDefaultCheckbox(false, city, lat, lng), datastar.WithUseViewTransitions(true))
 			sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
 			time.Sleep(200 * time.Millisecond) //wait for tab to be available
 			getPlacesSSE(sse, city, lat, lng, isRetry)
@@ -189,6 +228,8 @@ func sendMarkerToUI(sse *datastar.ServerSentEventGenerator, data models.TourismS
 }
 
 func sendTableRowToUI(sse *datastar.ServerSentEventGenerator, data models.TourismSpots) {
+	// sse.RemoveElement("#tr_"+strconv.Itoa(data.Id), datastar.WithUseViewTransitions(true))
+	sse.ExecuteScript(`if (document.getElementById("tr_`+strconv.Itoa(data.Id)+`")) { document.getElementById("tr_`+strconv.Itoa(data.Id)+`").remove(); }`, datastar.WithExecuteScriptAutoRemove(true))
 	sse.PatchElementTempl(components.PlacesTableRow(data), datastar.WithModeAppend(), datastar.WithSelectorID("tableViewTbody"), datastar.WithUseViewTransitions(true))
 }
 

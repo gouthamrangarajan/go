@@ -27,6 +27,7 @@ func main() {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
 	})
 	router.Get("/map/initialize", initializeMap)
+	router.Get("/map/initialize/{default}", initializeMap)
 	router.Get("/search", searchCityStateCountry)
 	router.Get("/{city}/{lat}/{lng}", func(responseWriter http.ResponseWriter, request *http.Request) {
 		getPlaces(responseWriter, request, false)

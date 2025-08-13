@@ -32,7 +32,15 @@ func mapCard() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"py-2 px-4 flex flex-col gap-2 shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-100 md:py-6 md:px-8 md:h-116 lg:h-136\" data-on-load=\"@get('/map/initialize')\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\" data-signals-selectedTab=\"'mapView'\"><div class=\"flex w-full items-center gap-2\"><button class=\"appearance-none outline-none cursor-pointer transition duration-300 py-1 px-3 rounded w-1/2 focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-white\" data-class=\"{'bg-action text-white':$selectedTab==='mapView','text-primary':$selectedTab!=='mapView'}\" data-on-click__viewtransition=\"$selectedTab='mapView'\" id=\"mapView\">Map View</button> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 py-1 px-3 rounded w-1/2 focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-white\" data-class=\"{'bg-action text-white':$selectedTab==='tableView','text-primary':$selectedTab!=='tableView'}\" data-on-click__viewtransition=\"$selectedTab='tableView'\" id=\"tableView\">Places to visit</button></div><div id=\"map\" class=\"h-full w-full\" data-class=\"{'z-0':$loadingMap}\" data-show=\"$selectedTab=='mapView'\"></div><div id=\"tableContainer\" class=\"w-full h-full p-1 scroll-pr-2 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-primary\" data-show=\"$selectedTab=='tableView'\"><table class=\"w-full table-fixed\"><thead><tr class=\" border-b border-secondary/50 \"><th class=\"w-1/3 py-2 px-4 text-secondary break-words\">Name</th><th class=\"w-2/3 py-2 px-4 text-secondary break-words\">Description</th></tr></thead> <tbody id=\"tableViewTbody\"></tbody></table></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"py-2 px-4 flex flex-col gap-2  shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-100 md:py-6 md:px-8 md:h-116 lg:h-136\" data-on-load=\"localStorage.getItem('default')?@get(localStorage.getItem('default')):@get('/map/initialize');\" data-class=\"{'z-0':$showSearchResults}\" data-on-click=\"$showSearchResults=false\" data-signals-selectedTab=\"'mapView'\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = SetDefaultCheckbox(false, "", "", "").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex w-full items-center gap-2\"><button class=\"appearance-none outline-none cursor-pointer transition duration-300 py-1 px-3 rounded w-1/2 focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-white\" data-class=\"{'bg-action text-white':$selectedTab==='mapView','text-primary':$selectedTab!=='mapView'}\" data-on-click__viewtransition=\"$selectedTab='mapView'\" id=\"mapView\">Map View</button> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 py-1 px-3 rounded w-1/2 focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-white\" data-class=\"{'bg-action text-white':$selectedTab==='tableView','text-primary':$selectedTab!=='tableView'}\" data-on-click__viewtransition=\"$selectedTab='tableView'\" id=\"tableView\">Places to visit</button></div><div id=\"map\" class=\"h-full w-full\" data-class=\"{'z-0':$loadingMap}\" data-show=\"$selectedTab=='mapView'\"></div><div id=\"tableContainer\" class=\"w-full h-full p-1 scroll-pr-2 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-primary\" data-show=\"$selectedTab=='tableView'\"><table class=\"w-full table-fixed\"><thead><tr class=\" border-b border-secondary/50 \"><th class=\"w-1/3 py-2 px-4 text-secondary break-words\">Name</th><th class=\"w-2/3 py-2 px-4 text-secondary break-words\">Description</th></tr></thead> <tbody id=\"tableViewTbody\"></tbody></table></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -40,7 +48,7 @@ func mapCard() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"text-sm text-primary\">* Zoom out in the map if you don't see any locations 😊...</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"text-sm text-primary\">* Zoom out in the map if you don't see any locations 😊...</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -69,46 +77,46 @@ func PlacesTableRow(spot models.TourismSpots) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"border-b border-secondary/50\" id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr class=\"border-b border-secondary/50\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("tr_" + strconv.Itoa(spot.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mapCard.templ`, Line: 59, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mapCard.templ`, Line: 60, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><td class=\"py-2 px-4 text-primary break-words\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><td class=\"py-2 px-4 text-primary break-words\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(spot.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mapCard.templ`, Line: 60, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mapCard.templ`, Line: 61, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td class=\"py-2 px-4 text-primary break-words\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td><td class=\"py-2 px-4 text-primary break-words\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(spot.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mapCard.templ`, Line: 61, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mapCard.templ`, Line: 62, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td></tr>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</td></tr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

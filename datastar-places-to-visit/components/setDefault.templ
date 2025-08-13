@@ -1,0 +1,40 @@
+package components 
+
+templ SetDefaultCheckbox(checked bool, city string, lat string, lng string) {
+	if checked {
+		<div class="relative" id="defaultCheckbox">
+			<div
+				class="bg-action-light/50 absolute -top-3 right-3 h-2 rounded-xl w-10 cursor-pointer"
+				data-on-click="$defaultCheckbox.click()"
+			></div>
+			<label class="flex gap-2 items-center absolute -top-5.5 right-8 cursor-pointer">
+				<span class="text-primary text-lg">Default:</span>
+				<input
+					data-ref="defaultCheckbox"
+					type="checkbox"
+					name="isDefault"
+					checked={ checked }
+					data-on-change={ "$defaultCheckbox.checked?localStorage.setItem('default', '/map/initialize/" + city + "||" + lat + "||" + lng + "'):localStorage.removeItem('default');" }
+					class="appearance-none outline-none cursor-pointer w-5 h-5 rounded-full bg-action-light/80 transition duration-600 ease-(--ease-elastic-out-5) checked:translate-x-6 checked:bg-action focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-action-light"
+				/>
+			</label>
+		</div>
+	} else {
+		<div class="relative" id="defaultCheckbox">
+			<div
+				class="bg-action-light/50 absolute -top-3 right-3 h-2 rounded-xl w-10 cursor-pointer"
+				data-on-click="$defaultCheckbox.click()"
+			></div>
+			<label class="flex gap-2 items-center absolute -top-5.5 right-8 cursor-pointer">
+				<span class="text-primary text-lg">Default:</span>
+				<input
+					data-ref="defaultCheckbox"
+					type="checkbox"
+					name="isDefault"
+					data-on-change={ "$defaultCheckbox.checked?localStorage.setItem('default', '/map/initialize/" + city + "||" + lat + "||" + lng + "'):localStorage.removeItem('default');" }
+					class="appearance-none outline-none cursor-pointer w-5 h-5 rounded-full bg-action-light/80 transition duration-600 ease-(--ease-elastic-out-5) checked:translate-x-6 checked:bg-action focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-action-light"
+				/>
+			</label>
+		</div>
+	}
+}
