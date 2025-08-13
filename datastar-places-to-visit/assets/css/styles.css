@@ -32,6 +32,8 @@
     --color-secondary: #666666;
     --color-action: #2980B9;
     --color-action-light: #3498DB;
+    --color-action-2: #E67E22;
+    --color-action-2-light: #F39C12;
   }
 }
 @layer base {
@@ -408,6 +410,9 @@
   .bg-action {
     background-color: var(--color-action);
   }
+  .bg-action-2 {
+    background-color: var(--color-action-2);
+  }
   .bg-white {
     background-color: var(--color-white);
   }
@@ -548,6 +553,13 @@
       --tw-ring-color: var(--color-slate-300);
     }
   }
+  .hover\:bg-action-2-light {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-action-2-light);
+      }
+    }
+  }
   .hover\:bg-action-light {
     &:hover {
       @media (hover: hover) {
@@ -576,6 +588,11 @@
   .focus\:ring-action {
     &:focus {
       --tw-ring-color: var(--color-action);
+    }
+  }
+  .focus\:ring-action-2 {
+    &:focus {
+      --tw-ring-color: var(--color-action-2);
     }
   }
   .focus\:ring-slate-300 {

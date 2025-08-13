@@ -1,6 +1,9 @@
 package components
 
-import "datastar-placestovisit/models"
+import (
+	"datastar-placestovisit/models"
+	"strings"
+)
 
 templ placesSearchCard() {
 	<div class="py-2 px-4 rounded-xl bg-white w-full mx-auto h-48 shrink-0 pt-10 md:py-6 md:px-8 md:pt-16">
@@ -24,6 +27,7 @@ templ placesSearchCard() {
 					@loader("$fetchingCities", "", "")
 				</div>
 			</div>
+			@RetryButton("", "", "")
 			<button
 				type="button"
 				name="placeNearMe"
@@ -72,4 +76,38 @@ templ PlacesSearchResults(data []models.WorldCities) {
 			</li>
 		}
 	</ul>
+}
+
+templ RetryButton(city string, lat string, lng string) {
+	if strings.TrimSpace(city) == "" {
+		{{ city = "UNKNOWN" }}
+	}
+	if lat == "" || lng == "" {
+		<button
+			id="retry"
+			type="button"
+			name="retry"
+			value="yes"
+			class="appearance-none outline-none cursor-pointer flex gap-1 items-center py-2 px-4 rounded-lg bg-action-2 text-white transition duration-300 hover:bg-action-2-light focus:ring-2 focus:ring-action-2 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+				<path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd"></path>
+			</svg>
+			<span>Retry</span>
+		</button>
+	} else {
+		<button
+			id="retry"
+			type="button"
+			name="retry"
+			value="yes"
+			data-on-click={ "evt.preventDefault();@get('/retry/" + city + "/" + lat + "/" + lng + "')" }
+			class="appearance-none outline-none cursor-pointer flex gap-1 items-center py-2 px-4 rounded-lg bg-action-2 text-white transition duration-300 hover:bg-action-2-light focus:ring-2 focus:ring-action-2 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+				<path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd"></path>
+			</svg>
+			<span>Retry</span>
+		</button>
+	}
 }

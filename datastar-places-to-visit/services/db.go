@@ -165,6 +165,31 @@ func InsertMultipleSpot(spots []models.TourismSpots, nearCity string, nearLat st
 	}
 	channel <- success
 }
+func InsertSpot(spot models.TourismSpots, nearCity string, nearLat string, nearLng string, channel chan int) {
+	id := 0
+	db, err := getDb()
+	if err != nil {
+		fmt.Printf("Unable to get db %v\n", err.Error())
+		channel <- id
+		return
+	}
+	defer db.Close()
+
+	defer db.Close()
+	result, err := db.Exec("INSERT INTO spots (name,description,lat,lng,near_city,near_lat,near_lng,added) VALUES (?,?,?,?,?,?,?,?)", spot.Name, spot.Description, spot.Lat, spot.Lng, nearCity, nearLat, nearLng, time.Now().Unix())
+	if err != nil {
+		fmt.Printf("Unable to execute insert spot  %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	lastInsertedId, err := result.LastInsertId()
+	if err != nil {
+		fmt.Printf("Unable to get last inserted id after insert spot %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	channel <- int(lastInsertedId)
+}
 
 func GetSpots(lat string, lng string, limit int, channel chan []models.TourismSpots) {
 	var response []models.TourismSpots

@@ -31,9 +31,9 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 	if defaultCity == "" {
 		defaultCity = "Manhattan"
 	}
-	defaultLtd := os.Getenv("DEFAULT_LAT")
-	if defaultLtd == "" {
-		defaultLtd = "40.7834"
+	defaultLat := os.Getenv("DEFAULT_LAT")
+	if defaultLat == "" {
+		defaultLat = "40.7834"
 	}
 	defaultLng := os.Getenv("DEFAULT_LNG")
 	if defaultLng == "" {
@@ -42,17 +42,21 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
+	sse.PatchElementTempl(components.RetryButton(defaultCity, defaultLat, defaultLng))
 	time.Sleep(200 * time.Millisecond) //wait for tab to be available
-	sse.ExecuteScript(`if(!map){var map = L.map('map').setView([`+defaultLtd+`,`+defaultLng+`], 12);}`, datastar.WithExecuteScriptAutoRemove(true))
+	sse.ExecuteScript(`if(!map){var map = L.map('map').setView([`+defaultLat+`,`+defaultLng+`], 12);}`, datastar.WithExecuteScriptAutoRemove(true))
 	sse.ExecuteScript(`L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 19,
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 		}).addTo(map);`, datastar.WithExecuteScriptAutoRemove(true))
-	getPlacesSSE(sse, defaultCity, defaultLtd, defaultLng)
+	getPlacesSSE(sse, defaultCity, defaultLat, defaultLng, false)
 	sse.PatchSignals([]byte("{loadingMap:false}"))
 }
-func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
+func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetry bool) {
 	city := strings.TrimSpace(chi.URLParam(request, "city"))
+	if city == "UNKNOWN" {
+		city = ""
+	}
 	lat := strings.TrimSpace(chi.URLParam(request, "lat"))
 	lng := strings.TrimSpace(chi.URLParam(request, "lng"))
 
@@ -68,12 +72,14 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request) {
 		} else {
 			sse := datastar.NewSSE(responseWriter, request)
 			sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
+			sse.PatchElementTempl(components.RetryButton(city, lat, lng))
 			time.Sleep(200 * time.Millisecond) //wait for tab to be available
-			getPlacesSSE(sse, city, lat, lng)
+			getPlacesSSE(sse, city, lat, lng, isRetry)
 		}
 	}
 }
-func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat string, lng string) {
+
+func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat string, lng string, isRetry bool) {
 	dbInactivateChannel := make(chan int)
 	waitForInactivate := false
 	noOfPlaces, err := strconv.Atoi(os.Getenv("NO_OF_PLACES"))
@@ -91,17 +97,17 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 			noOfDaysToCachePlacesInt = 30
 		}
 		noOfDaysToCachePlaces := int64(noOfDaysToCachePlacesInt)
-		if time.Now().Unix()-allData[0].UnixTime > noOfDaysToCachePlaces*24*3600 {
+		if time.Now().Unix()-allData[0].UnixTime > noOfDaysToCachePlaces*24*3600 || isRetry {
 			//data is older , inactivate & fetch new data from Gemini API
 			go services.InactivateSpots(lat, lng, dbInactivateChannel)
 			waitForInactivate = true
 
 		} else {
 			fmt.Printf("Using cached data for %v, %v\n", lat, lng)
-			for index, data := range allData {
-				sendMarkerToUI(sse, data, index+1)
+			for _, data := range allData {
+				sendMarkerToUI(sse, data)
+				sendTableRowToUI(sse, data)
 			}
-			sendTableDataToUI(sse, allData)
 			sse.PatchSignals([]byte("{loadingMap:false}"))
 			return
 		}
@@ -109,6 +115,9 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 
 	geminiAiChannel := make(chan string)
 	go getTourismPlacesGeminiAPI(lat, lng, noOfPlaces, geminiAiChannel)
+	if len(allData) > 0 && isRetry {
+		removeTableRowAndMarkerFromUI(sse, allData)
+	}
 	allData = []models.TourismSpots{}
 	singleData := models.TourismSpots{}
 	concatenatedStr := ""
@@ -143,8 +152,15 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 					if _, ok := itemAlreadyExists[key]; !ok {
 						itemAlreadyExists[key] = true
 						concatenatedStr = strings.Replace(concatenatedStr, place+"||", "", 1) // remove processed place
-						allData = append(allData, singleData)
-						sendMarkerToUI(sse, singleData, len(allData))
+						idChannel := make(chan int)
+						go services.InsertSpot(singleData, city, lat, lng, idChannel)
+						singleData.Id = <-idChannel
+						close(idChannel)
+						if singleData.Id > 0 {
+							allData = append(allData, singleData)
+							sendMarkerToUI(sse, singleData)
+							sendTableRowToUI(sse, singleData)
+						}
 						sse.PatchSignals([]byte("{loadingMap:false}"))
 					}
 				}
@@ -153,30 +169,34 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 			}
 		}
 	}
-	if len(allData) > 0 {
-		sendTableDataToUI(sse, allData)
-	}
+
 	sse.PatchSignals([]byte("{loadingMap:false}"))
 	if waitForInactivate {
 		<-dbInactivateChannel
 	}
-	if len(allData) > 0 {
-		dbInsertChannel := make(chan string)
-		go services.InsertMultipleSpot(allData, city, lat, lng, dbInsertChannel)
-		<-dbInsertChannel
-	}
-}
-func sendMarkerToUI(sse *datastar.ServerSentEventGenerator, data models.TourismSpots, markerId int) {
-	markerAndPopupScript := `if (typeof marker` + strconv.Itoa(markerId) + `=='undefined') { const marker` + strconv.Itoa(markerId) + `=L.marker([` + data.Lat + `,` + data.Lng + `]).addTo(map);`
-	markerAndPopupScript += `marker` + strconv.Itoa(markerId) + `.bindPopup("<b>` + data.Name + `</b>");}`
-	markerAndPopupScript += `else { marker` + strconv.Itoa(markerId) + `=L.marker([` + data.Lat + `,` + data.Lng + `]).addTo(map); `
-	markerAndPopupScript += `marker` + strconv.Itoa(markerId) + `.bindPopup("<b>` + data.Name + `</b>");}`
-	sse.ExecuteScript(markerAndPopupScript, datastar.WithExecuteScriptAutoRemove(true))
-}
-func sendTableDataToUI(sse *datastar.ServerSentEventGenerator, allData []models.TourismSpots) {
-	sse.PatchElementTempl(components.PlacesTableRows(allData), datastar.WithModeAppend(), datastar.WithSelectorID("tableViewTbody"), datastar.WithUseViewTransitions(true))
+
 }
 
+func sendMarkerToUI(sse *datastar.ServerSentEventGenerator, data models.TourismSpots) {
+	markerVariableName := "marker_" + strconv.Itoa(data.Id)
+	markerAndPopupScript := `if (typeof ` + markerVariableName + `=='undefined') { var ` + markerVariableName + `=L.marker([` + data.Lat + `,` + data.Lng + `]).addTo(map);`
+	markerAndPopupScript += markerVariableName + `.bindPopup("<b>` + data.Name + `</b>");}`
+	markerAndPopupScript += `else { ` + markerVariableName + `.remove(); ` + markerVariableName + `=L.marker([` + data.Lat + `,` + data.Lng + `]).addTo(map); `
+	markerAndPopupScript += markerVariableName + `.bindPopup("<b>` + data.Name + `</b>");}`
+	sse.ExecuteScript(markerAndPopupScript, datastar.WithExecuteScriptAutoRemove(true))
+}
+
+func sendTableRowToUI(sse *datastar.ServerSentEventGenerator, data models.TourismSpots) {
+	sse.PatchElementTempl(components.PlacesTableRow(data), datastar.WithModeAppend(), datastar.WithSelectorID("tableViewTbody"), datastar.WithUseViewTransitions(true))
+}
+
+func removeTableRowAndMarkerFromUI(sse *datastar.ServerSentEventGenerator, allData []models.TourismSpots) {
+	for _, record := range allData {
+		markerVariableName1 := "marker_" + strconv.Itoa(record.Id)
+		sse.RemoveElement("#tr_"+strconv.Itoa(record.Id), datastar.WithUseViewTransitions(true))
+		sse.ExecuteScript(`if (typeof `+markerVariableName1+`!=='undefined'){`+markerVariableName1+`.remove();}`, datastar.WithExecuteScriptAutoRemove(true))
+	}
+}
 func showGettingCoordinatesError(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	showAndHideErrorMessage(sse, "Location access required. Please enable location services and click 'Allow' to continue.")
