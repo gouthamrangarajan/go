@@ -60,7 +60,7 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetr
 	lat := strings.TrimSpace(chi.URLParam(request, "lat"))
 	lng := strings.TrimSpace(chi.URLParam(request, "lng"))
 
-	if lng != "com.chrome.devtools.json" { //during debugging this value comes
+	if lng != "com.chrome.devtools.json" { //during local development debugging this value comes
 		if lat == "" || lng == "" {
 			if request.Header.Get("datastar-request") == "true" {
 				sse := datastar.NewSSE(responseWriter, request)
