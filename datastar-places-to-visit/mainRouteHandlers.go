@@ -75,10 +75,12 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 	sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
 	sse.PatchElementTempl(components.RetryButton(defaultCity, defaultLat, defaultLng))
 	if parseDefaultLatLngSuccess {
-		sse.PatchElementTempl(components.SetDefaultCheckbox(true, defaultCity, defaultLat, defaultLng), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.SetDefaultCheckbox(defaultCity, defaultLat, defaultLng), datastar.WithUseViewTransitions(true))
+		sse.PatchSignals([]byte("{isDefault:true}"))
 		sse.PatchElementTempl(components.PlacesSearchInput(defaultCity), datastar.WithUseViewTransitions(true))
 	} else {
-		sse.PatchElementTempl(components.SetDefaultCheckbox(false, defaultCity, defaultLat, defaultLng), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.SetDefaultCheckbox(defaultCity, defaultLat, defaultLng), datastar.WithUseViewTransitions(true))
+		sse.PatchSignals([]byte("{isDefault:false}"))
 	}
 	time.Sleep(200 * time.Millisecond) //wait for tab to be available
 	sse.ExecuteScript(`if(!map){var map = L.map('map').setView([`+defaultLat+`,`+defaultLng+`], 12);}`, datastar.WithExecuteScriptAutoRemove(true))
@@ -111,7 +113,8 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetr
 			sse := datastar.NewSSE(responseWriter, request)
 			sse.PatchElementTempl(components.PlacesSearchInput(city), datastar.WithUseViewTransitions(true))
 			sse.PatchElementTempl(components.RetryButton(city, lat, lng))
-			sse.PatchElementTempl(components.SetDefaultCheckbox(false, city, lat, lng), datastar.WithUseViewTransitions(true))
+			sse.PatchElementTempl(components.SetDefaultCheckbox(city, lat, lng), datastar.WithUseViewTransitions(true))
+			sse.PatchSignals([]byte("{isDefault:false}"))
 			sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
 			time.Sleep(200 * time.Millisecond) //wait for tab to be available
 			getPlacesSSE(sse, city, lat, lng, isRetry)
