@@ -146,7 +146,7 @@ func SetDefaultCheckbox(checked bool, city string, lat string, lng string) templ
 		}
 		ctx = templ.ClearChildren(ctx)
 		if checked {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"relative\" id=\"defaultCheckbox\"><div class=\"bg-action-light/50 absolute -top-3 right-3 h-2 rounded-xl w-10 cursor-pointer\" data-on-click=\"$defaultCheckbox.click()\"></div><label class=\"flex gap-2 items-center absolute -top-5.5 right-8 cursor-pointer\"><span class=\"text-primary text-lg\">Default:</span> <input data-ref=\"defaultCheckbox\" type=\"checkbox\" name=\"isDefault\" checked=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"relative\" id=\"defaultCheckbox\"><div class=\"bg-action-light/50 absolute -top-3 right-3 h-2 rounded-xl w-10 cursor-pointer\" data-on-click=\"$defaultCheckbox.click()\"></div><label class=\"flex gap-2 items-center absolute -top-5.5 right-8 cursor-pointer\"><span class=\"text-primary md:text-lg\">Default:</span> <input data-ref=\"defaultCheckbox\" type=\"checkbox\" name=\"isDefault\" checked=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -177,7 +177,7 @@ func SetDefaultCheckbox(checked bool, city string, lat string, lng string) templ
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"relative\" id=\"defaultCheckbox\"><div class=\"bg-action-light/50 absolute -top-3 right-3 h-2 rounded-xl w-10 cursor-pointer\" data-on-click=\"$defaultCheckbox.click()\"></div><label class=\"flex gap-2 items-center absolute -top-5.5 right-8 cursor-pointer\"><span class=\"text-primary text-lg\">Default:</span> <input data-ref=\"defaultCheckbox\" type=\"checkbox\" name=\"isDefault\" data-on-change=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"relative\" id=\"defaultCheckbox\"><div class=\"bg-action-light/50 absolute -top-3 right-3 h-2 rounded-xl w-10 cursor-pointer\" data-on-click=\"$defaultCheckbox.click()\"></div><label class=\"flex gap-2 items-center absolute -top-5.5 right-8 cursor-pointer\"><span class=\"text-primary md:text-lg\">Default:</span> <input data-ref=\"defaultCheckbox\" type=\"checkbox\" name=\"isDefault\" data-on-change=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -190,7 +190,7 @@ func SetDefaultCheckbox(checked bool, city string, lat string, lng string) templ
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"appearance-none outline-none cursor-pointer w-5 h-5 rounded-full bg-action-light/80 transition duration-600 ease-(--ease-elastic-out-5) checked:translate-x-6 checked:bg-action focus:ring-1 focus:ring-action focus:ring-offset-1 focus:ring-offset-transparent\"></label></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"appearance-none outline-none cursor-pointer w-5 h-5 rounded-full bg-action-light/80 transition duration-600 ease-(--ease-elastic-out-5) checked:translate-x-6 checked:bg-action focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-action-light\"></label></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
