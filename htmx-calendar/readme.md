@@ -17,7 +17,7 @@ To get started with the calendar application, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/gouthamrangarajan/htmx-calendar.git
+   git clone https://github.com/gouthamrangarajan/go.git
    ```
 2. Navigate to the project directory:
    ```bash
