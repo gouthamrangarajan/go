@@ -22,7 +22,7 @@ To get started with the Gemini Chat application, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/gouthamrangarajan/htmx-gemini-chat.git
+   git clone https://github.com/gouthamrangarajan/go.git
    ```
 2. Navigate to the project directory:
    ```bash
