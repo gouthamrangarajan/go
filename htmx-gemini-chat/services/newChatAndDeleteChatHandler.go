@@ -17,6 +17,11 @@ func NewChatSessionHandler(response http.ResponseWriter, request *http.Request) 
 	if newChatSessionId == 0 {
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
+	} else {
+		embeddingChannel := make(chan bool)
+		defer close(embeddingChannel)
+		go callGeminiEmbeddingAndUpdateSessionTitleVector(newChatSessionId, "New Chat", embeddingChannel)
+		<-embeddingChannel
 	}
 	component := components.NewChatSession(models.ChatSession{Id: newChatSessionId, Title: "New Chat"})
 	component.Render(request.Context(), response)
