@@ -9,8 +9,8 @@ templ inputAndError() {
 			data-indicator="promptProcessing"
 			data-attr-disabled="$promptProcessing"
 			data-on-call-api="!$promptProcessing && $prompt.trim()!='' && @post('/prompt',{contentType:'form', openWhenHidden: true,retryMaxCount:0})"
-			data-on-datastar-fetch="evt.detail.type === 'error' && evt.detail.el.dispatchEvent(new CustomEvent('show-network-error',{isTrusted:true}))"
-			data-on-show-network-error="$showErrorMessage = true; $errorMessage = 'Error. Please try again later.';setTimeout(() => { $showErrorMessage = false; }, 3000);"
+			data-on-datastar-fetch="evt.detail.type === 'error' && evt.detail.el.dispatchEvent(new CustomEvent('show-api-error',{isTrusted:true}))"
+			data-on-show-api-error="$showErrorMessage = true; $errorMessage = 'Error. Please try again later.';setTimeout(() => { $showErrorMessage = false; }, 3000);"
 		>
 			@promptField()
 			@submitButton()
