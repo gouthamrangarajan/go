@@ -70,7 +70,7 @@ func promptField() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<textarea class=\"appearance-none outline-none text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-yellow-500\" rows=\"4\" name=\"prompt\" id=\"prompt\" data-bind=\"prompt\" placeholder=\"Send a message\" data-on-keydown__window=\" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"></textarea>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<textarea class=\"appearance-none outline-none text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-primary\" rows=\"4\" name=\"prompt\" id=\"prompt\" data-bind=\"prompt\" placeholder=\"Send a message\" data-on-keydown__window=\" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"></textarea>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

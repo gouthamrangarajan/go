@@ -51,7 +51,7 @@ func main() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200  scrollbar-thumb-yellow-500\"><h1 class=\"text-2xl font-semibold text-primary\">Claude Chat</h1><section id=\"messages\" class=\"flex flex-col gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12\"></section>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200  scrollbar-thumb-primary\"><h1 class=\"text-2xl font-semibold text-primary\">Claude Chat</h1><section id=\"messages\" class=\"flex flex-col gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12\"></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -106,7 +106,7 @@ func MainWithMessages(messages []models.ChatConversation) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<main class=\"w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200  scrollbar-thumb-yellow-500\"><h1 class=\"text-2xl font-semibold text-primary\">Claude Chat</h1><section id=\"messages\" class=\"flex flex-col gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<main class=\"w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary\"><h1 class=\"text-2xl font-semibold text-primary\">Claude Chat</h1><section id=\"messages\" class=\"flex flex-col gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

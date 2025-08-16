@@ -12,7 +12,7 @@ templ layout() {
 			<link rel="stylesheet" href="/assets/css/styles.css"/>
 			<link rel="stylesheet" href="/assets//css//openprops.min.css"/>
 		</head>
-		<body class="w-full h-full bg-background font-(family-name:--font-geometric-humanist) relative text-slate-800">
+		<body class="w-full h-full overflow-x-hidden overflow-y-hidden bg-background font-(family-name:--font-geometric-humanist) relative text-slate-800">
 			{ children... }
 			<script src="/assets/js/datastar.min.js" type="module"></script>
 			<script type="module">
@@ -53,6 +53,7 @@ templ layout() {
                                                 opacity:0.9;
                                                 height:2rem;
                                                 width:2rem;
+                                                color:var(--color-yellow-600);
                                             }                               
 											</style>                                      
                                            `;                                                                 
