@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@plugin 'tailwind-scrollbar';
+
+
+@theme {
+    --color-background: #E3F2FD;
+    --color-primary: oklch(70.4% 0.191 22.216);
+    --color-primary-background: rgba(255, 100, 103, 0.4);
+}
+
+.animate-message {
+    animation: message 0.6s var(--ease-elastic-out-5);
+}
+
+@keyframes message {
+    0% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-loader-1 {
+    animation: loader 2s var(--ease-spring-3) infinite;
+}
+
+.animate-loader-2 {
+    animation: loader 2s var(--ease-spring-3) infinite;
+    animation-delay: 0.3s;
+}
+
+.animate-loader-3 {
+    animation: loader 2s var(--ease-spring-3) infinite;
+    animation-delay: 0.6s;
+}
+
+@keyframes loader {
+    0% {
+        transform: scale(0);
+        transform-origin: bottom;
+    }
+
+    100% {
+        transform: scale(1);
+        transform-origin: bottom;
+    }
+}

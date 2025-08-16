@@ -1,0 +1,54 @@
+package components
+
+templ input() {
+	<div class="absolute -bottom-2.5 left-0 w-full">
+		<form
+			class="py-2 px-4 mx-auto bg-white rounded flex items-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 "
+			data-on-submit="evt.preventDefault();"
+			data-signals="{prompt:''}"
+			data-indicator="promptProcessing"
+			data-attr-disabled="$promptProcessing"
+			data-on-call-api="!$promptProcessing && $prompt.trim()!='' && @post('/prompt',{contentType:'form', openWhenHidden: true})"
+		>
+			@promptField()
+			@submitButton()
+		</form>
+	</div>
+}
+
+templ promptField() {
+	<textarea
+		class="appearance-none outline-none text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-yellow-500"
+		rows="4"
+		name="prompt"
+		id="prompt"
+		data-bind="prompt"
+		placeholder="Send a message"
+		data-on-keydown__window=" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
+	></textarea>
+}
+
+templ submitButton() {
+	<button
+		class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
+		data-attr-disabled="$promptProcessing"
+		data-on-click="evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
+	>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="currentColor"
+			data-show="!$promptProcessing"
+			class="size-5"
+		>
+			<path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd"></path>
+		</svg>
+		<div
+			class="flex items-center gap-1 flex-1"
+			data-show="$promptProcessing"
+		>
+			<span class="h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-1"></span>
+			<span class="h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-2"></span>
+		</div>
+	</button>
+}
