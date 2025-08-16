@@ -10,29 +10,19 @@ func formatMessageForDataStar(message string) string {
 	return ret
 }
 
-templ main() {
+templ Main(messages []models.ChatConversation) {
 	@layout() {
-		<main class="w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200  scrollbar-thumb-primary">
-			<h1 class="text-2xl font-semibold text-primary">Claude Chat</h1>
-			<section id="messages" class="flex flex-col gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12">
-				// @Message(1, "Give me a sample golang code.", "user")
-				// @Message(2, "Sure! Here is a simple Go program that prints 'Hello, World!':\n\n```go\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}\n```", "assistant")
-			</section>
-			@input()
-		</main>
-	}
-}
-
-templ MainWithMessages(messages []models.ChatConversation) {
-	@layout() {
-		<main class="w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary">
+		<main
+			class="w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary"
+			data-signals="{showErrorMessage:false,errorMessage:'Error. Please try again later.'}"
+		>
 			<h1 class="text-2xl font-semibold text-primary">Claude Chat</h1>
 			<section id="messages" class="flex flex-col gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12">
 				for _, msg := range messages {
 					@Message(msg.Id, msg.Message, msg.Sender)
 				}
 			</section>
-			@input()
+			@inputAndError()
 		</main>
 	}
 }

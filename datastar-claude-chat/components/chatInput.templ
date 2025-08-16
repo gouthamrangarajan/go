@@ -1,6 +1,6 @@
 package components
 
-templ input() {
+templ inputAndError() {
 	<div class="absolute -bottom-2.5 left-0 w-full">
 		<form
 			class="py-2 px-4 mx-auto bg-white rounded flex items-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 "
@@ -13,6 +13,11 @@ templ input() {
 			@promptField()
 			@submitButton()
 		</form>
+		<p
+			class="absolute bottom-4 left-1 shadow-2xl animate-error-message rounded-lg bg-primary-background py-2 px-4 text-red-600 font-semibold"
+			data-show="$showErrorMessage"
+			data-text="$errorMessage"
+		></p>
 	</div>
 }
 

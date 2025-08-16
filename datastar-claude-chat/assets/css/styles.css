@@ -7,6 +7,7 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-600: oklch(57.7% 0.245 27.325);
     --color-yellow-500: oklch(79.5% 0.184 86.047);
     --color-yellow-600: oklch(68.1% 0.162 75.834);
     --color-slate-600: oklch(44.6% 0.043 257.281);
@@ -16,12 +17,14 @@
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
     --font-weight-semibold: 600;
+    --radius-lg: 0.5rem;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
     --color-background: #E3F2FD;
     --color-primary: oklch(70.4% 0.191 22.216);
+    --color-primary-background: rgba(255, 100, 103, 0.4);
   }
 }
 @layer base {
@@ -185,8 +188,14 @@
   .-bottom-2\.5 {
     bottom: calc(var(--spacing) * -2.5);
   }
+  .bottom-4 {
+    bottom: calc(var(--spacing) * 4);
+  }
   .left-0 {
     left: calc(var(--spacing) * 0);
+  }
+  .left-1 {
+    left: calc(var(--spacing) * 1);
   }
   .mx-auto {
     margin-inline: auto;
@@ -304,8 +313,14 @@
   .rounded-full {
     border-radius: calc(infinity * 1px);
   }
+  .rounded-lg {
+    border-radius: var(--radius-lg);
+  }
   .bg-background {
     background-color: var(--color-background);
+  }
+  .bg-primary-background {
+    background-color: var(--color-primary-background);
   }
   .bg-white {
     background-color: var(--color-white);
@@ -348,11 +363,18 @@
   .text-primary {
     color: var(--color-primary);
   }
+  .text-red-600 {
+    color: var(--color-red-600);
+  }
   .text-slate-800 {
     color: var(--color-slate-800);
   }
   .text-yellow-600 {
     color: var(--color-yellow-600);
+  }
+  .shadow-2xl {
+    --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, rgb(0 0 0 / 0.25));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .inset-shadow-sm {
     --tw-inset-shadow: inset 0 2px 4px var(--tw-inset-shadow-color, rgb(0 0 0 / 0.05));
@@ -391,9 +413,6 @@
   }
   .scrollbar-thumb-primary {
     --scrollbar-thumb: oklch(70.4% 0.191 22.216);
-  }
-  .scrollbar-track-gray-200 {
-    --scrollbar-track: oklch(92.8% 0.006 264.531);
   }
   .scrollbar-track-transparent {
     --scrollbar-track: transparent;
@@ -483,6 +502,30 @@
   100% {
     transform: scale(1);
     transform-origin: bottom;
+  }
+}
+.animate-error-message {
+  animation: error-message 2s var(--ease-spring-3);
+}
+@keyframes error-message {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.animate-error-message-out {
+  animation: error-message-out 0.6s var(--ease-elastic-out-5) forwards;
+}
+@keyframes error-message-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-100%);
   }
 }
 @layer base {

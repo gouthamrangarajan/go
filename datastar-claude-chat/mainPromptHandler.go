@@ -43,17 +43,19 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	claudeResponseChannel := make(chan string)
-	go services.CallClaudeAPIStreamingWithRequest(claudeRequest, claudeResponseChannel)
-
 	sse := datastar.NewSSE(responseWriter, request)
 
 	userMessageInsertDbChannel := make(chan int)
 	defer close(userMessageInsertDbChannel)
 	go services.InsertChatConversation(sessionId, prompt, "", "user", userMessageInsertDbChannel)
 	userMessageId := <-userMessageInsertDbChannel
+
 	if userMessageId == 0 {
 		//error handling
+		sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to save conversation. Please try again later.'}"))
+		time.Sleep(3000 * time.Millisecond)
+		sse.PatchSignals([]byte("{showErrorMessage:false}"))
+		return
 	}
 	sse.PatchElementTempl(components.Message(userMessageId, prompt, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	sse.PatchSignals([]byte("{prompt:''}"))
@@ -65,13 +67,30 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	claudeMessageId := <-claudeResponseInsertDbChannel
 	if claudeMessageId == 0 {
 		//error handling
+		sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to save conversation. Please try again later.'}"))
+		time.Sleep(3000 * time.Millisecond)
+		sse.PatchSignals([]byte("{showErrorMessage:false}"))
+		return
 	}
+
+	claudeResponseChannel := make(chan string)
+	go services.CallClaudeAPIStreamingWithRequest(claudeRequest, claudeResponseChannel)
 
 	sse.PatchElementTempl(components.Message(claudeMessageId, "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	mergedOutput := ""
+
+	errored := false
 	for response := range claudeResponseChannel {
+		if response == "Error" {
+			sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'An error occurred with the AI model. Please try again later.'}"))
+			errored = true
+		}
 		mergedOutput += response
 		sse.PatchElementTempl(components.Message(claudeMessageId, mergedOutput, "assistant"))
+	}
+	if errored {
+		time.Sleep(3000 * time.Millisecond)
+		sse.PatchSignals([]byte("{showErrorMessage:false}"))
 	}
 	updateMessageChannel := make(chan int)
 	defer close(updateMessageChannel)

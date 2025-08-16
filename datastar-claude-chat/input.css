@@ -48,3 +48,33 @@
         transform-origin: bottom;
     }
 }
+
+.animate-error-message {
+    animation: error-message 2s var(--ease-spring-3);
+}
+
+@keyframes error-message {
+    0% {
+        transform: translateY(100%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.animate-error-message-out {
+    animation: error-message-out 0.6s var(--ease-elastic-out-5) forwards;
+}
+
+@keyframes error-message-out {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}

@@ -29,5 +29,5 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	defer close(conversationChannel)
 	go services.GetChatConversations(userId, sessionId, conversationChannel)
 	conversations := <-conversationChannel
-	components.MainWithMessages(conversations).Render(request.Context(), responseWriter)
+	components.Main(conversations).Render(request.Context(), responseWriter)
 }
