@@ -104,7 +104,7 @@ func Message(id int, message string, role string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"flex gap-1 items-center py-2 px-1\"><div class=\"h-2 w-2 rounded-full bg-slate-600 animate-loader-1\"></div><div class=\"h-2 w-2 rounded-full bg-slate-600 animate-loader-2\"></div><div class=\"h-2 w-2 rounded-full bg-slate-600 animate-loader-3\"></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"flex gap-1 items-center py-2 px-1\"><div class=\"h-2 w-2 rounded-full bg-yellow-500 animate-loader-1\"></div><div class=\"h-2 w-2 rounded-full bg-yellow-500 animate-loader-2\"></div><div class=\"h-2 w-2 rounded-full bg-yellow-500 animate-loader-3\"></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
