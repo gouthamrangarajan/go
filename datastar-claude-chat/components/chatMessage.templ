@@ -1,6 +1,16 @@
 package components
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
+
+func formatMessageForDataStar(message string) string {
+	ret := strings.ReplaceAll(message, `\`, `\\`)
+	ret = strings.ReplaceAll(ret, "${", `\${`)
+	ret = strings.ReplaceAll(ret, "`", "\\`")
+	return ret
+}
 
 templ Message(id int, message string, role string) {
 	<div class="flex items-start gap-3  w-full" id={ "messageContainer_" + strconv.Itoa(id) }>

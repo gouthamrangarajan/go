@@ -8,15 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "strings"
 import "datastar-claude-chat/models"
-
-func formatMessageForDataStar(message string) string {
-	ret := strings.ReplaceAll(message, `\`, `\\`)
-	ret = strings.ReplaceAll(ret, "${", `\${`)
-	ret = strings.ReplaceAll(ret, "`", "\\`")
-	return ret
-}
 
 func Main(messages []models.ChatConversation) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {

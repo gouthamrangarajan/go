@@ -1,14 +1,6 @@
 package components
 
-import "strings"
 import "datastar-claude-chat/models"
-
-func formatMessageForDataStar(message string) string {
-	ret := strings.ReplaceAll(message, `\`, `\\`)
-	ret = strings.ReplaceAll(ret, "${", `\${`)
-	ret = strings.ReplaceAll(ret, "`", "\\`")
-	return ret
-}
 
 templ Main(messages []models.ChatConversation) {
 	@layout() {
