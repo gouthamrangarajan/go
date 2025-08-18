@@ -9,6 +9,8 @@
     --color-primary-background: rgba(255, 100, 103, 0.4);
 }
 
+
+
 .animate-message {
     animation: message 0.6s var(--ease-elastic-out-5);
 }

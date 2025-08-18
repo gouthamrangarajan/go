@@ -23,17 +23,34 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+	sessionIdStr := request.URL.Query().Get("sessionId")
+	sessionId, err := strconv.Atoi(sessionIdStr)
+	newSessionInserted := false
+	if err != nil || sessionIdStr == "" {
+		http.Error(responseWriter, "Internal Server Error", http.StatusInternalServerError)
+		return
+	} else if sessionId == 0 {
+		newSessionChannel := make(chan int)
+		go services.InsertChatSession(userId, prompt, newSessionChannel)
+		sessionId = <-newSessionChannel
+		newSessionInserted = true
+	}
 
 	sessionsChannel := make(chan []models.ChatSession)
 	defer close(sessionsChannel)
 	go services.GetChatSessions(userId, sessionsChannel)
 	sessions := <-sessionsChannel
-	sessionId := 0
-	if len(sessions) == 0 {
-		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+
+	sessionFound := false
+	for _, session := range sessions {
+		if session.Id == sessionId {
+			sessionFound = true
+			break
+		}
+	}
+	if !sessionFound {
+		http.Error(responseWriter, "UnAuthorized", http.StatusUnauthorized)
 		return
-	} else {
-		sessionId = sessions[0].Id
 	}
 
 	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, sessionId, prompt)
@@ -44,6 +61,14 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	sse := datastar.NewSSE(responseWriter, request)
+	if newSessionInserted {
+		chatSession := models.ChatSession{
+			Id:    sessionId,
+			Title: prompt,
+		}
+		sse.PatchSignals([]byte("{sessionId:" + strconv.Itoa(sessionId) + "}"))
+		sse.PatchElementTempl(components.ChatSessionMenuItems(append([]models.ChatSession{}, chatSession)), datastar.WithModeAppend(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
+	}
 
 	userMessageInsertDbChannel := make(chan int)
 	defer close(userMessageInsertDbChannel)

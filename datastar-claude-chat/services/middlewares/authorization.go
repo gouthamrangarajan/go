@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"datastar-claude-chat/services"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -14,8 +15,17 @@ import (
 func Authorization(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
 		userId := services.GetUserIdFromRequest(request)
+		if userId != "" {
+			userCheckChannel := make(chan bool)
+			defer close(userCheckChannel)
+			go services.CheckUserExistsInTable(userId, userCheckChannel)
+			if !<-userCheckChannel {
+				userId = ""
+			}
+		}
+		fmt.Printf("userId:%v\n", userId)
 		if userId == "" {
-			if strings.ToUpper(request.Method) == "GET" {
+			if strings.ToUpper(request.Method) == "GET" && request.URL.Path == "/" {
 				userId = uuid.New().String()
 				secure := true
 				if os.Getenv("ENV") == "Development" {
@@ -35,7 +45,7 @@ func Authorization(next http.Handler) http.Handler {
 				defer close(userChannel)
 				go services.InsertUser(userId, userChannel)
 				<-userChannel
-			} else if strings.ToUpper(request.Method) != "GET" {
+			} else {
 				http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 				return
 			}

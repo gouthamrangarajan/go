@@ -24,9 +24,9 @@ templ Message(id int, message string, role string) {
 			</span>
 		}
 		if message !="" {
-			<div class="flex-1" data-signals={ "{message_" + strconv.Itoa(id) + ":`" + formatMessageForDataStar(message) + "`}" }>
+			<div class="flex-1" data-signals={ "{__message_" + strconv.Itoa(id) + ":`" + formatMessageForDataStar(message) + "`}" }>
 				<zero-md>
-					<script type="text/markdown" id={ "message_" + strconv.Itoa(id) } data-text={ "$message_" + strconv.Itoa(id) }>					
+					<script type="text/markdown" id={ "message_" + strconv.Itoa(id) } data-text={ "$__message_" + strconv.Itoa(id) }>					
 					</script>
 				</zero-md>
 			</div>

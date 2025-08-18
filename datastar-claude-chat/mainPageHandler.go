@@ -5,29 +5,42 @@ import (
 	"datastar-claude-chat/models"
 	"datastar-claude-chat/services"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sessionId := 0
+	sessionIdStr := chi.URLParam(request, "sessionId")
+	sessionId, err := strconv.Atoi(sessionIdStr)
+	if err != nil {
+		sessionId = 0
+	}
+	if sessionId == 0 {
+		components.Main(0, []models.ChatConversation{}).Render(request.Context(), responseWriter)
+		return
+	}
 	userId := request.Context().Value(services.UserIDKey).(string)
+
 	sessionsChannel := make(chan []models.ChatSession)
 	defer close(sessionsChannel)
 	go services.GetChatSessions(userId, sessionsChannel)
 	sessions := <-sessionsChannel
-	sessionId := 0
-	if len(sessions) == 0 {
-		newSessionChannel := make(chan int)
-		go services.InsertChatSession(userId, "New Chat", newSessionChannel)
-		sessionId = <-newSessionChannel
-	} else {
-		sessionId = sessions[0].Id
+	sessionFound := false
+	for _, session := range sessions {
+		if session.Id == sessionId {
+			sessionFound = true
+			break
+		}
 	}
-	if sessionId == 0 {
-		http.Error(responseWriter, "Internal Server Error", http.StatusInternalServerError)
+	if !sessionFound {
+		http.Error(responseWriter, "UnAuthorized", http.StatusUnauthorized)
 		return
 	}
 	conversationChannel := make(chan []models.ChatConversation)
 	defer close(conversationChannel)
 	go services.GetChatConversations(userId, sessionId, conversationChannel)
 	conversations := <-conversationChannel
-	components.Main(conversations).Render(request.Context(), responseWriter)
+	components.Main(sessionId, conversations).Render(request.Context(), responseWriter)
 }

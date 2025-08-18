@@ -22,7 +22,37 @@ func createDb() (*sql.DB, error) {
 	}
 	return db, err
 }
+func CheckUserExistsInTable(userId string, channel chan<- bool) {
+	db, err := createDb()
+	if err != nil {
+		channel <- false
+		return
+	}
+	defer db.Close()
+	rows, err := db.Query("select 1 from users where user_Id=? LIMIT 1", userId)
+	if err != nil {
+		fmt.Printf("Failed to execute check user query: %v\n", err.Error())
+		channel <- false
+		return
+	}
+	defer rows.Close()
+	id := 0
+	for rows.Next() {
+		if err := rows.Scan(&id); err != nil {
+			fmt.Printf("Error scanning row:%v\n", err.Error())
+		}
+	}
 
+	if err := rows.Err(); err != nil {
+		fmt.Printf("Error during rows iteration:%v\n", err.Error())
+	}
+	if id != 0 {
+		channel <- true
+	} else {
+		channel <- false
+	}
+
+}
 func InsertUser(userId string, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
@@ -34,11 +64,13 @@ func InsertUser(userId string, channel chan<- int) {
 	if err != nil {
 		fmt.Printf("Failed to execute user insert query: %v\n", err.Error())
 		channel <- 0
+		return
 	}
 	rowsAffected, errInsert := result.RowsAffected()
 	if errInsert != nil {
 		fmt.Printf("Error getting rows affected for user insert: %v\n", errInsert.Error())
 		channel <- 0
+		return
 	}
 	channel <- int(rowsAffected)
 }
