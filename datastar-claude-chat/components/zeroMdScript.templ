@@ -72,4 +72,32 @@ templ zeroMdScript() {
             }               
         });              
     </script>
+	<script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {                
+                domContentLoadedEvent();                    
+            });
+            function domContentLoadedEvent() {                
+                document.querySelectorAll('zero-md').forEach(function(el) {                                      
+                    el.addEventListener('zero-md-rendered', function() {      
+                        if(document.startViewTransition){
+                            document.startViewTransition(()=>{
+                                if(el.parentElement.parentElement.classList.contains("hidden")){
+                                    el.parentElement.parentElement.classList.replace("hidden","flex");
+                                } else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
+                                    el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
+                                }
+                            });
+                        }
+                        else{                     
+                            if(el.parentElement.parentElement.classList.contains("hidden")){
+                                el.parentElement.parentElement.classList.replace("hidden","flex");
+                            } else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
+                                el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
+                            }
+                        }
+                    });
+                                                         
+                });
+            }
+    </script>
 }
