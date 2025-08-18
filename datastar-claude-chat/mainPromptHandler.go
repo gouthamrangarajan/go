@@ -82,7 +82,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
 		return
 	}
-	sse.PatchElementTempl(components.Message(userMessageId, prompt, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(userMessageId, prompt, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	sse.PatchSignals([]byte("{prompt:''}"))
 	sse.ExecuteScript(`document.getElementById('messageContainer_`+strconv.Itoa(userMessageId)+`').scrollIntoView()`, datastar.WithExecuteScriptAutoRemove(true))
 
@@ -101,7 +101,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	claudeResponseChannel := make(chan string)
 	go services.CallClaudeAPIStreamingWithRequest(claudeRequest, claudeResponseChannel)
 
-	sse.PatchElementTempl(components.Message(claudeMessageId, "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	mergedOutput := ""
 
 	errored := false
@@ -111,7 +111,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			errored = true
 		}
 		mergedOutput += response
-		sse.PatchElementTempl(components.Message(claudeMessageId, mergedOutput, "assistant"))
+		sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, mergedOutput, "assistant"))
 	}
 	if errored {
 		time.Sleep(3000 * time.Millisecond)
