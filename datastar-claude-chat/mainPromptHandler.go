@@ -62,12 +62,19 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	sse := datastar.NewSSE(responseWriter, request)
 	if newSessionInserted {
-		chatSession := models.ChatSession{
-			Id:    sessionId,
-			Title: prompt,
+		if sessionId != 0 {
+			chatSession := models.ChatSession{
+				Id:    sessionId,
+				Title: prompt,
+			}
+			sse.PatchSignals([]byte("{sessionId:" + strconv.Itoa(sessionId) + "}"))
+			sse.PatchElementTempl(components.ChatSessionMenuItems(append([]models.ChatSession{}, chatSession)), datastar.WithModeAppend(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
+		} else {
+			sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to save conversation. Please try again later.'}"))
+			time.Sleep(3000 * time.Millisecond)
+			sse.PatchSignals([]byte("{showErrorMessage:false}"))
+			return
 		}
-		sse.PatchSignals([]byte("{sessionId:" + strconv.Itoa(sessionId) + "}"))
-		sse.PatchElementTempl(components.ChatSessionMenuItems(append([]models.ChatSession{}, chatSession)), datastar.WithModeAppend(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
 	}
 
 	userMessageInsertDbChannel := make(chan int)

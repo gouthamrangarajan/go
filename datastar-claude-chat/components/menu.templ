@@ -33,7 +33,7 @@ templ menu() {
 		data-effect="$showMenu?$__abortController=menuFocusTrap():$__abortController.abort()"
 	>
 		<div
-			class="w-10/12 bg-background border-r border-primary-background h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary md:w-7/12 lg:w-5/12 xl:w-4/12"
+			class="w-10/12 bg-white border-r border-primary-background h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary md:w-7/12 lg:w-5/12 xl:w-4/12"
 			data-on-click="evt.stopPropagation()"
 		>
 			<ul class="flex flex-col mt-10" id="menuContainer" data-on-load="@get('/sessions')"></ul>
