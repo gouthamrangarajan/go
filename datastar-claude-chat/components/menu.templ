@@ -10,7 +10,7 @@ templ menu() {
 	<button
 		data-show="!$showMenu"
 		class="appearance-none outline-none py-2 px-2.25 rounded bg-yellow-600 text-white absolute top-2 left-2 cursor-pointer transition duration-300 focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-background hover:bg-yellow-500 "
-		style="view-transition-name:menu-button"
+		style="view-transition-name:menu-button;display:none;"
 		data-on-click__viewtransition="$showMenu = true"
 	>
 		<svg
@@ -36,6 +36,14 @@ templ menu() {
 			class="w-10/12 bg-white border-r border-primary-background h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary md:w-7/12 lg:w-5/12 xl:w-4/12"
 			data-on-click="evt.stopPropagation()"
 		>
+			// <button
+			// 	class="appearance-none outline-none cursor-pointer rounded-lg mx-auto mt-5 w-11/12 transition duration-300 py-2 px-4 bg-yellow-600 text-white hover:opacity-90 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70"
+			// 	data-on-click="@post('/new')"
+			// 	data-indicator="newChat"
+			// 	data-attr-disabled="$newChat"
+			// >
+			// 	New Chat
+			// </button>
 			<ul class="flex flex-col mt-10" id="menuContainer" data-on-load="@get('/sessions')"></ul>
 		</div>
 		<button

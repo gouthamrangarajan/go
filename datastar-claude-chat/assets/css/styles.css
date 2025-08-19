@@ -216,6 +216,9 @@
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
   }
+  .mt-5 {
+    margin-top: calc(var(--spacing) * 5);
+  }
   .mt-10 {
     margin-top: calc(var(--spacing) * 10);
   }
@@ -526,6 +529,11 @@
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
   }
+  .focus\:ring-yellow-500 {
+    &:focus {
+      --tw-ring-color: var(--color-yellow-500);
+    }
+  }
   .focus\:ring-yellow-600 {
     &:focus {
       --tw-ring-color: var(--color-yellow-600);
@@ -542,14 +550,19 @@
       --tw-ring-offset-color: var(--color-background);
     }
   }
+  .focus\:ring-offset-white {
+    &:focus {
+      --tw-ring-offset-color: var(--color-white);
+    }
+  }
   .disabled\:cursor-not-allowed {
     &:disabled {
       cursor: not-allowed;
     }
   }
-  .disabled\:opacity-80 {
+  .disabled\:opacity-70 {
     &:disabled {
-      opacity: 80%;
+      opacity: 70%;
     }
   }
   .md\:w-7\/12 {

@@ -54,7 +54,7 @@ func inputAndError() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</form><p class=\"absolute bottom-4 left-1 z-10 shadow-2xl animate-error-message rounded-lg bg-primary-background py-2 px-4 text-red-600 font-semibold\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\"></p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</form><p class=\"absolute bottom-4 left-1 z-10 shadow-2xl animate-error-message rounded-lg bg-primary-background py-2 px-4 text-red-600 font-semibold\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -112,7 +112,7 @@ func submitButton() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button class=\"appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" data-show=\"!$promptProcessing\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" data-show=\"$promptProcessing\"><span class=\"h-1.5 w-1.5 bg-yellow-500 rounded-full animate-loader-1\"></span> <span class=\"h-1.5 w-1.5 bg-yellow-500 rounded-full animate-loader-2\"></span></div></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button class=\"appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" data-show=\"!$promptProcessing\" style=\"display:none\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" data-show=\"$promptProcessing\" style=\"display:none\"><span class=\"h-1.5 w-1.5 bg-yellow-500 rounded-full animate-loader-1\"></span> <span class=\"h-1.5 w-1.5 bg-yellow-500 rounded-full animate-loader-2\"></span></div></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
