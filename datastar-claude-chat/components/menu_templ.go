@@ -65,7 +65,7 @@ func ChatSessionMenuItems(items []models.ChatSession) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		for _, item := range items {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li class=\"w-full cursor-pointer\"><a class=\"appearance-none outline-none cursor-pointer py-2 px-4 truncate flex items-center gap-2 hover:opacity-90 focus:underline focus:underline-offet-4\" href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li class=\"w-full cursor-pointer\"><a class=\"appearance-none outline-none cursor-pointer py-2 px-4 truncate flex items-center gap-2 transition duration-300 hover:opacity-90 focus:underline focus:underline-offet-4\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

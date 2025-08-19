@@ -59,7 +59,7 @@ templ ChatSessionMenuItems(items []models.ChatSession) {
 	for _,item := range items {
 		<li class="w-full cursor-pointer">
 			<a
-				class="appearance-none outline-none cursor-pointer py-2 px-4 truncate flex items-center gap-2 hover:opacity-90 focus:underline focus:underline-offet-4"
+				class="appearance-none outline-none cursor-pointer py-2 px-4 truncate flex items-center gap-2 transition duration-300 hover:opacity-90 focus:underline focus:underline-offet-4"
 				href={ "/" + strconv.Itoa(item.Id) }
 				data-on-go-to-session__viewtransition={ "$showMenu=false;setTimeout(()=>{window.location.href=window.location.origin+'/'+" + strconv.Itoa(item.Id) + ";},200)" }
 				data-on-click__stop__prevent="evt.srcElement.dispatchEvent(new CustomEvent('go-to-session',{isTrusted:true,bubbles:true}))"

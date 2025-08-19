@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/starfederation/datastar-go/datastar"
 )
 
 func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -43,4 +44,11 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	go services.GetChatConversations(userId, sessionId, conversationChannel)
 	conversations := <-conversationChannel
 	components.Main(sessionId, conversations).Render(request.Context(), responseWriter)
+}
+
+func menuDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(services.UserIDKey).(string)
+	sessions := services.GetChatSessionsViaChannel(userId)
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(components.ChatSessionMenuItems(sessions), datastar.WithModeInner(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
 }
