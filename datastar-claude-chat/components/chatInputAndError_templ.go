@@ -8,6 +8,8 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "datastar-claude-chat/components/shared"
+
 func inputAndError() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -36,7 +38,7 @@ func inputAndError() templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("!$promptProcessing && $prompt.trim()!='' && @post('/prompt?sessionId='+$sessionId,{contentType:'form', openWhenHidden: true,retryMaxCount:0})")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 11, Col: 165}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 13, Col: 165}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -112,7 +114,19 @@ func submitButton() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button class=\"appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" data-show=\"!$promptProcessing\" style=\"display:none\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" data-show=\"$promptProcessing\" style=\"display:none\"><span class=\"h-1.5 w-1.5 bg-yellow-500 rounded-full animate-loader-1\"></span> <span class=\"h-1.5 w-1.5 bg-yellow-500 rounded-full animate-loader-2\"></span></div></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button class=\"appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" data-show=\"!$promptProcessing\" style=\"display:none\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" data-show=\"$promptProcessing\" style=\"display:none\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Loader("animate-loader-1").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Loader("animate-loader-2").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

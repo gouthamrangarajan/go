@@ -23,13 +23,15 @@ import (
 // insert chat conversation from user and send error message via data star sse if failed
 // send message template for user to append to UI via data star sse
 // clear the prompt signal & scroll the user message into view using data star sse
+// if the request is first for the session call session title update via channel
 // insert chat conversation for assistant and send error message via data star sse if failed
 // call claude api with channel to get streaming string output
 // send message template for assistant to append to UI via data star sse
 // range over channel , as long as its not closed , read the message string from channel
 // consolidate the message , keep patching the assistant message UI with consolidate message for every loop iteration
 // if there was at least one message with "Error" , dont consolidate this string and send error message via data star sse
-// update the assistant message to db
+// wait for session title update to be completed if called & if success send patchelement to ui via data star sse
+// update the assistant message to db & wait
 
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	prompt := request.FormValue("prompt")
@@ -80,7 +82,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				Title: prompt,
 			}
 			sse.PatchSignals([]byte("{sessionId:" + strconv.Itoa(sessionId) + "}"))
-			sse.PatchElementTempl(components.ChatSessionMenuItems(append([]models.ChatSession{}, chatSession)), datastar.WithModeAppend(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
+			sse.PatchElementTempl(components.ChatSessionMenuItems(append([]models.ChatSession{}, chatSession)), datastar.WithModeAppend(), datastar.WithSelectorID("menuContainer"))
 		} else {
 			sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to save conversation. Please try again later.'}"))
 			time.Sleep(3000 * time.Millisecond)
@@ -104,6 +106,14 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse.PatchElementTempl(components.MessageForStreaming(userMessageId, prompt, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	sse.PatchSignals([]byte("{prompt:''}"))
 	sse.ExecuteScript(`document.getElementById('messageContainer_`+strconv.Itoa(userMessageId)+`').scrollIntoView()`, datastar.WithExecuteScriptAutoRemove(true))
+
+	isSessionTitleUpdate := false
+	sessionTitleUpdateChannel := make(chan int)
+	defer close(sessionTitleUpdateChannel)
+	if len(claudeRequest.Messages) == 1 {
+		go services.UpdateChatSessionTitle(userId, sessionId, prompt, sessionTitleUpdateChannel)
+		isSessionTitleUpdate = true
+	}
 
 	claudeResponseInsertDbChannel := make(chan int)
 	defer close(claudeResponseInsertDbChannel)
@@ -136,10 +146,15 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		time.Sleep(3000 * time.Millisecond)
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
 	}
+	if isSessionTitleUpdate && <-sessionTitleUpdateChannel > 0 {
+		chatSession := models.ChatSession{Id: sessionId, Title: prompt}
+		sse.PatchElementTempl(components.ChatSessionMenuItems(append([]models.ChatSession{}, chatSession)))
+	}
 	updateMessageChannel := make(chan int)
 	defer close(updateMessageChannel)
 	go services.UpateMessageChatConversation(claudeMessageId, mergedOutput, updateMessageChannel)
 	<-updateMessageChannel
+
 }
 
 func getMockAPIResponse(channel chan string) {

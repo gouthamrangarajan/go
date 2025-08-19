@@ -25,6 +25,7 @@ func main() {
 	router.Get("/", mainPageHandler)
 	router.Get("/{sessionId}", mainPageHandler)
 	router.Get("/sessions", menuDataHandler)
+	router.Post("/new", newChatHandler)
 	router.Post("/prompt", promptHandler)
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))

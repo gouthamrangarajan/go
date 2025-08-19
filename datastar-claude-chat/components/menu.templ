@@ -2,6 +2,7 @@
 package components
 
 import (
+	"datastar-claude-chat/components/shared"
 	"datastar-claude-chat/models"
 	"strconv"
 )
@@ -36,15 +37,23 @@ templ menu() {
 			class="w-10/12 bg-white border-r border-primary-background h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary md:w-7/12 lg:w-5/12 xl:w-4/12"
 			data-on-click="evt.stopPropagation()"
 		>
-			// <button
-			// 	class="appearance-none outline-none cursor-pointer rounded-lg mx-auto mt-5 w-11/12 transition duration-300 py-2 px-4 bg-yellow-600 text-white hover:opacity-90 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70"
-			// 	data-on-click="@post('/new')"
-			// 	data-indicator="newChat"
-			// 	data-attr-disabled="$newChat"
-			// >
-			// 	New Chat
-			// </button>
-			<ul class="flex flex-col mt-10" id="menuContainer" data-on-load="@get('/sessions')"></ul>
+			<button
+				class="appearance-none outline-none cursor-pointer rounded-lg flex justify-center items-center mx-auto mt-5 w-11/12 h-10 transition duration-300 py-2 px-4 hover:opacity-90 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70 md:w-9/12"
+				data-on-click__viewtransition="@post('/new')"
+				data-indicator="newChatProcessing"
+				data-attr-disabled="$newChatProcessing"
+				data-class="{'bg-yellow-600 text-white':!$newChatProcessing,'bg-white text-yellow-600 ring-2 ring-yellow-500':$newChatProcessing}"
+			>
+				<span data-show="!$newChatProcessing">New Chat</span>
+				<div
+					data-show="$newChatProcessing"
+					class="flex items-center gap-1 flex-1 w-full justify-center"
+				>
+					@shared.Loader("animate-loader-1")
+					@shared.Loader("animate-loader-2")
+				</div>
+			</button>
+			<ul class="flex flex-col mt-5" id="menuContainer" data-on-load="@get('/sessions')"></ul>
 		</div>
 		<button
 			class="appearance-none outline-none py-2 px-2.25 rounded bg-yellow-600 text-white  cursor-pointer transition duration-300 mt-2 focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-background hover:bg-yellow-500 "
@@ -65,7 +74,7 @@ templ menu() {
 
 templ ChatSessionMenuItems(items []models.ChatSession) {
 	for _,item := range items {
-		<li class="w-full cursor-pointer">
+		<li class="w-full cursor-pointer" id={ "menu_" + strconv.Itoa(item.Id) }>
 			<a
 				class="appearance-none outline-none cursor-pointer py-2 px-4 truncate flex items-center gap-2 transition duration-300 hover:opacity-90 focus:underline focus:underline-offet-4"
 				href={ "/" + strconv.Itoa(item.Id) }

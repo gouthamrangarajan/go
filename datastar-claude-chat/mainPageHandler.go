@@ -6,6 +6,7 @@ import (
 	"datastar-claude-chat/services"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/starfederation/datastar-go/datastar"
@@ -51,4 +52,19 @@ func menuDataHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	sessions := services.GetChatSessionsViaChannel(userId)
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchElementTempl(components.ChatSessionMenuItems(sessions), datastar.WithModeInner(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
+}
+
+func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(services.UserIDKey).(string)
+	newSessionId := services.InsertChatSessionViaChannel(userId, "New Chat")
+	sse := datastar.NewSSE(responseWriter, request)
+	if newSessionId == 0 {
+		sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to create new conversation. Please try again later.'}"))
+		time.Sleep(3000 * time.Millisecond)
+		sse.PatchSignals([]byte("{showErrorMessage:false}"))
+		return
+	}
+	sse.PatchSignals([]byte("{showMenu:false}"))
+	time.Sleep(200 * time.Millisecond)
+	sse.ExecuteScript("window.location.href=window.location.origin+'/'+" + strconv.Itoa(newSessionId))
 }

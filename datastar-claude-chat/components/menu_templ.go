@@ -10,6 +10,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"datastar-claude-chat/components/shared"
 	"datastar-claude-chat/models"
 	"strconv"
 )
@@ -35,7 +36,19 @@ func menu() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<button data-show=\"!$showMenu\" class=\"appearance-none outline-none py-2 px-2.25 rounded bg-yellow-600 text-white absolute top-2 left-2 cursor-pointer transition duration-300 focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-background hover:bg-yellow-500 \" style=\"view-transition-name:menu-button;display:none;\" data-on-click__viewtransition=\"$showMenu = true\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button><div class=\"absolute top-0 left-0 bg-black/50 w-full h-full flex gap-2 items-start justify-start z-10\" data-show=\"$showMenu\" style=\"display:none;\" data-on-click__viewtransition=\"$showMenu = false\" id=\"menuScreen\" data-signals=\"{__abortController:new AbortController()}\" data-effect=\"$showMenu?$__abortController=menuFocusTrap():$__abortController.abort()\"><div class=\"w-10/12 bg-white border-r border-primary-background h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary md:w-7/12 lg:w-5/12 xl:w-4/12\" data-on-click=\"evt.stopPropagation()\"><ul class=\"flex flex-col mt-10\" id=\"menuContainer\" data-on-load=\"@get('/sessions')\"></ul></div><button class=\"appearance-none outline-none py-2 px-2.25 rounded bg-yellow-600 text-white  cursor-pointer transition duration-300 mt-2 focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-background hover:bg-yellow-500 \" style=\"view-transition-name:menu-button\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<button data-show=\"!$showMenu\" class=\"appearance-none outline-none py-2 px-2.25 rounded bg-yellow-600 text-white absolute top-2 left-2 cursor-pointer transition duration-300 focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-background hover:bg-yellow-500 \" style=\"view-transition-name:menu-button;display:none;\" data-on-click__viewtransition=\"$showMenu = true\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button><div class=\"absolute top-0 left-0 bg-black/50 w-full h-full flex gap-2 items-start justify-start z-10\" data-show=\"$showMenu\" style=\"display:none;\" data-on-click__viewtransition=\"$showMenu = false\" id=\"menuScreen\" data-signals=\"{__abortController:new AbortController()}\" data-effect=\"$showMenu?$__abortController=menuFocusTrap():$__abortController.abort()\"><div class=\"w-10/12 bg-white border-r border-primary-background h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary md:w-7/12 lg:w-5/12 xl:w-4/12\" data-on-click=\"evt.stopPropagation()\"><button class=\"appearance-none outline-none cursor-pointer rounded-lg flex justify-center items-center mx-auto mt-5 w-11/12 h-10 transition duration-300 py-2 px-4 hover:opacity-90 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70 md:w-9/12\" data-on-click__viewtransition=\"@post('/new')\" data-indicator=\"newChatProcessing\" data-attr-disabled=\"$newChatProcessing\" data-class=\"{'bg-yellow-600 text-white':!$newChatProcessing,'bg-white text-yellow-600 ring-2 ring-yellow-500':$newChatProcessing}\"><span data-show=\"!$newChatProcessing\">New Chat</span><div data-show=\"$newChatProcessing\" class=\"flex items-center gap-1 flex-1 w-full justify-center\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Loader("animate-loader-1").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Loader("animate-loader-2").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></button><ul class=\"flex flex-col mt-5\" id=\"menuContainer\" data-on-load=\"@get('/sessions')\"></ul></div><button class=\"appearance-none outline-none py-2 px-2.25 rounded bg-yellow-600 text-white  cursor-pointer transition duration-300 mt-2 focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-background hover:bg-yellow-500 \" style=\"view-transition-name:menu-button\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,46 +78,59 @@ func ChatSessionMenuItems(items []models.ChatSession) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		for _, item := range items {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li class=\"w-full cursor-pointer\"><a class=\"appearance-none outline-none cursor-pointer py-2 px-4 truncate flex items-center gap-2 transition duration-300 hover:opacity-90 focus:underline focus:underline-offet-4\" href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<li class=\"w-full cursor-pointer\" id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 templ.SafeURL
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs("/" + strconv.Itoa(item.Id))
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("menu_" + strconv.Itoa(item.Id))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 71, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 77, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" data-on-go-to-session__viewtransition=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><a class=\"appearance-none outline-none cursor-pointer py-2 px-4 truncate flex items-center gap-2 transition duration-300 hover:opacity-90 focus:underline focus:underline-offet-4\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("$showMenu=false;setTimeout(()=>{window.location.href=window.location.origin+'/'+" + strconv.Itoa(item.Id) + ";},200)")
+			var templ_7745c5c3_Var4 templ.SafeURL
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs("/" + strconv.Itoa(item.Id))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 72, Col: 162}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 80, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" data-on-click__stop__prevent=\"evt.srcElement.dispatchEvent(new CustomEvent('go-to-session',{isTrusted:true,bubbles:true}))\"><span class=\"text-primary pt-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6 rotate-y-180\"><path fill-rule=\"evenodd\" d=\"M12 2.25c-2.429 0-4.817.178-7.152.521C2.87 3.061 1.5 4.795 1.5 6.741v6.018c0 1.946 1.37 3.68 3.348 3.97.877.129 1.761.234 2.652.316V21a.75.75 0 0 0 1.28.53l4.184-4.183a.39.39 0 0 1 .266-.112c2.006-.05 3.982-.22 5.922-.506 1.978-.29 3.348-2.023 3.348-3.97V6.741c0-1.947-1.37-3.68-3.348-3.97A49.145 49.145 0 0 0 12 2.25ZM8.25 8.625a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Zm2.625 1.125a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z\" clip-rule=\"evenodd\"></path></svg></span> <span class=\"capitalize truncate\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" data-on-go-to-session__viewtransition=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("$showMenu=false;setTimeout(()=>{window.location.href=window.location.origin+'/'+" + strconv.Itoa(item.Id) + ";},200)")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 80, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 81, Col: 162}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></a></li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" data-on-click__stop__prevent=\"evt.srcElement.dispatchEvent(new CustomEvent('go-to-session',{isTrusted:true,bubbles:true}))\"><span class=\"text-primary pt-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6 rotate-y-180\"><path fill-rule=\"evenodd\" d=\"M12 2.25c-2.429 0-4.817.178-7.152.521C2.87 3.061 1.5 4.795 1.5 6.741v6.018c0 1.946 1.37 3.68 3.348 3.97.877.129 1.761.234 2.652.316V21a.75.75 0 0 0 1.28.53l4.184-4.183a.39.39 0 0 1 .266-.112c2.006-.05 3.982-.22 5.922-.506 1.978-.29 3.348-2.023 3.348-3.97V6.741c0-1.947-1.37-3.68-3.348-3.97A49.145 49.145 0 0 0 12 2.25ZM8.25 8.625a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Zm2.625 1.125a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z\" clip-rule=\"evenodd\"></path></svg></span> <span class=\"capitalize truncate\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 89, Col: 50}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span></a></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

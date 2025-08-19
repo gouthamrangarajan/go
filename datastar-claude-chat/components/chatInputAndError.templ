@@ -1,5 +1,7 @@
 package components
 
+import "datastar-claude-chat/components/shared"
+
 templ inputAndError() {
 	<div class="absolute -bottom-2.5 left-0 w-full">
 		<form
@@ -57,8 +59,8 @@ templ submitButton() {
 			data-show="$promptProcessing"
 			style="display:none"
 		>
-			<span class="h-1.5 w-1.5 bg-yellow-500 rounded-full animate-loader-1"></span>
-			<span class="h-1.5 w-1.5 bg-yellow-500 rounded-full animate-loader-2"></span>
+			@shared.Loader("animate-loader-1")
+			@shared.Loader("animate-loader-2")
 		</div>
 	</button>
 }
