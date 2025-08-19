@@ -18,6 +18,7 @@ import (
 // If session id is 0 in incoming request , insert new chat session
 // Check if the session id is not part of user sessions, send unauthorized if so
 // if unable to generate claude request , send internal server error
+// append new chat session UI using data star sse if insert new chat session was sucessful
 // send error message using data star sse if insert new chat session has failed
 // insert chat conversation from user and send error message via data star sse if failed
 // send message template for user to append to UI via data star sse
