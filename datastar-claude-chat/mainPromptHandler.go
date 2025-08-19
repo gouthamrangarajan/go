@@ -12,22 +12,33 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 )
 
+// ALGO
+// all validation/error messages stops the flow except for claude message error
+// Check for invalid/bad request : prompt empty , invalid session id, & send bad request
+// If session id is 0 in incoming request , insert new chat session
+// Check if the session id is not part of user sessions, send unauthorized if so
+// if unable to generate claude request , send internal server error
+// send error message using data star sse if insert new chat session has failed
+// insert chat conversation from user and send error message via data star sse if failed
+// send message template for user to append to UI via data star sse
+// clear the prompt signal & scroll the user message into view using data star sse
+// insert chat conversation for assistant and send error message via data star sse if failed
+// call claude api with channel to get streaming string output
+// send message template for assistant to append to UI via data star sse
+// range over channel , as long as its not closed , read the message string from channel
+// consolidate the message , keep patching the assistant message UI with consolidate message for every loop iteration
+// if there was at least one message with "Error" , dont consolidate this string and send error message via data star sse
+// update the assistant message to db
+
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	prompt := request.FormValue("prompt")
-	if prompt == "" {
-		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
-		return
-	}
 	userId := request.Context().Value(services.UserIDKey).(string)
-	if userId == "" {
-		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
 	sessionIdStr := request.URL.Query().Get("sessionId")
 	sessionId, err := strconv.Atoi(sessionIdStr)
 	newSessionInserted := false
-	if err != nil || sessionIdStr == "" {
-		http.Error(responseWriter, "Internal Server Error", http.StatusInternalServerError)
+
+	if prompt == "" || err != nil {
+		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 		return
 	} else if sessionId == 0 {
 		newSessionChannel := make(chan int)

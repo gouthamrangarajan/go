@@ -3,7 +3,6 @@ package middlewares
 import (
 	"context"
 	"datastar-claude-chat/services"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -23,7 +22,6 @@ func Authorization(next http.Handler) http.Handler {
 				userId = ""
 			}
 		}
-		fmt.Printf("userId:%v\n", userId)
 		if userId == "" {
 			if strings.ToUpper(request.Method) == "GET" && request.URL.Path == "/" {
 				userId = uuid.New().String()

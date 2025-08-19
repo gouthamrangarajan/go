@@ -29,10 +29,6 @@ func main() {
 	router.Get("/{sessionId}", mainPageHandler)
 	router.Get("/sessions", func(responseWriter http.ResponseWriter, request *http.Request) {
 		userId := request.Context().Value(services.UserIDKey).(string)
-		if userId == "" {
-			http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
 		sessions := services.GetChatSessionsViaChannel(userId)
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(components.ChatSessionMenuItems(sessions), datastar.WithModeInner(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
