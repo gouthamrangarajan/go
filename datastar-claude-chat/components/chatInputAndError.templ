@@ -3,9 +3,9 @@ package components
 import "datastar-claude-chat/components/shared"
 
 templ inputAndError() {
-	<div class="absolute -bottom-2.5 left-0 w-full">
+	<div class="absolute bottom-0 left-0 w-full">
 		<form
-			class="py-2 px-4 mx-auto bg-white rounded flex items-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 "
+			class="py-2 px-4 mx-auto bg-white rounded-t flex items-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 "
 			data-on-submit="evt.preventDefault();"
 			data-signals="{prompt:''}"
 			data-indicator="promptProcessing"

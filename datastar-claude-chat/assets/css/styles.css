@@ -192,8 +192,8 @@
   .top-2 {
     top: calc(var(--spacing) * 2);
   }
-  .-bottom-2\.5 {
-    bottom: calc(var(--spacing) * -2.5);
+  .bottom-0 {
+    bottom: calc(var(--spacing) * 0);
   }
   .bottom-4 {
     bottom: calc(var(--spacing) * 4);
@@ -349,6 +349,10 @@
   }
   .rounded-lg {
     border-radius: var(--radius-lg);
+  }
+  .rounded-t {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
   }
   .border-r {
     border-right-style: var(--tw-border-style);

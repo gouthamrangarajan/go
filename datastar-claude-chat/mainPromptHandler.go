@@ -31,7 +31,8 @@ import (
 // consolidate the message , keep patching the assistant message UI with consolidate message for every loop iteration
 // if there was at least one message with "Error" , dont consolidate this string and send error message via data star sse
 // wait for session title update to be completed if called & if success send patchelement to ui via data star sse
-// update the assistant message to db & wait
+// if only one response from claude api call and thats error then delete the message
+// otherwise update the assistant message to db & wait
 
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	prompt := request.FormValue("prompt")
@@ -128,7 +129,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	claudeResponseChannel := make(chan string)
-	go services.CallClaudeAPIStreamingWithRequest(claudeRequest, claudeResponseChannel)
+	go services.CallClaudeAPI(claudeRequest, claudeResponseChannel)
 
 	sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	mergedOutput := ""
@@ -138,9 +139,10 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		if response == "Error" {
 			sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'An error occurred with the AI model. Please try again later.'}"))
 			errored = true
+		} else {
+			mergedOutput += response
+			sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, mergedOutput, "assistant"))
 		}
-		mergedOutput += response
-		sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, mergedOutput, "assistant"))
 	}
 	if errored {
 		time.Sleep(3000 * time.Millisecond)
@@ -150,10 +152,14 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		chatSession := models.ChatSession{Id: sessionId, Title: prompt}
 		sse.PatchElementTempl(components.ChatSessionMenuItems(append([]models.ChatSession{}, chatSession)))
 	}
-	updateMessageChannel := make(chan int)
-	defer close(updateMessageChannel)
-	go services.UpateMessageChatConversation(claudeMessageId, mergedOutput, updateMessageChannel)
-	<-updateMessageChannel
+	updateOrDeleteMessageChannel := make(chan int)
+	defer close(updateOrDeleteMessageChannel)
+	if !errored || mergedOutput != "Error" {
+		go services.UpateMessageChatConversation(claudeMessageId, mergedOutput, updateOrDeleteMessageChannel)
+	} else {
+		go services.DeleteClaudeMessageChatConversation(claudeMessageId, updateOrDeleteMessageChannel)
+	}
+	<-updateOrDeleteMessageChannel
 
 }
 

@@ -79,10 +79,16 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string) (models.
 	if err != nil {
 		maxToken = 8000
 	}
+	temperatureStr := os.Getenv("CLAUDE_TEMPERATURE")
+	temperature, err := strconv.ParseFloat(temperatureStr, 32)
+	if err != nil {
+		temperature = 0.5
+	}
 	claudeRequest := models.ClaudeRequest{
-		Model:    os.Getenv("CLAUDE_MODEL"),
-		MaxToken: maxToken,
-		Stream:   true,
+		Model:       os.Getenv("CLAUDE_MODEL"),
+		MaxToken:    maxToken,
+		Stream:      true,
+		Temperature: float32(temperature),
 	}
 	claudeRequest.Messages = make([]models.ClaudeRequestMessage, 0, len(conversations)+1)
 	for _, conversation := range conversations {

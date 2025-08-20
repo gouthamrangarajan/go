@@ -31,7 +31,7 @@ func inputAndError() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute -bottom-2.5 left-0 w-full\"><form class=\"py-2 px-4 mx-auto bg-white rounded flex items-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 \" data-on-submit=\"evt.preventDefault();\" data-signals=\"{prompt:''}\" data-indicator=\"promptProcessing\" data-attr-disabled=\"$promptProcessing\" data-on-call-api=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 left-0 w-full\"><form class=\"py-2 px-4 mx-auto bg-white rounded-t flex items-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 \" data-on-submit=\"evt.preventDefault();\" data-signals=\"{prompt:''}\" data-indicator=\"promptProcessing\" data-attr-disabled=\"$promptProcessing\" data-on-call-api=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

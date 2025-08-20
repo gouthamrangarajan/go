@@ -385,7 +385,7 @@ func UpateMessageChatConversation(conversationId int, message string, channel ch
 	channel <- int(rowsAffected)
 }
 
-func DeleteGeminiMessageChatConversation(conversationId int, channel chan<- int) {
+func DeleteClaudeMessageChatConversation(conversationId int, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
 		channel <- 0
