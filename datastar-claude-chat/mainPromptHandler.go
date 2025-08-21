@@ -4,6 +4,9 @@ import (
 	"datastar-claude-chat/components"
 	"datastar-claude-chat/models"
 	"datastar-claude-chat/services"
+	"encoding/base64"
+	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,11 +17,11 @@ import (
 
 // ALGO
 // all validation/error messages stops the flow except for claude message error
-// Check for invalid/bad request : prompt empty , invalid session id, & send bad request
+// Check for invalid/bad request : prompt empty , invalid session id, invalid image or size & send bad request
 // If session id is 0 in incoming request , insert new chat session
 // Check if the session id is not part of user sessions, send unauthorized if so
 // if unable to generate claude request , send internal server error
-// append new chat session UI using data star sse if insert new chat session was sucessful
+// append new chat session UI && window url replace using data star sse if insert new chat session was sucessful
 // send error message using data star sse if insert new chat session has failed
 // insert chat conversation from user and send error message via data star sse if failed
 // send message template for user to append to UI via data star sse
@@ -30,18 +33,37 @@ import (
 // range over channel , as long as its not closed , read the message string from channel
 // consolidate the message , keep patching the assistant message UI with consolidate message for every loop iteration
 // if there was at least one message with "Error" , dont consolidate this string and send error message via data star sse
+// reset img data & remove fileupload ui using data start sse
 // wait for session title update to be completed if called & if success send patchelement to ui via data star sse
 // if only one response from claude api call and thats error then delete the message
 // otherwise update the assistant message to db & wait
 
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	prompt := request.FormValue("prompt")
+
+	requestBody, err := io.ReadAll(request.Body)
+
+	var clientSignal models.ClientSignals
+	err = json.Unmarshal(requestBody, &clientSignal)
+	prompt := clientSignal.Prompt
+	imgData := ""
+	if len(clientSignal.ImgData) > 0 && len(clientSignal.ImgMimes) > 0 {
+		imgData = "data:" + clientSignal.ImgMimes[0] + ";base64," + clientSignal.ImgData[0]
+	}
+
 	userId := request.Context().Value(services.UserIDKey).(string)
 	sessionIdStr := request.URL.Query().Get("sessionId")
 	sessionId, err := strconv.Atoi(sessionIdStr)
+	var decodedBytes []byte
+	var imgDataDecodeErr error
+	if len(clientSignal.ImgData) > 0 {
+		decodedBytes, imgDataDecodeErr = base64.StdEncoding.DecodeString(clientSignal.ImgData[0])
+	}
+	matches := services.ImgRegex.FindStringSubmatch(imgData)
 	newSessionInserted := false
 
-	if prompt == "" || err != nil {
+	if prompt == "" || err != nil ||
+		imgDataDecodeErr != nil || len(decodedBytes) > 1024*1024 || len(clientSignal.ImgData) > 1 ||
+		(len(clientSignal.ImgData) == 1 && len(matches) != 4) {
 		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 		return
 	} else if sessionId == 0 {
@@ -68,7 +90,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, sessionId, prompt)
+	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, sessionId, prompt, imgData)
 
 	if errMsg != "" {
 		http.Error(responseWriter, "Internal Server Error", http.StatusInternalServerError)
@@ -84,27 +106,24 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 			sse.PatchSignals([]byte("{sessionId:" + strconv.Itoa(sessionId) + "}"))
 			sse.PatchElementTempl(components.ChatSessionMenuItems(append([]models.ChatSession{}, chatSession)), datastar.WithModeAppend(), datastar.WithSelectorID("menuContainer"))
+			sse.ExecuteScript("window.history.replaceState({},document.title,window.location.origin+'/'+" + strconv.Itoa(sessionId) + ");  ")
 		} else {
-			sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to save conversation. Please try again later.'}"))
-			time.Sleep(3000 * time.Millisecond)
-			sse.PatchSignals([]byte("{showErrorMessage:false}"))
+			services.SendErrorMessageToUI(sse, "'Failed to save conversation. Please try again later.'")
 			return
 		}
 	}
 
 	userMessageInsertDbChannel := make(chan int)
 	defer close(userMessageInsertDbChannel)
-	go services.InsertChatConversation(sessionId, prompt, "", "user", userMessageInsertDbChannel)
+	go services.InsertChatConversation(sessionId, prompt, imgData, "user", userMessageInsertDbChannel)
 	userMessageId := <-userMessageInsertDbChannel
 
 	if userMessageId == 0 {
 		//error handling
-		sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to save conversation. Please try again later.'}"))
-		time.Sleep(3000 * time.Millisecond)
-		sse.PatchSignals([]byte("{showErrorMessage:false}"))
+		services.SendErrorMessageToUI(sse, "'Failed to save conversation. Please try again later.'")
 		return
 	}
-	sse.PatchElementTempl(components.MessageForStreaming(userMessageId, prompt, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(userMessageId, prompt, imgData, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	sse.PatchSignals([]byte("{prompt:''}"))
 	sse.ExecuteScript(`document.getElementById('messageContainer_`+strconv.Itoa(userMessageId)+`').scrollIntoView()`, datastar.WithExecuteScriptAutoRemove(true))
 
@@ -122,16 +141,14 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	claudeMessageId := <-claudeResponseInsertDbChannel
 	if claudeMessageId == 0 {
 		//error handling
-		sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to save conversation. Please try again later.'}"))
-		time.Sleep(3000 * time.Millisecond)
-		sse.PatchSignals([]byte("{showErrorMessage:false}"))
+		services.SendErrorMessageToUI(sse, "'Failed to save conversation. Please try again later.'")
 		return
 	}
 
 	claudeResponseChannel := make(chan string)
 	go services.CallClaudeAPI(claudeRequest, claudeResponseChannel)
 
-	sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, "", "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	mergedOutput := ""
 
 	errored := false
@@ -141,12 +158,15 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			errored = true
 		} else {
 			mergedOutput += response
-			sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, mergedOutput, "assistant"))
+			sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, mergedOutput, "", "assistant"))
 		}
 	}
 	if errored {
 		time.Sleep(3000 * time.Millisecond)
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
+	} else {
+		sse.PatchSignals([]byte("{imgData:''}"))
+		sse.PatchElementTempl(components.FileDataDisplay("", ""), datastar.WithUseViewTransitions(true))
 	}
 	if isSessionTitleUpdate && <-sessionTitleUpdateChannel > 0 {
 		chatSession := models.ChatSession{Id: sessionId, Title: prompt}

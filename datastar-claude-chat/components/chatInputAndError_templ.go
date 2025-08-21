@@ -36,9 +36,9 @@ func inputAndError() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("!$promptProcessing && $prompt.trim()!='' && @post('/prompt?sessionId='+$sessionId,{contentType:'form', openWhenHidden: true,retryMaxCount:0})")
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("!$promptProcessing && $prompt.trim()!='' && @post('/prompt?sessionId='+$sessionId,{openWhenHidden: true,retryMaxCount:0})")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 13, Col: 165}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 13, Col: 145}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -52,11 +52,15 @@ func inputAndError() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex items-center gap-1\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = submitButton().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</form><p class=\"absolute bottom-4 left-1 z-10 shadow-2xl animate-error-message rounded-lg bg-primary-background py-2 px-4 text-red-600 font-semibold\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></form><p class=\"absolute bottom-4 left-1 z-10 shadow-2xl animate-error-message rounded-lg bg-primary/50 py-2 px-4 text-red-600 font-semibold\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,7 +89,7 @@ func promptField() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<textarea class=\"appearance-none outline-none text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-primary\" rows=\"4\" name=\"prompt\" id=\"prompt\" data-bind=\"prompt\" placeholder=\"Send a message\" data-on-keydown__window=\" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"></textarea>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<textarea class=\"appearance-none outline-none text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-primary\" rows=\"4\" name=\"prompt\" id=\"prompt\" data-bind=\"prompt\" placeholder=\"Send a message\" data-on-keydown__window=\" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"></textarea>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -114,7 +118,7 @@ func submitButton() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button class=\"appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" data-show=\"!$promptProcessing\" style=\"display:none\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" data-show=\"$promptProcessing\" style=\"display:none\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<button class=\"appearance-none outline-none p-1 mr-2 h-7 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" data-show=\"!$promptProcessing\" style=\"display:none\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" data-show=\"$promptProcessing\" style=\"display:none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -126,7 +130,108 @@ func submitButton() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></button>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func fileUpload() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = FileDataDisplay("", "").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<input type=\"file\" class=\"hidden\" name=\"imgData\" data-ref=\"fileInputRef\" accept=\"image/jpeg, image/png, image/webp, image/jpg\" data-bind-img-data data-on-change=\"setTimeout(()=>{@post('/fileupload',{openWhenHidden: true,retryMaxCount:0});},100)\"> <button class=\"appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"$fileInputRef.click()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func FileDataDisplay(imgData string, imgName string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"absolute bottom-28.5 left-0 w-full\" id=\"fileDataDisplay\"><div class=\"animate-error-message shadow py-2 px-4 rounded bg-white flex justify-between mx-auto w-11/12 lg:w-10/12 xl:w-9/12\" data-show=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("$imgData!='' && '" + imgData + "'!=''")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 97, Col: 54}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><div class=\"flex-1 flex items-center gap-3\"><img class=\"rounded-full w-6 h-6\" src=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(imgData)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 100, Col: 51}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"> <span class=\"text-primary truncate font-semibold\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(imgName)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 101, Col: 63}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span></div><button class=\"appearance-none outline-none p-1 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-on-click__viewtransition=\"$imgData=''\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

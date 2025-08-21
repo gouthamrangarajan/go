@@ -10,15 +10,18 @@ templ inputAndError() {
 			data-signals="{prompt:''}"
 			data-indicator="promptProcessing"
 			data-attr-disabled="$promptProcessing"
-			data-on-call-api={ "!$promptProcessing && $prompt.trim()!='' && @post('/prompt?sessionId='+$sessionId,{contentType:'form', openWhenHidden: true,retryMaxCount:0})" }
+			data-on-call-api={ "!$promptProcessing && $prompt.trim()!='' && @post('/prompt?sessionId='+$sessionId,{openWhenHidden: true,retryMaxCount:0})" }
 			data-on-datastar-fetch="evt.detail.type === 'error' && evt.detail.el.dispatchEvent(new CustomEvent('show-api-error',{isTrusted:true}))"
 			data-on-show-api-error="$showErrorMessage = true; $errorMessage = 'Error. Please try again later.';setTimeout(() => { $showErrorMessage = false; }, 3000);"
 		>
 			@promptField()
-			@submitButton()
+			<div class="flex items-center gap-1">
+				// @fileUpload()
+				@submitButton()
+			</div>
 		</form>
 		<p
-			class="absolute bottom-4 left-1 z-10 shadow-2xl animate-error-message rounded-lg bg-primary-background py-2 px-4 text-red-600 font-semibold"
+			class="absolute bottom-4 left-1 z-10 shadow-2xl animate-error-message rounded-lg bg-primary/50 py-2 px-4 text-red-600 font-semibold"
 			data-show="$showErrorMessage"
 			data-text="$errorMessage"
 			style="display:none"
@@ -40,7 +43,7 @@ templ promptField() {
 
 templ submitButton() {
 	<button
-		class="appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+		class="appearance-none outline-none p-1 mr-2 h-7 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
 		data-attr-disabled="$promptProcessing"
 		data-on-click="evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
 	>
@@ -63,4 +66,48 @@ templ submitButton() {
 			@shared.Loader("animate-loader-2")
 		</div>
 	</button>
+}
+
+templ fileUpload() {
+	@FileDataDisplay("", "")
+	<input
+		type="file"
+		class="hidden"
+		name="imgData"
+		data-ref="fileInputRef"
+		accept="image/jpeg, image/png, image/webp, image/jpg"
+		data-bind-img-data
+		data-on-change="setTimeout(()=>{@post('/fileupload',{openWhenHidden: true,retryMaxCount:0});},100)"
+	/>
+	<button
+		class="appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+		data-attr-disabled="$promptProcessing"
+		data-on-click="$fileInputRef.click()"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+			<path fill-rule="evenodd" d="M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z" clip-rule="evenodd"></path>
+		</svg>
+	</button>
+}
+
+templ FileDataDisplay(imgData string, imgName string) {
+	<div class="absolute bottom-28.5 left-0 w-full" id="fileDataDisplay">
+		<div
+			class="animate-error-message shadow py-2 px-4 rounded bg-white flex justify-between mx-auto w-11/12 lg:w-10/12 xl:w-9/12"
+			data-show={ "$imgData!='' && '" + imgData + "'!=''" }
+		>
+			<div class="flex-1 flex items-center gap-3">
+				<img class="rounded-full w-6 h-6" src={ imgData }/>
+				<span class="text-primary truncate font-semibold">{ imgName }</span>
+			</div>
+			<button
+				class="appearance-none outline-none p-1 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+				data-on-click__viewtransition="$imgData=''"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+					<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
 }

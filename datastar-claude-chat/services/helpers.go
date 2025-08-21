@@ -7,13 +7,19 @@ import (
 	"encoding/base64"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/starfederation/datastar-go/datastar"
 )
 
 type contextKey string
 
 const UserIDKey contextKey = "userId"
+
+var ImgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
 
 func GenerateSignedStrForCookie(name string, val string) string {
 	cookieSecret := os.Getenv("COOKIE_SECRET")
@@ -67,7 +73,7 @@ func InsertChatSessionViaChannel(userId string, title string) int {
 	sessionId = <-insertSessionChannel
 	return sessionId
 }
-func GenerateClaudeRequest(userId string, sessionId int, prompt string) (models.ClaudeRequest, string) {
+func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptImgData string) (models.ClaudeRequest, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
@@ -94,7 +100,26 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string) (models.
 	for _, conversation := range conversations {
 		if strings.TrimSpace(conversation.Message) != "" {
 			if conversation.ImgData != "" {
-
+				matches := ImgRegex.FindStringSubmatch(conversation.ImgData)
+				if len(matches) > 3 {
+					contentWithImage := []models.ClaudeRequestImageContent{}
+					contentWithImage = append(contentWithImage, models.ClaudeRequestImageContent{
+						Type: "image",
+						Source: models.ClaudeRequestImageContentSource{
+							Type:      "base64",
+							MediaType: matches[1],
+							Data:      matches[3],
+						},
+					})
+					contentWithImage = append(contentWithImage, models.ClaudeRequestImageContent{
+						Type: "text",
+						Text: conversation.Message,
+					})
+					claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
+						Role:             conversation.Sender,
+						ContentWithImage: contentWithImage,
+					})
+				}
 			} else {
 				claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
 					Role:    conversation.Sender,
@@ -103,9 +128,38 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string) (models.
 			}
 		}
 	}
-	claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
-		Role:    "user",
-		Content: prompt,
-	})
+	if promptImgData != "" {
+		matches := ImgRegex.FindStringSubmatch(promptImgData)
+		if len(matches) > 3 {
+			contentWithImage := []models.ClaudeRequestImageContent{}
+			contentWithImage = append(contentWithImage, models.ClaudeRequestImageContent{
+				Type: "image",
+				Source: models.ClaudeRequestImageContentSource{
+					Type:      "base64",
+					MediaType: matches[1],
+					Data:      matches[3],
+				},
+			})
+			contentWithImage = append(contentWithImage, models.ClaudeRequestImageContent{
+				Type: "text",
+				Text: prompt,
+			})
+			claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
+				Role:             "user",
+				ContentWithImage: contentWithImage,
+			})
+		}
+	} else {
+		claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
+			Role:    "user",
+			Content: prompt,
+		})
+	}
 	return claudeRequest, errToRet
+}
+
+func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string) {
+	sse.PatchSignals([]byte(`{showErrorMessage:true,errorMessage:` + message + `}`))
+	time.Sleep(3000 * time.Millisecond)
+	sse.PatchSignals([]byte("{showErrorMessage:false}"))
 }

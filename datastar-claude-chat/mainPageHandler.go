@@ -4,6 +4,9 @@ import (
 	"datastar-claude-chat/components"
 	"datastar-claude-chat/models"
 	"datastar-claude-chat/services"
+	"encoding/base64"
+	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -67,4 +70,42 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse.PatchSignals([]byte("{showMenu:false}"))
 	time.Sleep(200 * time.Millisecond)
 	sse.ExecuteScript("window.location.href=window.location.origin+'/'+" + strconv.Itoa(newSessionId))
+}
+
+func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	requestBody, _ := io.ReadAll(request.Body)
+	var clientSignal models.ClientSignals
+	_ = json.Unmarshal(requestBody, &clientSignal)
+
+	imgData := ""
+	imgName := ""
+	if len(clientSignal.ImgData) > 0 && len(clientSignal.ImgMimes) > 0 {
+		imgData = "data:" + clientSignal.ImgMimes[0] + ";base64," + clientSignal.ImgData[0]
+	}
+	if len(clientSignal.ImgNames) > 0 {
+		imgName = clientSignal.ImgNames[0]
+	}
+	sse := datastar.NewSSE(responseWriter, request)
+	matches := services.ImgRegex.FindStringSubmatch(imgData)
+	if len(clientSignal.ImgData) > 1 {
+		sse.PatchSignals([]byte("{imgData:''}"))
+		services.SendErrorMessageToUI(sse, "Please select only one image at a time.")
+		imgName = ""
+		imgData = ""
+	}
+	if len(matches) != 4 {
+		sse.PatchSignals([]byte("{imgData:''}"))
+		services.SendErrorMessageToUI(sse, "Invalid file type. Please upload an image with type (JPG, PNG, WEBP)")
+		imgName = ""
+		imgData = ""
+	}
+
+	decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.ImgData[0])
+	if err != nil || len(decodedBytes) > 1024*1024 {
+		sse.PatchSignals([]byte("{imgData:''}"))
+		services.SendErrorMessageToUI(sse, "'Image size exceeds the limit of 1 MB'")
+		imgName = ""
+		imgData = ""
+	}
+	sse.PatchElementTempl(components.FileDataDisplay(imgData, imgName), datastar.WithUseViewTransitions(true))
 }
