@@ -21,15 +21,19 @@ type ClaudeRequestMessage struct {
 	Content          string                      `json:",omitempty"`
 	ContentWithImage []ClaudeRequestImageContent `json:",omitempty"`
 }
-
+type ClaudeRequestTools struct {
+	Type    string `json:"type,omitempty"`
+	Name    string `json:"name,omitempty"`
+	MaxUses int    `json:"max_uses,omitempty"`
+}
 type ClaudeRequest struct {
 	Model       string                 `json:"model"`
 	Messages    []ClaudeRequestMessage `json:"messages"`
 	MaxToken    int                    `json:"max_tokens,omitempty"`
 	Stream      bool                   `json:"stream,omitempty"`
 	Temperature float32                `json:"temperature,omitempty"`
+	Tools       []ClaudeRequestTools   `json:"tools,omitempty"`
 }
-
 type ClaudeResponseContent struct {
 	Type string `json:"type"`
 	Text string `json:"text"`

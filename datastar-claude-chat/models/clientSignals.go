@@ -6,4 +6,5 @@ type ClientSignals struct {
 	ImgData   []string `json:"imgData"`
 	ImgMimes  []string `json:"imgDataMimes"`
 	ImgNames  []string `json:"imgDataNames"`
+	SearchWeb bool     `json:"searchWeb"`
 }

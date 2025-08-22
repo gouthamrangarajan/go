@@ -27,6 +27,7 @@ import (
 // send message template for user to append to UI via data star sse
 // clear the prompt signal & scroll the user message into view using data star sse
 // if the request is first for the session call session title update via channel
+// call session allow web search flag update via channel
 // insert chat conversation for assistant and send error message via data star sse if failed
 // call claude api with channel to get streaming string output
 // send message template for assistant to append to UI via data star sse
@@ -37,6 +38,7 @@ import (
 // wait for session title update to be completed if called & if success send patchelement to ui via data star sse
 // if only one response from claude api call and thats error then delete the message
 // otherwise update the assistant message to db & wait
+// wait for allow web search flag update to complete
 
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
@@ -45,6 +47,11 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var clientSignal models.ClientSignals
 	err = json.Unmarshal(requestBody, &clientSignal)
 	prompt := clientSignal.Prompt
+
+	// fmt.Println(clientSignal)
+	// http.Error(responseWriter, "Bad request", http.StatusBadRequest)
+	// return
+
 	imgData := ""
 	if len(clientSignal.ImgData) > 0 && len(clientSignal.ImgMimes) > 0 {
 		imgData = "data:" + clientSignal.ImgMimes[0] + ";base64," + clientSignal.ImgData[0]
@@ -68,7 +75,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	} else if sessionId == 0 {
 		newSessionChannel := make(chan int)
-		go services.InsertChatSession(userId, prompt, newSessionChannel)
+		go services.InsertChatSession(userId, prompt, clientSignal.SearchWeb, newSessionChannel)
 		sessionId = <-newSessionChannel
 		newSessionInserted = true
 	}
@@ -90,7 +97,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, sessionId, prompt, imgData)
+	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, sessionId, prompt, imgData, clientSignal.SearchWeb)
 
 	if errMsg != "" {
 		http.Error(responseWriter, "Internal Server Error", http.StatusInternalServerError)
@@ -135,6 +142,10 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		isSessionTitleUpdate = true
 	}
 
+	sessionSearchWebChannel := make(chan int)
+	defer close(sessionSearchWebChannel)
+	go services.UpdateChatSessionAllowWebSearch(userId, sessionId, clientSignal.SearchWeb, sessionSearchWebChannel)
+
 	claudeResponseInsertDbChannel := make(chan int)
 	defer close(claudeResponseInsertDbChannel)
 	go services.InsertChatConversation(sessionId, "", "", "assistant", claudeResponseInsertDbChannel)
@@ -166,7 +177,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
 	} else {
 		sse.PatchSignals([]byte("{imgData:''}"))
-		sse.PatchElementTempl(components.FileDataDisplay("", ""), datastar.WithUseViewTransitions(true))
+		// sse.PatchElementTempl(components.FileDataDisplay("", ""), datastar.WithUseViewTransitions(true))
 	}
 	if isSessionTitleUpdate && <-sessionTitleUpdateChannel > 0 {
 		chatSession := models.ChatSession{Id: sessionId, Title: prompt}
@@ -180,7 +191,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go services.DeleteClaudeMessageChatConversation(claudeMessageId, updateOrDeleteMessageChannel)
 	}
 	<-updateOrDeleteMessageChannel
-
+	<-sessionSearchWebChannel
 }
 
 func getMockAPIResponse(channel chan string) {

@@ -65,15 +65,15 @@ func GetChatSessionsViaChannel(userId string) []models.ChatSession {
 	sessions := <-sessionChannel
 	return sessions
 }
-func InsertChatSessionViaChannel(userId string, title string) int {
+func InsertChatSessionViaChannel(userId string, title string, webSearch bool) int {
 	var sessionId int = 0
 	insertSessionChannel := make(chan int)
 	defer close(insertSessionChannel)
-	go InsertChatSession(userId, title, insertSessionChannel)
+	go InsertChatSession(userId, title, webSearch, insertSessionChannel)
 	sessionId = <-insertSessionChannel
 	return sessionId
 }
-func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptImgData string) (models.ClaudeRequest, string) {
+func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptImgData string, searchWeb bool) (models.ClaudeRequest, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
@@ -153,6 +153,19 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptIm
 		claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
 			Role:    "user",
 			Content: prompt,
+		})
+	}
+	if searchWeb {
+		max_uses_str := os.Getenv("CALUDE_WEB_TOOL_MAX_USES")
+		max_uses, err := strconv.Atoi(max_uses_str)
+		if err != nil {
+			max_uses = 5
+		}
+		claudeRequest.Tools = []models.ClaudeRequestTools{}
+		claudeRequest.Tools = append(claudeRequest.Tools, models.ClaudeRequestTools{
+			Type:    os.Getenv("CLAUDE_WEB_TOOL_TYPE"),
+			Name:    os.Getenv("CLAUDE_WEB_TOOL_NAME"),
+			MaxUses: max_uses,
 		})
 	}
 	return claudeRequest, errToRet

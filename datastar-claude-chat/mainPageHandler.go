@@ -17,13 +17,14 @@ import (
 
 func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sessionId := 0
+	allowWebSearch := false
 	sessionIdStr := chi.URLParam(request, "sessionId")
 	sessionId, err := strconv.Atoi(sessionIdStr)
 	if err != nil {
 		sessionId = 0
 	}
 	if sessionId == 0 {
-		components.Main(0, []models.ChatConversation{}).Render(request.Context(), responseWriter)
+		components.Main(0, allowWebSearch, []models.ChatConversation{}).Render(request.Context(), responseWriter)
 		return
 	}
 	userId := request.Context().Value(services.UserIDKey).(string)
@@ -33,8 +34,10 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	go services.GetChatSessions(userId, sessionsChannel)
 	sessions := <-sessionsChannel
 	sessionFound := false
+
 	for _, session := range sessions {
 		if session.Id == sessionId {
+			allowWebSearch = session.AllowWebSearch
 			sessionFound = true
 			break
 		}
@@ -47,7 +50,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	defer close(conversationChannel)
 	go services.GetChatConversations(userId, sessionId, conversationChannel)
 	conversations := <-conversationChannel
-	components.Main(sessionId, conversations).Render(request.Context(), responseWriter)
+	components.Main(sessionId, allowWebSearch, conversations).Render(request.Context(), responseWriter)
 }
 
 func menuDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -59,7 +62,7 @@ func menuDataHandler(responseWriter http.ResponseWriter, request *http.Request) 
 
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
-	newSessionId := services.InsertChatSessionViaChannel(userId, "New Chat")
+	newSessionId := services.InsertChatSessionViaChannel(userId, "New Chat", false)
 	sse := datastar.NewSSE(responseWriter, request)
 	if newSessionId == 0 {
 		sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to create new conversation. Please try again later.'}"))

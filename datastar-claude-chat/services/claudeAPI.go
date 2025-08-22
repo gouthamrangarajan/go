@@ -21,7 +21,7 @@ func CallClaudeAPI(aiRequest models.ClaudeRequest, channel chan string) {
 		channel <- "Error"
 		return
 	}
-
+	// fmt.Printf("request to ai: %v", string(aiRequestBytes))
 	client := &http.Client{}
 	httpRequest, err := http.NewRequest("POST", os.Getenv("CLAUDE_API_URL"), bytes.NewBuffer(aiRequestBytes))
 	if err != nil {
@@ -52,6 +52,7 @@ func CallClaudeAPI(aiRequest models.ClaudeRequest, channel chan string) {
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {
 		line := scanner.Text()
+		// fmt.Println(line)
 		if strings.Contains(line, "data: ") {
 			line = strings.TrimSpace(strings.ReplaceAll(line, "data: ", ""))
 
@@ -64,6 +65,8 @@ func CallClaudeAPI(aiRequest models.ClaudeRequest, channel chan string) {
 				case claudeStreamingResponse.Type == "content_block_delta" &&
 					claudeStreamingResponse.Delta.Type == "text_delta":
 					channel <- claudeStreamingResponse.Delta.Text
+				case claudeStreamingResponse.Type == "error":
+					channel <- "Error"
 				}
 			}
 
