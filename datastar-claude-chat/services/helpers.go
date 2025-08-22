@@ -159,7 +159,7 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptIm
 		max_uses_str := os.Getenv("CALUDE_WEB_TOOL_MAX_USES")
 		max_uses, err := strconv.Atoi(max_uses_str)
 		if err != nil {
-			max_uses = 5
+			max_uses = 3
 		}
 		claudeRequest.Tools = []models.ClaudeRequestTools{}
 		claudeRequest.Tools = append(claudeRequest.Tools, models.ClaudeRequestTools{
