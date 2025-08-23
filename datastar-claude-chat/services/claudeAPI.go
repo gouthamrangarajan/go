@@ -21,7 +21,7 @@ func CallClaudeAPI(aiRequest models.ClaudeRequest, channel chan string) {
 		channel <- "Error"
 		return
 	}
-	// fmt.Printf("request to ai: %v", string(aiRequestBytes))
+	// fmt.Printf("request to ai: %v\n", string(aiRequestBytes))
 	client := &http.Client{}
 	httpRequest, err := http.NewRequest("POST", os.Getenv("CLAUDE_API_URL"), bytes.NewBuffer(aiRequestBytes))
 	if err != nil {
@@ -75,26 +75,34 @@ func CallClaudeAPI(aiRequest models.ClaudeRequest, channel chan string) {
 }
 
 //TO debug
-// clonedMessageImageContent := []models.ClaudeRequestImageContent{}
-// if len(aiRequest.Messages) > 0 && len(aiRequest.Messages[0].ContentWithImage) > 0 {
-// 	clonedMessageImageContent = append(clonedMessageImageContent, models.ClaudeRequestImageContent{
-// 		Source: models.ClaudeRequestImageContentSource{
-// 			Data:      aiRequest.Messages[0].ContentWithImage[0].Source.Data[0:50],
-// 			Type:      aiRequest.Messages[0].ContentWithImage[0].Source.Type,
-// 			MediaType: aiRequest.Messages[0].ContentWithImage[0].Source.MediaType,
-// 		},
-// 	})
-// 	clonedMessageImageContent = append(clonedMessageImageContent, models.ClaudeRequestImageContent{
-// 		Type: aiRequest.Messages[0].ContentWithImage[1].Type,
-// 		Text: aiRequest.Messages[0].ContentWithImage[1].Text,
-// 	})
-// }
+//  clonedMessageImageContent := []models.ClaudeRequestImageContent{}
+// 	if len(aiRequest.Messages) > 0 {
+// 		if len(aiRequest.Messages[0].ContentWithImage) > 0 {
+// 			clonedMessageImageContent = append(clonedMessageImageContent, models.ClaudeRequestImageContent{
+// 				Type: aiRequest.Messages[0].ContentWithImage[0].Type,
+// 				Source: models.ClaudeRequestImageContentSource{
+// 					Data:      aiRequest.Messages[0].ContentWithImage[0].Source.Data[0:50],
+// 					Type:      aiRequest.Messages[0].ContentWithImage[0].Source.Type,
+// 					MediaType: aiRequest.Messages[0].ContentWithImage[0].Source.MediaType,
+// 				},
+// 			})
+// 			clonedMessageImageContent = append(clonedMessageImageContent, models.ClaudeRequestImageContent{
+// 				Type: aiRequest.Messages[0].ContentWithImage[1].Type,
+// 				Text: aiRequest.Messages[0].ContentWithImage[1].Text,
+// 			})
+// 		}
+// 	}
 
-// aiRequestCloned := models.ClaudeRequest{}
-// aiRequestCloned.Messages = []models.ClaudeRequestMessage{}
-// aiRequestCloned.Messages = append(aiRequestCloned.Messages, models.ClaudeRequestMessage{
-// 	ContentWithImage: clonedMessageImageContent,
-// 	Role:             "user",
-// })
-// aiRequestCloneBytes, _ := json.Marshal(aiRequestCloned)
-// fmt.Printf("Request to claude trimmed %v\n:", string(aiRequestCloneBytes))
+// 	aiRequestCloned := models.ClaudeRequest{}
+// 	aiRequestCloned.Model = aiRequest.Model
+// 	aiRequestCloned.MaxToken = aiRequest.MaxToken
+// 	aiRequestCloned.Stream = aiRequest.Stream
+// 	aiRequestCloned.Temperature = aiRequest.Temperature
+// 	aiRequestCloned.Tools = aiRequest.Tools
+// 	aiRequestCloned.Messages = []models.ClaudeRequestMessage{}
+// 	aiRequestCloned.Messages = append(aiRequestCloned.Messages, models.ClaudeRequestMessage{
+// 		ContentWithImage: clonedMessageImageContent,
+// 		Role:             "user",
+// 	})
+// 	aiRequestCloneBytes, _ := json.Marshal(aiRequestCloned)
+// 	fmt.Printf("Request to claude trimmed %v\n:", string(aiRequestCloneBytes))

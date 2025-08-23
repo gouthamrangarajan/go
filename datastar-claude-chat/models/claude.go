@@ -49,19 +49,23 @@ type ClaudeStreamingResponse struct {
 	ContentBlock ClaudeResponseContent `json:"content_block,omitempty"`
 }
 
-func (requestMessage *ClaudeRequestMessage) MarshalJSON() ([]byte, error) {
+func (requestMessage ClaudeRequestMessage) MarshalJSON() ([]byte, error) {
 	output := make(map[string]interface{})
 	output["role"] = requestMessage.Role
 	var outErr error
+	var outputBytes []byte
 	if len(requestMessage.ContentWithImage) > 0 {
 		if bytes, err := json.Marshal(requestMessage.ContentWithImage); err == nil {
 			output["content"] = string(bytes)
+			// output["content"] = strings.ReplaceAll(output["content"].(string), ",\"source\":{}", "")
 		} else {
 			outErr = err
 		}
 	} else if strings.TrimSpace(requestMessage.Content) != "" {
 		output["content"] = requestMessage.Content
 	}
-	outputBytes, outErr := json.Marshal(output)
+	if outErr == nil {
+		outputBytes, outErr = json.Marshal(output)
+	}
 	return outputBytes, outErr
 }
