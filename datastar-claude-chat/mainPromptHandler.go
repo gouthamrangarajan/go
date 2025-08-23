@@ -175,9 +175,9 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	if errored {
 		time.Sleep(3000 * time.Millisecond)
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
-	} else {
+	} else if imgData != "" {
 		sse.PatchSignals([]byte("{imgData:''}"))
-		// sse.PatchElementTempl(components.FileDataDisplay("", ""), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.FileDataDisplay("", ""), datastar.WithUseViewTransitions(true))
 	}
 	if isSessionTitleUpdate && <-sessionTitleUpdateChannel > 0 {
 		chatSession := models.ChatSession{Id: sessionId, Title: prompt}
