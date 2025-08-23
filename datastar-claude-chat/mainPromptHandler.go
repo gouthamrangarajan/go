@@ -127,7 +127,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	if userMessageId == 0 {
 		//error handling
-		services.SendErrorMessageToUI(sse, "'Failed to save conversation. Please try again later.'")
+		services.SendErrorMessageToUI(sse, "Failed to save conversation. Please try again later.")
 		return
 	}
 	sse.PatchElementTempl(components.MessageForStreaming(userMessageId, prompt, imgData, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))

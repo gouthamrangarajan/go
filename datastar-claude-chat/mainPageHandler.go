@@ -78,8 +78,12 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	requestBody, _ := io.ReadAll(request.Body)
 	var clientSignal models.ClientSignals
+	// var clientSignalsAll map[string]interface{}
 	_ = json.Unmarshal(requestBody, &clientSignal)
-
+	// _ = json.Unmarshal(requestBody, &clientSignalsAll)
+	// for key := range clientSignalsAll {
+	// 	fmt.Printf("%v\n", key)
+	// }
 	imgData := ""
 	imgName := ""
 	if len(clientSignal.ImgData) > 0 && len(clientSignal.ImgMimes) > 0 {
@@ -106,9 +110,19 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 	decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.ImgData[0])
 	if err != nil || len(decodedBytes) > 1024*1024 {
 		sse.PatchSignals([]byte("{imgData:''}"))
-		services.SendErrorMessageToUI(sse, "'Image size exceeds the limit of 1 MB'")
+		services.SendErrorMessageToUI(sse, "Image size exceeds the limit of 1 MB")
 		imgName = ""
 		imgData = ""
 	}
+	// channel := make(chan string)
+	// defer close(channel)
+	// go services.CallClaudeAPIFileUpload(clientSignal.ImgData[0], channel)
+	// uploadResponse := <-channel
+	// if uploadResponse == "Error" {
+	// 	sse.PatchSignals([]byte("{imgData:''}"))
+	// 	services.SendErrorMessageToUI(sse, "Failed to upload Image.Please try again later.")
+	// 	imgName = ""
+	// 	imgData = ""
+	// }
 	sse.PatchElementTempl(components.FileDataDisplay(imgData, imgName), datastar.WithUseViewTransitions(true))
 }

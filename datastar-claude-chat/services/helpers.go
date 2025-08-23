@@ -172,7 +172,7 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptIm
 }
 
 func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string) {
-	sse.PatchSignals([]byte(`{showErrorMessage:true,errorMessage:` + message + `}`))
+	sse.PatchSignals([]byte(`{showErrorMessage:true,errorMessage:'` + message + `'}`))
 	time.Sleep(3000 * time.Millisecond)
 	sse.PatchSignals([]byte("{showErrorMessage:false}"))
 }
