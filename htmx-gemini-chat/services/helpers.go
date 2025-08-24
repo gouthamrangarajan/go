@@ -136,6 +136,8 @@ func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 		}
 	}
 	geminiRequest.Contents = append(geminiRequest.Contents, promptToGeminiRequestContent)
+	geminiRequest.Tools = make(map[string]interface{})
+	geminiRequest.Tools["google_search"] = emptyStruct{}
 	return geminiRequest, err
 }
 
@@ -151,4 +153,7 @@ func GenerateGeminiEmbeddingRequest(srchTxt string) models.GeminiEmbeddingReques
 			Role:  "user",
 			Parts: geminiRequestParts,
 		}}
+}
+
+type emptyStruct struct {
 }

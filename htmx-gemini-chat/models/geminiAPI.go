@@ -20,6 +20,7 @@ type GeminiRequest struct {
 			Budget int8 `json:"thinkingBudget"`
 		} `json:"thinkingConfig"`
 	} `json:"generationConfig"`
+	Tools map[string]interface{} `json:"tools,omitempty"`
 }
 type GeminiResponse struct {
 	Candidates []struct {

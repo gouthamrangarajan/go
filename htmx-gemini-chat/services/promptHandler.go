@@ -250,6 +250,7 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 	for scanner.Scan() {
 		var responseParsed models.GeminiResponse
 		line := scanner.Text()
+		// fmt.Println(line)
 		txtInLoop := line
 		if strings.HasPrefix(line, "data: ") {
 			txtInLoop = strings.TrimPrefix(line, "data: ")
