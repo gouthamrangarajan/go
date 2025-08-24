@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"datastar-claude-chat/models"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -33,6 +34,7 @@ func CallClaudeAPI(aiRequest models.ClaudeRequest, channel chan string) {
 	httpRequest.Header.Set("x-api-key", os.Getenv("CLAUDE_API_KEY"))
 	httpRequest.Header.Set("anthropic-version", os.Getenv("CLAUDE_API_HEADER_VERSION"))
 	httpRequest.Header.Set("Content-Type", "application/json")
+	httpRequest.Header.Set("anthropic-beta", os.Getenv("CALUDE_API_HEADER_FILE_UPLOAD"))
 	resp, err := client.Do(httpRequest)
 	if err != nil {
 		fmt.Printf("Error making HTTP request: %v\n", err.Error())
@@ -42,10 +44,10 @@ func CallClaudeAPI(aiRequest models.ClaudeRequest, channel chan string) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Error in making claude api call: received status code %d\n", resp.StatusCode)
+		fmt.Printf("Error in making message api call: received status code %d\n", resp.StatusCode)
 		respBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Error in making claude api call %v\n", string(respBody))
+		if err == nil {
+			fmt.Printf("Error in making message api call %v\n", string(respBody))
 		}
 		channel <- "Error"
 		return
@@ -75,15 +77,25 @@ func CallClaudeAPI(aiRequest models.ClaudeRequest, channel chan string) {
 	}
 }
 
-func CallClaudeAPIFileUpload(base64Data string, channel chan string) {
-	decodedBytes, err := base64.StdEncoding.DecodeString(base64Data)
+func CallClaudeAPIFileUpload(data []byte, fileName string, channel chan string) {
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	fileReader := bytes.NewReader(data)
+	part, err := writer.CreateFormFile("file", filepath.Base(fileName))
 	if err != nil {
-		fmt.Printf("Error decoding base64 data")
-		channel <- "Error"
-		return
+		fmt.Printf("Error creating form file field to call file upload api %v\n", err.Error())
+	}
+	_, err = io.Copy(part, fileReader)
+	if err != nil {
+		fmt.Printf("Error copying file content to file field in file upload api %v\n", err.Error())
+	}
+	err = writer.Close()
+	if err != nil {
+		fmt.Printf("Error closing the writer to api file upload request%v\n", err.Error())
 	}
 	client := &http.Client{}
-	httpRequest, err := http.NewRequest("POST", os.Getenv("CLAUDE_FILE_UPLOAD_API_URL"), bytes.NewBuffer(decodedBytes))
+
+	httpRequest, err := http.NewRequest("POST", os.Getenv("CLAUDE_FILE_UPLOAD_API_URL"), body)
 	if err != nil {
 		fmt.Printf("Error creating HTTP request: %v\n", err.Error())
 		channel <- "Error"
@@ -91,7 +103,9 @@ func CallClaudeAPIFileUpload(base64Data string, channel chan string) {
 	}
 	httpRequest.Header.Set("x-api-key", os.Getenv("CLAUDE_API_KEY"))
 	httpRequest.Header.Set("anthropic-version", os.Getenv("CLAUDE_API_HEADER_VERSION"))
-	httpRequest.Header.Set("anthropic-beta", "CALUDE_API_HEADER_FILE_UPLOAD")
+	httpRequest.Header.Set("anthropic-beta", os.Getenv("CALUDE_API_HEADER_FILE_UPLOAD"))
+	httpRequest.Header.Set("content-type", writer.FormDataContentType())
+
 	resp, err := client.Do(httpRequest)
 	if err != nil {
 		fmt.Printf("Error making HTTP request: %v\n", err.Error())
@@ -102,16 +116,22 @@ func CallClaudeAPIFileUpload(base64Data string, channel chan string) {
 	respBody, err := io.ReadAll(resp.Body)
 	respBodyStr := string(respBody)
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Error in making claude file upload api call: received status code %d\n", resp.StatusCode)
-		if err != nil {
-			fmt.Printf("Error in making claude file upload api call %v\n", respBodyStr)
+		fmt.Printf("Error in making file upload api call: received status code %d\n", resp.StatusCode)
+		if err == nil {
+			fmt.Printf("Error in making file upload api call %v\n", respBodyStr)
+		} else {
+			fmt.Printf("Error in making file upload api call %v\n", err.Error())
 		}
 		channel <- "Error"
 		return
 	}
-
-	fmt.Printf("File upload API response %v\n", respBodyStr)
-	channel <- respBodyStr
+	var fileUploadResponse models.ClaudeFileUploadResponse
+	err = json.Unmarshal(respBody, &fileUploadResponse)
+	if err != nil {
+		fmt.Printf("Error UnMarshalling file upload response %v\n", err.Error())
+		channel <- "Error"
+	}
+	channel <- fileUploadResponse.Id
 }
 
 //TO debug

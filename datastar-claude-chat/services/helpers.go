@@ -19,7 +19,8 @@ type contextKey string
 
 const UserIDKey contextKey = "userId"
 
-var ImgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
+var ImgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp|gif));base64,([A-Za-z0-9+/=]+)$`)
+var PdfRegex = regexp.MustCompile(`^data:application/pdf;base64,([A-Za-z0-9+/=]+)$`)
 
 func GenerateSignedStrForCookie(name string, val string) string {
 	cookieSecret := os.Getenv("COOKIE_SECRET")
@@ -73,7 +74,7 @@ func InsertChatSessionViaChannel(userId string, title string, webSearch bool) in
 	sessionId = <-insertSessionChannel
 	return sessionId
 }
-func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptImgData string, searchWeb bool) (models.ClaudeRequest, string) {
+func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptFileId string, searchWeb bool) (models.ClaudeRequest, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
@@ -99,27 +100,23 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptIm
 	claudeRequest.Messages = make([]models.ClaudeRequestMessage, 0, len(conversations)+1)
 	for _, conversation := range conversations {
 		if strings.TrimSpace(conversation.Message) != "" {
-			if conversation.ImgData != "" {
-				matches := ImgRegex.FindStringSubmatch(conversation.ImgData)
-				if len(matches) > 3 {
-					contentWithImage := []models.ClaudeRequestImageContent{}
-					contentWithImage = append(contentWithImage, models.ClaudeRequestImageContent{
-						Type: "image",
-						Source: models.ClaudeRequestImageContentSource{
-							Type:      "base64",
-							MediaType: matches[1],
-							Data:      matches[3],
-						},
-					})
-					contentWithImage = append(contentWithImage, models.ClaudeRequestImageContent{
-						Type: "text",
-						Text: conversation.Message,
-					})
-					claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
-						Role:             conversation.Sender,
-						ContentWithImage: contentWithImage,
-					})
-				}
+			if conversation.FileId != "" {
+				contentWithFile := []models.ClaudeRequestFileContent{}
+				contentWithFile = append(contentWithFile, models.ClaudeRequestFileContent{
+					Type: "document",
+					Source: models.ClaudeRequestFileContentSource{
+						Type:   "file",
+						FileId: conversation.FileId,
+					},
+				})
+				contentWithFile = append(contentWithFile, models.ClaudeRequestFileContent{
+					Type: "text",
+					Text: conversation.Message,
+				})
+				claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
+					Role:            conversation.Sender,
+					ContentWithFile: contentWithFile,
+				})
 			} else {
 				claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
 					Role:    conversation.Sender,
@@ -128,27 +125,23 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptIm
 			}
 		}
 	}
-	if promptImgData != "" {
-		matches := ImgRegex.FindStringSubmatch(promptImgData)
-		if len(matches) > 3 {
-			contentWithImage := []models.ClaudeRequestImageContent{}
-			contentWithImage = append(contentWithImage, models.ClaudeRequestImageContent{
-				Type: "image",
-				Source: models.ClaudeRequestImageContentSource{
-					Type:      "base64",
-					MediaType: matches[1],
-					Data:      matches[3],
-				},
-			})
-			contentWithImage = append(contentWithImage, models.ClaudeRequestImageContent{
-				Type: "text",
-				Text: prompt,
-			})
-			claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
-				Role:             "user",
-				ContentWithImage: contentWithImage,
-			})
-		}
+	if promptFileId != "" {
+		contentWithFile := []models.ClaudeRequestFileContent{}
+		contentWithFile = append(contentWithFile, models.ClaudeRequestFileContent{
+			Type: "document",
+			Source: models.ClaudeRequestFileContentSource{
+				Type:   "file",
+				FileId: promptFileId,
+			},
+		})
+		contentWithFile = append(contentWithFile, models.ClaudeRequestFileContent{
+			Type: "text",
+			Text: prompt,
+		})
+		claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
+			Role:            "user",
+			ContentWithFile: contentWithFile,
+		})
 	} else {
 		claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
 			Role:    "user",

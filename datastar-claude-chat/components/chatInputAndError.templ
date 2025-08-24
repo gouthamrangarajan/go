@@ -73,14 +73,14 @@ templ submitButton() {
 }
 
 templ fileUpload() {
-	@FileDataDisplay("", "")
+	@FileDataDisplay("", "", false)
 	<input
 		type="file"
 		class="hidden"
-		name="imgData"
+		name="fileData"
 		data-ref="fileInputRef"
-		accept="image/jpeg, image/png, image/webp, image/jpg"
-		data-bind-img-data
+		accept="image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf"
+		data-bind-file-data
 		data-on-change="setTimeout(()=>{@post('/fileupload',{openWhenHidden: true,retryMaxCount:0});},100)"
 	/>
 	<button
@@ -96,19 +96,21 @@ templ fileUpload() {
 	</button>
 }
 
-templ FileDataDisplay(imgData string, imgName string) {
+templ FileDataDisplay(fileData string, fileName string, isImg bool) {
 	<div class="absolute bottom-28.5 left-0 w-full" id="fileDataDisplay">
 		<div
 			class="animate-error-message shadow py-2 px-4 rounded bg-white flex justify-between mx-auto w-11/12 lg:w-10/12 xl:w-9/12"
-			data-show={ "$imgData!='' && '" + imgData + "'!=''" }
+			data-show={ "$fileData!='' && '" + fileData + "'!=''" }
 		>
 			<div class="flex-1 flex items-center gap-3">
-				<img class="rounded-full w-6 h-6" src={ imgData }/>
-				<span class="text-primary truncate font-semibold">{ imgName }</span>
+				if isImg {
+					<img class="rounded-full w-6 h-6" src={ fileData }/>
+				}
+				<span class="text-primary truncate font-semibold">{ fileName }</span>
 			</div>
 			<button
 				class="appearance-none outline-none p-1 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-				data-on-click__viewtransition="$imgData=''"
+				data-on-click__viewtransition="$fileData=''"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 					<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>

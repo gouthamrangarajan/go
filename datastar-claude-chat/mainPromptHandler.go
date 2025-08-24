@@ -17,10 +17,11 @@ import (
 
 // ALGO
 // all validation/error messages stops the flow except for claude message error
-// Check for invalid/bad request : prompt empty , invalid session id, invalid image or size & send bad request
+// Check for invalid/bad request : prompt empty , invalid session id, invalid image/pdf, invalid size & send bad request
 // If session id is 0 in incoming request , insert new chat session
+// generate fileData for images so that they can be stored in db , if not image , make this field empty
 // Check if the session id is not part of user sessions, send unauthorized if so
-// if unable to generate claude request , send internal server error
+// if unable to generate claude request , send internal server error (prompt + uploaded fileid + allowWebsearch)
 // append new chat session UI && window url replace using data star sse if insert new chat session was sucessful
 // send error message using data star sse if insert new chat session has failed
 // insert chat conversation from user and send error message via data star sse if failed
@@ -52,25 +53,32 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	// http.Error(responseWriter, "Bad request", http.StatusBadRequest)
 	// return
 
-	imgData := ""
-	if len(clientSignal.ImgData) > 0 && len(clientSignal.ImgMimes) > 0 {
-		imgData = "data:" + clientSignal.ImgMimes[0] + ";base64," + clientSignal.ImgData[0]
+	fileData := ""
+	fileName := ""
+	var imgMatches []string
+	var pdfMatches []string
+	if len(clientSignal.FileData) > 0 && len(clientSignal.FileDataMimes) > 0 {
+		fileData = "data:" + clientSignal.FileDataMimes[0] + ";base64," + clientSignal.FileData[0]
+		imgMatches = services.ImgRegex.FindStringSubmatch(fileData)
+		pdfMatches = services.PdfRegex.FindStringSubmatch(fileData)
+		if len(clientSignal.FileDataNames) > 0 {
+			fileName = clientSignal.FileDataNames[0]
+		}
 	}
 
 	userId := request.Context().Value(services.UserIDKey).(string)
 	sessionIdStr := request.URL.Query().Get("sessionId")
 	sessionId, err := strconv.Atoi(sessionIdStr)
 	var decodedBytes []byte
-	var imgDataDecodeErr error
-	if len(clientSignal.ImgData) > 0 {
-		decodedBytes, imgDataDecodeErr = base64.StdEncoding.DecodeString(clientSignal.ImgData[0])
+	var fileDataDecodeErr error
+	if len(clientSignal.FileData) > 0 {
+		decodedBytes, fileDataDecodeErr = base64.StdEncoding.DecodeString(clientSignal.FileData[0])
 	}
-	matches := services.ImgRegex.FindStringSubmatch(imgData)
-	newSessionInserted := false
 
+	newSessionInserted := false
 	if prompt == "" || err != nil ||
-		imgDataDecodeErr != nil || len(decodedBytes) > 1024*1024 || len(clientSignal.ImgData) > 1 ||
-		(len(clientSignal.ImgData) == 1 && len(matches) != 4) {
+		fileDataDecodeErr != nil || len(decodedBytes) > 1024*1024 || len(clientSignal.FileData) > 1 ||
+		(len(clientSignal.FileData) == 1 && len(imgMatches) != 4 && len(pdfMatches) != 2) {
 		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 		return
 	} else if sessionId == 0 {
@@ -79,7 +87,9 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		sessionId = <-newSessionChannel
 		newSessionInserted = true
 	}
-
+	if len(imgMatches) != 4 && fileData != "" {
+		fileData = ""
+	}
 	sessionsChannel := make(chan []models.ChatSession)
 	defer close(sessionsChannel)
 	go services.GetChatSessions(userId, sessionsChannel)
@@ -97,7 +107,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, sessionId, prompt, imgData, clientSignal.SearchWeb)
+	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, sessionId, prompt, clientSignal.FileId, clientSignal.SearchWeb)
 
 	if errMsg != "" {
 		http.Error(responseWriter, "Internal Server Error", http.StatusInternalServerError)
@@ -122,7 +132,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	userMessageInsertDbChannel := make(chan int)
 	defer close(userMessageInsertDbChannel)
-	go services.InsertChatConversation(sessionId, prompt, imgData, "user", userMessageInsertDbChannel)
+	go services.InsertChatConversation(sessionId, prompt, fileData, clientSignal.FileId, fileName, "user", userMessageInsertDbChannel)
 	userMessageId := <-userMessageInsertDbChannel
 
 	if userMessageId == 0 {
@@ -130,7 +140,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		services.SendErrorMessageToUI(sse, "Failed to save conversation. Please try again later.")
 		return
 	}
-	sse.PatchElementTempl(components.MessageForStreaming(userMessageId, prompt, imgData, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(userMessageId, prompt, fileData, fileName, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	sse.PatchSignals([]byte("{prompt:''}"))
 	sse.ExecuteScript(`document.getElementById('messageContainer_`+strconv.Itoa(userMessageId)+`').scrollIntoView()`, datastar.WithExecuteScriptAutoRemove(true))
 
@@ -148,7 +158,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	claudeResponseInsertDbChannel := make(chan int)
 	defer close(claudeResponseInsertDbChannel)
-	go services.InsertChatConversation(sessionId, "", "", "assistant", claudeResponseInsertDbChannel)
+	go services.InsertChatConversation(sessionId, "", "", "", "", "assistant", claudeResponseInsertDbChannel)
 	claudeMessageId := <-claudeResponseInsertDbChannel
 	if claudeMessageId == 0 {
 		//error handling
@@ -159,7 +169,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	claudeResponseChannel := make(chan string)
 	go services.CallClaudeAPI(claudeRequest, claudeResponseChannel)
 
-	sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, "", "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, "", "", "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	mergedOutput := ""
 
 	errored := false
@@ -169,15 +179,15 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			errored = true
 		} else {
 			mergedOutput += response
-			sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, mergedOutput, "", "assistant"))
+			sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, mergedOutput, "", "", "assistant"))
 		}
 	}
 	if errored {
 		time.Sleep(3000 * time.Millisecond)
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
-	} else if imgData != "" {
-		sse.PatchSignals([]byte("{imgData:''}"))
-		sse.PatchElementTempl(components.FileDataDisplay("", ""), datastar.WithUseViewTransitions(true))
+	} else if fileData != "" {
+		sse.PatchSignals([]byte("{fileData:''}"))
+		sse.PatchElementTempl(components.FileDataDisplay("", "", false), datastar.WithUseViewTransitions(true))
 	}
 	if isSessionTitleUpdate && <-sessionTitleUpdateChannel > 0 {
 		chatSession := models.ChatSession{Id: sessionId, Title: prompt}
