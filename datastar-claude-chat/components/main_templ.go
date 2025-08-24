@@ -75,7 +75,7 @@ func Main(sessionId int, allowWebSearch bool, messages []models.ChatConversation
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</section>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</section><section class=\"flex w-full h-full items-center justify-center\" style=\"display:none;\" data-show=\"$sessionId==0\" style=\"view-transition-name:landing-message\"><p class=\"p-1 font-semibold text-yellow-600 text-xl\">🔗 Effortless Conversations: Jump in and chat now</p></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

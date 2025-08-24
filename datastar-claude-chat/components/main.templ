@@ -16,6 +16,16 @@ templ Main(sessionId int, allowWebSearch bool, messages []models.ChatConversatio
 					@Message(msg.Id, msg.Message, msg.ImgData, msg.FileName, msg.Sender)
 				}
 			</section>
+			<section
+				class="flex w-full h-full items-center justify-center"
+				style="display:none;"
+				data-show="$sessionId==0"
+				style="view-transition-name:landing-message"
+			>
+				<p class="p-1 font-semibold text-yellow-600 text-xl">
+					🔗 Effortless Conversations: Jump in and chat now
+				</p>
+			</section>
 			@inputAndError(allowWebSearch)
 		</main>
 	}
