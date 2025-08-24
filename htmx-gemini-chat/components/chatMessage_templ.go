@@ -375,14 +375,14 @@ func GeminiMessageTemplate(id int) templ.Component {
 			templ_7745c5c3_Var21 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"w-full flex items-start gap-2 p-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" class=\"shrink-0\"><path d=\"M20 10.0196C14.6358 10.3431 10.3431 14.6358 10.0196 20H9.98042C9.65687 14.6358 5.36425 10.3431 0 10.0196V9.98043C5.36425 9.65688 9.65687 5.36424 9.98042 0H10.0196C10.3431 5.36424 14.6358 9.65688 20 9.98043V10.0196Z\" fill=\"url(#paint0_radial_809_11874)\"></path> <defs><radialGradient id=\"paint0_radial_809_11874\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(-6.13727 9.97493) scale(21.6266 172.607)\"><stop offset=\"0.385135\" stop-color=\"#9E72BA\"></stop> <stop offset=\"0.734299\" stop-color=\"#D65C67\"></stop> <stop offset=\"0.931035\" stop-color=\"#D6635C\"></stop></radialGradient></defs></svg><div class=\"flex-1 max-w-full\"><zero-md><script type=\"text/markdown\" id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"w-full flex items-start gap-2 p-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" class=\"shrink-0\"><path d=\"M20 10.0196C14.6358 10.3431 10.3431 14.6358 10.0196 20H9.98042C9.65687 14.6358 5.36425 10.3431 0 10.0196V9.98043C5.36425 9.65688 9.65687 5.36424 9.98042 0H10.0196C10.3431 5.36424 14.6358 9.65688 20 9.98043V10.0196Z\" fill=\"url(#paint0_radial_809_11874)\"></path> <defs><radialGradient id=\"paint0_radial_809_11874\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(-6.13727 9.97493) scale(21.6266 172.607)\"><stop offset=\"0.385135\" stop-color=\"#9E72BA\"></stop> <stop offset=\"0.734299\" stop-color=\"#D65C67\"></stop> <stop offset=\"0.931035\" stop-color=\"#D6635C\"></stop></radialGradient></defs></svg><div class=\"flex-1 max-w-full\"><div class=\"flex items-center gap-1 flex-1 mt-2 ml-2\" id=\"promptProcessingIndicator\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-three\"></span></div><zero-md><script type=\"text/markdown\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("message_" + strconv.Itoa(id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 123, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 128, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {

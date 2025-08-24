@@ -119,6 +119,11 @@ templ GeminiMessageTemplate(id int) {
 			</defs>
 		</svg>
 		<div class="flex-1 max-w-full">
+			<div class="flex items-center gap-1 flex-1 mt-2 ml-2" id="promptProcessingIndicator">
+				<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one"></span>
+				<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two"></span>
+				<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-three"></span>
+			</div>
 			<zero-md>
 				<script type="text/markdown" id={ "message_" + strconv.Itoa(id) }>					
                 </script>

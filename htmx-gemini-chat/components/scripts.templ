@@ -327,6 +327,7 @@ templ bodyScript() {
                                             document.getElementById("helper").outerHTML=decodedItem;  
                                         }                                        
                                         else if(decodedItem.includes("MESSAGE")){ //streamed output is gemini message that needs to be appended to existing message                                         
+                                            document.getElementById("promptProcessingIndicator")?.remove()
                                             decodedItem=decodedItem.replace("MESSAGE\ndata: ",""); //no trim end required , if added will remove \n coming in data also
                                             decodedValueMerged += decodedItem;                                                 
                                             document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   

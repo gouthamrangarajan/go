@@ -271,6 +271,9 @@
   .mr-2 {
     margin-right: calc(var(--spacing) * 2);
   }
+  .ml-2 {
+    margin-left: calc(var(--spacing) * 2);
+  }
   .scrollbar-thin {
     &::-webkit-scrollbar-track {
       background-color: var(--scrollbar-track);
