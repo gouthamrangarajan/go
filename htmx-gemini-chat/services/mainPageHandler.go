@@ -21,6 +21,7 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
 	}
+	allowWebSearch := false
 
 	if chatSessionId > 0 {
 		ftedSessions := make([]models.ChatSession, 0, 1)
@@ -34,6 +35,7 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 			http.Error(response, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+		allowWebSearch = ftedSessions[0].AllowWebSearch
 		conversationsChannel := make(chan []models.ChatConversation)
 		defer close(conversationsChannel)
 		go GetChatConversations(userId, chatSessionId, conversationsChannel)
@@ -41,26 +43,12 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 	}
 	if request.Header.Get("HX-Request") == "true" {
 		time.Sleep(200 * time.Millisecond) // Simulate a delay for the sake of UX so that menu closes before the chat session is loaded
-		component := components.SectionAndChatSessionIdInput(chatSessionId, conversations, true)
+		component := components.SectionAndChatSessionIdInput(chatSessionId, conversations, allowWebSearch, true)
 		component.Render(request.Context(), response)
 	} else {
-		component := components.Main(conversations, sessions, chatSessionId)
+		component := components.Main(conversations, sessions, chatSessionId, allowWebSearch)
 		component.Render(request.Context(), response)
 	}
-}
-
-func MarkdownSrcHandler(sessionId int, conversationId int, response http.ResponseWriter, request *http.Request) {
-	userId, ok := request.Context().Value(UserIDKey).(string)
-	if !ok {
-		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	conversationChannel := make(chan models.ChatConversation)
-	defer close(conversationChannel)
-	go GetChatConversation(userId, sessionId, conversationId, conversationChannel)
-	conversation := <-conversationChannel
-	response.Header().Set("Cache-Control", "public, max-age=31536000, immutable") // 1 year (31536000 seconds), immutable
-	response.Write([]byte(conversation.Message))
 }
 
 func SearchMenuHandler(response http.ResponseWriter, request *http.Request) {

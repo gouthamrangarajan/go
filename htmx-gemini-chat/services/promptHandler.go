@@ -25,10 +25,12 @@ var imgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp));base64,([A-
 // Step 4:  Insert user message in chat conversation & send to client
 // Step 5:  If new chat session inserted, send new session UI. Also call embedding to update title vector
 // Step 6:  If first message, update chat session title with prompt & send to client.Also call embedding to update title vector
-// Step 7:  Insert Gemini message in chat conversation
-// Step 8:  Send Gemini messages to client
-// Step 9:  Consolidate & Update Gemini message in chat conversation
-// Step 10: If embedding called, wait for it to complete
+// step 7:  Call Gemini session web search flag update
+// Step 8:  Insert Gemini message in chat conversation
+// Step 9:  Send Gemini messages to client
+// Step 10: Consolidate & Update Gemini message in chat conversation
+// Step 11: If embedding called, wait for it to complete
+// step 12: Wait for gemini web search flag update to finish
 
 func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	ctx := request.Context()
@@ -41,6 +43,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	imgBase64 := request.FormValue("imgBase64")
 	chatSessionIdStr := request.FormValue("chatSessionId")
 	chatSessionId, err := strconv.Atoi(chatSessionIdStr)
+
 	newChatSessionInserted := false
 	if err != nil {
 		http.Error(response, "Unauthorized", http.StatusUnauthorized)
@@ -52,11 +55,16 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
 	}
+
+	allowWebSearchStr := request.FormValue("webSearch")
+	allowWebSearch := false
+	allowWebSearch, _ = strconv.ParseBool(allowWebSearchStr)
+
 	embeddingCallChannel := make(chan bool)
 	defer close(embeddingCallChannel)
 	embeddingCalled := false
 	if chatSessionId == 0 {
-		chatSessionId = InsertChatSessionViaChannel(userId, prompt)
+		chatSessionId = InsertChatSessionViaChannel(userId, prompt, allowWebSearch)
 		newChatSessionInserted = true
 		if chatSessionId > 0 {
 			go callGeminiEmbeddingAndUpdateSessionTitleVector(chatSessionId, prompt, embeddingCallChannel)
@@ -80,7 +88,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	geminiRequest, errStr := GenerateGeminiRequest(userId, chatSessionId, prompt, imgBase64)
+	geminiRequest, errStr := GenerateGeminiRequest(userId, chatSessionId, prompt, imgBase64, allowWebSearch)
 	if errStr != "" {
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		if embeddingCalled {
@@ -142,6 +150,9 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 			sendMessageAndFlush("event: MENU_ITEM\ndata: "+eventDataBuffer.String()+"\n\n", response)
 		}
 	}
+	chatSessionWebSearchUpdateChannel := make(chan int)
+	defer close(chatSessionWebSearchUpdateChannel)
+	go UpdateChatSessionWebSearchFlag(userId, chatSessionId, allowWebSearch, chatSessionWebSearchUpdateChannel)
 
 	consolidateGeminiResponse := ""
 	insertGeminiMessageChatConversationChannel := make(chan int)
@@ -207,7 +218,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	if embeddingCalled {
 		<-embeddingCallChannel
 	}
-
+	<-chatSessionWebSearchUpdateChannel
 }
 
 func sendMessageAndFlush(message string, response http.ResponseWriter) {
@@ -228,6 +239,7 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 		channel <- "data:ERROR\n\n"
 		return
 	}
+	// fmt.Printf("request to gemini api %v\n", string(jsonData))
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		fmt.Printf("Error calling Gemini API %v\n", err)

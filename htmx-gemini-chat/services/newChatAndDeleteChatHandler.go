@@ -13,7 +13,7 @@ func NewChatSessionHandler(response http.ResponseWriter, request *http.Request) 
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	newChatSessionId := InsertChatSessionViaChannel(userId, "New Chat")
+	newChatSessionId := InsertChatSessionViaChannel(userId, "New Chat", false)
 	if newChatSessionId == 0 {
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return

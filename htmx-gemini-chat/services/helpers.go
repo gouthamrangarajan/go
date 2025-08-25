@@ -58,16 +58,16 @@ func GetChatSessionsViaChannel(userId string) []models.ChatSession {
 	sessions := <-sessionChannel
 	return sessions
 }
-func InsertChatSessionViaChannel(userId string, title string) int {
+func InsertChatSessionViaChannel(userId string, title string, allowWebSearch bool) int {
 	var sessionId int = 0
 	insertSessionChannel := make(chan int)
 	defer close(insertSessionChannel)
-	go InsertChatSession(userId, title, insertSessionChannel)
+	go InsertChatSession(userId, title, allowWebSearch, insertSessionChannel)
 	sessionId = <-insertSessionChannel
 	return sessionId
 }
 
-func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase64 string) (models.GeminiRequest, string) {
+func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase64 string, allowWebSearch bool) (models.GeminiRequest, string) {
 	err := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
@@ -136,8 +136,10 @@ func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 		}
 	}
 	geminiRequest.Contents = append(geminiRequest.Contents, promptToGeminiRequestContent)
-	geminiRequest.Tools = make(map[string]interface{})
-	geminiRequest.Tools["google_search"] = struct{}{}
+	if allowWebSearch {
+		geminiRequest.Tools = make(map[string]interface{})
+		geminiRequest.Tools["google_search"] = struct{}{}
+	}
 	return geminiRequest, err
 }
 

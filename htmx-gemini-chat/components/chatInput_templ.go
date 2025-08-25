@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "strconv"
 
-func chatInput(currentChatSessionId int) templ.Component {
+func chatInput(currentChatSessionId int, defaultWebSearch bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -31,7 +31,20 @@ func chatInput(currentChatSessionId int) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 shrink-0 rounded w-11/12 p-1 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-center inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 \" style=\"view-transition-name:prompt-form\" x-data=\"chatInput\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 shrink-0 rounded w-11/12 p-1 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-center inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 \" style=\"view-transition-name:prompt-form\" x-data=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("chatInput")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 9, Col: 22}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,7 +52,7 @@ func chatInput(currentChatSessionId int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<textarea class=\"appreance-none outline-none w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4\" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"prompt\" x-on:keyup.enter=\"submitMessage($event,'section')\"></textarea>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<textarea class=\"appreance-none outline-none w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4\" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"prompt\" x-on:keyup.enter=\"submitMessage($event,'section')\"></textarea>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -47,7 +60,11 @@ func chatInput(currentChatSessionId int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"submitMessage($event,'section')\" x-bind:disabled=\"$store.data.promptProcessing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" x-show=\"!$store.data.promptProcessing\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" x-show=\"$store.data.promptProcessing\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span></div></button></div>")
+		templ_7745c5c3_Err = searchWebButton(defaultWebSearch).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"submitMessage($event,'section')\" x-bind:disabled=\"$store.data.promptProcessing\" aria-label=\"Submit\" title=\"Submit\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" x-show=\"!$store.data.promptProcessing\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg><div class=\"flex items-center gap-1 flex-1\" x-show=\"$store.data.promptProcessing\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span></div></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -71,44 +88,44 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var2 == nil {
-			templ_7745c5c3_Var2 = templ.NopComponent
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if isOob {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<input type=\"hidden\" name=\"chatSessionId\" id=\"chatSessionId\" value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 49, Col: 34}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-swap-oob=\"true\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<input type=\"hidden\" name=\"chatSessionId\" id=\"chatSessionId\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<input type=\"hidden\" name=\"chatSessionId\" id=\"chatSessionId\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 57, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 52, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-swap-oob=\"true\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<input type=\"hidden\" name=\"chatSessionId\" id=\"chatSessionId\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 60, Col: 34}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -133,12 +150,54 @@ func fileUpload() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"animate-slide-up absolute -top-10 left-0 w-full py-1 px-3 flex items-center gap-3 rounded inset-shadow-sm inset-shadow-cyan-700 dark:inset-shadow-cyan-400 bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-200\" style=\"view-transition-name:upload-file-name\" x-show=\"fileName!=''\"><img class=\"h-5 w-5 rounded-full\" x-bind:src=\"imgBase64\"> <span x-text=\"fileName\" class=\"flex-1\"></span> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer transition duration-300 text-red-600 dark:text-slate-200 focus:ring-1 focus:ring-red-600 dark:focus:ring-slate-200\" x-on:click=\"clearFileInput()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div><input type=\"file\" name=\"image\" x-ref=\"imageInput\" class=\"hidden\" accept=\"image/jpeg, image/png, image/webp, image/jpg\" x-on:change=\"fileInputChanged\"> <button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"$refs.imageInput.click()\" x-bind:disabled=\"$store.data.promptProcessing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"animate-slide-up absolute -top-10 left-0 w-full py-1 px-3 flex items-center gap-3 rounded inset-shadow-sm inset-shadow-cyan-700 dark:inset-shadow-cyan-400 bg-white dark:bg-gray-800 text-slate-700 dark:text-slate-200\" style=\"view-transition-name:upload-file-name\" x-show=\"fileName!=''\"><img class=\"h-5 w-5 rounded-full\" x-bind:src=\"imgBase64\"> <span x-text=\"fileName\" class=\"flex-1\"></span> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer transition duration-300 text-red-600 dark:text-slate-200 focus:ring-1 focus:ring-red-600 dark:focus:ring-slate-200\" x-on:click=\"clearFileInput()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div><input type=\"file\" name=\"image\" x-ref=\"imageInput\" class=\"hidden\" accept=\"image/jpeg, image/png, image/webp, image/jpg\" x-on:change=\"fileInputChanged\"> <button class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-on:click=\"$refs.imageInput.click()\" x-bind:disabled=\"$store.data.promptProcessing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func searchWebButton(defaultWebSearch bool) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<input type=\"hidden\" name=\"webSearch\" x-bind:value=\"$store.data.webSearch\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(defaultWebSearch)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 111, Col: 26}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"> <button type=\"button\" class=\"appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\" x-bind:class=\"$store.data.webSearch?'text-slate-900 dark:text-slate-100':'text-slate-400 dark:text-slate-500'\" x-on:click=\"$store.data.webSearch=!$store.data.webSearch\" x-bind:disabled=\"$store.data.promptProcessing\" aria-label=\"Search Web\" title=\"Search Web\" name=\"webSearchButton\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path d=\"M21.721 12.752a9.711 9.711 0 0 0-.945-5.003 12.754 12.754 0 0 1-4.339 2.708 18.991 18.991 0 0 1-.214 4.772 17.165 17.165 0 0 0 5.498-2.477ZM14.634 15.55a17.324 17.324 0 0 0 .332-4.647c-.952.227-1.945.347-2.966.347-1.021 0-2.014-.12-2.966-.347a17.515 17.515 0 0 0 .332 4.647 17.385 17.385 0 0 0 5.268 0ZM9.772 17.119a18.963 18.963 0 0 0 4.456 0A17.182 17.182 0 0 1 12 21.724a17.18 17.18 0 0 1-2.228-4.605ZM7.777 15.23a18.87 18.87 0 0 1-.214-4.774 12.753 12.753 0 0 1-4.34-2.708 9.711 9.711 0 0 0-.944 5.004 17.165 17.165 0 0 0 5.498 2.477ZM21.356 14.752a9.765 9.765 0 0 1-7.478 6.817 18.64 18.64 0 0 0 1.988-4.718 18.627 18.627 0 0 0 5.49-2.098ZM2.644 14.752c1.682.971 3.53 1.688 5.49 2.099a18.64 18.64 0 0 0 1.988 4.718 9.765 9.765 0 0 1-7.478-6.816ZM13.878 2.43a9.755 9.755 0 0 1 6.116 3.986 11.267 11.267 0 0 1-3.746 2.504 18.63 18.63 0 0 0-2.37-6.49ZM12 2.276a17.152 17.152 0 0 1 2.805 7.121c-.897.23-1.837.353-2.805.353-.968 0-1.908-.122-2.805-.353A17.151 17.151 0 0 1 12 2.276ZM10.122 2.43a18.629 18.629 0 0 0-2.37 6.49 11.266 11.266 0 0 1-3.746-2.504 9.754 9.754 0 0 1 6.116-3.985Z\"></path></svg></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
