@@ -275,7 +275,7 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,img_data FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
+	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,file_data FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- data
@@ -306,7 +306,7 @@ func GetChatConversation(userId string, sessionId int, conversationId int, chann
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,img_data FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE conversation_id=? AND chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", conversationId, sessionId, userId)
+	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,file_data FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE conversation_id=? AND chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", conversationId, sessionId, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- data
@@ -337,7 +337,7 @@ func InsertChatConversation(sessionId int, message string, imgData string, sende
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("INSERT INTO chat_conversations (session_id,message,sender,img_data, timestamp) VALUES (?, ?,?,?,?)", sessionId, message, sender, imgData, time.Now().Unix())
+	result, err := db.Exec("INSERT INTO chat_conversations (session_id,message,sender,file_data, timestamp) VALUES (?, ?,?,?,?)", sessionId, message, sender, imgData, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0
