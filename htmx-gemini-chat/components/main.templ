@@ -24,6 +24,7 @@ templ NewChatSession(session models.ChatSession) {
 templ UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatSessionIdForConversations int) {
 	@section(conversations, true, chatSessionIdForConversations == 0)
 	@ChatSessionIdInput(chatSessionIdForConversations, true)
+	@setWebSearchScript(false, true)
 }
 
 templ SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConversation, allowWebSearch bool, isOob bool) {
