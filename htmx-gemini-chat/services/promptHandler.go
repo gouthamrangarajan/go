@@ -11,17 +11,14 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 )
 
-var imgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
-
 // ALGO
-// Step 1:  Validate data, e.g empty prompt, invalid chatSessionId, invalid imagedata etc.
+// Step 1:  Validate data, e.g empty prompt, invalid chatSessionId, invalid image/pdf filedata etc.
 // Step 2:  Insert new chat session or get all chat conversations
-// Step 3:  Convert chat conversation + prompt + image to GeminiRequest & call Gemini API
+// Step 3:  Convert chat conversation + prompt + image/pdf to GeminiRequest & call Gemini API
 // Step 4:  Insert user message in chat conversation & send to client
 // Step 5:  If new chat session inserted, send new session UI. Also call embedding to update title vector
 // Step 6:  If first message, update chat session title with prompt & send to client.Also call embedding to update title vector
@@ -40,7 +37,8 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	prompt := request.FormValue("prompt")
-	imgBase64 := request.FormValue("imgBase64")
+	fileData := request.FormValue("base64")
+	fileName := request.FormValue("fileName")
 	chatSessionIdStr := request.FormValue("chatSessionId")
 	chatSessionId, err := strconv.Atoi(chatSessionIdStr)
 
@@ -50,7 +48,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	prompt = strings.TrimSpace(prompt)
-	imgBase64 = strings.TrimSpace(imgBase64)
+	fileData = strings.TrimSpace(fileData)
 	if prompt == "" {
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
@@ -88,7 +86,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	geminiRequest, errStr := GenerateGeminiRequest(userId, chatSessionId, prompt, imgBase64, allowWebSearch)
+	geminiRequest, errStr := GenerateGeminiRequest(userId, chatSessionId, prompt, fileData, allowWebSearch)
 	if errStr != "" {
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		if embeddingCalled {
@@ -105,7 +103,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 
 	insertUserChatConversationChannel := make(chan int)
 	defer close(insertUserChatConversationChannel)
-	go InsertChatConversation(chatSessionId, prompt, imgBase64, "user", insertUserChatConversationChannel)
+	go InsertChatConversation(chatSessionId, prompt, fileData, fileName, "user", insertUserChatConversationChannel)
 	userMessageId := <-insertUserChatConversationChannel
 
 	if userMessageId == 0 {
@@ -157,7 +155,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	consolidateGeminiResponse := ""
 	insertGeminiMessageChatConversationChannel := make(chan int)
 	defer close(insertGeminiMessageChatConversationChannel)
-	go InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "model", insertGeminiMessageChatConversationChannel)
+	go InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "", "model", insertGeminiMessageChatConversationChannel)
 	geminiMessageId := <-insertGeminiMessageChatConversationChannel
 	if geminiMessageId == 0 {
 		sendMessageAndFlush("event: ERROR\n\n", response)

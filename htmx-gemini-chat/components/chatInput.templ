@@ -68,7 +68,11 @@ templ fileUpload() {
 		style="view-transition-name:upload-file-name"
 		x-show="fileName!=''"
 	>
-		<img class="h-5 w-5 rounded-full" x-bind:src="imgBase64"/>
+		<img
+			class="h-5 w-5 rounded-full"
+			x-bind:src="base64"
+			x-show="!fileName.toLowerCase().endsWith('.pdf')"
+		/>
 		<span x-text="fileName" class="flex-1"></span>
 		<button
 			class="appearance-none outline-none p-1 rounded-full cursor-pointer transition duration-300 text-red-600 dark:text-slate-200 focus:ring-1 focus:ring-red-600 dark:focus:ring-slate-200"
@@ -89,7 +93,7 @@ templ fileUpload() {
 		name="image"
 		x-ref="imageInput"
 		class="hidden"
-		accept="image/jpeg, image/png, image/webp, image/jpg"
+		accept="image/jpeg, image/png, image/webp, image/jpg, application/pdf"
 		x-on:change="fileInputChanged"
 	/>
 	<button

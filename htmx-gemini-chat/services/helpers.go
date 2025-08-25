@@ -7,12 +7,16 @@ import (
 	"htmx-gemini-chat/models"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 )
 
 type contextKey string
 
 const UserIDKey contextKey = "userId"
+
+var imgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
+var pdfRegex = regexp.MustCompile(`^data:application/pdf;base64,([A-Za-z0-9+/=]+)$`)
 
 func GenerateSignedStrForCookie(name string, val string) string {
 	cookieSecret := os.Getenv("COOKIE_SECRET")
@@ -67,7 +71,7 @@ func InsertChatSessionViaChannel(userId string, title string, allowWebSearch boo
 	return sessionId
 }
 
-func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase64 string, allowWebSearch bool) (models.GeminiRequest, string) {
+func GenerateGeminiRequest(userId string, sessionId int, prompt string, fileBase64 string, allowWebSearch bool) (models.GeminiRequest, string) {
 	err := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
@@ -77,19 +81,27 @@ func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 	geminiRequest.Contents = make([]models.GeminiRequestContent, 0, len(conversations)+1)
 	for _, conversation := range conversations {
 		if strings.TrimSpace(conversation.Message) != "" {
-			if conversation.ImgData != "" {
+			if conversation.FileData != "" {
 				messageToGeminiRequestContent := models.GeminiRequestContent{
 					Role: conversation.Sender,
 					Parts: append(make([]models.GeminiRequestParts, 0, 2), models.GeminiRequestParts{
 						Text: &conversation.Message,
 					}),
 				}
-				matches := imgRegex.FindStringSubmatch(conversation.ImgData)
-				if len(matches) > 3 {
+				imgMatches := imgRegex.FindStringSubmatch(conversation.FileData)
+				pdfMatches := pdfRegex.FindStringSubmatch(conversation.FileData)
+				if len(imgMatches) == 4 {
 					messageToGeminiRequestContent.Parts = append(messageToGeminiRequestContent.Parts, models.GeminiRequestParts{
-						ImgData: &models.GeminiRequestImageData{
-							MimeType: matches[1],
-							Data:     matches[3],
+						FileData: &models.GeminiRequestFileData{
+							MimeType: imgMatches[1],
+							Data:     imgMatches[3],
+						},
+					})
+				} else if len(pdfMatches) == 2 {
+					messageToGeminiRequestContent.Parts = append(messageToGeminiRequestContent.Parts, models.GeminiRequestParts{
+						FileData: &models.GeminiRequestFileData{
+							MimeType: "application/pdf",
+							Data:     pdfMatches[1],
 						},
 					})
 				}
@@ -106,7 +118,7 @@ func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 		}
 	}
 	partsCapacityForPrompt := 1
-	if imgBase64 != "" {
+	if fileBase64 != "" {
 		partsCapacityForPrompt = 2
 	}
 	promptToGeminiRequestContent := models.GeminiRequestContent{
@@ -115,22 +127,33 @@ func GenerateGeminiRequest(userId string, sessionId int, prompt string, imgBase6
 			Text: &prompt,
 		}),
 	}
-	if imgBase64 != "" {
-		matches := imgRegex.FindStringSubmatch(imgBase64)
-		if len(matches) < 4 {
-			err = "Invalid Image data"
+	if fileBase64 != "" {
+		strDataMatch := ""
+		mimeType := ""
+		imgMatches := imgRegex.FindStringSubmatch(fileBase64)
+		pdfMatches := pdfRegex.FindStringSubmatch(fileBase64)
+		if len(imgMatches) != 4 && len(pdfMatches) != 2 {
+			err = "Invalid data"
 		} else {
-			decoded, decodeErr := base64.StdEncoding.DecodeString(matches[3])
+
+			if len(imgMatches) == 4 {
+				strDataMatch = imgMatches[3]
+				mimeType = imgMatches[1]
+			} else {
+				strDataMatch = pdfMatches[1]
+				mimeType = "application/pdf"
+			}
+			decoded, decodeErr := base64.StdEncoding.DecodeString(strDataMatch)
 			if decodeErr != nil || len(decoded) > 1024*1024 {
-				err = "Invalid Image data"
+				err = "Invalid File Size"
 			}
 		}
 
 		if err == "" {
 			promptToGeminiRequestContent.Parts = append(promptToGeminiRequestContent.Parts, models.GeminiRequestParts{
-				ImgData: &models.GeminiRequestImageData{
-					MimeType: matches[1],
-					Data:     matches[3],
+				FileData: &models.GeminiRequestFileData{
+					MimeType: mimeType,
+					Data:     strDataMatch,
 				},
 			})
 		}

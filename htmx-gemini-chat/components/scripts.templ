@@ -178,7 +178,7 @@ templ bodyScript() {
                 });
                 Alpine.data('chatInput',()=>({
                     prompt:'',
-                    imgBase64:"",
+                    base64:"",
                     fileName:"",  
                     abortController:new AbortController(),                             
                     init(){
@@ -227,29 +227,32 @@ templ bodyScript() {
                         const reader = new FileReader();
                         reader.addEventListener("load",() => {
                             if (typeof reader.result == "string") {
-                                if(reader.result.startsWith("data:image/")){
-                                    this.imgBase64=reader.result;
+                                if(reader.result.startsWith("data:image/") 
+                                    || reader.result.startsWith("data:application/pdf")){
+                                    this.base64=reader.result;
                                     this.fileName=fl.name;
                                 }else{
-                                    addErrorMessage('Please select a valid image file')
+                                    addErrorMessage('Invalid file type. Please upload an file with type (JPG, PNG, WEBP, PDF)')
                                 }
+                            }else{
+                                addErrorMessage('Invalid file type. Please upload an file with type (JPG, PNG, WEBP, PDF)')
                             }
                         });
                         if (fl.size <= 1024 * 1024) {//1 mb
                             reader.readAsDataURL(fl);
                         }else{
-                            addErrorMessage('Image size exceeds the limit of 1 MB');                                 
+                            addErrorMessage('File size exceeds the limit of 1 MB');                                 
                         }
                     },
                     clearFileInput(){         
                         if(document.startViewTransition){
                             document.startViewTransition(()=>{
-                                this.imgBase64='';
+                                this.base64='';
                                 this.fileName=''; 
                             });
                         }               
                         else{
-                            this.imgBase64='';
+                            this.base64='';
                             this.fileName=''; 
                         }                        
                         this.$refs.imageInput.value=''
@@ -259,7 +262,8 @@ templ bodyScript() {
                             this.setProcessing(true);
                             const fm=new FormData();
                             fm.append("prompt",this.prompt);
-                            fm.append("imgBase64",this.imgBase64)
+                            fm.append("base64",this.base64);
+                            fm.append("fileName",this.fileName);
                             fm.append("chatSessionId",this.$store.data.currentSessionId);   
                             fm.append("webSearch",this.$store.data.webSearch);                                                     
                             try{
@@ -353,8 +357,8 @@ templ bodyScript() {
                     appendPromptAndImageToUserMessageTemplate(){                    
                         document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = this.prompt;  
                         this.prompt='';
-                        if(this.imgBase64!=""){// streamed output is based on image input so prepend Img
-                            prependImageToUserMessage(this.$store.data.currentMessageId,this.imgBase64)
+                        if(this.base64!=""){// streamed output is based on image input so prepend Img
+                            prependFileDataToUserMessage(this.$store.data.currentMessageId,this.base64,this.fileName)
                             this.clearFileInput();
                         } 
                     }                                  
@@ -372,12 +376,19 @@ templ bodyScript() {
                 const messageId=messageUI.substring(strtIdx+"message_".length,messageUI.indexOf('"',strtIdx));                
                 return messageId;
             }
-            function prependImageToUserMessage(messageId,imgBase64){
-               const elToPrependImg= document.getElementById("message_"+messageId).parentElement.parentElement;
-               const imgEl=document.createElement("img")
-               imgEl.classList.add("w-full", "h-full")
-               imgEl.src=imgBase64        
-               elToPrependImg.prepend(imgEl);              
+            function prependFileDataToUserMessage(messageId,base64,fileName){
+               const elToPrepend= document.getElementById("message_"+messageId).parentElement.parentElement;
+               if (fileName.toLowerCase().endsWith(".pdf")){
+                const pEl = document.createElement("p");
+                pEl.classList.add("font-semibold", "flex", "gap-2","truncate", "text-lime-700", "dark:text-lime-500");
+                pEl.textContent=fileName
+                elToPrepend.prepend(pEl);
+               } else{
+                const imgEl=document.createElement("img")
+                imgEl.classList.add("w-full", "h-full")
+                imgEl.src=base64   
+                elToPrepend.prepend(imgEl);              
+               }
             }
             function upsertMenuUIWithMenuItem(menuItemUI){
                 const strtIdx=menuItemUI.indexOf("li_");

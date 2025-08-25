@@ -1,10 +1,10 @@
 package models
 
 type GeminiRequestParts struct {
-	Text    *string                 `json:"text,omitempty"`
-	ImgData *GeminiRequestImageData `json:"inline_data,omitempty"`
+	Text     *string                `json:"text,omitempty"`
+	FileData *GeminiRequestFileData `json:"inline_data,omitempty"`
 }
-type GeminiRequestImageData struct {
+type GeminiRequestFileData struct {
 	MimeType string `json:"mime_type"`
 	Data     string `json:"data"`
 }

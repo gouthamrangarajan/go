@@ -224,7 +224,7 @@ func section(conversations []models.ChatConversation, isOob bool, helperTextShow
 			}
 			for _, conversation := range conversations {
 				if conversation.Sender == "user" {
-					templ_7745c5c3_Err = UserMessage(conversation.Id, conversation.Message, conversation.ImgData).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = UserMessage(conversation.Id, conversation.Message, conversation.FileData, conversation.FileName).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -250,7 +250,7 @@ func section(conversations []models.ChatConversation, isOob bool, helperTextShow
 			}
 			for _, conversation := range conversations {
 				if conversation.Sender == "user" {
-					templ_7745c5c3_Err = UserMessage(conversation.Id, conversation.Message, conversation.ImgData).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = UserMessage(conversation.Id, conversation.Message, conversation.FileData, conversation.FileName).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

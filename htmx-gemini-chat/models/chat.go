@@ -11,5 +11,6 @@ type ChatConversation struct {
 	SessionId int
 	Message   string
 	Sender    string
-	ImgData   string
+	FileData  string
+	FileName  string
 }

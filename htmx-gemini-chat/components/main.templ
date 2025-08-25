@@ -43,7 +43,7 @@ templ section(conversations []models.ChatConversation, isOob bool, helperTextSho
 		>
 			for _,conversation:= range conversations {
 				if conversation.Sender == "user" {
-					@UserMessage(conversation.Id, conversation.Message, conversation.ImgData)
+					@UserMessage(conversation.Id, conversation.Message, conversation.FileData, conversation.FileName)
 				} else {
 					@GeminiMessage(conversation.Id, conversation.Message)
 				}
@@ -58,7 +58,7 @@ templ section(conversations []models.ChatConversation, isOob bool, helperTextSho
 		>
 			for _,conversation:= range conversations {
 				if conversation.Sender == "user" {
-					@UserMessage(conversation.Id, conversation.Message, conversation.ImgData)
+					@UserMessage(conversation.Id, conversation.Message, conversation.FileData, conversation.FileName)
 				} else {
 					@GeminiMessage(conversation.Id, conversation.Message)
 				}
