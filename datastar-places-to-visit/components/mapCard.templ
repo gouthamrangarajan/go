@@ -6,7 +6,7 @@ import "strconv"
 templ mapCard() {
 	<div
 		class="py-6 px-8 flex flex-col gap-2  shrink-0 shadow-lg relative shadow-action-light/20 rounded-xl bg-white w-full mx-auto h-116 md:h-136"
-		data-on-load="localStorage.getItem('default')?@get(localStorage.getItem('default')):@get('/map/initialize');"
+		data-on-load="localStorage.getItem('default')?@get(localStorage.getItem('default')):@get('/map/initialize');$defaultSelection=localStorage.getItem('default')"
 		data-class="{'z-0':$showSearchResults}"
 		data-on-click="$showSearchResults=false"
 		data-signals-selectedTab="'mapView'"
@@ -69,7 +69,9 @@ templ SetDefaultCheckbox(city string, lat string, lng string) {
 			class="bg-action-light/50 absolute -top-3 right-3 h-2 rounded-xl w-10 cursor-pointer"
 			data-on-click="$defaultCheckbox.click()"
 		></div>
-		<label class="flex gap-2 items-center absolute -top-5.5 right-8 cursor-pointer">
+		<label
+			class="flex gap-2 items-center absolute -top-5.5 right-8 cursor-pointer"
+		>
 			<span class="text-primary md:text-lg">Default:</span>
 			<input
 				data-ref="defaultCheckbox"

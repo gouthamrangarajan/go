@@ -4,6 +4,7 @@ import (
 	"datastar-placestovisit/components"
 	"datastar-placestovisit/models"
 	"datastar-placestovisit/services"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -88,8 +89,8 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 			maxZoom: 19,
 			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 		}).addTo(map);`, datastar.WithExecuteScriptAutoRemove(true))
-	getPlacesSSE(sse, defaultCity, defaultLat, defaultLng, false)
 
+	getPlacesSSE(sse, defaultCity, defaultLat, defaultLng, false)
 	sse.PatchSignals([]byte("{loadingMap:false}"))
 }
 func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetry bool) {
@@ -99,6 +100,12 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetr
 	}
 	lat := strings.TrimSpace(chi.URLParam(request, "lat"))
 	lng := strings.TrimSpace(chi.URLParam(request, "lng"))
+
+	var signals models.ClientSignals
+	dataStarQueryString := request.URL.Query().Get("datastar")
+	if dataStarQueryString != "" {
+		json.Unmarshal([]byte(dataStarQueryString), &signals)
+	}
 
 	if lng != "com.chrome.devtools.json" { //during local development debugging this value comes
 		if lat == "" || lng == "" {
@@ -114,7 +121,11 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetr
 			sse.PatchElementTempl(components.PlacesSearchInput(city), datastar.WithUseViewTransitions(true))
 			sse.PatchElementTempl(components.RetryButton(city, lat, lng))
 			sse.PatchElementTempl(components.SetDefaultCheckbox(city, lat, lng), datastar.WithUseViewTransitions(true))
-			sse.PatchSignals([]byte("{isDefault:false}"))
+			if signals.DefaultVal == `/map/initialize/`+city+`||`+lat+`||`+lng {
+				sse.PatchSignals([]byte("{isDefault:true}"))
+			} else {
+				sse.PatchSignals([]byte("{isDefault:false}"))
+			}
 			sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
 			time.Sleep(200 * time.Millisecond) //wait for tab to be available
 			getPlacesSSE(sse, city, lat, lng, isRetry)

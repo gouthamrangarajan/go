@@ -3,7 +3,7 @@ module datastar-placestovisit
 go 1.24.1
 
 require (
-	github.com/a-h/templ v0.3.924
+	github.com/a-h/templ v0.3.943
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/starfederation/datastar-go v1.0.1
 )
