@@ -1,26 +1,25 @@
-## Gemini Chat
+## Claude Chat
 
-Welcome to the Gemini Chat project! This application allows users to talk to Google Gemini Model
+Welcome to the Claude Chat project! This application allows users to talk to Claude Model's
 
 ### Features
 
-- Real-time Messaging
-- Responsive Design
-- Integrated Web Search Tool
-- Image & PDF Summarization
+- Real-time messaging
+- Responsive design
+- Web search Tool
 
 ### Model/Library/Frameworks used
 
-- Gemini (works for Flash-2.0, Flash-2.5 & Flash-2.5-lite)
+- Claude (works for Claude 3.5 Haiku, Sonnet models)
 - Golang , templ , chi
-- Htmx, Alpine
+- Datastar
 - Zero md
 - Tailwind, Open Props
 - Turso
 
 ### Installation
 
-To get started with the Gemini Chat application, follow these steps:
+To get started with the Claude Chat application, follow these steps:
 
 1. Clone the repository:
    ```bash
@@ -28,15 +27,22 @@ To get started with the Gemini Chat application, follow these steps:
    ```
 2. Navigate to the project directory:
    ```bash
-   cd htmx-gemini-chat
+   cd datastar-claude-chat
    ```
 3. Create a .env file with following values
+   - CLAUDE_API_HEADER_VERSION
+   - CALUDE_API_HEADER_FILE_UPLOAD
+   - CLAUDE_API_KEY
+   - CLAUDE_API_URL
+   - CLAUDE_FILE_UPLOAD_API_URL
+   - CLAUDE_MAX_TOKEN
+   - CLAUDE_MODEL
+   - CLAUDE_TEMPERATURE
+   - CLAUDE_WEB_TOOL_TYPE
+   - CLAUDE_WEB_TOOL_NAME
+   - CALUDE_WEB_TOOL_MAX_USES
    - COOKIE_SECRET
    - ENVIRONMENT
-   - GEMINI_KEY
-   - GEMINI_EMBEDDING_MODEL
-   - GEMINI_EMBEDDING_URL
-   - GEMINI_STREAMING_URL
    - TURSO_AUTH_TOKEN
    - TURSO_DATABASE_URL
 4. Use Go & Templ (Terminal 1)
@@ -56,6 +62,6 @@ Open your browser and navigate to `http://http://127.0.0.1:7331/` to start chatt
 
 ### Deployed version
 
-[rg-gemini-chat](https://rg-gemini-chat.up.railway.app/)
+[rg-claude-chat](https://rg-claude-chat.up.railway.app/)
 
-![screenshot](Gemini_Chat.png)
+![screenshot](Claude_Chat.png)
