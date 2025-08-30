@@ -32,6 +32,8 @@ To get started with the Gemini Chat application, follow these steps:
    - COOKIE_SECRET
    - ENVIRONMENT
    - GEMINI_KEY
+   - GEMINI_EMBEDDING_MODEL
+   - GEMINI_EMBEDDING_URL
    - GEMINI_STREAMING_URL
    - TURSO_AUTH_TOKEN
    - TURSO_DATABASE_URL
