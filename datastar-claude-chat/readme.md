@@ -30,6 +30,7 @@ To get started with the Claude Chat application, follow these steps:
    cd datastar-claude-chat
    ```
 3. Create a .env file with following values
+
    - CLAUDE_API_HEADER_VERSION
    - CALUDE_API_HEADER_FILE_UPLOAD
    - CLAUDE_API_KEY
@@ -45,6 +46,7 @@ To get started with the Claude Chat application, follow these steps:
    - ENVIRONMENT
    - TURSO_AUTH_TOKEN
    - TURSO_DATABASE_URL
+
 4. Use Go & Templ (Terminal 1)
    ```bash
     templ generate --watch --proxy="http://localhost:3000" --cmd="go run ."

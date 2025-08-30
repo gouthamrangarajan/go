@@ -31,6 +31,7 @@ To get started with the Gemini Chat application, follow these steps:
    cd htmx-gemini-chat
    ```
 3. Create a .env file with following values
+
    - COOKIE_SECRET
    - ENVIRONMENT
    - GEMINI_KEY
@@ -39,6 +40,7 @@ To get started with the Gemini Chat application, follow these steps:
    - GEMINI_STREAMING_URL
    - TURSO_AUTH_TOKEN
    - TURSO_DATABASE_URL
+
 4. Use Go & Templ (Terminal 1)
    ```bash
     templ generate --watch --proxy="http://localhost:3000" --cmd="go run ."
