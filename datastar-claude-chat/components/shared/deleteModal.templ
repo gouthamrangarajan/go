@@ -1,0 +1,53 @@
+package shared
+
+templ DeleteModal() {
+	<div
+		class="absolute top-0 left-0 bg-black/50 w-full h-full flex items-center justify-center z-10"
+		data-show="$showDeleteModal"
+		data-signals="{_modalAbortController:new AbortController()}"
+		data-effect="$showDeleteModal?$_modalAbortController=focusTrap('dialog[open]'):$_modalAbortController.abort()"
+		style="display:none;"
+	>
+		<dialog
+			open
+			class="w-11/12 mx-auto animate-modal bg-white py-4 px-6 rounded flex flex-col md:w-7/12 lg:w-5/12"
+			id="deleteModal"
+			style="view-transition-name:delete-dialog"
+		>
+			<h1 class="text-lg font-semibold text-primary">Delete Chat Session?</h1>
+			<p id="deleteError" class="mt-4"></p>
+			<div class="mt-4 flex flex-col">
+				<p>Are you sure you want to delete this chat session? This action is permanent and cannot be undone.</p>
+				<div class="flex items-center justify-end gap-2 w-full mt-5">
+					<button
+						class="appearance-none outline-none cursor-pointer w-29 shrink-0 h-10 flex justify-center items-center py-2 px-4 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-yellow-50  disabled:cursor-not-allowed disabled:opacity-70"
+						data-on-click="@post('/delete')"
+						data-indicator="deleting"
+						data-attr-disabled="$deleting"
+						data-class="{'bg-yellow-600 text-white':!$deleting,'bg-white text-yellow-600 ring-2 ring-yellow-500':$deleting}"
+					>
+						<span data-show="!$deleting">Yes, Delete</span>
+						<div
+							data-show="$deleting"
+							class="flex items-center gap-1 flex-1 w-full justify-center"
+						>
+							@Loader("animate-loader-1")
+							@Loader("animate-loader-2")
+						</div>
+					</button>
+					<button
+						class="appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-slate-200 transition duration-300 hover:bg-slate-300 focus:ring-1 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
+						data-on-click__viewTransition="document.getElementById('deleteError').outerHTML='<p id=\'deleteError\' class=\'mt-4\'></p>';$showDeleteModal=false"
+						data-attr-disabled="$deleting"
+					>Cancel</button>
+				</div>
+			</div>
+		</dialog>
+	</div>
+}
+
+templ DeleteErrorMessage(message string) {
+	<p id="deleteError" data-show="!$deleting" class="w-full animate-message bg-red-200 text-red-600 rounded py-1 px-3 mt-4 font-semibold">
+		{ message }
+	</p>
+}

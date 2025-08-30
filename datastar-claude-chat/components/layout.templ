@@ -1,5 +1,7 @@
 package components
 
+import "datastar-claude-chat/components/scripts"
+
 templ layout() {
 	<!DOCTYPE html>
 	<html class="w-full h-full">
@@ -12,77 +14,13 @@ templ layout() {
 			<link rel="stylesheet" href="/assets/css/styles.css"/>
 			<link rel="stylesheet" href="/assets//css//openprops.min.css"/>
 		</head>
-		<body class="w-full h-full overflow-x-hidden overflow-y-hidden bg-background font-(family-name:--font-geometric-humanist) relative text-slate-800">
+		<body
+			class="w-full h-full overflow-x-hidden overflow-y-hidden bg-background font-(family-name:--font-geometric-humanist) relative text-slate-800"
+		>
 			{ children... }
 			<script src="/assets/js/datastar.min.js" type="module"></script>
-			@zeroMdScript()
-			<script type="text/javascript">
-             	function menuFocusTrap() {
-					const activeElementsSelector='a[href]:not(:disabled), button:not(:disabled), input:not(:disabled):not([type="hidden"]), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])' 												 
-					const abortController = new AbortController();    
-					const abortSignal = abortController.signal; 
-					const menu = document.querySelector('#menuScreen');         					
-					if(!menu){return abortController;}
-            		const focusableElements = menu.querySelectorAll(activeElementsSelector);
-					if (focusableElements.length === 0 && menu.focus){
-						menu.focus();
-					}
-					else{
-						focusableElements[0].focus(); 
-					}					
-            		const firstElement = focusableElements[0];
-            		window.addEventListener('keydown', function(event) {        
-						if (event.key === 'Tab') {                
-							const menu = document.querySelector('#menuScreen');
-							if (!menu) {
-								return;
-							}					
-							const focusableElements = menu.querySelectorAll(activeElementsSelector);
-							if (focusableElements.length === 0){
-								if(menu.focus){
-									menu.focus();
-								}
-								event.preventDefault();
-								return;
-							}
-							const firstElement = focusableElements[0];
-							const lastElement = focusableElements[focusableElements.length - 1];
-							if (event.shiftKey) { // Shift + Tab
-								if (document.activeElement === firstElement) {
-									event.preventDefault();							
-									lastElement.focus();
-									return;
-								}
-							} else { // Tab
-								if (document.activeElement === lastElement) {
-									event.preventDefault();
-									firstElement.focus();
-									return;
-								}
-							}
-							if (!menu.contains(document.activeElement)){
-								event.preventDefault();
-								firstElement.focus();
-								return;
-							}
-						}
-					}, {signal: abortSignal});
-           		 	window.addEventListener('focus',function(event){
-						const menu = document.querySelector('#menuScreen');          
-						if(!menu){return;}				
-                		const focusableElements = menu.querySelectorAll(activeElementsSelector);
-						if (focusableElements.length === 0){
-							event.preventDefault();
-							menu.focus(); 
-							return;
-						}
-						const firstElement = focusableElements[0];
-						event.preventDefault();		
-						firstElement.focus();
-					}, {signal: abortSignal});              
-					return abortController;
-				}  						
-   			 </script>
+			@scripts.ZeroMdScript()
+			@scripts.FocusTrap()
 		</body>
 	</html>
 }

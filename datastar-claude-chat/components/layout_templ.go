@@ -8,6 +8,8 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "datastar-claude-chat/components/scripts"
+
 func layout() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -41,11 +43,15 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = zeroMdScript().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = scripts.ZeroMdScript().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"text/javascript\">\n             \tfunction menuFocusTrap() {\n\t\t\t\t\tconst activeElementsSelector='a[href]:not(:disabled), button:not(:disabled), input:not(:disabled):not([type=\"hidden\"]), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex=\"-1\"])' \t\t\t\t\t\t\t\t\t\t\t\t \n\t\t\t\t\tconst abortController = new AbortController();    \n\t\t\t\t\tconst abortSignal = abortController.signal; \n\t\t\t\t\tconst menu = document.querySelector('#menuScreen');         \t\t\t\t\t\n\t\t\t\t\tif(!menu){return abortController;}\n            \t\tconst focusableElements = menu.querySelectorAll(activeElementsSelector);\n\t\t\t\t\tif (focusableElements.length === 0 && menu.focus){\n\t\t\t\t\t\tmenu.focus();\n\t\t\t\t\t}\n\t\t\t\t\telse{\n\t\t\t\t\t\tfocusableElements[0].focus(); \n\t\t\t\t\t}\t\t\t\t\t\n            \t\tconst firstElement = focusableElements[0];\n            \t\twindow.addEventListener('keydown', function(event) {        \n\t\t\t\t\t\tif (event.key === 'Tab') {                \n\t\t\t\t\t\t\tconst menu = document.querySelector('#menuScreen');\n\t\t\t\t\t\t\tif (!menu) {\n\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t}\t\t\t\t\t\n\t\t\t\t\t\t\tconst focusableElements = menu.querySelectorAll(activeElementsSelector);\n\t\t\t\t\t\t\tif (focusableElements.length === 0){\n\t\t\t\t\t\t\t\tif(menu.focus){\n\t\t\t\t\t\t\t\t\tmenu.focus();\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\tevent.preventDefault();\n\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tconst firstElement = focusableElements[0];\n\t\t\t\t\t\t\tconst lastElement = focusableElements[focusableElements.length - 1];\n\t\t\t\t\t\t\tif (event.shiftKey) { // Shift + Tab\n\t\t\t\t\t\t\t\tif (document.activeElement === firstElement) {\n\t\t\t\t\t\t\t\t\tevent.preventDefault();\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\tlastElement.focus();\n\t\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t} else { // Tab\n\t\t\t\t\t\t\t\tif (document.activeElement === lastElement) {\n\t\t\t\t\t\t\t\t\tevent.preventDefault();\n\t\t\t\t\t\t\t\t\tfirstElement.focus();\n\t\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tif (!menu.contains(document.activeElement)){\n\t\t\t\t\t\t\t\tevent.preventDefault();\n\t\t\t\t\t\t\t\tfirstElement.focus();\n\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t}, {signal: abortSignal});\n           \t\t \twindow.addEventListener('focus',function(event){\n\t\t\t\t\t\tconst menu = document.querySelector('#menuScreen');          \n\t\t\t\t\t\tif(!menu){return;}\t\t\t\t\n                \t\tconst focusableElements = menu.querySelectorAll(activeElementsSelector);\n\t\t\t\t\t\tif (focusableElements.length === 0){\n\t\t\t\t\t\t\tevent.preventDefault();\n\t\t\t\t\t\t\tmenu.focus(); \n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tconst firstElement = focusableElements[0];\n\t\t\t\t\t\tevent.preventDefault();\t\t\n\t\t\t\t\t\tfirstElement.focus();\n\t\t\t\t\t}, {signal: abortSignal});              \n\t\t\t\t\treturn abortController;\n\t\t\t\t}  \t\t\t\t\t\t\n   \t\t\t </script></body></html>")
+		templ_7745c5c3_Err = scripts.FocusTrap().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

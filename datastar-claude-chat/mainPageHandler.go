@@ -2,6 +2,7 @@ package main
 
 import (
 	"datastar-claude-chat/components"
+	"datastar-claude-chat/components/shared"
 	"datastar-claude-chat/models"
 	"datastar-claude-chat/services"
 	"encoding/base64"
@@ -130,4 +131,27 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 		}
 	}
 	sse.PatchElementTempl(components.FileDataDisplay(fileData, fileName, len(imgMatches) == 4), datastar.WithUseViewTransitions(true))
+}
+func deleteChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(services.UserIDKey).(string)
+	requestBody, _ := io.ReadAll(request.Body)
+	var clientSignal models.ClientSignals
+
+	_ = json.Unmarshal(requestBody, &clientSignal)
+	channel := make(chan int)
+	defer close(channel)
+	go services.DeleteChatSession(userId, clientSignal.SessionIdToDelete, channel)
+	rowsAffected := <-channel
+	sse := datastar.NewSSE(responseWriter, request)
+	if rowsAffected != 1 {
+		sse.PatchElementTempl(shared.DeleteErrorMessage("Failed to delete the chat session. Please try again later."))
+		return
+	}
+	sse.RemoveElement("#menu_"+strconv.Itoa(clientSignal.SessionIdToDelete), datastar.WithUseViewTransitions(true))
+	sse.PatchSignals([]byte("{showDeleteModal:false}"))
+	if clientSignal.SessionId == clientSignal.SessionIdToDelete {
+		sse.PatchSignals([]byte("{sessionId:0}"))
+		sse.PatchElementTempl(components.MessagesSection([]models.ChatConversation{}))
+		sse.ExecuteScript("window.history.replaceState({},document.title,window.location.origin);")
+	}
 }

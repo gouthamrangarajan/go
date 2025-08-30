@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "datastar-claude-chat/models"
 import "strconv"
+import "datastar-claude-chat/components/shared"
 
 func Main(sessionId int, allowWebSearch bool, messages []models.ChatConversation) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -49,9 +50,9 @@ func Main(sessionId int, allowWebSearch bool, messages []models.ChatConversation
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("{showErrorMessage:false,errorMessage:'Error. Please try again later.',showMenu:false,sessionId:" + strconv.Itoa(sessionId) + "}")
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("{showErrorMessage:false,errorMessage:'Error. Please try again later.',showMenu:false,sessionId:" + strconv.Itoa(sessionId) + ",showDeleteModal:false}")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 10, Col: 147}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 11, Col: 169}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -65,21 +66,23 @@ func Main(sessionId int, allowWebSearch bool, messages []models.ChatConversation
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<h1 class=\"text-2xl font-semibold text-primary\">Claude Chat</h1><section id=\"messages\" class=\"flex flex-col items-start justify-start gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<h1 class=\"text-2xl font-semibold text-primary\">Claude Chat</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for _, msg := range messages {
-				templ_7745c5c3_Err = Message(msg.Id, msg.Message, msg.ImgData, msg.FileName, msg.Sender).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
+			templ_7745c5c3_Err = MessagesSection(messages).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</section><section class=\"flex w-full h-full items-center justify-center\" style=\"display:none;\" data-show=\"$sessionId==0\" style=\"view-transition-name:landing-message\"><p class=\"p-1 font-semibold text-yellow-600 text-xl\">🔗 Effortless Conversations: Jump in and chat now</p></section>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<section class=\"flex w-full h-full items-center justify-center\" style=\"display:none;\" data-show=\"$sessionId==0\" style=\"view-transition-name:landing-message\"><p class=\"p-1 font-semibold text-yellow-600 text-xl\">🔗 Effortless Conversations: Jump in and chat now</p></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = inputAndError(allowWebSearch).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = shared.DeleteModal().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -90,6 +93,45 @@ func Main(sessionId int, allowWebSearch bool, messages []models.ChatConversation
 			return nil
 		})
 		templ_7745c5c3_Err = layout().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func MessagesSection(messages []models.ChatConversation) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<section id=\"messages\" class=\"flex flex-col items-start justify-start gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, msg := range messages {
+			templ_7745c5c3_Err = Message(msg.Id, msg.Message, msg.ImgData, msg.FileName, msg.Sender).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

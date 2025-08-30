@@ -67,7 +67,7 @@ func inputAndError(allowWebSearch bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></form><p class=\"absolute bottom-4 left-1 z-10 shadow-2xl animate-error-message rounded-lg bg-primary/50 py-2 px-4 text-red-600 font-semibold\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></form><p class=\"absolute bottom-4 left-1 z-20 shadow-2xl animate-error-message rounded-lg bg-primary/50 py-2 px-4 text-red-600 font-semibold\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
