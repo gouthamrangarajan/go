@@ -4,9 +4,9 @@ Welcome to the Claude Chat project! This application allows users to talk to Cla
 
 ### Features
 
-- Real-time messaging
-- Responsive design
-- Web search Tool
+- Real-time Messaging
+- Responsive Design
+- Integrated Web Search Tool
 
 ### Model/Library/Frameworks used
 
