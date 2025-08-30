@@ -6,6 +6,7 @@ Welcome to the Gemini Chat project! This application allows users to talk to Goo
 
 - Real-time messaging
 - Responsive design
+- Web search tool
 
 ### Model/Library/Frameworks used
 
