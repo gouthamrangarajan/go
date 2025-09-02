@@ -8,6 +8,7 @@ Welcome to the Gemini Chat project! This application allows users to talk to Goo
 - Responsive Design
 - Integrated Web Search Tool
 - Image & PDF Summarization
+- Image Generation
 
 ### Model/Library/Frameworks used
 
@@ -37,6 +38,7 @@ To get started with the Gemini Chat application, follow these steps:
    - GEMINI_KEY
    - GEMINI_EMBEDDING_MODEL
    - GEMINI_EMBEDDING_URL
+   - GEMINI_IMAGE_GENERATION_URL
    - GEMINI_STREAMING_URL
    - TURSO_AUTH_TOKEN
    - TURSO_DATABASE_URL
