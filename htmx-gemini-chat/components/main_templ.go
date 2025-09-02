@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "htmx-gemini-chat/models"
 
-func Main(conversations []models.ChatConversation, sessions []models.ChatSession, currentChatSessionId int, defaultWebSearch bool) templ.Component {
+func Main(conversations []models.ChatConversation, sessions []models.ChatSession, currentChatSessionId int, defaultWebSearch bool, defaultImageGeneration bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -59,7 +59,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = chatInput(currentChatSessionId, defaultWebSearch).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = chatInput(currentChatSessionId, defaultWebSearch, defaultImageGeneration).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -114,7 +114,7 @@ func NewChatSession(session models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = SectionAndChatSessionIdInput(session.Id, make([]models.ChatConversation, 0, 0), false, true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = SectionAndChatSessionIdInput(session.Id, make([]models.ChatConversation, 0, 0), false, false, true).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -151,7 +151,7 @@ func UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatS
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = setWebSearchScript(false, true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = setWebSearchAndImgGenerationScript(false, false, len(conversations) > 0, true).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -159,7 +159,7 @@ func UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatS
 	})
 }
 
-func SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConversation, allowWebSearch bool, isOob bool) templ.Component {
+func SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConversation, allowWebSearch bool, imgGeneration bool, isOob bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -188,7 +188,7 @@ func SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConv
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = setWebSearchScript(allowWebSearch, isOob).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = setWebSearchAndImgGenerationScript(allowWebSearch, imgGeneration, len(conversations) > 0, isOob).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -229,7 +229,7 @@ func section(conversations []models.ChatConversation, isOob bool, helperTextShow
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = GeminiMessage(conversation.Id, conversation.Message).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = GeminiMessage(conversation.Id, conversation.Message, conversation.FileData).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -255,7 +255,7 @@ func section(conversations []models.ChatConversation, isOob bool, helperTextShow
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = GeminiMessage(conversation.Id, conversation.Message).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = GeminiMessage(conversation.Id, conversation.Message, conversation.FileData).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

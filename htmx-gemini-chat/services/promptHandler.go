@@ -18,16 +18,16 @@ import (
 // ALGO
 // Step 1:  Validate data, e.g empty prompt, invalid chatSessionId, invalid image/pdf filedata etc.
 // Step 2:  Insert new chat session or get all chat conversations
-// Step 3:  Convert chat conversation + prompt + image/pdf to GeminiRequest & call Gemini API
+// Step 3:  Convert chat conversation + prompt + image/pdf to GeminiRequest & call Gemini API / Gemini Image Generation API
 // Step 4:  Insert user message in chat conversation & send to client
 // Step 5:  If new chat session inserted, send new session UI. Also call embedding to update title vector
 // Step 6:  If first message, update chat session title with prompt & send to client.Also call embedding to update title vector
-// step 7:  Call Gemini session web search flag update
+// step 7:  Call Gemini session web search flag update & call Image Generation Flag update
 // Step 8:  Insert Gemini message in chat conversation
 // Step 9:  Send Gemini messages to client
 // Step 10: Consolidate & Update Gemini message in chat conversation
 // Step 11: If embedding called, wait for it to complete
-// step 12: Wait for gemini web search flag update to finish
+// step 12: Wait for gemini web search flag update & Image Generation flag update to finish
 
 func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	ctx := request.Context()
@@ -49,20 +49,24 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	}
 	prompt = strings.TrimSpace(prompt)
 	fileData = strings.TrimSpace(fileData)
+
+	allowWebSearchStr := request.FormValue("webSearch")
+	generateImageStr := request.FormValue("imgGeneration")
+	allowWebSearch := false
+	generateImg := false
+	allowWebSearch, _ = strconv.ParseBool(allowWebSearchStr)
+	generateImg, _ = strconv.ParseBool(generateImageStr)
+
 	if prompt == "" {
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	allowWebSearchStr := request.FormValue("webSearch")
-	allowWebSearch := false
-	allowWebSearch, _ = strconv.ParseBool(allowWebSearchStr)
-
 	embeddingCallChannel := make(chan bool)
 	defer close(embeddingCallChannel)
 	embeddingCalled := false
 	if chatSessionId == 0 {
-		chatSessionId = InsertChatSessionViaChannel(userId, prompt, allowWebSearch)
+		chatSessionId = InsertChatSessionViaChannel(userId, prompt, allowWebSearch, generateImg)
 		newChatSessionInserted = true
 		if chatSessionId > 0 {
 			go callGeminiEmbeddingAndUpdateSessionTitleVector(chatSessionId, prompt, embeddingCallChannel)
@@ -95,7 +99,14 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 	geminiAPIChannel := make(chan string)
-	go callGeminiWithStreaming(geminiRequest, geminiAPIChannel)
+	if !generateImg {
+		go callGeminiWithStreaming(geminiRequest, geminiAPIChannel)
+	} else {
+		geminiImageRequest := models.GeminiImageGenerationRequest{
+			Contents: geminiRequest.Contents,
+		}
+		go callGeminiImageGeneration(geminiImageRequest, geminiAPIChannel)
+	}
 
 	response.Header().Set("Content-Type", "text/event-stream")
 	response.Header().Set("Cache-Control", "no-cache")
@@ -152,6 +163,10 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	defer close(chatSessionWebSearchUpdateChannel)
 	go UpdateChatSessionWebSearchFlag(userId, chatSessionId, allowWebSearch, chatSessionWebSearchUpdateChannel)
 
+	chatSessionImgGenerationUpdateChannel := make(chan int)
+	defer close(chatSessionImgGenerationUpdateChannel)
+	go UpdateChatSessionImgGenerationFlag(userId, chatSessionId, generateImg, chatSessionImgGenerationUpdateChannel)
+
 	consolidateGeminiResponse := ""
 	insertGeminiMessageChatConversationChannel := make(chan int)
 	defer close(insertGeminiMessageChatConversationChannel)
@@ -171,6 +186,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 
 	for message := range geminiAPIChannel {
 		if message != "data:ERROR\n\n" {
+
 			consolidateGeminiResponse += message
 		}
 		select {
@@ -181,7 +197,11 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 			if message != "data:ERROR\n\n" {
 				//not adding \n\n in the end here , might confuse find a better way
 				//if added,trimend in the javscript is needed which will remove \n coming in data also
-				sendMessageAndFlush("event: MESSAGE\ndata: "+message, response)
+				if !generateImg {
+					sendMessageAndFlush("event: MESSAGE\ndata: "+message, response)
+				} else {
+					sendMessageAndFlush("event: IMAGE\ndata: "+message, response)
+				}
 			} else {
 				sendMessageAndFlush("event: ERROR\n\n", response)
 			}
@@ -190,7 +210,11 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	if strings.TrimSpace(consolidateGeminiResponse) != "" {
 		updateChatConversationChannel := make(chan int)
 		defer close(updateChatConversationChannel)
-		go UpateGeminiMessageChatConversation(geminiMessageId, consolidateGeminiResponse, updateChatConversationChannel)
+		if !generateImg {
+			go UpateGeminiMessageChatConversation(geminiMessageId, consolidateGeminiResponse, "", updateChatConversationChannel)
+		} else {
+			go UpateGeminiMessageChatConversation(geminiMessageId, "", consolidateGeminiResponse, updateChatConversationChannel)
+		}
 		rowsAffectedUpdate := <-updateChatConversationChannel
 		if rowsAffectedUpdate == 0 {
 			sendMessageAndFlush("event: ERROR\n\n", response)
@@ -217,6 +241,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		<-embeddingCallChannel
 	}
 	<-chatSessionWebSearchUpdateChannel
+	<-chatSessionImgGenerationUpdateChannel
 }
 
 func sendMessageAndFlush(message string, response http.ResponseWriter) {
@@ -228,17 +253,27 @@ func sendMessageAndFlush(message string, response http.ResponseWriter) {
 
 func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string) {
 	defer close(channel)
-	url := os.Getenv("GEMINI_STREAMING_URL") + os.Getenv("GEMINI_KEY")
+	url := os.Getenv("GEMINI_STREAMING_URL")
 
 	jsonData, err := json.Marshal(request)
-	// os.WriteFile("test2.txt", jsonData, 0644)
 	if err != nil {
 		fmt.Printf("Error converting request to json data to call Gemini API %v\n", err)
 		channel <- "data:ERROR\n\n"
 		return
 	}
-	// fmt.Printf("request to gemini api %v\n", string(jsonData))
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	// fmt.Printf("Request to gemini api %v\n", string(jsonData))
+	httpClient := &http.Client{}
+	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Printf("Error creating request for Gemini API %v\n", err)
+		channel <- "data:ERROR\n\n"
+		return
+	}
+	httpRequest.Header.Add("x-goog-api-key", os.Getenv("GEMINI_KEY"))
+	httpRequest.Header.Add("Content-Type", "application/json")
+
+	resp, err := httpClient.Do(httpRequest)
+
 	if err != nil {
 		fmt.Printf("Error calling Gemini API %v\n", err)
 		channel <- "data:ERROR\n\n"
@@ -270,10 +305,97 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 		if err == nil {
 			channel <- *responseParsed.Candidates[0].Content.Parts[0].Text
 			txt = ""
-
 		}
 	}
 
+}
+
+func callGeminiImageGeneration(request models.GeminiImageGenerationRequest, channel chan<- string) {
+	defer close(channel)
+	url := os.Getenv("GEMINI_IMAGE_GENERATION_URL")
+
+	jsonData, err := json.Marshal(request)
+	// os.WriteFile("test2.txt", jsonData, 0644)
+	if err != nil {
+		fmt.Printf("Error converting request to json data to call Gemini Image Generation API %v\n", err)
+		channel <- "data:ERROR\n\n"
+		return
+	}
+	// fmt.Printf("Request to gemini image generation api %v\n", string(jsonData))
+
+	httpClient := &http.Client{}
+	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Printf("Error creating request for Gemini Image Generation API %v\n", err)
+		channel <- "data:ERROR\n\n"
+		return
+	}
+	httpRequest.Header.Add("x-goog-api-key", os.Getenv("GEMINI_KEY"))
+	httpRequest.Header.Add("Content-Type", "application/json")
+
+	resp, err := httpClient.Do(httpRequest)
+	if err != nil {
+		fmt.Printf("Error calling Gemini Image Generation API %v\n", err)
+		channel <- "data:ERROR\n\n"
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		errorMsg, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Printf("Error in Gemini Image Generation API call: %v\n", resp.Status)
+		} else {
+			fmt.Printf("Error in Gemini Image Generation API call: %v\n", string(errorMsg))
+		}
+		channel <- "data:ERROR\n\n"
+		return
+	}
+	responseBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body Gemini Image Generation API call%v\n", err.Error())
+		channel <- "data:ERROR\n\n"
+		return
+	}
+	// fmt.Printf("Response from Gemini Image Generation API call %v\n", string(responseBytes)[:300])
+	var responseParsed models.GeminiResponse
+	err = json.Unmarshal(responseBytes, &responseParsed)
+	if err != nil {
+		fmt.Printf("Error parsing response body Gemini Image Generation API call%v\n", err.Error())
+		channel <- "data:ERROR\n\n"
+		return
+	}
+	if len(responseParsed.Candidates) > 0 {
+		for _, part := range responseParsed.Candidates[0].Content.Parts {
+			if part.Text != nil && *part.Text != "" {
+				fmt.Println(part.Text)
+			} else if part.FileData != nil {
+				imageBytes := part.FileData.Data
+				channel <- "data:" + strings.TrimSpace(part.FileData.MimeType) + ";base64," + imageBytes
+			}
+		}
+	} else {
+		fmt.Printf("Response not in expected format Image Generation API call %v\n", string(responseBytes))
+	}
+
+}
+
+func callGeminiEmbeddingAndUpdateSessionTitleVector(sessionId int, sessionTitle string, completedChannel chan bool) {
+	request := GenerateGeminiEmbeddingRequest(sessionTitle)
+	embeddingAPIChannel := make(chan models.GeminiEmbeddingResponse)
+	defer close(embeddingAPIChannel)
+	go CallGeminiEmbedding(request, embeddingAPIChannel)
+	embeddingResponse := <-embeddingAPIChannel
+	if len(embeddingResponse.Embedding.Values) == 0 {
+		fmt.Printf("Error getting embedding response for session %d\n", sessionId)
+		completedChannel <- true
+		return
+	}
+	updateDbChannel := make(chan int)
+	defer close(updateDbChannel)
+	go UpdateChatSessionTitleVector(sessionId, embeddingResponse.Embedding.Values, updateDbChannel)
+
+	<-updateDbChannel
+	completedChannel <- true
 }
 
 func CallGeminiEmbedding(request models.GeminiEmbeddingRequest, channel chan<- models.GeminiEmbeddingResponse) {
@@ -327,23 +449,4 @@ func CallGeminiEmbedding(request models.GeminiEmbeddingRequest, channel chan<- m
 		return
 	}
 	channel <- output
-}
-
-func callGeminiEmbeddingAndUpdateSessionTitleVector(sessionId int, sessionTitle string, completedChannel chan bool) {
-	request := GenerateGeminiEmbeddingRequest(sessionTitle)
-	embeddingAPIChannel := make(chan models.GeminiEmbeddingResponse)
-	defer close(embeddingAPIChannel)
-	go CallGeminiEmbedding(request, embeddingAPIChannel)
-	embeddingResponse := <-embeddingAPIChannel
-	if len(embeddingResponse.Embedding.Values) == 0 {
-		fmt.Printf("Error getting embedding response for session %d\n", sessionId)
-		completedChannel <- true
-		return
-	}
-	updateDbChannel := make(chan int)
-	defer close(updateDbChannel)
-	go UpdateChatSessionTitleVector(sessionId, embeddingResponse.Embedding.Values, updateDbChannel)
-
-	<-updateDbChannel
-	completedChannel <- true
 }

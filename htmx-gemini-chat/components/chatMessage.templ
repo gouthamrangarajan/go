@@ -54,7 +54,7 @@ templ UserMessageTemplate(id int) {
 	</div>
 }
 
-templ GeminiMessage(id int, message string) {
+templ GeminiMessage(id int, message string, fileData string) {
 	<div class="w-full hidden items-start gap-2 p-1">
 		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" class="shrink-0">
 			<path d="M20 10.0196C14.6358 10.3431 10.3431 14.6358 10.0196 20H9.98042C9.65687 14.6358 5.36425 10.3431 0 10.0196V9.98043C5.36425 9.65688 9.65687 5.36424 9.98042 0H10.0196C10.3431 5.36424 14.6358 9.65688 20 9.98043V10.0196Z" fill="url(#paint0_radial_809_11874)"></path>
@@ -66,11 +66,19 @@ templ GeminiMessage(id int, message string) {
 				</radialGradient>
 			</defs>
 		</svg>
-		<div class="flex-1 max-w-full" x-data={ "{md:`" + formatMessageForAlpine(message) + "`}" }>
-			<zero-md>
-				<script type="text/markdown" x-html="md" id={ "message_" + strconv.Itoa(id) }>			        
+		<div class="flex flex-col gap-1 w-full">
+			if fileData!="" {
+				<img
+					class="h-full w-full"
+					src={ fileData }
+				/>
+			}
+			<div class="flex-1 max-w-full" x-data={ "{md:`" + formatMessageForAlpine(message) + "`}" }>
+				<zero-md>
+					<script type="text/markdown" x-html="md" id={ "message_" + strconv.Itoa(id) }>			        
 			    </script>
-			</zero-md>
+				</zero-md>
+			</div>
 		</div>
 	</div>
 }
@@ -87,16 +95,18 @@ templ GeminiMessageTemplate(id int) {
 				</radialGradient>
 			</defs>
 		</svg>
-		<div class="flex-1 max-w-full">
-			<div class="flex items-center gap-1 flex-1 mt-2 ml-2" id="promptProcessingIndicator">
-				<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one"></span>
-				<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two"></span>
-				<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-three"></span>
-			</div>
-			<zero-md>
-				<script type="text/markdown" id={ "message_" + strconv.Itoa(id) }>					
+		<div class="flex flex-col gap-1 w-full">
+			<div class="flex-1 max-w-full">
+				<div class="flex items-center gap-1 flex-1 mt-2 ml-2" id="promptProcessingIndicator">
+					<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one"></span>
+					<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two"></span>
+					<span class="h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-three"></span>
+				</div>
+				<zero-md>
+					<script type="text/markdown" id={ "message_" + strconv.Itoa(id) }>					
                 </script>
-			</zero-md>
+				</zero-md>
+			</div>
 		</div>
 	</div>
 }

@@ -62,11 +62,11 @@ func GetChatSessionsViaChannel(userId string) []models.ChatSession {
 	sessions := <-sessionChannel
 	return sessions
 }
-func InsertChatSessionViaChannel(userId string, title string, allowWebSearch bool) int {
+func InsertChatSessionViaChannel(userId string, title string, allowWebSearch bool, generateImage bool) int {
 	var sessionId int = 0
 	insertSessionChannel := make(chan int)
 	defer close(insertSessionChannel)
-	go InsertChatSession(userId, title, allowWebSearch, insertSessionChannel)
+	go InsertChatSession(userId, title, allowWebSearch, generateImage, insertSessionChannel)
 	sessionId = <-insertSessionChannel
 	return sessionId
 }

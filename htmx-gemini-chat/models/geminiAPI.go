@@ -13,20 +13,36 @@ type GeminiRequestContent struct {
 	Parts []GeminiRequestParts `json:"parts"`
 }
 
+type GeminiRequestConfigThinking struct {
+	Budget int8 `json:"thinkingBudget"`
+}
+
+type GeminiRequestConfig struct {
+	Thinking GeminiRequestConfigThinking `json:"thinkingConfig,omitempty"`
+}
 type GeminiRequest struct {
 	Contents []GeminiRequestContent `json:"contents"`
-	Config   struct {
-		Thinking struct {
-			Budget int8 `json:"thinkingBudget"`
-		} `json:"thinkingConfig"`
-	} `json:"generationConfig"`
-	Tools map[string]interface{} `json:"tools,omitempty"`
+	Config   GeminiRequestConfig    `json:"generationConfig,omitempty"`
+	Tools    map[string]interface{} `json:"tools,omitempty"`
+}
+type GeminiImageGenerationRequest struct {
+	Contents []GeminiRequestContent `json:"contents"`
+}
+
+type GeminiResponseParts struct {
+	Text     *string                `json:"text,omitempty"`
+	FileData *GeminiRequestFileData `json:"inlineData,omitempty"`
+}
+type GeminiResponseContent struct {
+	Role  string                `json:"role"`
+	Parts []GeminiResponseParts `json:"parts"`
 }
 type GeminiResponse struct {
 	Candidates []struct {
-		Content GeminiRequestContent
+		Content GeminiResponseContent `json:"content"`
 	} `json:"candidates"`
 }
+
 type GeminiEmbeddingRequestConfig struct {
 	OutputDimension int `json:"output_dimensionality"`
 }

@@ -11,8 +11,7 @@ templ bodyScript() {
                 ABORT_CONTROLLER=new AbortController();
                 Alpine.store('data').fullPageFetchProcessing=true;
                 setTimeout(()=>{
-                    Alpine.store('data').currentSessionId=document.getElementById("chatSessionId").value;
-                    Alpine.store('data').fullPageFetchProcessing=false;
+                   initAlpineStore();
                 },1);
             },{signal:ABORT_CONTROLLER.signal})          
             function addErrorMessage(message){
@@ -42,17 +41,13 @@ templ bodyScript() {
                     el.addEventListener('zero-md-rendered', function() {      
                         if(document.startViewTransition){
                             document.startViewTransition(()=>{
-                                if(el.parentElement.parentElement.classList.contains("hidden")){
-                                    el.parentElement.parentElement.classList.replace("hidden","flex");
-                                } else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
+                               if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
                                     el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
                                 }
                             });
                         }
                         else{                     
-                            if(el.parentElement.parentElement.classList.contains("hidden")){
-                                el.parentElement.parentElement.classList.replace("hidden","flex");
-                            } else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
+                             if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
                                 el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
                             }
                         }
@@ -126,14 +121,17 @@ templ bodyScript() {
                     addNewChatSessionProcessing:false,
                     deleteChatSessionProcessing:false,
                     fullPageFetchProcessing:false,                    
-                    promptProcessing:false,
-                    currentMessageId:-1,
+                    promptProcessing:false,                   
                     menuOpen:false,
                     errorMessages:[],
                     currentSessionId:document.getElementById("chatSessionId").value,
                     webSearch:false,
+                    disableWebSearch:false,
+                    imgGeneration:false,
+                    disableImgGeneration:false,
+                    disableFileUpload:false,
                     init(){                       
-                        this.webSearch= document.getElementsByName("webSearch")[0].value=='true';
+                       initAlpineStore();
                     },
                     openMenu(){                        
                         this.menuOpen=true;
@@ -177,6 +175,7 @@ templ bodyScript() {
                     },                    
                 });
                 Alpine.data('chatInput',()=>({
+                    currentMessageId:-1,
                     prompt:'',
                     base64:"",
                     fileName:"",  
@@ -265,7 +264,8 @@ templ bodyScript() {
                             fm.append("base64",this.base64);
                             fm.append("fileName",this.fileName);
                             fm.append("chatSessionId",this.$store.data.currentSessionId);   
-                            fm.append("webSearch",this.$store.data.webSearch);                                                     
+                            fm.append("webSearch",this.$store.data.webSearch);    
+                            fm.append("imgGeneration",this.$store.data.imgGeneration)                                                 
                             try{
                                 let decodedValueMerged ="";                                
                                 const resp= await fetch('/send',{
@@ -283,12 +283,13 @@ templ bodyScript() {
                                     return;
                                 }                                   
                                 const reader = resp.body.getReader();
-                                const textDecoder=new TextDecoder();                                                                 
+                                const textDecoder=new TextDecoder();        
+                                let imageDataProcessing=false;                                                         
                                 while (true){
                                     const { done, value } = await reader.read();
                                     if(done){//streaming end
                                         this.setProcessing(false);
-                                        this.$store.data.currentMessageId=-1;
+                                        this.currentMessageId=-1;
                                         decodedValueMerged="";
                                         break;
                                     }
@@ -299,13 +300,13 @@ templ bodyScript() {
                                         }
                                         if(decodedItem.includes("END\n\n")){
                                             this.setProcessing(false);
-                                            this.$store.data.currentMessageId=-1;
+                                            this.currentMessageId=-1;
                                             decodedValueMerged="";                                                                                
                                             return;
                                         }
                                         else if(decodedItem.includes("ERROR\n\n")){
                                             this.setProcessing(false);
-                                            this.$store.data.currentMessageId=-1;
+                                            this.currentMessageId=-1;
                                             decodedValueMerged="";                                        
                                             addErrorMessage('Error! Please try again later');     
                                             return;
@@ -314,7 +315,7 @@ templ bodyScript() {
                                             decodedItem.includes("USER_MESSAGE_TEMPLATE") 
                                             ){ //streamed output is a new user message item or new gemini message item                                        
                                             decodedItem=decodedItem.replace("GEMINI_MESSAGE_TEMPLATE\ndata: ","").replace("USER_MESSAGE_TEMPLATE\ndata: ","").trimEnd();
-                                            this.$store.data.currentMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedItem);                                                                                 
+                                            this.currentMessageId = createNewMessageUIAndGetMessageId(idToAppendData,decodedItem);                                                                                 
                                             decodedValueMerged="";                                           
                                             if(this.prompt!=''){ //streamed output is user message 
                                                 this.appendPromptAndImageToUserMessageTemplate()                                                                   
@@ -334,12 +335,23 @@ templ bodyScript() {
                                         else if(decodedItem.includes("HELPER_TEXT")){
                                             decodedItem=decodedItem.replace("HELPER_TEXT\ndata: ","").trimEnd();
                                             document.getElementById("helper").outerHTML=decodedItem;  
-                                        }                                        
+                                        }                   
+                                        else if(decodedItem.includes("IMAGE")){                                            
+                                            document.getElementById("promptProcessingIndicator")?.remove()
+                                            decodedItem=decodedItem.replace("IMAGE\ndata: ","").trimEnd();
+                                            decodedValueMerged += decodedItem;
+                                            imageDataProcessing=true;
+                                            prependFileDataToMessage(this.currentMessageId,decodedValueMerged,"output.png");
+                                        }                     
                                         else if(decodedItem.includes("MESSAGE")){ //streamed output is gemini message that needs to be appended to existing message                                         
                                             document.getElementById("promptProcessingIndicator")?.remove()
                                             decodedItem=decodedItem.replace("MESSAGE\ndata: ",""); //no trim end required , if added will remove \n coming in data also
                                             decodedValueMerged += decodedItem;                                                 
-                                            document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = decodedValueMerged;   
+                                            document.getElementById('message_'+this.currentMessageId).innerHTML = decodedValueMerged;   
+                                        }
+                                        else if(imageDataProcessing == true){
+                                            decodedValueMerged += decodedItem;
+                                            updateImageSrc(this.currentMessageId,decodedValueMerged);
                                         }              
                                     });                                                                                                                                                                                                                                                                          
                                 }
@@ -355,16 +367,28 @@ templ bodyScript() {
                         }
                     },
                     appendPromptAndImageToUserMessageTemplate(){                    
-                        document.getElementById('message_'+this.$store.data.currentMessageId).innerHTML = this.prompt;  
+                        document.getElementById('message_'+this.currentMessageId).innerHTML = this.prompt;  
                         this.prompt='';
                         if(this.base64!=""){// streamed output is based on image input so prepend Img
-                            prependFileDataToUserMessage(this.$store.data.currentMessageId,this.base64,this.fileName)
+                            prependFileDataToMessage(this.currentMessageId,this.base64,this.fileName)
                             this.clearFileInput();
                         } 
                     }                                  
                 }));                               
             });   
                     
+            function initAlpineStore(){
+                Alpine.store('data').currentSessionId=document.getElementById("chatSessionId").value;
+                Alpine.store('data').fullPageFetchProcessing=false;
+                Alpine.store('data').webSearch= document.getElementsByName("webSearch")[0].value=='true';
+                Alpine.store('data').imgGeneration=document.getElementsByName("imgGeneration")[0].value=='true';
+                if (Alpine.store('data').imgGeneration){
+                    Alpine.store('data').disableWebSearch=true;
+                }
+                if(document.getElementById('section').children.length>0){
+                    Alpine.store('data').disableImgGeneration=true;
+                }
+            }
             function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){                
                 const divEl=document.createElement("div");
                 document.getElementById(idToAppendHTML).appendChild(divEl);
@@ -376,19 +400,23 @@ templ bodyScript() {
                 const messageId=messageUI.substring(strtIdx+"message_".length,messageUI.indexOf('"',strtIdx));                
                 return messageId;
             }
-            function prependFileDataToUserMessage(messageId,base64,fileName){
-               const elToPrepend= document.getElementById("message_"+messageId).parentElement.parentElement;
+            function prependFileDataToMessage(messageId,base64,fileName){
+               const elToPrepend= document.getElementById("message_"+messageId).parentElement.parentElement.parentElement;
                if (fileName.toLowerCase().endsWith(".pdf")){
-                const pEl = document.createElement("p");
-                pEl.classList.add("font-semibold", "flex", "gap-2","truncate", "text-lime-700", "dark:text-lime-500");
-                pEl.textContent=fileName
-                elToPrepend.prepend(pEl);
+                    const pEl = document.createElement("p");
+                    pEl.classList.add("font-semibold", "flex", "gap-2","truncate", "text-lime-700", "dark:text-lime-500");
+                    pEl.textContent=fileName
+                    elToPrepend.prepend(pEl);
                } else{
-                const imgEl=document.createElement("img")
-                imgEl.classList.add("w-full", "h-full")
-                imgEl.src=base64   
-                elToPrepend.prepend(imgEl);              
+                    const imgEl=document.createElement("img")
+                    imgEl.classList.add("w-full", "h-full")
+                    imgEl.src=base64   
+                    elToPrepend.prepend(imgEl);              
                }
+            }
+            function updateImageSrc(messageId,base64){
+                const parent= document.getElementById("message_"+messageId).parentElement.parentElement.parentElement;
+                parent.children[0].src=base64
             }
             function upsertMenuUIWithMenuItem(menuItemUI){
                 const strtIdx=menuItemUI.indexOf("li_");
@@ -411,22 +439,52 @@ templ bodyScript() {
                 htmx.process(document.getElementById(elId));
             }           
         </script>
-		@setWebSearchScript(false, false)
+		@setWebSearchAndImgGenerationScript(false, false, false, false)
 	}
 }
 
-templ setWebSearchScript(allowWebSearch bool, isOob bool) {
+templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool, disableImgGeneration bool, isOob bool) {
 	switch  {
 		case isOob && allowWebSearch:
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=true
+                    Alpine.store('data').imgGeneration=false
+                    Alpine.store('data').disableImgGeneration=true
                 })()
             </script>
-		case isOob && !allowWebSearch:
+		case isOob && !allowWebSearch && imgGeneration && disableImgGeneration:
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
+                    Alpine.store('data').imgGeneration=true
+                    Alpine.store('data').disableWebSearch=true
+                    Alpine.store('data').disableImgGeneration=true
+                })()
+            </script>
+		case isOob && !allowWebSearch && imgGeneration && !disableImgGeneration:
+			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
+                (()=>{
+                    Alpine.store('data').webSearch=false
+                    Alpine.store('data').imgGeneration=true
+                    Alpine.store('data').disableWebSearch=true
+                    Alpine.store('data').disableImgGeneration=false
+                })()
+            </script>
+		case isOob && !allowWebSearch && !imgGeneration && disableImgGeneration:
+			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
+                (()=>{
+                    Alpine.store('data').webSearch=false
+                    Alpine.store('data').imgGeneration=false
+                    Alpine.store('data').disableImgGeneration=true
+                })()
+            </script>
+		case isOob && !allowWebSearch && !imgGeneration && !disableImgGeneration:
+			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
+                (()=>{
+                    Alpine.store('data').webSearch=false
+                    Alpine.store('data').imgGeneration=false
+                    Alpine.store('data').disableImgGeneration=false
                 })()
             </script>
 		case !isOob:

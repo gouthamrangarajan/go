@@ -22,6 +22,7 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 		return
 	}
 	allowWebSearch := false
+	imgGeneration := false
 
 	if chatSessionId > 0 {
 		ftedSessions := make([]models.ChatSession, 0, 1)
@@ -36,6 +37,7 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 			return
 		}
 		allowWebSearch = ftedSessions[0].AllowWebSearch
+		imgGeneration = ftedSessions[0].ImageGeneration
 		conversationsChannel := make(chan []models.ChatConversation)
 		defer close(conversationsChannel)
 		go GetChatConversations(userId, chatSessionId, conversationsChannel)
@@ -43,10 +45,10 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 	}
 	if request.Header.Get("HX-Request") == "true" {
 		time.Sleep(200 * time.Millisecond) // Simulate a delay for the sake of UX so that menu closes before the chat session is loaded
-		component := components.SectionAndChatSessionIdInput(chatSessionId, conversations, allowWebSearch, true)
+		component := components.SectionAndChatSessionIdInput(chatSessionId, conversations, allowWebSearch, imgGeneration, true)
 		component.Render(request.Context(), response)
 	} else {
-		component := components.Main(conversations, sessions, chatSessionId, allowWebSearch)
+		component := components.Main(conversations, sessions, chatSessionId, allowWebSearch, imgGeneration)
 		component.Render(request.Context(), response)
 	}
 }
