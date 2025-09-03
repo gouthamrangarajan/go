@@ -99,12 +99,12 @@ func setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool,
 				return templ_7745c5c3_Err
 			}
 		case isOob && !allowWebSearch && !imgGeneration && disableImgGeneration:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<script type=\"text/javascript\" id=\"webSearchSetScript\" hx-swap-oob=\"true\">\n                (()=>{\n                    Alpine.store('data').webSearch=false\n                    Alpine.store('data').imgGeneration=false\n                    Alpine.store('data').disableImgGeneration=true\n                })()\n            </script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<script type=\"text/javascript\" id=\"webSearchSetScript\" hx-swap-oob=\"true\">\n                (()=>{\n                    Alpine.store('data').webSearch=false\n                    Alpine.store('data').imgGeneration=false\n                    Alpine.store('data').disableWebSearch=false\n                    Alpine.store('data').disableImgGeneration=true\n                })()\n            </script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case isOob && !allowWebSearch && !imgGeneration && !disableImgGeneration:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<script type=\"text/javascript\" id=\"webSearchSetScript\" hx-swap-oob=\"true\">\n                (()=>{\n                    Alpine.store('data').webSearch=false\n                    Alpine.store('data').imgGeneration=false\n                    Alpine.store('data').disableImgGeneration=false\n                })()\n            </script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<script type=\"text/javascript\" id=\"webSearchSetScript\" hx-swap-oob=\"true\">\n                (()=>{\n                    Alpine.store('data').webSearch=false\n                    Alpine.store('data').imgGeneration=false\n                    Alpine.store('data').disableWebSearch=false\n                    Alpine.store('data').disableImgGeneration=false\n                })()\n            </script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

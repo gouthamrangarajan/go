@@ -476,6 +476,7 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
                 (()=>{
                     Alpine.store('data').webSearch=false
                     Alpine.store('data').imgGeneration=false
+                    Alpine.store('data').disableWebSearch=false
                     Alpine.store('data').disableImgGeneration=true
                 })()
             </script>
@@ -484,6 +485,7 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
                 (()=>{
                     Alpine.store('data').webSearch=false
                     Alpine.store('data').imgGeneration=false
+                    Alpine.store('data').disableWebSearch=false
                     Alpine.store('data').disableImgGeneration=false
                 })()
             </script>
