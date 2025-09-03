@@ -449,16 +449,17 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=true
+                    Alpine.store('data').disableWebSearch=false
                     Alpine.store('data').imgGeneration=false
-                    Alpine.store('data').disableImgGeneration=true
+                    Alpine.store('data').disableImgGeneration=true                    
                 })()
             </script>
 		case isOob && !allowWebSearch && imgGeneration && disableImgGeneration:
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
-                    Alpine.store('data').imgGeneration=true
                     Alpine.store('data').disableWebSearch=true
+                    Alpine.store('data').imgGeneration=true                    
                     Alpine.store('data').disableImgGeneration=true
                 })()
             </script>
@@ -466,8 +467,8 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
-                    Alpine.store('data').imgGeneration=true
                     Alpine.store('data').disableWebSearch=true
+                    Alpine.store('data').imgGeneration=true                    
                     Alpine.store('data').disableImgGeneration=false
                 })()
             </script>
@@ -475,8 +476,8 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
-                    Alpine.store('data').imgGeneration=false
                     Alpine.store('data').disableWebSearch=false
+                    Alpine.store('data').imgGeneration=false                    
                     Alpine.store('data').disableImgGeneration=true
                 })()
             </script>
@@ -484,8 +485,8 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
-                    Alpine.store('data').imgGeneration=false
                     Alpine.store('data').disableWebSearch=false
+                    Alpine.store('data').imgGeneration=false                    
                     Alpine.store('data').disableImgGeneration=false
                 })()
             </script>
