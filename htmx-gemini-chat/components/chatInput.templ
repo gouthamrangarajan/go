@@ -4,10 +4,26 @@ import "strconv"
 
 templ chatInput(currentChatSessionId int, defaultWebSearch bool, defaultImageGeneration bool) {
 	<div
-		class="absolute bottom-0 shrink-0 rounded w-11/12 p-1 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-center inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 "
+		class="absolute bottom-0 shrink-0 rounded w-11/12 p-1 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-end inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 "
 		style="view-transition-name:prompt-form"
 		x-data={ "chatInput" }
 	>
+		<template x-if="$store.data.webSearch || $store.data.imgGeneration">
+			<div class="hidden flex-col gap-1 items-center absolute top-0 right-0 lg:flex " style="view-transition-name:prompt-tools">
+				<template x-if="$store.data.webSearch">
+					<p
+						class="text-xs font-semibold py-1 px-3 rounded-full shadow bg-[#151b23] dark:bg-[#f6f8fa] text-lime-500 dark:text-lime-700"
+						style="view-transition-name:web-srch-enabled-text"
+					>Web Search Enabled</p>
+				</template>
+				<template x-if="$store.data.imgGeneration">
+					<p
+						class="text-xs font-semibold py-1 px-3 rounded-full shadow bg-[#151b23] dark:bg-[#f6f8fa] text-lime-500 dark:text-lime-700"
+						style="view-transition-name:img-gen-enabled-text"
+					>Image Generation Enabled</p>
+				</template>
+			</div>
+		</template>
 		@ChatSessionIdInput(currentChatSessionId, false)
 		<textarea
 			class="appreance-none outline-none w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4"
@@ -120,7 +136,7 @@ templ searchWebButton(defaultWebSearch bool) {
 		type="button"
 		class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
 		x-bind:class="$store.data.webSearch?'text-slate-900 dark:text-slate-100':'text-slate-400 dark:text-slate-500'"
-		x-on:click="$store.data.webSearch=!$store.data.webSearch"
+		x-on:click="document.startViewTransition?document.startViewTransition(()=>{$store.data.webSearch=!$store.data.webSearch;}):$store.data.webSearch=!$store.data.webSearch"
 		x-bind:disabled="$store.data.promptProcessing || $store.data.disableWebSearch"
 		aria-label="Search Web"
 		title="Search Web"
@@ -143,7 +159,7 @@ templ imageGenerationButton(defaultImgGeneration bool) {
 		type="button"
 		class="appearance-none outline-none p-1 mr-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
 		x-bind:class="$store.data.imgGeneration?'text-slate-900 dark:text-slate-100':'text-slate-400 dark:text-slate-500'"
-		x-on:click="$store.data.imgGeneration=!$store.data.imgGeneration"
+		x-on:click="document.startViewTransition?document.startViewTransition(()=>{$store.data.imgGeneration=!$store.data.imgGeneration;}):$store.data.imgGeneration=!$store.data.imgGeneration"
 		x-bind:disabled="$store.data.promptProcessing || $store.data.disableImgGeneration"
 		aria-label="Generate Image"
 		title="Generate Image"

@@ -34,12 +34,17 @@
     --color-gray-900: oklch(21% 0.034 264.665);
     --color-white: #fff;
     --spacing: 0.25rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
+    --radius-xl: 0.75rem;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
@@ -215,6 +220,9 @@
   }
   .top-3 {
     top: calc(var(--spacing) * 3);
+  }
+  .right-0 {
+    right: calc(var(--spacing) * 0);
   }
   .right-12 {
     right: calc(var(--spacing) * 12);
@@ -396,6 +404,9 @@
   .items-center {
     align-items: center;
   }
+  .items-end {
+    align-items: flex-end;
+  }
   .items-start {
     align-items: flex-start;
   }
@@ -452,6 +463,9 @@
   .border-slate-600 {
     border-color: var(--color-slate-600);
   }
+  .bg-\[\#151b23\] {
+    background-color: #151b23;
+  }
   .bg-\[\#f6f8fa\] {
     background-color: #f6f8fa;
   }
@@ -505,6 +519,10 @@
     font-size: var(--text-xl);
     line-height: var(--tw-leading, var(--text-xl--line-height));
   }
+  .text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
@@ -518,6 +536,9 @@
   }
   .text-cyan-700 {
     color: var(--color-cyan-700);
+  }
+  .text-lime-500 {
+    color: var(--color-lime-500);
   }
   .text-lime-700 {
     color: var(--color-lime-700);
@@ -769,6 +790,11 @@
       margin-top: calc(var(--spacing) * 10);
     }
   }
+  .lg\:flex {
+    @media (width >= 64rem) {
+      display: flex;
+    }
+  }
   .lg\:w-1\/3 {
     @media (width >= 64rem) {
       width: calc(1/3 * 100%);
@@ -818,6 +844,11 @@
   .dark\:bg-\[\#151b23\] {
     @media (prefers-color-scheme: dark) {
       background-color: #151b23;
+    }
+  }
+  .dark\:bg-\[\#f6f8fa\] {
+    @media (prefers-color-scheme: dark) {
+      background-color: #f6f8fa;
     }
   }
   .dark\:bg-gray-800 {
@@ -871,6 +902,11 @@
   .dark\:text-lime-500 {
     @media (prefers-color-scheme: dark) {
       color: var(--color-lime-500);
+    }
+  }
+  .dark\:text-lime-700 {
+    @media (prefers-color-scheme: dark) {
+      color: var(--color-lime-700);
     }
   }
   .dark\:text-red-600 {
