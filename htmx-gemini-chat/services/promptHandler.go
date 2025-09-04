@@ -302,7 +302,8 @@ func callGeminiWithStreaming(request models.GeminiRequest, channel chan<- string
 		}
 		txt += txtInLoop
 		err = json.Unmarshal([]byte(txt), &responseParsed)
-		if err == nil {
+		if err == nil && len(responseParsed.Candidates) > 0 &&
+			len(responseParsed.Candidates[0].Content.Parts) > 0 {
 			channel <- *responseParsed.Candidates[0].Content.Parts[0].Text
 			txt = ""
 		}
