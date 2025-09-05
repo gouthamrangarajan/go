@@ -19,15 +19,16 @@ import (
 // Step 1:  Validate data, e.g empty prompt, invalid chatSessionId, invalid image/pdf filedata etc.
 // Step 2:  Insert new chat session or get all chat conversations
 // Step 3:  Convert chat conversation + prompt + image/pdf to GeminiRequest & call Gemini API / Gemini Image Generation API
-// Step 4:  Insert user message in chat conversation & send to client
-// Step 5:  If new chat session inserted, send new session UI. Also call embedding to update title vector
-// Step 6:  If first message, update chat session title with prompt & send to client.Also call embedding to update title vector
-// step 7:  Call Gemini session web search flag update & call Image Generation Flag update
-// Step 8:  Insert Gemini message in chat conversation
-// Step 9:  Send Gemini messages to client
-// Step 10: Consolidate & Update Gemini message in chat conversation
-// Step 11: If embedding called, wait for it to complete
-// step 12: Wait for gemini web search flag update & Image Generation flag update to finish
+// Step 4:  Image generation takes precedence and set web search flag to false for image generation
+// Step 5:  Insert user message in chat conversation & send to client
+// Step 6:  If new chat session inserted, send new session UI. Also call embedding to update title vector
+// Step 7:  If first message, update chat session title with prompt & send to client.Also call embedding to update title vector
+// step 8:  Call Gemini session web search flag update & call Image Generation Flag update
+// Step 9:  Insert Gemini message in chat conversation
+// Step 10: Send Gemini messages to client
+// Step 11: Consolidate & Update Gemini message in chat conversation
+// Step 12: If embedding called, wait for it to complete
+// step 13: Wait for gemini web search flag update & Image Generation flag update to finish
 
 func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	ctx := request.Context()
@@ -102,6 +103,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	if !generateImg {
 		go callGeminiWithStreaming(geminiRequest, geminiAPIChannel)
 	} else {
+		allowWebSearch = false
 		geminiImageRequest := models.GeminiImageGenerationRequest{
 			Contents: geminiRequest.Contents,
 		}

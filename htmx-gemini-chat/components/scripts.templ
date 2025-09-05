@@ -265,7 +265,7 @@ templ bodyScript() {
                             fm.append("fileName",this.fileName);
                             fm.append("chatSessionId",this.$store.data.currentSessionId);   
                             fm.append("webSearch",this.$store.data.webSearch);    
-                            fm.append("imgGeneration",this.$store.data.imgGeneration)                                                 
+                            fm.append("imgGeneration",this.$store.data.imgGeneration);                                                 
                             try{
                                 let decodedValueMerged ="";                                
                                 const resp= await fetch('/send',{
@@ -293,6 +293,7 @@ templ bodyScript() {
                                         decodedValueMerged="";
                                         break;
                                     }
+                                    this.$store.data.disableImgGeneration=true;
                                     const decodedValue = textDecoder.decode(value);     
                                     decodedValue.split('event: ').forEach((decodedItem)=>{
                                         if(decodedItem.trim()==''){
