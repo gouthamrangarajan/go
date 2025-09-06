@@ -640,9 +640,9 @@
     --tw-ease: var(--ease-elastic-in-5);
     transition-timing-function: var(--ease-elastic-in-5);
   }
-  .ease-\(--ease-in-3\) {
-    --tw-ease: var(--ease-in-3);
-    transition-timing-function: var(--ease-in-3);
+  .ease-\(--ease-elastic-out-5\) {
+    --tw-ease: var(--ease-elastic-out-5);
+    transition-timing-function: var(--ease-elastic-out-5);
   }
   .outline-none {
     --tw-outline-style: none;
