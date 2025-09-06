@@ -217,7 +217,7 @@ func toolsDropDown(defaultWebSearch bool, defaultImgGeneration bool) templ.Compo
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"relative\" x-data=\"{showToolsDropDown:false}\" x-on:click.outside=\"document.startViewTransition?document.startViewTransition(()=>{showToolsDropDown=false;}):showToolsDropDown=false;\"><button aria-label=\"Tools\" x-on:click=\"document.startViewTransition?document.startViewTransition(()=>{showToolsDropDown=!showToolsDropDown;}):showToolsDropDown=!showToolsDropDown;\" class=\"appearance-none outline-none p-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg> <span class=\"absolute top-0 right-0 h-2 w-2 bg-lime-600 dark:bg-lime-500 rounded-full\" x-show=\"$store.data.webSearch||$store.data.imgGeneration\"></span></button><ul class=\"animate-scale p-1 absolute -top-18 right-0 shadow-2xl rounded w-46 flex flex-col bg-[#f6f8fa] dark:bg-[#151b23] border border-cyan-700/50 dark:border-cyan-400/50\" x-show=\"showToolsDropDown\" style=\"view-transition-name:prompt-tools-dropdown\"><li class=\"w-full\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"relative\" x-data=\"{showToolsDropDown:false}\" x-on:click.outside=\"document.startViewTransition?document.startViewTransition(()=>{showToolsDropDown=false;}):showToolsDropDown=false;\"><button aria-label=\"Tools\" x-on:click=\"showToolsDropDown=!showToolsDropDown;\" class=\"appearance-none outline-none p-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z\" clip-rule=\"evenodd\"></path></svg> <span class=\"absolute top-0 right-0 h-2 w-2 bg-lime-600 dark:bg-lime-500 rounded-full\" x-show=\"$store.data.webSearch||$store.data.imgGeneration\"></span></button><ul class=\"animate-scale p-1 absolute -top-18 right-0 shadow-2xl rounded w-46 flex flex-col bg-[#f6f8fa] dark:bg-[#151b23] border border-cyan-700/50 dark:border-cyan-400/50\" x-show=\"showToolsDropDown\" style=\"view-transition-name:prompt-tools-dropdown\" x-transition:leave=\"transition duration-200 ease-(--ease-elastic-out-5)\" x-transition:leave-end=\"opacity-0\"><li class=\"w-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -269,7 +269,7 @@ func searchWebButton(defaultWebSearch bool) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(defaultWebSearch)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 154, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 156, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -311,7 +311,7 @@ func imageGenerationButton(defaultImgGeneration bool) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(defaultImgGeneration)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 186, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 188, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {

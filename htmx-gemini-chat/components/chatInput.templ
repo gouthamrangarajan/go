@@ -120,7 +120,7 @@ templ toolsDropDown(defaultWebSearch bool, defaultImgGeneration bool) {
 	>
 		<button
 			aria-label="Tools"
-			x-on:click="document.startViewTransition?document.startViewTransition(()=>{showToolsDropDown=!showToolsDropDown;}):showToolsDropDown=!showToolsDropDown;"
+			x-on:click="showToolsDropDown=!showToolsDropDown;"
 			class="appearance-none outline-none p-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
@@ -135,6 +135,8 @@ templ toolsDropDown(defaultWebSearch bool, defaultImgGeneration bool) {
 			class="animate-scale p-1 absolute -top-18 right-0 shadow-2xl rounded w-46 flex flex-col bg-[#f6f8fa] dark:bg-[#151b23] border border-cyan-700/50 dark:border-cyan-400/50"
 			x-show="showToolsDropDown"
 			style="view-transition-name:prompt-tools-dropdown"
+			x-transition:leave="transition duration-200 ease-(--ease-elastic-out-5)"
+			x-transition:leave-end="opacity-0"
 		>
 			<li class="w-full">
 				@searchWebButton(defaultWebSearch)
