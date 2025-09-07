@@ -49,7 +49,7 @@ func tickerDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenera
 				// if apiData.ErrorMessage != "" && strings.Contains(strings.ToLower(apiData.ErrorMessage), "invalid api call") {
 				// 	sse.PatchElementTempl(shared.CardTickerError(ticker, "Error! Invalid Ticker"))
 				// } else {
-				sse.PatchElementTempl(shared.CardTickerError(ticker, "Error! Try again later"))
+				sse.PatchElementTempl(shared.CardTickerError(models.TickerError{Ticker: ticker, ErrorMessage: "Error! Try again later"}))
 				// }
 				return
 			}
@@ -265,8 +265,8 @@ func addPopularTickerHandler(responseWriter http.ResponseWriter, request *http.R
 	}
 	sse.PatchElementTempl(components.AvailablePopularsCount(len(populars)))
 	sse.PatchElementTempl(shared.Card(models.TickerCard{Ticker: tickerToBeAdded, Name: ""}), datastar.WithSelector("#populars"), datastar.WithModeAppend())
-	sse.PatchElementTempl(shared.TickerSequenceChanger(len(populars)-1, tickerToBeAdded, len(populars)))
-	sse.PatchElementTempl(shared.TickerSequenceChanger(len(populars)-2, populars[len(populars)-2], len(populars)))
+	sse.PatchElementTempl(shared.TickerSequenceChanger(models.TickerSequence{Ticker: tickerToBeAdded, TotalNoOfTickers: len(populars), Index: len(populars) - 1}))
+	sse.PatchElementTempl(shared.TickerSequenceChanger(models.TickerSequence{Ticker: populars[len(populars)-2], TotalNoOfTickers: len(populars), Index: len(populars) - 2}))
 	<-saveChannel
 	<-popularsCacheSaveChannel
 }
@@ -308,7 +308,7 @@ func removePopularTickerHandler(responseWriter http.ResponseWriter, request *htt
 	sse.RemoveElement("#card_" + shared.ReplaceSpecialCharsInTicker(tickerToBeRemoved))
 
 	for idx, tickerInPopulars := range populars {
-		sse.PatchElementTempl(shared.TickerSequenceChanger(idx, tickerInPopulars, len(populars)))
+		sse.PatchElementTempl(shared.TickerSequenceChanger(models.TickerSequence{Index: idx, Ticker: tickerInPopulars, TotalNoOfTickers: len(populars)}))
 	}
 
 	<-saveChannel

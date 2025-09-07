@@ -1,6 +1,9 @@
 package components
 
-import "datastar-stock/components/shared"
+import (
+	"datastar-stock/components/shared"
+	"datastar-stock/models"
+)
 
 templ LoginUI(redirect string) {
 	<div class="w-full h-full flex items-center justify-center">
@@ -50,7 +53,7 @@ templ LoginInSubmitBtn(inactive bool) {
 		>
 			<span data-show="!$signingIn">Submit</span>
 			<span data-show="$signingIn">Submitting</span>
-			@shared.Spinner("$signingIn", "border-white")
+			@shared.Spinner(models.Spinner{DataShowSignal: "$signingIn", Class: "border-white"})
 		</button>
 	}
 }

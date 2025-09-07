@@ -39,7 +39,7 @@ func PopularsConfigure() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Spinner("$closingConfigurePopulars", "border-red-600").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$closingConfigurePopulars", Class: "border-red-600"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -199,7 +199,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.Spinner("$addingPopulars_"+shared.ReplaceSpecialCharsInTicker(item.Ticker), "border-secondary").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$addingPopulars_" + shared.ReplaceSpecialCharsInTicker(item.Ticker), Class: "border-secondary"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -303,7 +303,7 @@ func PopularsConfigureCard(item models.TickerCard, section string) templ.Compone
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.Spinner("$removingPopulars_"+shared.ReplaceSpecialCharsInTicker(item.Ticker), "border-red-600").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$removingPopulars_" + shared.ReplaceSpecialCharsInTicker(item.Ticker), Class: "border-red-600"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

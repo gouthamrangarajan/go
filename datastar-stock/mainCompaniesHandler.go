@@ -107,7 +107,22 @@ func filterCompaniesBySearchTerm(companies []models.CompanyFromDb, searchTerm st
 }
 
 func companiesPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	component := components.Companies()
+	limitStr := os.Getenv("COMPANIES_LIMIT")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		limit = 100 // default limit
+	}
+	endIndex := 0 + limit
+
+	channel := make(chan string)
+	companies, saveCalled := getAllCompanies(request.Context(), channel)
+	if saveCalled {
+		<-channel
+	}
+	if endIndex > len(companies) {
+		endIndex = len(companies)
+	}
+	component := components.Companies(len(companies), companies[0:endIndex])
 	component.Render(request.Context(), responseWriter)
 }
 

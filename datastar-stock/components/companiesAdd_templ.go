@@ -8,7 +8,10 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "datastar-stock/components/shared"
+import (
+	"datastar-stock/components/shared"
+	"datastar-stock/models"
+)
 
 func AddCompany() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -35,7 +38,7 @@ func AddCompany() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Spinner("$closingAddCompany", "border-red-600").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$closingAddCompany", Class: "border-red-600"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -51,7 +54,7 @@ func AddCompany() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Spinner("$addingCompany", "border-white").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$addingCompany", Class: "border-white"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

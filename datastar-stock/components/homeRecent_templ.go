@@ -56,7 +56,7 @@ func Recent(items []models.TickerCard) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.Spinner("$loadingAddRecent", "border-white").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$loadingAddRecent", Class: "border-white"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -72,7 +72,7 @@ func Recent(items []models.TickerCard) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.Spinner("$fetchingRecent", "border-slate-600 absolute top-2.5 right-1").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$fetchingRecent", Class: "border-slate-600 absolute top-2.5 right-1"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -190,7 +190,7 @@ func RecentError() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.Spinner("$loadingAddRecent", "border-white").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$loadingAddRecent", Class: "border-white"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -206,7 +206,7 @@ func RecentError() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.Spinner("$fetchingRecent", "border-slate-600 absolute top-2.5 right-1").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$fetchingRecent", Class: "border-slate-600 absolute top-2.5 right-1"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -36,7 +36,7 @@ func AddRecent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.Spinner("$closingAddRecent", "border-red-600").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.Spinner(models.Spinner{DataShowSignal: "$closingAddRecent", Class: "border-red-600"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -44,7 +44,7 @@ func AddRecent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.SearchCompanyInput("home", "mt-6").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.SearchCompanyInput(models.CompanyTable{Page: "home", Class: "mt-6"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -52,7 +52,7 @@ func AddRecent() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.CompaniesTable([]models.CompanyFromDb{}, "home", "").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = shared.CompaniesTable([]models.CompanyFromDb{}, models.CompanyTable{Page: "home", Class: ""}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -5,11 +5,11 @@ import "datastar-stock/models"
 
 templ Cards(items []models.TickerCard, page string) {
 	for idx, item := range items {
-		@cardNoDataLoad(idx, item, page, len(items))
+		@cardNoDataLoad(item, models.UICard{Page: page, Index: idx, TotalNoOfItems: len(items)})
 	}
 }
 
-templ cardNoDataLoad(index int, item models.TickerCard, page string, totalNoOfItems int) {
+templ cardNoDataLoad(item models.TickerCard, model models.UICard) {
 	<div
 		class={ " card shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
 		data-on-resize__window__throttle.500ms.trail={ "ResizeChart('chart_" + ReplaceSpecialCharsInTicker(item.Ticker) + "')" }
@@ -17,8 +17,8 @@ templ cardNoDataLoad(index int, item models.TickerCard, page string, totalNoOfIt
 		style={ "view-transition-name:card-" + ReplaceSpecialCharsInTicker(item.Ticker) }
 	>
 		<div class="flex gap-2 items-center w-full">
-			if page == "populars" {
-				@TickerSequenceChanger(index, item.Ticker, totalNoOfItems)
+			if model.Page == "populars" {
+				@TickerSequenceChanger(models.TickerSequence{Index: model.Index, Ticker: item.Ticker, TotalNoOfTickers: model.TotalNoOfItems})
 			}
 			<div class="flex flex-col gap-1">
 				<div class="flex gap-2 items-center">
@@ -66,19 +66,19 @@ templ Card(item models.TickerCard) {
 	</div>
 }
 
-templ TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
+templ TickerSequenceChanger(model models.TickerSequence) {
 	<form
 		class="flex flex-col items-center"
-		data-indicator={ "priority_change_" + ReplaceSpecialCharsInTicker(ticker) }
+		data-indicator={ "priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker) }
 		data-on-submit={ "evt.preventDefault();@post('/home/populars/priority/change', {contentType:'form'})" }
-		id={ "cardSequenceChangerForm_" + ReplaceSpecialCharsInTicker(ticker) }
+		id={ "cardSequenceChangerForm_" + ReplaceSpecialCharsInTicker(model.Ticker) }
 	>
 		<button
 			type="submit"
 			name="incrementDecrementIndicator"
 			value="increase"
 			class="appearance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-50"
-			data-attr-disabled={ strconv.Itoa(index) + "==0 || $priority_change_" + ReplaceSpecialCharsInTicker(ticker) }
+			data-attr-disabled={ strconv.Itoa(model.Index) + "==0 || $priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker) }
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -90,16 +90,16 @@ templ TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) {
 			</svg>
 		</button>
 		<p class=" text-slate-700 flex gap-1 items-center">
-			<span data-show={ "!$priority_change_" + ReplaceSpecialCharsInTicker(ticker) }>#{ strconv.Itoa(index+1) }</span>
-			@Spinner("$priority_change_"+ReplaceSpecialCharsInTicker(ticker), " border-secondary")
+			<span data-show={ "!$priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker) }>#{ strconv.Itoa(model.Index+1) }</span>
+			@Spinner(models.Spinner{DataShowSignal: "$priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker), Class: " border-secondary"})
 		</p>
-		<input type="hidden" name="ticker" value={ ticker }/>
+		<input type="hidden" name="ticker" value={ model.Ticker }/>
 		<button
 			type="submit"
 			name="incrementDecrementIndicator"
 			value="decrease"
 			class="appearance-none outline-none flex cursor-pointer rounded-full transition duration-300 text-secondary focus:ring-1 focus:ring-secondary disabled:cursor-not-allowed disabled:opacity-50"
-			data-attr-disabled={ strconv.Itoa(index+1) + "==" + strconv.Itoa(totalNoOfTickers) + " || $priority_change_" + ReplaceSpecialCharsInTicker(ticker) }
+			data-attr-disabled={ strconv.Itoa(model.Index+1) + "==" + strconv.Itoa(model.TotalNoOfTickers) + " || $priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker) }
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -128,20 +128,20 @@ templ TickerIsNotInPopularUI(ticker string) {
 	<div id={ "tickerPopular_" + ReplaceSpecialCharsInTicker(ticker) }></div>
 }
 
-templ CardTickerError(ticker string, errorMessage string) {
+templ CardTickerError(model models.TickerError) {
 	<div
 		class={ " card shadow bg-white flex flex-col py-2 px-4 rounded lg:py-4 lg:px-6 " }
-		id={ "card_" + ReplaceSpecialCharsInTicker(ticker) }
-		style={ "view-transition-name:card_" + ReplaceSpecialCharsInTicker(ticker) }
+		id={ "card_" + ReplaceSpecialCharsInTicker(model.Ticker) }
+		style={ "view-transition-name:card_" + ReplaceSpecialCharsInTicker(model.Ticker) }
 	>
 		<p class="w-full text-menu font-semibold">
-			{ ticker }
+			{ model.Ticker }
 		</p>
 		<div class="flex flex-col gap-1 items-center justify-center text-red-500 h-96">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 				<path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd"></path>
 			</svg>
-			<p>{ errorMessage }</p>
+			<p>{ model.ErrorMessage }</p>
 		</div>
 	</div>
 }

@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-templ Companies() {
+templ Companies(companiesCount int, firstPageCompanyData []models.CompanyFromDb) {
 	@layout() {
 		@header("companies")
 		<div class="w-11/12 mx-auto flex items-center justify-between gap-2 py-2">
@@ -19,7 +19,7 @@ templ Companies() {
 						<path fill-rule="evenodd" d="M4.5 2.25a.75.75 0 0 0 0 1.5v16.5h-.75a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5h-.75V3.75a.75.75 0 0 0 0-1.5h-15ZM9 6a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5H9Zm-.75 3.75A.75.75 0 0 1 9 9h1.5a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM9 12a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5H9Zm3.75-5.25A.75.75 0 0 1 13.5 6H15a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM13.5 9a.75.75 0 0 0 0 1.5H15A.75.75 0 0 0 15 9h-1.5Zm-.75 3.75a.75.75 0 0 1 .75-.75H15a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75ZM9 19.5v-2.25a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 9 19.5Z" clip-rule="evenodd"></path>
 					</svg>
 				</div>
-				@companiesCountLoader()
+				@CompaniesCount(companiesCount)
 			</div>
 			<button
 				class="appearance-none outline-none cursor-pointer p-2 flex items-center gap-2 rounded-full bg-secondary text-white transition duration-300 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-white md:py-2 md:px-4 md:rounded-lg  disabled:cursor-not-allowed disabled:opacity-80"
@@ -37,7 +37,7 @@ templ Companies() {
 				>
 					<path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
 				</svg>
-				@shared.Spinner("$loadingAddCompany", "border-white")
+				@shared.Spinner(models.Spinner{DataShowSignal: "$loadingAddCompany", Class: "border-white"})
 				<span class="hidden md:inline">Add Company</span>
 			</button>
 		</div>
@@ -46,21 +46,11 @@ templ Companies() {
 			style="view-transition-name:companies-container"
 			id="companiesContainer"
 		>
-			@shared.SearchCompanyInput("companies", "")
-			@shared.CompaniesTable(make([]models.CompanyFromDb, 0), "companies", "")
-			@shared.LoadMore("@get('/companies/all/0')")
+			@shared.SearchCompanyInput(models.CompanyTable{Page: "companies", Class: ""})
+			@shared.CompaniesTable(firstPageCompanyData, models.CompanyTable{Page: "companies", Class: ""})
+			@shared.LoadMore("@get('/companies/all/1')")
 		</div>
 	}
-}
-
-templ companiesCountLoader() {
-	<p
-		id="companiesCount"
-		style="view-transition-name:companies-count"
-		class="text-xl font-semibold text-menu flex"
-	>
-		@shared.Spinner("", "border-2 border-menu w-7 h-7")
-	</p>
 }
 
 templ CompaniesCount(count int) {

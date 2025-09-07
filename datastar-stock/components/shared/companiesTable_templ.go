@@ -19,7 +19,7 @@ func ReplaceSpecialCharsInTicker(ticker string) string {
 	return replacer.Replace(ticker)
 }
 
-func SearchCompanyInput(page string, class string) templ.Component {
+func SearchCompanyInput(model models.CompanyTable) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -40,7 +40,7 @@ func SearchCompanyInput(page string, class string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{"w-full py-2 px-4 flex gap-1 items-center rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30  focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-80 ", class}
+		var templ_7745c5c3_Var2 = []any{"w-full py-2 px-4 flex gap-1 items-center rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30  focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-80 ", model.Class}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -63,9 +63,9 @@ func SearchCompanyInput(page string, class string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(page)
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(model.Page)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 27, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/companiesTable.templ`, Line: 27, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -75,7 +75,7 @@ func SearchCompanyInput(page string, class string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Spinner("$searchingCompany", "border-slate-600").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Spinner(models.Spinner{DataShowSignal: "$searchingCompany", Class: "border-slate-600"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -87,7 +87,7 @@ func SearchCompanyInput(page string, class string) templ.Component {
 	})
 }
 
-func CompaniesTable(companies []models.CompanyFromDb, page string, class string) templ.Component {
+func CompaniesTable(companies []models.CompanyFromDb, model models.CompanyTable) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -108,7 +108,7 @@ func CompaniesTable(companies []models.CompanyFromDb, page string, class string)
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var6 = []any{"w-full table-fixed text-left " + class}
+		var templ_7745c5c3_Var6 = []any{"w-full table-fixed text-left " + model.Class}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -130,7 +130,7 @@ func CompaniesTable(companies []models.CompanyFromDb, page string, class string)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if page == "home" {
+		if model.Page == "home" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<th class=\"py-1 px-3 w-1/4 text-menu md:px-4 md:py-2 \">Ticker</th><th class=\"py-1 px-3 w-1/2 text-menu md:px-4 md:py-2\">Name</th><th class=\"py-1 px-3 w-1/4 md:px-4 md:py-2 \"></th>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -146,12 +146,12 @@ func CompaniesTable(companies []models.CompanyFromDb, page string, class string)
 			return templ_7745c5c3_Err
 		}
 		if len(companies) == 0 {
-			templ_7745c5c3_Err = CompaniesTbodyHint(page).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CompaniesTbodyHint(model.Page).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = CompaniesTbody(companies, page).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CompaniesTbody(companies, model.Page).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -375,7 +375,7 @@ func CompaniesTr(companies []models.CompanyFromDb, page string) templ.Component 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = Spinner("$adding_"+ReplaceSpecialCharsInTicker(company.Ticker), "border-white").Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = Spinner(models.Spinner{DataShowSignal: "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker), Class: "border-white"}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

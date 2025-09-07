@@ -11,9 +11,9 @@ func ReplaceSpecialCharsInTicker(ticker string) string {
 	return replacer.Replace(ticker)
 }
 
-templ SearchCompanyInput(page string, class string) {
+templ SearchCompanyInput(model models.CompanyTable) {
 	<form
-		class={ "w-full py-2 px-4 flex gap-1 items-center rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30  focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-80 ",class }
+		class={ "w-full py-2 px-4 flex gap-1 items-center rounded transition-all duration-300 border border-gray-600 inset-shadow-sm inset-shadow-indigo-500/30  focus-within:ring-2 focus-within:ring-gray-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-80 ",model.Class }
 		id="companySearchForm"
 	>
 		<input
@@ -24,16 +24,16 @@ templ SearchCompanyInput(page string, class string) {
 			data-indicator-searching-company
 			data-on-input__debounce.300ms="@post('/companies/search', {contentType:'form'})"
 		/>
-		<input type="hidden" name="page" value={ page }/>
-		@Spinner("$searchingCompany", "border-slate-600")
+		<input type="hidden" name="page" value={ model.Page }/>
+		@Spinner(models.Spinner{DataShowSignal: "$searchingCompany", Class: "border-slate-600"})
 	</form>
 }
 
-templ CompaniesTable(companies []models.CompanyFromDb, page string, class string) {
-	<table class={ "w-full table-fixed text-left " + class }>
+templ CompaniesTable(companies []models.CompanyFromDb, model models.CompanyTable) {
+	<table class={ "w-full table-fixed text-left " + model.Class }>
 		<thead>
 			<tr>
-				if page == "home" {
+				if model.Page == "home" {
 					<th class="py-1 px-3 w-1/4 text-menu md:px-4 md:py-2 ">Ticker</th>
 					<th class="py-1 px-3 w-1/2 text-menu md:px-4 md:py-2">Name</th>
 					<th class="py-1 px-3 w-1/4 md:px-4 md:py-2 "></th>
@@ -44,9 +44,9 @@ templ CompaniesTable(companies []models.CompanyFromDb, page string, class string
 			</tr>
 		</thead>
 		if len(companies) == 0 {
-			@CompaniesTbodyHint(page)
+			@CompaniesTbodyHint(model.Page)
 		} else {
-			@CompaniesTbody(companies, page)
+			@CompaniesTbody(companies, model.Page)
 		}
 	</table>
 }
@@ -87,7 +87,7 @@ templ CompaniesTr(companies []models.CompanyFromDb, page string) {
 									<path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z"></path>
 								</svg>
 							</span>
-							@Spinner("$adding_"+ReplaceSpecialCharsInTicker(company.Ticker), "border-white")
+							@Spinner(models.Spinner{DataShowSignal: "$adding_" + ReplaceSpecialCharsInTicker(company.Ticker), Class: "border-white"})
 						</button>
 					</form>
 				</td>

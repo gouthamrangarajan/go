@@ -33,7 +33,7 @@ func Cards(items []models.TickerCard, page string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		for idx, item := range items {
-			templ_7745c5c3_Err = cardNoDataLoad(idx, item, page, len(items)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = cardNoDataLoad(item, models.UICard{Page: page, Index: idx, TotalNoOfItems: len(items)}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -42,7 +42,7 @@ func Cards(items []models.TickerCard, page string) templ.Component {
 	})
 }
 
-func cardNoDataLoad(index int, item models.TickerCard, page string, totalNoOfItems int) templ.Component {
+func cardNoDataLoad(item models.TickerCard, model models.UICard) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -124,8 +124,8 @@ func cardNoDataLoad(index int, item models.TickerCard, page string, totalNoOfIte
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if page == "populars" {
-			templ_7745c5c3_Err = TickerSequenceChanger(index, item.Ticker, totalNoOfItems).Render(ctx, templ_7745c5c3_Buffer)
+		if model.Page == "populars" {
+			templ_7745c5c3_Err = TickerSequenceChanger(models.TickerSequence{Index: model.Index, Ticker: item.Ticker, TotalNoOfTickers: model.TotalNoOfItems}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -364,7 +364,7 @@ func Card(item models.TickerCard) templ.Component {
 	})
 }
 
-func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ.Component {
+func TickerSequenceChanger(model models.TickerSequence) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -390,9 +390,9 @@ func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var23 string
-		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs("priority_change_" + ReplaceSpecialCharsInTicker(ticker))
+		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs("priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 72, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 72, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -416,9 +416,9 @@ func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var25 string
-		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs("cardSequenceChangerForm_" + ReplaceSpecialCharsInTicker(ticker))
+		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs("cardSequenceChangerForm_" + ReplaceSpecialCharsInTicker(model.Ticker))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 74, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 74, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -429,9 +429,9 @@ func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var26 string
-		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(index) + "==0 || $priority_change_" + ReplaceSpecialCharsInTicker(ticker))
+		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(model.Index) + "==0 || $priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 81, Col: 110}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 81, Col: 122}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -442,9 +442,9 @@ func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 string
-		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs("!$priority_change_" + ReplaceSpecialCharsInTicker(ticker))
+		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs("!$priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 93, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 93, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -455,9 +455,9 @@ func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var28 string
-		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(index + 1))
+		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(model.Index + 1))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 93, Col: 106}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 93, Col: 118}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -467,7 +467,7 @@ func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Spinner("$priority_change_"+ReplaceSpecialCharsInTicker(ticker), " border-secondary").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Spinner(models.Spinner{DataShowSignal: "$priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker), Class: " border-secondary"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -476,9 +476,9 @@ func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var29 string
-		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(ticker)
+		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(model.Ticker)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 96, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 96, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -489,9 +489,9 @@ func TickerSequenceChanger(index int, ticker string, totalNoOfTickers int) templ
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var30 string
-		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(index+1) + "==" + strconv.Itoa(totalNoOfTickers) + " || $priority_change_" + ReplaceSpecialCharsInTicker(ticker))
+		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(model.Index+1) + "==" + strconv.Itoa(model.TotalNoOfTickers) + " || $priority_change_" + ReplaceSpecialCharsInTicker(model.Ticker))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 102, Col: 149}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 102, Col: 167}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -589,7 +589,7 @@ func TickerIsNotInPopularUI(ticker string) templ.Component {
 	})
 }
 
-func CardTickerError(ticker string, errorMessage string) templ.Component {
+func CardTickerError(model models.TickerError) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -633,9 +633,9 @@ func CardTickerError(ticker string, errorMessage string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var38 string
-		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs("card_" + ReplaceSpecialCharsInTicker(ticker))
+		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs("card_" + ReplaceSpecialCharsInTicker(model.Ticker))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 134, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 134, Col: 58}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 		if templ_7745c5c3_Err != nil {
@@ -646,9 +646,9 @@ func CardTickerError(ticker string, errorMessage string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var39 string
-		templ_7745c5c3_Var39, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:card_" + ReplaceSpecialCharsInTicker(ticker))
+		templ_7745c5c3_Var39, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:card_" + ReplaceSpecialCharsInTicker(model.Ticker))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 135, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 135, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
@@ -659,9 +659,9 @@ func CardTickerError(ticker string, errorMessage string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var40 string
-		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(ticker)
+		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(model.Ticker)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 138, Col: 11}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 138, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 		if templ_7745c5c3_Err != nil {
@@ -672,9 +672,9 @@ func CardTickerError(ticker string, errorMessage string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var41 string
-		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(errorMessage)
+		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(model.ErrorMessage)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 144, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/tickerCards.templ`, Line: 144, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 		if templ_7745c5c3_Err != nil {

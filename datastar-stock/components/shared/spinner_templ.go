@@ -8,7 +8,9 @@ package shared
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Spinner(dataShowSignal string, class string) templ.Component {
+import "datastar-stock/models"
+
+func Spinner(model models.Spinner) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,8 +31,8 @@ func Spinner(dataShowSignal string, class string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if dataShowSignal == "" {
-			var templ_7745c5c3_Var2 = []any{`animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + class}
+		if model.DataShowSignal == "" {
+			var templ_7745c5c3_Var2 = []any{`animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + model.Class}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -53,7 +55,7 @@ func Spinner(dataShowSignal string, class string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			var templ_7745c5c3_Var4 = []any{`animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + class}
+			var templ_7745c5c3_Var4 = []any{`animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + model.Class}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -63,9 +65,9 @@ func Spinner(dataShowSignal string, class string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(dataShowSignal)
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(model.DataShowSignal)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/spinner.templ`, Line: 10, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/spinner.templ`, Line: 12, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {

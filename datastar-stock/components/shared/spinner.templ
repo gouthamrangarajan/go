@@ -1,14 +1,16 @@
 package shared
 
-templ Spinner(dataShowSignal string, class string) {
-	if dataShowSignal == "" {
+import "datastar-stock/models"
+
+templ Spinner(model models.Spinner) {
+	if model.DataShowSignal == "" {
 		<span
-			class={ `animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + class }
+			class={ `animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + model.Class }
 		></span>
 	} else {
 		<span
-			data-show={ dataShowSignal }
-			class={ `animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + class }
+			data-show={ model.DataShowSignal }
+			class={ `animate-spin-2 w-5 h-5 rounded-full border-2 border-dashed  ` + model.Class }
 		></span>
 	}
 }
