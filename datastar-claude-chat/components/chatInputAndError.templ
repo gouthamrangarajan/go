@@ -8,7 +8,7 @@ import (
 templ inputAndError(allowWebSearch bool) {
 	<div class="absolute bottom-0 left-0 w-full">
 		<form
-			class="py-2 px-4 mx-auto bg-white rounded-t flex items-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 "
+			class="py-2 px-4 mx-auto bg-white rounded-t flex items-end justify-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 "
 			data-on-submit="evt.preventDefault();"
 			data-signals="{searchWeb:false}"
 			data-indicator="promptProcessing"
@@ -35,7 +35,7 @@ templ inputAndError(allowWebSearch bool) {
 
 templ promptField() {
 	<textarea
-		class="appearance-none outline-none text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-primary"
+		class="appearance-none outline-none field-sizing-content min-h-24 max-h-[50vh] text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-primary"
 		rows="4"
 		name="prompt"
 		id="prompt"

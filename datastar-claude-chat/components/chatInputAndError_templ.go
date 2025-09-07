@@ -34,7 +34,7 @@ func inputAndError(allowWebSearch bool) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 left-0 w-full\"><form class=\"py-2 px-4 mx-auto bg-white rounded-t flex items-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 \" data-on-submit=\"evt.preventDefault();\" data-signals=\"{searchWeb:false}\" data-indicator=\"promptProcessing\" data-attr-disabled=\"$promptProcessing\" data-on-call-api=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 left-0 w-full\"><form class=\"py-2 px-4 mx-auto bg-white rounded-t flex items-end justify-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 \" data-on-submit=\"evt.preventDefault();\" data-signals=\"{searchWeb:false}\" data-indicator=\"promptProcessing\" data-attr-disabled=\"$promptProcessing\" data-on-call-api=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -96,7 +96,7 @@ func promptField() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<textarea class=\"appearance-none outline-none text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-primary\" rows=\"4\" name=\"prompt\" id=\"prompt\" data-bind=\"prompt\" placeholder=\"Send a message\" data-on-keydown__window=\" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"></textarea>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<textarea class=\"appearance-none outline-none field-sizing-content min-h-24 max-h-[50vh] text-slate-800 placeholder:text-slate-600 flex-1 resize-none overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent  scrollbar-thumb-primary\" rows=\"4\" name=\"prompt\" id=\"prompt\" data-bind=\"prompt\" placeholder=\"Send a message\" data-on-keydown__window=\" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) \"></textarea>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
