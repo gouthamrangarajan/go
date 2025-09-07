@@ -1,6 +1,7 @@
 package components
 
 import (
+	"htmx-calendar/models"
 	"strconv"
 	"time"
 )
@@ -91,10 +92,10 @@ templ nextMonthLink(currentMonthAndYear time.Time, autoFocus bool) {
 	}
 }
 
-templ goToYearLink(goToMonth int, goToYear int, currYear int) {
-	{{ url := "/?month=" + strconv.Itoa(goToMonth) + "&year=" + strconv.Itoa(goToYear) }}
+templ goToYearLink(model models.GoToDay) {
+	{{ url := "/?month=" + strconv.Itoa(model.GoToMonth) + "&year=" + strconv.Itoa(model.GoToYear) }}
 	{{ classBindExpression := "$store.data.processing?'opacity-80 cursor-not-allowed text-slate-600':'opacity-100 cursor-pointer text-slate-600'" }}
-	if goToYear == currYear {
+	if model.GoToYear == model.CurrYear {
 		{{ classBindExpression = "$store.data.processing?'opacity-80 cursor-not-allowed bg-slate-600 text-white':'opacity-100 cursor-pointer  bg-slate-600 text-white'" }}
 	}
 	<a
@@ -109,6 +110,6 @@ templ goToYearLink(goToMonth int, goToYear int, currYear int) {
 		x-bind:class={ classBindExpression }
 		x-on:click="$store.data.setProcessingForFetch($event,'YEAR_CHANGE_EVENT')"
 	>
-		{ goToYear }
+		{ model.GoToYear }
 	</a>
 }

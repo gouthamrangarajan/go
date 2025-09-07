@@ -66,7 +66,11 @@ templ monthCalendarheader(currentMonthAndYear time.Time, from string) {
 				<span class="text-lg text-slate-600">Select year:</span>
 				<div class="flex gap-2 flex-wrap items-center w-full">
 					for _, year := range years {
-						@goToYearLink(int(currentMonthAndYear.Month()), year, int(currentMonthAndYear.Year()))
+						@goToYearLink(models.GoToDay{
+							GoToMonth: int(currentMonthAndYear.Month()),
+							GoToYear:  year,
+							CurrYear:  int(currentMonthAndYear.Year()),
+						})
 					}
 				</div>
 			</div>
