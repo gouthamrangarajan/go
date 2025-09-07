@@ -318,6 +318,9 @@
   .table {
     display: table;
   }
+  .field-sizing-content {
+    field-sizing: content;
+  }
   .size-5 {
     width: calc(var(--spacing) * 5);
     height: calc(var(--spacing) * 5);
@@ -340,6 +343,12 @@
   }
   .h-full {
     height: 100%;
+  }
+  .max-h-\[50vh\] {
+    max-height: 50vh;
+  }
+  .min-h-22 {
+    min-height: calc(var(--spacing) * 22);
   }
   .w-1\.5 {
     width: calc(var(--spacing) * 1.5);
