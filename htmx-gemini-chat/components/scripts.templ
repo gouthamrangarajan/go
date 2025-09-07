@@ -307,6 +307,10 @@ templ bodyScript() {
                                         break;
                                     }
                                     this.$store.data.disableImgGeneration=true;
+                                    if(this.$store.data.imgGeneration){
+                                        this.$store.data.webSearch=false;
+                                        this.$store.data.disableWebSearch=false;                                        
+                                    }
                                     const decodedValue = textDecoder.decode(value);     
                                     decodedValue.split('event: ').forEach((decodedItem)=>{
                                         if(decodedItem.trim()==''){
