@@ -8,9 +8,12 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "strconv"
+import (
+	"htmx-gemini-chat/models"
+	"strconv"
+)
 
-func chatInput(currentChatSessionId int, defaultWebSearch bool, defaultImageGeneration bool) templ.Component {
+func chatInput(model models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -38,7 +41,7 @@ func chatInput(currentChatSessionId int, defaultWebSearch bool, defaultImageGene
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("chatInput")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 9, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 12, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -48,7 +51,7 @@ func chatInput(currentChatSessionId int, defaultWebSearch bool, defaultImageGene
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ChatSessionIdInput(currentChatSessionId, false).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ChatSessionIdInput(model.ChatSessionId, false).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -60,7 +63,7 @@ func chatInput(currentChatSessionId int, defaultWebSearch bool, defaultImageGene
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = toolsDropDown(defaultWebSearch, defaultImageGeneration).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = toolsDropDown(model).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -105,7 +108,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 32, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 35, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -123,7 +126,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 40, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 43, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -196,7 +199,7 @@ func fileUpload() templ.Component {
 	})
 }
 
-func toolsDropDown(defaultWebSearch bool, defaultImgGeneration bool) templ.Component {
+func toolsDropDown(model models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -221,7 +224,7 @@ func toolsDropDown(defaultWebSearch bool, defaultImgGeneration bool) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = searchWebButton(defaultWebSearch).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = searchWebButton(model.WebSearch).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -229,7 +232,7 @@ func toolsDropDown(defaultWebSearch bool, defaultImgGeneration bool) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = imageGenerationButton(defaultImgGeneration).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = imageGenerationButton(model.ImageGeneration).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -269,7 +272,7 @@ func searchWebButton(defaultWebSearch bool) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(defaultWebSearch)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 156, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 159, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -311,7 +314,7 @@ func imageGenerationButton(defaultImgGeneration bool) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(defaultImgGeneration)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 188, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 191, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {

@@ -45,10 +45,10 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 	}
 	if request.Header.Get("HX-Request") == "true" {
 		time.Sleep(200 * time.Millisecond) // Simulate a delay for the sake of UX so that menu closes before the chat session is loaded
-		component := components.SectionAndChatSessionIdInput(chatSessionId, conversations, allowWebSearch, imgGeneration, true)
+		component := components.SectionAndChatSessionIdInput(conversations, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, IsOob: true})
 		component.Render(request.Context(), response)
 	} else {
-		component := components.Main(conversations, sessions, chatSessionId, allowWebSearch, imgGeneration)
+		component := components.Main(conversations, sessions, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, HelperTextShow: len(conversations) == 0})
 		component.Render(request.Context(), response)
 	}
 }

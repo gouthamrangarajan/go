@@ -1,5 +1,7 @@
 package components
 
+import "htmx-gemini-chat/models"
+
 var onceHandle = templ.NewOnceHandle()
 
 templ bodyScript() {
@@ -326,7 +328,8 @@ templ bodyScript() {
                                             this.setProcessing(false);
                                             this.currentMessageId=-1;
                                             decodedValueMerged="";                                        
-                                            addErrorMessage('Error! Please try again later');     
+                                            addErrorMessage('Error! Please try again later');   
+                                            document.getElementById("promptProcessingIndicator")?.remove();  
                                             return;
                                         }
                                         else if(decodedItem.includes("GEMINI_MESSAGE_TEMPLATE") || 
@@ -355,14 +358,14 @@ templ bodyScript() {
                                             document.getElementById("helper").outerHTML=decodedItem;  
                                         }                   
                                         else if(decodedItem.includes("IMAGE")){                                            
-                                            document.getElementById("promptProcessingIndicator")?.remove()
+                                            document.getElementById("promptProcessingIndicator")?.remove();
                                             decodedItem=decodedItem.replace("IMAGE\ndata: ","").trimEnd();
                                             decodedValueMerged += decodedItem;
                                             imageDataProcessing=true;
                                             prependFileDataToMessage(this.currentMessageId,decodedValueMerged,"output.png");
                                         }                     
                                         else if(decodedItem.includes("MESSAGE")){ //streamed output is gemini message that needs to be appended to existing message                                         
-                                            document.getElementById("promptProcessingIndicator")?.remove()
+                                            document.getElementById("promptProcessingIndicator")?.remove();
                                             decodedItem=decodedItem.replace("MESSAGE\ndata: ",""); //no trim end required , if added will remove \n coming in data also
                                             decodedValueMerged += decodedItem;                                                 
                                             document.getElementById('message_'+this.currentMessageId).innerHTML = decodedValueMerged;   
@@ -380,6 +383,7 @@ templ bodyScript() {
                                 this.setProcessing(false);
                                 if (err?.name !== 'AbortError') {
                                     addErrorMessage('Error! Please try again later');     
+                                    document.getElementById("promptProcessingIndicator")?.remove();
                                 }
                             }                            
                         }
@@ -457,13 +461,13 @@ templ bodyScript() {
                 htmx.process(document.getElementById(elId));
             }           
         </script>
-		@setWebSearchAndImgGenerationScript(false, false, false, false)
+		@setWebSearchAndImgGenerationScript(models.Section{IsOob: false, WebSearch: true, ImageGeneration: true}, false)
 	}
 }
 
-templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool, disableImgGeneration bool, isOob bool) {
+templ setWebSearchAndImgGenerationScript(model models.Section, disableImgGeneration bool) {
 	switch  {
-		case isOob && allowWebSearch:
+		case model.IsOob && model.WebSearch:
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=true
@@ -472,7 +476,7 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
                     Alpine.store('data').disableImgGeneration=true                    
                 })()
             </script>
-		case isOob && !allowWebSearch && imgGeneration && disableImgGeneration:
+		case model.IsOob && !model.WebSearch && model.ImageGeneration && disableImgGeneration:
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
@@ -481,7 +485,7 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
                     Alpine.store('data').disableImgGeneration=true
                 })()
             </script>
-		case isOob && !allowWebSearch && imgGeneration && !disableImgGeneration:
+		case model.IsOob && !model.WebSearch && model.ImageGeneration && !disableImgGeneration:
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
@@ -490,7 +494,7 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
                     Alpine.store('data').disableImgGeneration=false
                 })()
             </script>
-		case isOob && !allowWebSearch && !imgGeneration && disableImgGeneration:
+		case model.IsOob && !model.WebSearch && !model.ImageGeneration && disableImgGeneration:
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
@@ -499,7 +503,7 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
                     Alpine.store('data').disableImgGeneration=true
                 })()
             </script>
-		case isOob && !allowWebSearch && !imgGeneration && !disableImgGeneration:
+		case model.IsOob && !model.WebSearch && !model.ImageGeneration && !disableImgGeneration:
 			<script type="text/javascript" id="webSearchSetScript" hx-swap-oob="true">
                 (()=>{
                     Alpine.store('data').webSearch=false
@@ -508,7 +512,7 @@ templ setWebSearchAndImgGenerationScript(allowWebSearch bool, imgGeneration bool
                     Alpine.store('data').disableImgGeneration=false
                 })()
             </script>
-		case !isOob:
+		case !model.IsOob:
 			<script type="text/javascript" id="webSearchSetScript"></script>
 	}
 }

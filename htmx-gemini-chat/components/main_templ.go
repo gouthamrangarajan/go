@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "htmx-gemini-chat/models"
 
-func Main(conversations []models.ChatConversation, sessions []models.ChatSession, currentChatSessionId int, defaultWebSearch bool, defaultImageGeneration bool) templ.Component {
+func Main(conversations []models.ChatConversation, sessions []models.ChatSession, model models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -55,11 +55,11 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = section(conversations, false, currentChatSessionId == 0).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = section(conversations, model).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = chatInput(currentChatSessionId, defaultWebSearch, defaultImageGeneration).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = chatInput(model).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -114,7 +114,7 @@ func NewChatSession(session models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = SectionAndChatSessionIdInput(session.Id, make([]models.ChatConversation, 0, 0), false, false, true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = SectionAndChatSessionIdInput(make([]models.ChatConversation, 0, 0), models.Section{ChatSessionId: session.Id, WebSearch: false, ImageGeneration: false, IsOob: true}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -143,7 +143,7 @@ func UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatS
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = section(conversations, true, chatSessionIdForConversations == 0).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = section(conversations, models.Section{IsOob: true, HelperTextShow: chatSessionIdForConversations == 0}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -151,7 +151,7 @@ func UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatS
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = setWebSearchAndImgGenerationScript(false, false, len(conversations) > 0, true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = setWebSearchAndImgGenerationScript(models.Section{WebSearch: false, ImageGeneration: false, IsOob: true}, len(conversations) > 0).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -159,7 +159,7 @@ func UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatS
 	})
 }
 
-func SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConversation, allowWebSearch bool, imgGeneration bool, isOob bool) templ.Component {
+func SectionAndChatSessionIdInput(conversations []models.ChatConversation, model models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -180,15 +180,15 @@ func SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConv
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = section(conversations, isOob, false).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = section(conversations, model).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ChatSessionIdInput(sessionId, isOob).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ChatSessionIdInput(model.ChatSessionId, model.IsOob).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = setWebSearchAndImgGenerationScript(allowWebSearch, imgGeneration, len(conversations) > 0, isOob).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = setWebSearchAndImgGenerationScript(model, len(conversations) > 0).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -196,7 +196,7 @@ func SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConv
 	})
 }
 
-func section(conversations []models.ChatConversation, isOob bool, helperTextShow bool) templ.Component {
+func section(conversations []models.ChatConversation, model models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -217,19 +217,19 @@ func section(conversations []models.ChatConversation, isOob bool, helperTextShow
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if isOob {
+		if model.IsOob {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto flex flex-col gap-2  mt-2 py-1 px-3 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 xl:w-9/12\" style=\"view-transition-name:section\" hx-swap-oob=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, conversation := range conversations {
 				if conversation.Sender == "user" {
-					templ_7745c5c3_Err = UserMessage(conversation.Id, conversation.Message, conversation.FileData, conversation.FileName).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = UserMessage(conversation).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = GeminiMessage(conversation.Id, conversation.Message, conversation.FileData).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = GeminiMessage(conversation).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -239,7 +239,7 @@ func section(conversations []models.ChatConversation, isOob bool, helperTextShow
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = HelperText(helperTextShow).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = HelperText(model.HelperTextShow).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -250,12 +250,12 @@ func section(conversations []models.ChatConversation, isOob bool, helperTextShow
 			}
 			for _, conversation := range conversations {
 				if conversation.Sender == "user" {
-					templ_7745c5c3_Err = UserMessage(conversation.Id, conversation.Message, conversation.FileData, conversation.FileName).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = UserMessage(conversation).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = GeminiMessage(conversation.Id, conversation.Message, conversation.FileData).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = GeminiMessage(conversation).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -265,7 +265,7 @@ func section(conversations []models.ChatConversation, isOob bool, helperTextShow
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = HelperText(helperTextShow).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = HelperText(model.HelperTextShow).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

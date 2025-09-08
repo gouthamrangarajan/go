@@ -2,13 +2,13 @@ package components
 
 import "htmx-gemini-chat/models"
 
-templ Main(conversations []models.ChatConversation, sessions []models.ChatSession, currentChatSessionId int, defaultWebSearch bool, defaultImageGeneration bool) {
+templ Main(conversations []models.ChatConversation, sessions []models.ChatSession, model models.Section) {
 	@layout() {
 		<main class="w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500" style="view-transition-name:main">
 			@menuBarButton()
 			<h1 class="text-2xl font-semibold text-cyan-700 dark:text-cyan-400" style="view-transition-name:header">Gemini Chat</h1>
-			@section(conversations, false, currentChatSessionId == 0)
-			@chatInput(currentChatSessionId, defaultWebSearch, defaultImageGeneration)
+			@section(conversations, model)
+			@chatInput(model)
 			@menu(sessions)
 			@errorToast()
 			@PageLoader()
@@ -18,23 +18,23 @@ templ Main(conversations []models.ChatConversation, sessions []models.ChatSessio
 
 templ NewChatSession(session models.ChatSession) {
 	@MenuItem(session)
-	@SectionAndChatSessionIdInput(session.Id, make([]models.ChatConversation, 0, 0), false, false, true)
+	@SectionAndChatSessionIdInput(make([]models.ChatConversation, 0, 0), models.Section{ChatSessionId: session.Id, WebSearch: false, ImageGeneration: false, IsOob: true})
 }
 
 templ UIToReplaceDeleteChatSession(conversations []models.ChatConversation, chatSessionIdForConversations int) {
-	@section(conversations, true, chatSessionIdForConversations == 0)
+	@section(conversations, models.Section{IsOob: true, HelperTextShow: chatSessionIdForConversations == 0})
 	@ChatSessionIdInput(chatSessionIdForConversations, true)
-	@setWebSearchAndImgGenerationScript(false, false, len(conversations) > 0, true)
+	@setWebSearchAndImgGenerationScript(models.Section{WebSearch: false, ImageGeneration: false, IsOob: true}, len(conversations) > 0)
 }
 
-templ SectionAndChatSessionIdInput(sessionId int, conversations []models.ChatConversation, allowWebSearch bool, imgGeneration bool, isOob bool) {
-	@section(conversations, isOob, false)
-	@ChatSessionIdInput(sessionId, isOob)
-	@setWebSearchAndImgGenerationScript(allowWebSearch, imgGeneration, len(conversations) > 0, isOob)
+templ SectionAndChatSessionIdInput(conversations []models.ChatConversation, model models.Section) {
+	@section(conversations, model)
+	@ChatSessionIdInput(model.ChatSessionId, model.IsOob)
+	@setWebSearchAndImgGenerationScript(model, len(conversations) > 0)
 }
 
-templ section(conversations []models.ChatConversation, isOob bool, helperTextShow bool) {
-	if (isOob) {
+templ section(conversations []models.ChatConversation, model models.Section) {
+	if (model.IsOob) {
 		<section
 			id="section"
 			class="w-11/12 shrink-0 mx-auto flex flex-col gap-2  mt-2 py-1 px-3 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 xl:w-9/12"
@@ -43,13 +43,13 @@ templ section(conversations []models.ChatConversation, isOob bool, helperTextSho
 		>
 			for _,conversation:= range conversations {
 				if conversation.Sender == "user" {
-					@UserMessage(conversation.Id, conversation.Message, conversation.FileData, conversation.FileName)
+					@UserMessage(conversation)
 				} else {
-					@GeminiMessage(conversation.Id, conversation.Message, conversation.FileData)
+					@GeminiMessage(conversation)
 				}
 			}
 		</section>
-		@HelperText(helperTextShow)
+		@HelperText(model.HelperTextShow)
 	} else {
 		<section
 			id="section"
@@ -58,13 +58,13 @@ templ section(conversations []models.ChatConversation, isOob bool, helperTextSho
 		>
 			for _,conversation:= range conversations {
 				if conversation.Sender == "user" {
-					@UserMessage(conversation.Id, conversation.Message, conversation.FileData, conversation.FileName)
+					@UserMessage(conversation)
 				} else {
-					@GeminiMessage(conversation.Id, conversation.Message, conversation.FileData)
+					@GeminiMessage(conversation)
 				}
 			}
 		</section>
-		@HelperText(helperTextShow)
+		@HelperText(model.HelperTextShow)
 	}
 }
 

@@ -1,14 +1,17 @@
 package components
 
-import "strconv"
+import (
+	"htmx-gemini-chat/models"
+	"strconv"
+)
 
-templ chatInput(currentChatSessionId int, defaultWebSearch bool, defaultImageGeneration bool) {
+templ chatInput(model models.Section) {
 	<div
 		class="absolute bottom-0 shrink-0 rounded w-11/12 p-1 pr-2 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-end justify-center gap-1 inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 "
 		style="view-transition-name:prompt-form"
 		x-data={ "chatInput" }
 	>
-		@ChatSessionIdInput(currentChatSessionId, false)
+		@ChatSessionIdInput(model.ChatSessionId, false)
 		<textarea
 			class="appearance-none outline-none field-sizing-content min-h-22 max-h-[50vh] w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4"
 			placeholder="Send a message"
@@ -18,7 +21,7 @@ templ chatInput(currentChatSessionId int, defaultWebSearch bool, defaultImageGen
 			x-on:keyup.enter="submitMessage($event,'section')"
 		></textarea>
 		@fileUpload()
-		@toolsDropDown(defaultWebSearch, defaultImageGeneration)
+		@toolsDropDown(model)
 		@submitButton()
 	</div>
 }
@@ -112,7 +115,7 @@ templ fileUpload() {
 	</button>
 }
 
-templ toolsDropDown(defaultWebSearch bool, defaultImgGeneration bool) {
+templ toolsDropDown(model models.Section) {
 	<div
 		class="relative"
 		x-data="{showToolsDropDown:false}"
@@ -139,10 +142,10 @@ templ toolsDropDown(defaultWebSearch bool, defaultImgGeneration bool) {
 			x-transition:leave-end="opacity-0"
 		>
 			<li class="w-full">
-				@searchWebButton(defaultWebSearch)
+				@searchWebButton(model.WebSearch)
 			</li>
 			<li class="w-full">
-				@imageGenerationButton(defaultImgGeneration)
+				@imageGenerationButton(model.ImageGeneration)
 			</li>
 		</ul>
 	</div>
