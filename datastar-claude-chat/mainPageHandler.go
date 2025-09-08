@@ -63,7 +63,7 @@ func menuDataHandler(responseWriter http.ResponseWriter, request *http.Request) 
 
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
-	newSessionId := services.InsertChatSessionViaChannel(userId, "New Chat", false)
+	newSessionId := services.InsertChatSessionViaChannel(userId, models.ChatSession{Title: "New Chat", AllowWebSearch: false})
 	sse := datastar.NewSSE(responseWriter, request)
 	if newSessionId == 0 {
 		sse.PatchSignals([]byte("{showErrorMessage:true,errorMessage:'Failed to create new conversation. Please try again later.'}"))

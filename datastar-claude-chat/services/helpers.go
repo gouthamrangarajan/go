@@ -22,13 +22,13 @@ const UserIDKey contextKey = "userId"
 var ImgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp|gif));base64,([A-Za-z0-9+/=]+)$`)
 var PdfRegex = regexp.MustCompile(`^data:application/pdf;base64,([A-Za-z0-9+/=]+)$`)
 
-func GenerateSignedStrForCookie(name string, val string) string {
+func GenerateSignedStrForCookie(model models.UICookie) string {
 	cookieSecret := os.Getenv("COOKIE_SECRET")
 	mac := hmac.New(sha256.New, []byte(cookieSecret))
-	mac.Write([]byte(name))
-	mac.Write([]byte(val))
+	mac.Write([]byte(model.Name))
+	mac.Write([]byte(model.Value))
 	signature := mac.Sum(nil)
-	cookieValueSignedBytes := append(signature, []byte(val)...)
+	cookieValueSignedBytes := append(signature, []byte(model.Value)...)
 	cookieValueSignedStr := base64.URLEncoding.EncodeToString(cookieValueSignedBytes)
 	return cookieValueSignedStr
 }
@@ -66,19 +66,19 @@ func GetChatSessionsViaChannel(userId string) []models.ChatSession {
 	sessions := <-sessionChannel
 	return sessions
 }
-func InsertChatSessionViaChannel(userId string, title string, webSearch bool) int {
+func InsertChatSessionViaChannel(userId string, data models.ChatSession) int {
 	var sessionId int = 0
 	insertSessionChannel := make(chan int)
 	defer close(insertSessionChannel)
-	go InsertChatSession(userId, title, webSearch, insertSessionChannel)
+	go InsertChatSession(userId, data, insertSessionChannel)
 	sessionId = <-insertSessionChannel
 	return sessionId
 }
-func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptFileId string, searchWeb bool) (models.ClaudeRequest, string) {
+func GenerateClaudeRequest(userId string, request models.PromptRequest) (models.ClaudeRequest, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
-	go GetChatConversations(userId, sessionId, conversationsChannel)
+	go GetChatConversations(userId, request.SessionId, conversationsChannel)
 	conversations := <-conversationsChannel
 
 	maxTokenStr := os.Getenv("CLAUDE_MAX_TOKEN")
@@ -125,18 +125,18 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptFi
 			}
 		}
 	}
-	if promptFileId != "" {
+	if request.PromptFileId != "" {
 		contentWithFile := []models.ClaudeRequestFileContent{}
 		contentWithFile = append(contentWithFile, models.ClaudeRequestFileContent{
 			Type: "document",
 			Source: models.ClaudeRequestFileContentSource{
 				Type:   "file",
-				FileId: promptFileId,
+				FileId: request.PromptFileId,
 			},
 		})
 		contentWithFile = append(contentWithFile, models.ClaudeRequestFileContent{
 			Type: "text",
-			Text: prompt,
+			Text: request.Prompt,
 		})
 		claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
 			Role:            "user",
@@ -145,10 +145,10 @@ func GenerateClaudeRequest(userId string, sessionId int, prompt string, promptFi
 	} else {
 		claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
 			Role:    "user",
-			Content: prompt,
+			Content: request.Prompt,
 		})
 	}
-	if searchWeb {
+	if request.SearchWeb {
 		max_uses_str := os.Getenv("CALUDE_WEB_TOOL_MAX_USES")
 		max_uses, err := strconv.Atoi(max_uses_str)
 		if err != nil {

@@ -16,3 +16,15 @@ type FileDataDisplay struct {
 	FileData string
 	IsImg    bool
 }
+
+type UICookie struct {
+	Name  string
+	Value string
+}
+
+type PromptRequest struct {
+	SessionId    int
+	Prompt       string
+	PromptFileId string
+	SearchWeb    bool
+}

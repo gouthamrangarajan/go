@@ -83,7 +83,8 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	} else if sessionId == 0 {
 		newSessionChannel := make(chan int)
-		go services.InsertChatSession(userId, prompt, clientSignal.SearchWeb, newSessionChannel)
+
+		go services.InsertChatSession(userId, models.ChatSession{Title: prompt, AllowWebSearch: clientSignal.SearchWeb}, newSessionChannel)
 		sessionId = <-newSessionChannel
 		newSessionInserted = true
 	}
@@ -107,7 +108,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, sessionId, prompt, clientSignal.FileId, clientSignal.SearchWeb)
+	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, models.PromptRequest{SessionId: sessionId, Prompt: prompt, PromptFileId: clientSignal.FileId, SearchWeb: clientSignal.SearchWeb})
 
 	if errMsg != "" {
 		http.Error(responseWriter, "Internal Server Error", http.StatusInternalServerError)
@@ -132,7 +133,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	userMessageInsertDbChannel := make(chan int)
 	defer close(userMessageInsertDbChannel)
-	go services.InsertChatConversation(sessionId, prompt, fileData, clientSignal.FileId, fileName, "user", userMessageInsertDbChannel)
+	go services.InsertChatConversation(models.ChatConversation{SessionId: sessionId, Message: prompt, ImgData: fileData, FileId: clientSignal.FileId, FileName: fileName, Sender: "user"}, userMessageInsertDbChannel)
 	userMessageId := <-userMessageInsertDbChannel
 
 	if userMessageId == 0 {
@@ -148,7 +149,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sessionTitleUpdateChannel := make(chan int)
 	defer close(sessionTitleUpdateChannel)
 	if len(claudeRequest.Messages) == 1 {
-		go services.UpdateChatSessionTitle(userId, sessionId, prompt, sessionTitleUpdateChannel)
+		go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: sessionId, Title: prompt}, sessionTitleUpdateChannel)
 		isSessionTitleUpdate = true
 	}
 
@@ -158,7 +159,8 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	claudeResponseInsertDbChannel := make(chan int)
 	defer close(claudeResponseInsertDbChannel)
-	go services.InsertChatConversation(sessionId, "", "", "", "", "assistant", claudeResponseInsertDbChannel)
+
+	go services.InsertChatConversation(models.ChatConversation{SessionId: sessionId, Message: "", ImgData: "", FileId: "", FileName: "", Sender: "assistant"}, claudeResponseInsertDbChannel)
 	claudeMessageId := <-claudeResponseInsertDbChannel
 	if claudeMessageId == 0 {
 		//error handling
