@@ -68,7 +68,7 @@ func GetData(accessToken string, dateRange []string, channel chan<- []models.Eve
 	channel <- response
 }
 
-func UpdateDate(accessToken string, id string, date string, channel chan<- bool) {
+func UpdateDate(accessToken string, data models.DnD, channel chan<- bool) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
@@ -79,7 +79,7 @@ func UpdateDate(accessToken string, id string, date string, channel chan<- bool)
 		channel <- false
 		return
 	}
-	_, count, err := client.From("calendar").Update(map[string]string{"date": date}, "minimal", "exact").Eq("id", id).Execute()
+	_, count, err := client.From("calendar").Update(map[string]string{"date": data.Date}, "minimal", "exact").Eq("id", data.Id).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- false
@@ -113,18 +113,18 @@ func AddData(accessToken string, data models.EventData, channel chan<- int16) {
 	channel <- int16(count)
 }
 
-func DeleteEvent(accessToken string, id string, channel chan<- bool) {
+func DeleteEvent(data models.DeleteEvent, channel chan<- bool) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
-		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
+		Headers: map[string]string{"Authorization": "Bearer " + data.AccessToken},
 	})
 	if err != nil {
 		fmt.Printf("Error connecting to supabase %v\n", err.Error())
 		channel <- false
 		return
 	}
-	_, count, err := client.From("calendar").Delete("minimal", "exact").Eq("id", id).Execute()
+	_, count, err := client.From("calendar").Delete("minimal", "exact").Eq("id", data.Id).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- false

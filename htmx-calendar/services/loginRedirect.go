@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"htmx-calendar/components"
+	"htmx-calendar/models"
 	"htmx-calendar/services/db"
 	"net/http"
 	"net/url"
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, month string, year string, dayOrWeek string, isOob bool){
+var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, to models.MonthYearDayWeekString, isOob bool){
 	"/":    MonthPageWithOob,
 	"/add": AddPageWithOob,
 	"/wk":  WeekPageWithOob,
@@ -55,11 +56,8 @@ func Login(responseWriter http.ResponseWriter, request *http.Request) {
 		if loginRedirectRoutes[path] != nil {
 			ctx := context.WithValue(request.Context(), TokenKey, resp.AccessToken)
 			request = request.WithContext(ctx)
-			if day == "" {
-				loginRedirectRoutes[path](responseWriter, request, month, year, week, true)
-			} else {
-				loginRedirectRoutes[path](responseWriter, request, month, year, day, true)
-			}
+			to := models.MonthYearDayWeekString{Month: month, Year: year, Day: day, Week: week}
+			loginRedirectRoutes[path](responseWriter, request, to, true)
 		} else {
 			responseWriter.WriteHeader(404)
 		}
