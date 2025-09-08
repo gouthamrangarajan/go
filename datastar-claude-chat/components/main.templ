@@ -32,7 +32,7 @@ templ Main(sessionId int, allowWebSearch bool, messages []models.ChatConversatio
 templ MessagesSection(messages []models.ChatConversation) {
 	<section id="messages" class="flex flex-col items-start justify-start gap-2 pt-10 mx-auto w-11/12 lg:w-10/12 xl:w-9/12">
 		for _, msg := range messages {
-			@Message(msg.Id, msg.Message, msg.ImgData, msg.FileName, msg.Sender)
+			@Message(msg)
 		}
 	</section>
 }

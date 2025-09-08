@@ -140,7 +140,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		services.SendErrorMessageToUI(sse, "Failed to save conversation. Please try again later.")
 		return
 	}
-	sse.PatchElementTempl(components.MessageForStreaming(userMessageId, prompt, fileData, fileName, "user"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(models.ChatConversation{Id: userMessageId, Message: prompt, ImgData: fileData, FileName: fileName, Sender: "user"}), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	sse.PatchSignals([]byte("{prompt:''}"))
 	sse.ExecuteScript(`document.getElementById('messageContainer_`+strconv.Itoa(userMessageId)+`').scrollIntoView()`, datastar.WithExecuteScriptAutoRemove(true))
 
@@ -169,7 +169,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	claudeResponseChannel := make(chan string)
 	go services.CallClaudeAPI(claudeRequest, claudeResponseChannel)
 
-	sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, "", "", "", "assistant"), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(models.ChatConversation{Id: claudeMessageId, Message: "", FileName: "", ImgData: "", Sender: "assistant"}), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	mergedOutput := ""
 
 	errored := false
@@ -179,7 +179,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			errored = true
 		} else {
 			mergedOutput += response
-			sse.PatchElementTempl(components.MessageForStreaming(claudeMessageId, mergedOutput, "", "", "assistant"))
+			sse.PatchElementTempl(components.MessageForStreaming(models.ChatConversation{Id: claudeMessageId, Message: mergedOutput, FileName: "", ImgData: "", Sender: "assistant"}))
 		}
 	}
 	if errored {
@@ -187,7 +187,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
 	} else if fileData != "" {
 		sse.PatchSignals([]byte("{fileData:''}"))
-		sse.PatchElementTempl(components.FileDataDisplay("", "", false), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.FileDataDisplay(models.FileDataDisplay{}, false), datastar.WithUseViewTransitions(true))
 	}
 	if isSessionTitleUpdate && <-sessionTitleUpdateChannel > 0 {
 		chatSession := models.ChatSession{Id: sessionId, Title: prompt}

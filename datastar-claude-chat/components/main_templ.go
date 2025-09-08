@@ -126,7 +126,7 @@ func MessagesSection(messages []models.ChatConversation) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, msg := range messages {
-			templ_7745c5c3_Err = Message(msg.Id, msg.Message, msg.ImgData, msg.FileName, msg.Sender).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = Message(msg).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

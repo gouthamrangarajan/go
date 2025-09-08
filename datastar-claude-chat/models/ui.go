@@ -10,3 +10,9 @@ type ClientSignals struct {
 	FileId            string   `json:"fileId"`
 	SessionIdToDelete int      `json:"sessionIdToDelete"`
 }
+
+type FileDataDisplay struct {
+	FileName string
+	FileData string
+	IsImg    bool
+}

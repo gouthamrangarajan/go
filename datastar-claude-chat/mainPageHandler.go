@@ -130,7 +130,7 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 			sse.PatchSignals([]byte("{fileId:'" + uploadResponse + "'}"))
 		}
 	}
-	sse.PatchElementTempl(components.FileDataDisplay(fileData, fileName, len(imgMatches) == 4), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.FileDataDisplay(models.FileDataDisplay{FileData: fileData, FileName: fileName}, len(imgMatches) == 4), datastar.WithUseViewTransitions(true))
 }
 func deleteChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)

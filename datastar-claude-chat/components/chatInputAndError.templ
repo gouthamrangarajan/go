@@ -2,6 +2,7 @@ package components
 
 import (
 	"datastar-claude-chat/components/shared"
+	"datastar-claude-chat/models"
 	"strconv"
 )
 
@@ -73,7 +74,7 @@ templ submitButton() {
 }
 
 templ fileUpload() {
-	@FileDataDisplay("", "", false)
+	@FileDataDisplay(models.FileDataDisplay{}, false)
 	<input
 		type="file"
 		class="hidden"
@@ -96,17 +97,17 @@ templ fileUpload() {
 	</button>
 }
 
-templ FileDataDisplay(fileData string, fileName string, isImg bool) {
+templ FileDataDisplay(model models.FileDataDisplay, isImg bool) {
 	<div class="absolute bottom-28.5 left-0 w-full" id="fileDataDisplay">
 		<div
 			class="animate-error-message shadow py-2 px-4 rounded bg-white flex justify-between mx-auto w-11/12 lg:w-10/12 xl:w-9/12"
-			data-show={ "$fileData!='' && '" + fileData + "'!=''" }
+			data-show={ "$fileData!='' && '" + model.FileData + "'!=''" }
 		>
 			<div class="flex-1 flex items-center gap-3">
 				if isImg {
-					<img class="rounded-full w-6 h-6" src={ fileData }/>
+					<img class="rounded-full w-6 h-6" src={ model.FileData }/>
 				}
-				<span class="text-primary truncate font-semibold">{ fileName }</span>
+				<span class="text-primary truncate font-semibold">{ model.FileName }</span>
 			</div>
 			<button
 				class="appearance-none outline-none p-1 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
