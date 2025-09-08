@@ -120,7 +120,7 @@ func SearchWorldCity(search string, channel chan []models.WorldCities) {
 	channel <- response
 }
 
-func InsertMultipleSpot(spots []models.TourismSpots, nearCity string, nearLat string, nearLng string, channel chan string) {
+func InsertMultipleSpot(spots []models.TourismSpots, nearCityLatLng models.CityLatLng, channel chan string) {
 	success := "SUCCESS"
 	db, err := getDb()
 	if err != nil {
@@ -148,7 +148,7 @@ func InsertMultipleSpot(spots []models.TourismSpots, nearCity string, nearLat st
 
 	for _, row := range spots {
 		fmt.Printf("Inserting %v data\n", row.Name)
-		_, err := statement.Exec(row.Name, row.Description, row.Lat, row.Lng, nearCity, nearLat, nearLng, time.Now().Unix())
+		_, err := statement.Exec(row.Name, row.Description, row.Lat, row.Lng, nearCityLatLng.City, nearCityLatLng.Lat, nearCityLatLng.Lng, time.Now().Unix())
 		if err != nil {
 			// Handle error
 			fmt.Printf("Error inserting %v into spots %v\n", row.Name, err.Error())
@@ -165,7 +165,7 @@ func InsertMultipleSpot(spots []models.TourismSpots, nearCity string, nearLat st
 	}
 	channel <- success
 }
-func InsertSpot(spot models.TourismSpots, nearCity string, nearLat string, nearLng string, channel chan int) {
+func InsertSpot(spot models.TourismSpots, nearCityLatLng models.CityLatLng, channel chan int) {
 	id := 0
 	db, err := getDb()
 	if err != nil {
@@ -176,7 +176,7 @@ func InsertSpot(spot models.TourismSpots, nearCity string, nearLat string, nearL
 	defer db.Close()
 
 	defer db.Close()
-	result, err := db.Exec("INSERT INTO spots (name,description,lat,lng,near_city,near_lat,near_lng,added) VALUES (?,?,?,?,?,?,?,?)", spot.Name, spot.Description, spot.Lat, spot.Lng, nearCity, nearLat, nearLng, time.Now().Unix())
+	result, err := db.Exec("INSERT INTO spots (name,description,lat,lng,near_city,near_lat,near_lng,added) VALUES (?,?,?,?,?,?,?,?)", spot.Name, spot.Description, spot.Lat, spot.Lng, nearCityLatLng.City, nearCityLatLng.Lat, nearCityLatLng.Lng, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("Unable to execute insert spot  %v\n", err.Error())
 		channel <- 0
@@ -191,7 +191,7 @@ func InsertSpot(spot models.TourismSpots, nearCity string, nearLat string, nearL
 	channel <- int(lastInsertedId)
 }
 
-func GetSpots(lat string, lng string, limit int, channel chan []models.TourismSpots) {
+func GetSpots(cityLatLng models.CityLatLng, limit int, channel chan []models.TourismSpots) {
 	var response []models.TourismSpots
 	db, err := getDb()
 	if err != nil {
@@ -200,7 +200,7 @@ func GetSpots(lat string, lng string, limit int, channel chan []models.TourismSp
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT id,name,description,lat,lng,near_city,near_lat,near_lng,added FROM spots WHERE near_lat = ? AND near_lng = ? AND active=1 LIMIT ?", lat, lng, strconv.Itoa(limit))
+	rows, err := db.Query("SELECT id,name,description,lat,lng,near_city,near_lat,near_lng,added FROM spots WHERE near_lat = ? AND near_lng = ? AND active=1 LIMIT ?", cityLatLng.Lat, cityLatLng.Lng, strconv.Itoa(limit))
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- response
@@ -223,7 +223,7 @@ func GetSpots(lat string, lng string, limit int, channel chan []models.TourismSp
 	channel <- response
 }
 
-func InactivateSpots(lat string, lng string, channel chan int) {
+func InactivateSpots(cityLatLng models.CityLatLng, channel chan int) {
 	db, err := getDb()
 	if err != nil {
 		fmt.Printf("Unable to get db %v\n", err.Error())
@@ -231,7 +231,7 @@ func InactivateSpots(lat string, lng string, channel chan int) {
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("UPDATE spots SET active=0 WHERE near_lat = ? AND near_lng = ?", lat, lng)
+	result, err := db.Exec("UPDATE spots SET active=0 WHERE near_lat = ? AND near_lng = ?", cityLatLng.Lat, cityLatLng.Lng)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0
@@ -245,7 +245,7 @@ func InactivateSpots(lat string, lng string, channel chan int) {
 		return
 	}
 	if rowsAffected <= 0 {
-		fmt.Printf("No rows were updated during inactivate spots for lat %v lng %v\n", lat, lng)
+		fmt.Printf("No rows were updated during inactivate spots for lat %v lng %v\n", cityLatLng.Lat, cityLatLng.Lng)
 	}
 	channel <- int(rowsAffected)
 }

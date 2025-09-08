@@ -26,11 +26,11 @@ func searchCityStateCountry(responseWriter http.ResponseWriter, request *http.Re
 	SSE.PatchElementTempl(components.PlacesSearchResults(data))
 	SSE.PatchSignals([]byte("{showSearchResults:true}"))
 }
-func parseLatAndLng(lat, lng string) bool {
-	if _, err := strconv.ParseFloat(lat, 32); err != nil {
+func parseLatAndLng(cityLatLng models.CityLatLng) bool {
+	if _, err := strconv.ParseFloat(cityLatLng.Lat, 32); err != nil {
 		return false
 	}
-	if _, err := strconv.ParseFloat(lng, 32); err != nil {
+	if _, err := strconv.ParseFloat(cityLatLng.Lng, 32); err != nil {
 		return false
 	}
 	return true
@@ -48,7 +48,7 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 			defaultLng = strings.TrimSpace(parts[2])
 		}
 	}
-	parseDefaultLatLngSuccess := parseLatAndLng(defaultLat, defaultLng)
+	parseDefaultLatLngSuccess := parseLatAndLng(models.CityLatLng{Lat: defaultLat, Lng: defaultLng})
 	if !parseDefaultLatLngSuccess {
 		defaultLat = ""
 		defaultLng = ""
@@ -145,7 +145,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 	sse.ExecuteScript("if(map){map.setView(["+lat+","+lng+"], 12);}", datastar.WithExecuteScriptAutoRemove(true))
 
 	dbChannel := make(chan []models.TourismSpots)
-	go services.GetSpots(lat, lng, noOfPlaces, dbChannel)
+	go services.GetSpots(models.CityLatLng{Lat: lat, Lng: lng}, noOfPlaces, dbChannel)
 	allData := <-dbChannel
 	if len(allData) > 0 {
 		noOfDaysToCachePlacesInt, err := strconv.Atoi(os.Getenv("NO_OF_DAYS_TO_CACHE_SPOTS"))
@@ -155,7 +155,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 		noOfDaysToCachePlaces := int64(noOfDaysToCachePlacesInt)
 		if time.Now().Unix()-allData[0].UnixTime > noOfDaysToCachePlaces*24*3600 || isRetry {
 			//data is older , inactivate & fetch new data from Gemini API
-			go services.InactivateSpots(lat, lng, dbInactivateChannel)
+			go services.InactivateSpots(models.CityLatLng{Lat: lat, Lng: lng}, dbInactivateChannel)
 			waitForInactivate = true
 
 		} else {
@@ -170,7 +170,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 	}
 
 	geminiAiChannel := make(chan string)
-	go getTourismPlacesGeminiAPI(lat, lng, noOfPlaces, geminiAiChannel)
+	go getTourismPlacesGeminiAPI(models.CityLatLng{Lat: lat, Lng: lng}, noOfPlaces, geminiAiChannel)
 	if len(allData) > 0 && isRetry {
 		removeTableRowAndMarkerFromUI(sse, allData)
 	}
@@ -209,7 +209,7 @@ func getPlacesSSE(sse *datastar.ServerSentEventGenerator, city string, lat strin
 						itemAlreadyExists[key] = true
 						concatenatedStr = strings.Replace(concatenatedStr, place+"||", "", 1) // remove processed place
 						idChannel := make(chan int)
-						go services.InsertSpot(singleData, city, lat, lng, idChannel)
+						go services.InsertSpot(singleData, models.CityLatLng{City: city, Lat: lat, Lng: lng}, idChannel)
 						singleData.Id = <-idChannel
 						close(idChannel)
 						if singleData.Id > 0 {

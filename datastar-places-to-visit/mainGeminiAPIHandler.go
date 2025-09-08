@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func getPrompt1(lat, lng string, noOfPlaces int) string {
+func getPrompt1(cityLatLng models.CityLatLng, noOfPlaces int) string {
 	prompt := `You are an AI assistant specialized in providing concise tourism information for a given geographical location.
 				I will provide you with a central latitude and longitude.
 				Your task is to identify the **top 5 most popular or significant tourism spots** in the area defined by these coordinates.
@@ -35,11 +35,11 @@ func getPrompt1(lat, lng string, noOfPlaces int) string {
 
 				**Your turn. Provide the top ` + strconv.Itoa(noOfPlaces) + ` tourism spots for the following coordinates:**
 
-				Latitude: ` + lat + `
-				Longitude: ` + lng
+				Latitude: ` + cityLatLng.Lat + `
+				Longitude: ` + cityLatLng.Lng
 	return prompt
 }
-func getPrompt2(lat, lng string, noOfPlaces int) string {
+func getPrompt2(cityLatLng models.CityLatLng, noOfPlaces int) string {
 	prompt := `You are an assistant that provides the top ` + strconv.Itoa(noOfPlaces) + ` tourism spots based on the given city and/or geographic coordinates. For each spot, provide the name, a short description (1-2 sentences), the latitude, and longitude.
 
 				Format your response exactly as follows:
@@ -49,12 +49,12 @@ func getPrompt2(lat, lng string, noOfPlaces int) string {
 
 				Rely solely on the latitude and longitude coordinates.
 				
-				The latitude and longitude are: ` + lat + `,` + lng + `
+				The latitude and longitude are: ` + cityLatLng.Lat + `,` + cityLatLng.Lng + `
 
 				Only provide the formatted list, no additional text.`
 	return prompt
 }
-func getTourismPlacesGeminiAPI(lat, lng string, noOfPlaces int, channel chan string) {
+func getTourismPlacesGeminiAPI(cityLatLng models.CityLatLng, noOfPlaces int, channel chan string) {
 	defer close(channel)
 	geminiRequest := models.GeminiRequest{
 		Contents: []models.GeminiRequestContent{},
@@ -63,7 +63,7 @@ func getTourismPlacesGeminiAPI(lat, lng string, noOfPlaces int, channel chan str
 		Role:  "user",
 		Parts: []models.GeminiRequestContentPart{},
 	})
-	text := getPrompt1(lat, lng, noOfPlaces)
+	text := getPrompt1(cityLatLng, noOfPlaces)
 	geminiRequest.Contents[0].Parts = append(geminiRequest.Contents[0].Parts, models.GeminiRequestContentPart{
 		Text: &text,
 	})
