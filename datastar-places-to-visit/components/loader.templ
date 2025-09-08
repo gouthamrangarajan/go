@@ -1,21 +1,23 @@
 package components
 
-templ loader(dataShowSignal string, class string, containerClass string) {
-	if dataShowSignal != "" {
+import "datastar-placestovisit/models"
+
+templ loader(model models.Loader) {
+	if model.DataShowSignal != "" {
 		<div
-			class={ "absolute top-0 left-0 w-full h-full flex items-center justify-center " + containerClass }
-			data-show={ dataShowSignal }
+			class={ "absolute top-0 left-0 w-full h-full flex items-center justify-center " + model.ContainerClass }
+			data-show={ model.DataShowSignal }
 		>
 			<span
-				class={ "border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + class }
+				class={ "border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + model.Class }
 			></span>
 		</div>
 	} else {
 		<div
-			class={ "absolute top-0 left-0 w-full h-full flex items-center justify-center " + containerClass }
+			class={ "absolute top-0 left-0 w-full h-full flex items-center justify-center " + model.ContainerClass }
 		>
 			<span
-				class={ "border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + class }
+				class={ "border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + model.Class }
 			></span>
 		</div>
 	}

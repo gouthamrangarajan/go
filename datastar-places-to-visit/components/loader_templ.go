@@ -8,7 +8,9 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func loader(dataShowSignal string, class string, containerClass string) templ.Component {
+import "datastar-placestovisit/models"
+
+func loader(model models.Loader) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,8 +31,8 @@ func loader(dataShowSignal string, class string, containerClass string) templ.Co
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if dataShowSignal != "" {
-			var templ_7745c5c3_Var2 = []any{"absolute top-0 left-0 w-full h-full flex items-center justify-center " + containerClass}
+		if model.DataShowSignal != "" {
+			var templ_7745c5c3_Var2 = []any{"absolute top-0 left-0 w-full h-full flex items-center justify-center " + model.ContainerClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -53,9 +55,9 @@ func loader(dataShowSignal string, class string, containerClass string) templ.Co
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(dataShowSignal)
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(model.DataShowSignal)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/loader.templ`, Line: 7, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/loader.templ`, Line: 9, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -65,7 +67,7 @@ func loader(dataShowSignal string, class string, containerClass string) templ.Co
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 = []any{"border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + class}
+			var templ_7745c5c3_Var5 = []any{"border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + model.Class}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var5...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -88,7 +90,7 @@ func loader(dataShowSignal string, class string, containerClass string) templ.Co
 				return templ_7745c5c3_Err
 			}
 		} else {
-			var templ_7745c5c3_Var7 = []any{"absolute top-0 left-0 w-full h-full flex items-center justify-center " + containerClass}
+			var templ_7745c5c3_Var7 = []any{"absolute top-0 left-0 w-full h-full flex items-center justify-center " + model.ContainerClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -110,7 +112,7 @@ func loader(dataShowSignal string, class string, containerClass string) templ.Co
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var9 = []any{"border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + class}
+			var templ_7745c5c3_Var9 = []any{"border-2 border-dashed rounded-full border-action-light w-6 h-6 animate-spin-2 " + model.Class}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var9...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

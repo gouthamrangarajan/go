@@ -74,13 +74,13 @@ func initializeMap(responseWriter http.ResponseWriter, request *http.Request) {
 
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchSignals([]byte("{loadingMap:true,selectedTab:'mapView'}"))
-	sse.PatchElementTempl(components.RetryButton(defaultCity, defaultLat, defaultLng))
+	sse.PatchElementTempl(components.RetryButton(models.CityLatLng{City: defaultCity, Lat: defaultLat, Lng: defaultLng}))
 	if parseDefaultLatLngSuccess {
-		sse.PatchElementTempl(components.SetDefaultCheckbox(defaultCity, defaultLat, defaultLng), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.SetDefaultCheckbox(models.CityLatLng{City: defaultCity, Lat: defaultLat, Lng: defaultLng}), datastar.WithUseViewTransitions(true))
 		sse.PatchSignals([]byte("{isDefault:true}"))
 		sse.PatchElementTempl(components.PlacesSearchInput(defaultCity), datastar.WithUseViewTransitions(true))
 	} else {
-		sse.PatchElementTempl(components.SetDefaultCheckbox(defaultCity, defaultLat, defaultLng), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.SetDefaultCheckbox(models.CityLatLng{City: defaultCity, Lat: defaultLat, Lng: defaultLng}), datastar.WithUseViewTransitions(true))
 		sse.PatchSignals([]byte("{isDefault:false}"))
 	}
 	time.Sleep(200 * time.Millisecond) //wait for tab to be available
@@ -117,10 +117,11 @@ func getPlaces(responseWriter http.ResponseWriter, request *http.Request, isRetr
 				return
 			}
 		} else {
+			cityLatLng := models.CityLatLng{City: city, Lat: lat, Lng: lng}
 			sse := datastar.NewSSE(responseWriter, request)
 			sse.PatchElementTempl(components.PlacesSearchInput(city), datastar.WithUseViewTransitions(true))
-			sse.PatchElementTempl(components.RetryButton(city, lat, lng))
-			sse.PatchElementTempl(components.SetDefaultCheckbox(city, lat, lng), datastar.WithUseViewTransitions(true))
+			sse.PatchElementTempl(components.RetryButton(cityLatLng))
+			sse.PatchElementTempl(components.SetDefaultCheckbox(cityLatLng), datastar.WithUseViewTransitions(true))
 			if signals.DefaultVal == `/map/initialize/`+city+`||`+lat+`||`+lng {
 				sse.PatchSignals([]byte("{isDefault:true}"))
 			} else {

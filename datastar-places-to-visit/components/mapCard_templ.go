@@ -36,7 +36,7 @@ func mapCard() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = SetDefaultCheckbox("", "", "").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = SetDefaultCheckbox(models.CityLatLng{City: "", Lat: "", Lng: ""}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -44,7 +44,7 @@ func mapCard() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = loader("$loadingMap", "border-3 w-16 h-16", "").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = loader(models.Loader{DataShowSignal: "$loadingMap", Class: "border-3 w-16 h-16", ContainerClass: ""}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -124,7 +124,7 @@ func PlacesTableRow(spot models.TourismSpots) templ.Component {
 	})
 }
 
-func SetDefaultCheckbox(city string, lat string, lng string) templ.Component {
+func SetDefaultCheckbox(model models.CityLatLng) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -150,9 +150,9 @@ func SetDefaultCheckbox(city string, lat string, lng string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("$isDefault?localStorage.setItem('default', '/map/initialize/" + city + "||" + lat + "||" + lng + "'):localStorage.removeItem('default');")
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("$isDefault?localStorage.setItem('default', '/map/initialize/" + model.City + "||" + model.Lat + "||" + model.Lng + "'):localStorage.removeItem('default');")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mapCard.templ`, Line: 81, Col: 159}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mapCard.templ`, Line: 81, Col: 177}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {

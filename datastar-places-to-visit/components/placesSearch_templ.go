@@ -46,7 +46,7 @@ func placesSearchCard() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = loader("$fetchingCities", "", "").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = loader(models.Loader{DataShowSignal: "$fetchingCities", Class: "", ContainerClass: ""}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -54,7 +54,7 @@ func placesSearchCard() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = RetryButton("", "", "").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = RetryButton(models.CityLatLng{City: "", Lat: "", Lng: ""}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -226,7 +226,7 @@ func PlacesSearchResults(data []models.WorldCities) templ.Component {
 	})
 }
 
-func RetryButton(city string, lat string, lng string) templ.Component {
+func RetryButton(model models.CityLatLng) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -247,11 +247,11 @@ func RetryButton(city string, lat string, lng string) templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if strings.TrimSpace(city) == "" {
-			city = "UNKNOWN"
+		if strings.TrimSpace(model.City) == "" {
+			model.City = "UNKNOWN"
 		}
-		if lat == "" || lng == "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<button id=\"retry\" type=\"button\" name=\"retry\" value=\"yes\" class=\"appearance-none outline-none cursor-pointer flex gap-1 items-center py-2 px-4 rounded-lg bg-action-2 text-white transition duration-300 hover:bg-action-2-light focus:ring-2 focus:ring-action-2 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z\" clip-rule=\"evenodd\"></path></svg> <span>Retry</span></button>")
+		if model.Lat == "" || model.Lng == "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<button id=\"retry\" type=\"button\" name=\"retry\" value=\"yes\" disabled class=\"appearance-none outline-none cursor-pointer flex gap-1 items-center py-2 px-4 rounded-lg bg-action-2 text-white transition duration-300 hover:bg-action-2-light focus:ring-2 focus:ring-action-2 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z\" clip-rule=\"evenodd\"></path></svg> <span>Retry</span></button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -261,9 +261,9 @@ func RetryButton(city string, lat string, lng string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("evt.preventDefault();@get('/retry/" + city + "/" + lat + "/" + lng + "')")
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("evt.preventDefault();@get('/retry/" + model.City + "/" + model.Lat + "/" + model.Lng + "')")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/placesSearch.templ`, Line: 110, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/placesSearch.templ`, Line: 111, Col: 111}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {

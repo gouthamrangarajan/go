@@ -17,10 +17,10 @@ templ placesSearchCard() {
 				</svg>
 				@PlacesSearchInput("")
 				<div class="relative w-6 h-6" data-show="$fetchingCities">
-					@loader("$fetchingCities", "", "")
+					@loader(models.Loader{DataShowSignal: "$fetchingCities", Class: "", ContainerClass: ""})
 				</div>
 			</div>
-			@RetryButton("", "", "")
+			@RetryButton(models.CityLatLng{City: "", Lat: "", Lng: ""})
 			<button
 				type="button"
 				name="placeNearMe"
@@ -84,16 +84,17 @@ templ PlacesSearchResults(data []models.WorldCities) {
 	</ul>
 }
 
-templ RetryButton(city string, lat string, lng string) {
-	if strings.TrimSpace(city) == "" {
-		{{ city = "UNKNOWN" }}
+templ RetryButton(model models.CityLatLng) {
+	if strings.TrimSpace(model.City) == "" {
+		{{ model.City = "UNKNOWN" }}
 	}
-	if lat == "" || lng == "" {
+	if model.Lat == "" || model.Lng == "" {
 		<button
 			id="retry"
 			type="button"
 			name="retry"
 			value="yes"
+			disabled
 			class="appearance-none outline-none cursor-pointer flex gap-1 items-center py-2 px-4 rounded-lg bg-action-2 text-white transition duration-300 hover:bg-action-2-light focus:ring-2 focus:ring-action-2 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -107,7 +108,7 @@ templ RetryButton(city string, lat string, lng string) {
 			type="button"
 			name="retry"
 			value="yes"
-			data-on-click={ "evt.preventDefault();@get('/retry/" + city + "/" + lat + "/" + lng + "')" }
+			data-on-click={ "evt.preventDefault();@get('/retry/" + model.City + "/" + model.Lat + "/" + model.Lng + "')" }
 			data-attr-disabled="$loadingMap || $fetchingGeo"
 			class="appearance-none outline-none cursor-pointer flex gap-1 items-center py-2 px-4 rounded-lg bg-action-2 text-white transition duration-300 hover:bg-action-2-light focus:ring-2 focus:ring-action-2 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70"
 		>

@@ -11,7 +11,7 @@ templ mapCard() {
 		data-on-click="$showSearchResults=false"
 		data-signals-selectedTab="'mapView'"
 	>
-		@SetDefaultCheckbox("", "", "")
+		@SetDefaultCheckbox(models.CityLatLng{City: "", Lat: "", Lng: ""})
 		<div class="flex w-full items-center gap-2">
 			<button
 				class="appearance-none outline-none cursor-pointer transition duration-300 py-1 px-3 rounded w-1/2 focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-white"
@@ -51,7 +51,7 @@ templ mapCard() {
 				<tbody id="tableViewTbody"></tbody>
 			</table>
 		</div>
-		@loader("$loadingMap", "border-3 w-16 h-16", "")
+		@loader(models.Loader{DataShowSignal: "$loadingMap", Class: "border-3 w-16 h-16", ContainerClass: ""})
 		<span class="text-sm text-primary">* Zoom out in the map if you don't see any locations 😊...</span>
 	</div>
 }
@@ -63,7 +63,7 @@ templ PlacesTableRow(spot models.TourismSpots) {
 	</tr>
 }
 
-templ SetDefaultCheckbox(city string, lat string, lng string) {
+templ SetDefaultCheckbox(model models.CityLatLng) {
 	<div class="relative" id="defaultCheckbox">
 		<div
 			class="bg-action-light/50 absolute -top-3 right-3 h-2 rounded-xl w-10 cursor-pointer"
@@ -78,7 +78,7 @@ templ SetDefaultCheckbox(city string, lat string, lng string) {
 				type="checkbox"
 				name="isDefault"
 				data-bind="isDefault"
-				data-on-change={ "$isDefault?localStorage.setItem('default', '/map/initialize/" + city + "||" + lat + "||" + lng + "'):localStorage.removeItem('default');" }
+				data-on-change={ "$isDefault?localStorage.setItem('default', '/map/initialize/" + model.City + "||" + model.Lat + "||" + model.Lng + "'):localStorage.removeItem('default');" }
 				class="appearance-none outline-none cursor-pointer w-5 h-5 rounded-full bg-action-light/80 transition duration-600 ease-(--ease-elastic-out-5) checked:translate-x-6 checked:bg-action focus:ring-2 focus:ring-action focus:ring-offset-2 focus:ring-offset-action-light"
 			/>
 		</label>
