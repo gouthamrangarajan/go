@@ -18,13 +18,13 @@ const UserIDKey contextKey = "userId"
 var imgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp));base64,([A-Za-z0-9+/=]+)$`)
 var pdfRegex = regexp.MustCompile(`^data:application/pdf;base64,([A-Za-z0-9+/=]+)$`)
 
-func GenerateSignedStrForCookie(name string, val string) string {
+func GenerateSignedStrForCookie(data models.UserIdCookie) string {
 	cookieSecret := os.Getenv("COOKIE_SECRET")
 	mac := hmac.New(sha256.New, []byte(cookieSecret))
-	mac.Write([]byte(name))
-	mac.Write([]byte(val))
+	mac.Write([]byte(data.Name))
+	mac.Write([]byte(data.Value))
 	signature := mac.Sum(nil)
-	cookieValueSignedBytes := append(signature, []byte(val)...)
+	cookieValueSignedBytes := append(signature, []byte(data.Value)...)
 	cookieValueSignedStr := base64.URLEncoding.EncodeToString(cookieValueSignedBytes)
 	return cookieValueSignedStr
 }
@@ -62,20 +62,20 @@ func GetChatSessionsViaChannel(userId string) []models.ChatSession {
 	sessions := <-sessionChannel
 	return sessions
 }
-func InsertChatSessionViaChannel(userId string, title string, allowWebSearch bool, generateImage bool) int {
+func InsertChatSessionViaChannel(userId string, data models.ChatSession) int {
 	var sessionId int = 0
 	insertSessionChannel := make(chan int)
 	defer close(insertSessionChannel)
-	go InsertChatSession(userId, title, allowWebSearch, generateImage, insertSessionChannel)
+	go InsertChatSession(userId, data, insertSessionChannel)
 	sessionId = <-insertSessionChannel
 	return sessionId
 }
 
-func GenerateGeminiRequest(userId string, sessionId int, prompt string, fileBase64 string, allowWebSearch bool) (models.GeminiRequest, string) {
+func GenerateGeminiRequest(userId string, data models.PromptInput) (models.GeminiRequest, string) {
 	err := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
-	go GetChatConversations(userId, sessionId, conversationsChannel)
+	go GetChatConversations(userId, data.SessionId, conversationsChannel)
 	conversations := <-conversationsChannel
 	geminiRequest := models.GeminiRequest{}
 	geminiRequest.Contents = make([]models.GeminiRequestContent, 0, len(conversations)+1)
@@ -118,20 +118,20 @@ func GenerateGeminiRequest(userId string, sessionId int, prompt string, fileBase
 		}
 	}
 	partsCapacityForPrompt := 1
-	if fileBase64 != "" {
+	if data.FileBase64 != "" {
 		partsCapacityForPrompt = 2
 	}
 	promptToGeminiRequestContent := models.GeminiRequestContent{
 		Role: "user",
 		Parts: append(make([]models.GeminiRequestParts, 0, partsCapacityForPrompt), models.GeminiRequestParts{
-			Text: &prompt,
+			Text: &data.Prompt,
 		}),
 	}
-	if fileBase64 != "" {
+	if data.FileBase64 != "" {
 		strDataMatch := ""
 		mimeType := ""
-		imgMatches := imgRegex.FindStringSubmatch(fileBase64)
-		pdfMatches := pdfRegex.FindStringSubmatch(fileBase64)
+		imgMatches := imgRegex.FindStringSubmatch(data.FileBase64)
+		pdfMatches := pdfRegex.FindStringSubmatch(data.FileBase64)
 		if len(imgMatches) != 4 && len(pdfMatches) != 2 {
 			err = "Invalid data"
 		} else {
@@ -159,7 +159,7 @@ func GenerateGeminiRequest(userId string, sessionId int, prompt string, fileBase
 		}
 	}
 	geminiRequest.Contents = append(geminiRequest.Contents, promptToGeminiRequestContent)
-	if allowWebSearch {
+	if data.AllowWebSearch {
 		geminiRequest.Tools = make(map[string]interface{})
 		geminiRequest.Tools["google_search"] = struct{}{}
 	}

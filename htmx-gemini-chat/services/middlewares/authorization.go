@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"htmx-gemini-chat/models"
 	"htmx-gemini-chat/services"
 	"net/http"
 	"os"
@@ -23,7 +24,7 @@ func Authorization(next http.Handler) http.Handler {
 				}
 				cookie := http.Cookie{
 					Name:     "id",
-					Value:    services.GenerateSignedStrForCookie("id", userId),
+					Value:    services.GenerateSignedStrForCookie(models.UserIdCookie{Name: "id", Value: userId}),
 					Path:     "/",
 					HttpOnly: true,
 					Secure:   secure,

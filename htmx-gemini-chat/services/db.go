@@ -148,14 +148,14 @@ func SearchChatSessions(userId string, searchVector []float32, channel chan<- []
 	}
 	channel <- data
 }
-func InsertChatSession(userId string, title string, allowWebSearch bool, generateImg bool, channel chan<- int) {
+func InsertChatSession(userId string, data models.ChatSession, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
 		channel <- 0
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("INSERT INTO chat_sessions (user_id,title,allow_web_search,img_generation, created_at) VALUES (?, ?,?,?,?)", userId, title, allowWebSearch, generateImg, time.Now().Unix())
+	result, err := db.Exec("INSERT INTO chat_sessions (user_id,title,allow_web_search,img_generation, created_at) VALUES (?, ?,?,?,?)", userId, data.Title, data.AllowWebSearch, data.ImageGeneration, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0
@@ -320,14 +320,14 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 	channel <- data
 }
 
-func InsertChatConversation(sessionId int, message string, fileData string, fileName string, sender string, channel chan<- int) {
+func InsertChatConversation(data models.ChatConversation, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
 		channel <- 0
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("INSERT INTO chat_conversations (session_id,message,sender,file_data, file_name,timestamp) VALUES (?, ?,?,?,?,?)", sessionId, message, sender, fileData, fileName, time.Now().Unix())
+	result, err := db.Exec("INSERT INTO chat_conversations (session_id,message,sender,file_data, file_name,timestamp) VALUES (?, ?,?,?,?,?)", data.SessionId, data.Message, data.Sender, data.FileData, data.FileName, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0
@@ -341,14 +341,14 @@ func InsertChatConversation(sessionId int, message string, fileData string, file
 	}
 	channel <- int(newId)
 }
-func UpateGeminiMessageChatConversation(conversationId int, message string, imgData string, channel chan<- int) {
+func UpateChatConversationMessageAndImgData(data models.ChatConversation, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
 		channel <- 0
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("UPDATE chat_conversations SET message= ?,file_data=? WHERE  conversation_id=?", message, imgData, conversationId)
+	result, err := db.Exec("UPDATE chat_conversations SET message= ?,file_data=? WHERE  conversation_id=?", data.Message, data.FileData, data.Id)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0

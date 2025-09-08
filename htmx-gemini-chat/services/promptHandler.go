@@ -67,7 +67,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	defer close(embeddingCallChannel)
 	embeddingCalled := false
 	if chatSessionId == 0 {
-		chatSessionId = InsertChatSessionViaChannel(userId, prompt, allowWebSearch, generateImg)
+		chatSessionId = InsertChatSessionViaChannel(userId, models.ChatSession{Title: prompt, AllowWebSearch: allowWebSearch, ImageGeneration: generateImg})
 		newChatSessionInserted = true
 		if chatSessionId > 0 {
 			go callGeminiEmbeddingAndUpdateSessionTitleVector(chatSessionId, prompt, embeddingCallChannel)
@@ -91,7 +91,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	geminiRequest, errStr := GenerateGeminiRequest(userId, chatSessionId, prompt, fileData, allowWebSearch)
+	geminiRequest, errStr := GenerateGeminiRequest(userId, models.PromptInput{SessionId: chatSessionId, Prompt: prompt, FileBase64: fileData, AllowWebSearch: allowWebSearch})
 	if errStr != "" {
 		http.Error(response, "Bad Request", http.StatusBadRequest)
 		if embeddingCalled {
@@ -116,7 +116,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 
 	insertUserChatConversationChannel := make(chan int)
 	defer close(insertUserChatConversationChannel)
-	go InsertChatConversation(chatSessionId, prompt, fileData, fileName, "user", insertUserChatConversationChannel)
+	go InsertChatConversation(models.ChatConversation{SessionId: chatSessionId, Message: prompt, FileData: fileData, FileName: fileName, Sender: "user"}, insertUserChatConversationChannel)
 	userMessageId := <-insertUserChatConversationChannel
 
 	if userMessageId == 0 {
@@ -172,9 +172,11 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	consolidateGeminiResponse := ""
 	insertGeminiMessageChatConversationChannel := make(chan int)
 	defer close(insertGeminiMessageChatConversationChannel)
-	go InsertChatConversation(chatSessionId, consolidateGeminiResponse, "", "", "model", insertGeminiMessageChatConversationChannel)
-	geminiMessageId := <-insertGeminiMessageChatConversationChannel
-	if geminiMessageId == 0 {
+
+	convesationDataToInsertAndUpdate := models.ChatConversation{SessionId: chatSessionId, Message: consolidateGeminiResponse, Sender: "model", FileData: "", FileName: ""}
+	go InsertChatConversation(convesationDataToInsertAndUpdate, insertGeminiMessageChatConversationChannel)
+	convesationDataToInsertAndUpdate.Id = <-insertGeminiMessageChatConversationChannel
+	if convesationDataToInsertAndUpdate.Id == 0 {
 		sendMessageAndFlush("event: ERROR\n\n", response)
 		if embeddingCalled {
 			<-embeddingCallChannel
@@ -183,7 +185,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	}
 
 	eventDataBuffer.Reset()
-	components.GeminiMessageTemplate(geminiMessageId).Render(context.Background(), eventDataBuffer)
+	components.GeminiMessageTemplate(convesationDataToInsertAndUpdate.Id).Render(context.Background(), eventDataBuffer)
 	sendMessageAndFlush("event: GEMINI_MESSAGE_TEMPLATE\ndata: "+eventDataBuffer.String()+"\n\n", response)
 
 	for message := range geminiAPIChannel {
@@ -212,17 +214,19 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	if strings.TrimSpace(consolidateGeminiResponse) != "" {
 		updateChatConversationChannel := make(chan int)
 		defer close(updateChatConversationChannel)
+
 		if !generateImg {
-			go UpateGeminiMessageChatConversation(geminiMessageId, consolidateGeminiResponse, "", updateChatConversationChannel)
+			convesationDataToInsertAndUpdate.Message = consolidateGeminiResponse
 		} else {
-			go UpateGeminiMessageChatConversation(geminiMessageId, "", consolidateGeminiResponse, updateChatConversationChannel)
+			convesationDataToInsertAndUpdate.FileData = consolidateGeminiResponse
 		}
+		go UpateChatConversationMessageAndImgData(convesationDataToInsertAndUpdate, updateChatConversationChannel)
 		rowsAffectedUpdate := <-updateChatConversationChannel
 		if rowsAffectedUpdate == 0 {
 			sendMessageAndFlush("event: ERROR\n\n", response)
 			deleteChatConversationChannel := make(chan int)
 			defer close(deleteChatConversationChannel)
-			go DeleteGeminiMessageChatConversation(geminiMessageId, deleteChatConversationChannel)
+			go DeleteGeminiMessageChatConversation(convesationDataToInsertAndUpdate.Id, deleteChatConversationChannel)
 			<-deleteChatConversationChannel
 			if embeddingCalled {
 				<-embeddingCallChannel
