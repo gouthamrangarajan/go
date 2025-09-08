@@ -26,3 +26,8 @@ type TickerError struct {
 	Ticker       string
 	ErrorMessage string
 }
+
+type EChartData struct {
+	AxisData  string
+	ChartData string
+}

@@ -9,7 +9,12 @@ type CacheData struct {
 	Volume string `json:"volume"`
 }
 
-type EChartData struct {
-	AxisData  string
-	ChartData string
+type CacheKey struct {
+	Ticker string
+	Date   string
+}
+
+type Tokens struct {
+	IdToken      string
+	RefreshToken string
 }

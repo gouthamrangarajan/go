@@ -35,7 +35,7 @@ func tickerDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenera
 	setCacheChannel := make(chan string)
 	defer close(setCacheChannel)
 
-	go services.GetCachedTickerData(ticker, time.Now().Format("2006-01-02"), cachedDataTodayChannel)
+	go services.GetCachedTickerData(models.CacheKey{Ticker: ticker, Date: time.Now().Format("2006-01-02")}, cachedDataTodayChannel)
 	chartData := <-cachedDataTodayChannel
 
 	if (len(chartData)) == 0 {
@@ -43,7 +43,7 @@ func tickerDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenera
 		if len(chartData) == 0 { //error in both api calls
 			cachedDataPrevDayChannel := make(chan []models.CacheData)
 			defer close(cachedDataPrevDayChannel)
-			go services.GetCachedTickerData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
+			go services.GetCachedTickerData(models.CacheKey{Ticker: ticker, Date: time.Now().AddDate(0, 0, -1).Format("2006-01-02")}, cachedDataPrevDayChannel)
 			chartData = <-cachedDataPrevDayChannel
 			if len(chartData) == 0 { //still no data
 				// if apiData.ErrorMessage != "" && strings.Contains(strings.ToLower(apiData.ErrorMessage), "invalid api call") {
@@ -54,7 +54,7 @@ func tickerDataHandlerWithSSE(ticker string, sse *datastar.ServerSentEventGenera
 				return
 			}
 		} else {
-			go services.SetCacheTickerData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
+			go services.SetCacheTickerData(models.CacheKey{Ticker: ticker, Date: time.Now().Format("2006-01-02")}, chartData, setCacheChannel)
 			waitForSetCache = true
 		}
 	}
@@ -440,7 +440,7 @@ func addRecentTickerHandler(responseWriter http.ResponseWriter, request *http.Re
 
 	addRecentToDbChannel := make(chan bool)
 	defer close(addRecentToDbChannel)
-	go services.AddRecent(request.Context(), ticker, company, addRecentToDbChannel)
+	go services.AddRecent(request.Context(), models.RecentFromDb{Ticker: ticker, Name: company}, addRecentToDbChannel)
 
 	sse := datastar.NewSSE(responseWriter, request)
 	if recentAlreadyContainsTicker {

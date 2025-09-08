@@ -7,3 +7,11 @@ type EmailPopularsPriceData struct {
 	PrevPrice  float64
 	IsIncrease bool
 }
+
+type SendEmail struct {
+	To       string
+	From     string
+	HtmlBody string
+	Subject  string
+	APIKey   string
+}

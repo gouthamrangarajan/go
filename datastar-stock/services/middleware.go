@@ -60,7 +60,7 @@ func LoggedInMiddleware(next http.Handler) http.Handler {
 				} else {
 					cacheRefreshTokenChannel := make(chan string)
 					possibleUserId = refreshTokenResponse.Email
-					go CacheRefreshToken(refreshTokenResponse.IDToken, refreshTokenResponse.RefreshToken, cacheRefreshTokenChannel)
+					go CacheRefreshToken(models.Tokens{IdToken: refreshTokenResponse.IDToken, RefreshToken: refreshTokenResponse.RefreshToken}, cacheRefreshTokenChannel)
 					expiresIn := time.Now().Add(24 * 60 * time.Minute) // Default to 1 day
 					http.SetCookie(responseWriter, &http.Cookie{
 						Name:     "token",

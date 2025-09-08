@@ -75,7 +75,7 @@ func main() {
 	components.EmailTemplate(emailData).Render(context.Background(), emailStrBuffer)
 	emailChannel := make(chan string)
 	defer close(emailChannel)
-	go sendEmail(os.Getenv("EMAIL_TO"), os.Getenv("EMAIL_FROM"), emailStrBuffer.String(), os.Getenv("EMAIL_SUBJECT"), os.Getenv("RESEND_API_KEY"), emailChannel)
+	go sendEmail(models.SendEmail{To: os.Getenv("EMAIL_TO"), From: os.Getenv("EMAIL_FROM"), HtmlBody: emailStrBuffer.String(), Subject: os.Getenv("EMAIL_SUBJECT"), APIKey: os.Getenv("RESEND_API_KEY")}, emailChannel)
 	fmt.Println(<-emailChannel)
 
 	//For debugging uncommen the below
@@ -91,17 +91,17 @@ func getData(ticker string, channel chan<- []models.CacheData) {
 	chartData := services.CallStockApisInPriority(ticker)
 
 	if len(chartData) > 0 {
-		go services.SetCacheTickerData(ticker, time.Now().Format("2006-01-02"), chartData, setCacheChannel)
+		go services.SetCacheTickerData(models.CacheKey{Ticker: ticker, Date: time.Now().Format("2006-01-02")}, chartData, setCacheChannel)
 		waitForSetCache = true
 	} else {
 		cachedDataTodayChannel := make(chan []models.CacheData)
 		defer close(cachedDataTodayChannel)
-		go services.GetCachedTickerData(ticker, time.Now().Format("2006-01-02"), cachedDataTodayChannel)
+		go services.GetCachedTickerData(models.CacheKey{Ticker: ticker, Date: time.Now().Format("2006-01-02")}, cachedDataTodayChannel)
 		chartData := <-cachedDataTodayChannel
 		if len(chartData) == 0 {
 			cachedDataPrevDayChannel := make(chan []models.CacheData)
 			defer close(cachedDataPrevDayChannel)
-			go services.GetCachedTickerData(ticker, time.Now().AddDate(0, 0, -1).Format("2006-01-02"), cachedDataPrevDayChannel)
+			go services.GetCachedTickerData(models.CacheKey{Ticker: ticker, Date: time.Now().AddDate(0, 0, -1).Format("2006-01-02")}, cachedDataPrevDayChannel)
 			chartData = <-cachedDataPrevDayChannel
 		}
 
@@ -111,13 +111,13 @@ func getData(ticker string, channel chan<- []models.CacheData) {
 	}
 	channel <- chartData
 }
-func sendEmail(to string, from string, htmlBody string, subject string, apiKey string, channel chan<- string) {
-	client := resend.NewClient(apiKey)
+func sendEmail(model models.SendEmail, channel chan<- string) {
+	client := resend.NewClient(model.APIKey)
 	params := &resend.SendEmailRequest{
-		From:    from,
-		To:      []string{to},
-		Html:    htmlBody,
-		Subject: subject,
+		From:    model.From,
+		To:      []string{model.To},
+		Html:    model.HtmlBody,
+		Subject: model.Subject,
 	}
 
 	_, err := client.Emails.Send(params)

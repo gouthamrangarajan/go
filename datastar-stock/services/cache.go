@@ -11,7 +11,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func GetCachedTickerData(ticker string, date string, channel chan<- []models.CacheData) {
+func GetCachedTickerData(key models.CacheKey, channel chan<- []models.CacheData) {
 	ctx := context.Background()
 	response := []models.CacheData{}
 
@@ -22,10 +22,10 @@ func GetCachedTickerData(ticker string, date string, channel chan<- []models.Cac
 		DB:       0,
 	})
 
-	result, err := rdb.Get(ctx, ticker+"_"+date).Result()
+	result, err := rdb.Get(ctx, key.Ticker+"_"+key.Date).Result()
 
 	if err != nil {
-		fmt.Printf("Error fetching %s data from Redis for date %s:%s\n", ticker, date, err)
+		fmt.Printf("Error fetching %s data from Redis for date %s:%s\n", key.Ticker, key.Date, err)
 		channel <- response
 		return
 	}
@@ -36,12 +36,12 @@ func GetCachedTickerData(ticker string, date string, channel chan<- []models.Cac
 		return
 	}
 	if len(response) > 0 {
-		fmt.Printf("Cached data for %s found for date %s\n", ticker, date)
+		fmt.Printf("Cached data for %s found for date %s\n", key.Ticker, key.Date)
 	}
 	channel <- response
 }
 
-func SetCacheTickerData(ticker string, date string, data []models.CacheData, channel chan<- string) {
+func SetCacheTickerData(key models.CacheKey, data []models.CacheData, channel chan<- string) {
 	ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDRESS"),
@@ -57,13 +57,13 @@ func SetCacheTickerData(ticker string, date string, data []models.CacheData, cha
 		return
 	}
 
-	err = rdb.Set(ctx, ticker+"_"+date, dataJSON, 48*time.Hour).Err()
+	err = rdb.Set(ctx, key.Ticker+"_"+key.Date, dataJSON, 48*time.Hour).Err()
 	if err != nil {
 		fmt.Println("Error setting data in Redis:", err)
 		channel <- "ERROR"
 		return
 	}
-	fmt.Printf("Successfully cached data for %s & date %s\n", ticker, date)
+	fmt.Printf("Successfully cached data for %s & date %s\n", key.Ticker, key.Date)
 	channel <- "OK"
 }
 
@@ -179,7 +179,7 @@ func SetCachePopularsData(data []string, channel chan<- string) {
 	channel <- "OK"
 }
 
-func CacheRefreshToken(idToken string, refreshToken string, channel chan<- string) {
+func CacheRefreshToken(tokens models.Tokens, channel chan<- string) {
 	ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDRESS"),
@@ -188,7 +188,7 @@ func CacheRefreshToken(idToken string, refreshToken string, channel chan<- strin
 		DB:       0,
 	})
 
-	err := rdb.Set(ctx, idToken, refreshToken, 24*time.Hour).Err()
+	err := rdb.Set(ctx, tokens.IdToken, tokens.RefreshToken, 24*time.Hour).Err()
 	if err != nil {
 		fmt.Println("Error setting data in Redis:", err)
 		channel <- "ERROR"

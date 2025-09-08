@@ -54,7 +54,7 @@ func loginHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			SameSite: http.SameSiteLaxMode,
 		})
 		channel := make(chan string)
-		go services.CacheRefreshToken(signInResponse.IDToken, signInResponse.RefreshToken, channel)
+		go services.CacheRefreshToken(models.Tokens{IdToken: signInResponse.IDToken, RefreshToken: signInResponse.RefreshToken}, channel)
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(shared.FormSubmitEmptyResult(), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(shared.FormSubmitResult("Successfully logged in.", false), datastar.WithUseViewTransitions(true))
