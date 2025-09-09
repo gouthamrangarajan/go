@@ -7,7 +7,7 @@ import (
 
 templ chatInput(model models.Section) {
 	<div
-		class="absolute bottom-0 shrink-0 rounded w-11/12 p-1 pr-2 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-end justify-center gap-1 inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 "
+		class="absolute bottom-0 shrink-0 rounded w-11/12 p-1 pr-2 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-end justify-center inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 "
 		style="view-transition-name:prompt-form"
 		x-data={ "chatInput" }
 	>
@@ -19,6 +19,7 @@ templ chatInput(model models.Section) {
 			name="prompt"
 			x-model="prompt"
 			x-on:keyup.enter="submitMessage($event,'section')"
+			x-on:click.stop
 		></textarea>
 		@fileUpload()
 		@toolsDropDown(model)

@@ -34,7 +34,7 @@ func chatInput(model models.Section) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 shrink-0 rounded w-11/12 p-1 pr-2 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-end justify-center gap-1 inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 \" style=\"view-transition-name:prompt-form\" x-data=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute bottom-0 shrink-0 rounded w-11/12 p-1 pr-2 bg-[#f6f8fa] dark:bg-[#151b23] transition duration-300 mx-auto flex items-end justify-center inset-shadow-sm inset-shadow-cyan-700/50 dark:inset-shadow-cyan-400/50 focus-within:inset-shadow-cyan-700 dark:focus-within:inset-shadow-cyan-400 lg:w-10/12 lg:mt-6 xl:w-9/12 \" style=\"view-transition-name:prompt-form\" x-data=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -55,7 +55,7 @@ func chatInput(model models.Section) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<textarea class=\"appearance-none outline-none field-sizing-content min-h-22 max-h-[50vh] w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4\" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"prompt\" x-on:keyup.enter=\"submitMessage($event,'section')\"></textarea>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<textarea class=\"appearance-none outline-none field-sizing-content min-h-22 max-h-[50vh] w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4\" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"prompt\" x-on:keyup.enter=\"submitMessage($event,'section')\" x-on:click.stop></textarea>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,7 +108,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 35, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 36, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -126,7 +126,7 @@ func ChatSessionIdInput(sessionId int, isOob bool) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(sessionId))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 43, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 44, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -272,7 +272,7 @@ func searchWebButton(defaultWebSearch bool) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(defaultWebSearch)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 159, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 160, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -314,7 +314,7 @@ func imageGenerationButton(defaultImgGeneration bool) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(defaultImgGeneration)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 191, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInput.templ`, Line: 192, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
