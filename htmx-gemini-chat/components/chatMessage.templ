@@ -77,7 +77,7 @@ templ GeminiMessage(model models.ChatConversation) {
 			<div class="flex-1 max-w-full" x-data={ "{md:`" + formatMessageForAlpine(model.Message) + "`}" }>
 				<zero-md>
 					<script type="text/markdown" x-html="md" id={ "message_" + strconv.Itoa(model.Id) }>			        
-			    </script>
+			   		 </script>
 				</zero-md>
 			</div>
 		</div>
@@ -105,7 +105,7 @@ templ GeminiMessageTemplate(id int) {
 				</div>
 				<zero-md>
 					<script type="text/markdown" id={ "message_" + strconv.Itoa(id) }>					
-                </script>
+                	</script>
 				</zero-md>
 			</div>
 		</div>
