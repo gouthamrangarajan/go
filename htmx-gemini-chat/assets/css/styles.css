@@ -207,6 +207,9 @@
   .relative {
     position: relative;
   }
+  .static {
+    position: static;
+  }
   .-top-10 {
     top: calc(var(--spacing) * -10);
   }
@@ -302,6 +305,9 @@
       width: 8px;
       height: 8px;
     }
+  }
+  .block {
+    display: block;
   }
   .contents {
     display: contents;
@@ -1051,17 +1057,19 @@
     transform-origin: top;
   }
 }
-.animate-scale {
-  animation: scale 0.3s var(--ease-elastic-in-5);
+.animate-scale-y-opposite {
+  animation: scale-y-opposite 0.3s var(--ease-3);
 }
-@keyframes scale {
+@keyframes scale-y-opposite {
   from {
-    opacity: 0.8;
-    transform: scale(0.8);
+    opacity: 0;
+    transform: scaleY(0);
+    transform-origin: bottom;
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scaleY(1);
+    transform-origin: bottom;
   }
 }
 .animate-slide-up {
