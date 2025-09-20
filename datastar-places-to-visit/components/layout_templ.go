@@ -29,7 +29,7 @@ func layout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Top Places to Visit</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/leaflet.css\" rel=\"stylesheet\"><link href=\"/assets//css/openprops.min.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/assets/images/favicon.ico\" type=\"image/x-icon\"></head><body class=\"w-full h-full bg-[#F7F9FB] overflow-x-hidden overflow-y-auto font-(family-name:--font-neo-grotesque) scrollbar-thin scrollbar-track-secondary/30 scrollbar-thumb-primary\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Top Places to Visit</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Search by City to find Top Places to Visit\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/leaflet.css\" rel=\"stylesheet\"><link href=\"/assets//css/openprops.min.css\" rel=\"stylesheet\"><link rel=\"icon\" href=\"/assets/images/favicon.ico\" type=\"image/x-icon\"></head><body class=\"w-full h-full bg-[#F7F9FB] overflow-x-hidden overflow-y-auto font-(family-name:--font-neo-grotesque) scrollbar-thin scrollbar-track-secondary/30 scrollbar-thumb-primary\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
