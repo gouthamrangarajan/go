@@ -992,13 +992,6 @@
   .scrollbar-track-transparent {
     --scrollbar-track: transparent;
   }
-  .group-hover\:flex {
-    &:is(:where(.group):hover *) {
-      @media (hover: hover) {
-        display: flex;
-      }
-    }
-  }
   .hover\:bg-slate-300 {
     &:hover {
       @media (hover: hover) {
