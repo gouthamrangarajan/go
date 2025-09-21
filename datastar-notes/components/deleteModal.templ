@@ -17,7 +17,7 @@ templ deleteModal() {
 			<h1 class="text-lg font-semibold text-red-600">Confirm Note Deletion</h1>
 			<p id="deleteError" class="mt-4"></p>
 			<div class="mt-4 flex flex-col">
-				<p>Are you sure you want to delete this chat session? This action is permanent and cannot be undone.</p>
+				<p>This action will permanently delete your note and cannot be recovered. Are you sure you want to proceed?</p>
 				<div class="flex items-center justify-end gap-2 w-full mt-5">
 					<button
 						class="appearance-none outline-none cursor-pointer shrink-0  py-2 px-4 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50  disabled:cursor-not-allowed disabled:opacity-80"
@@ -40,7 +40,7 @@ templ deleteModal() {
 }
 
 templ DeleteErrorMessage(message string) {
-	<p id="deleteError" data-show="!$deleting" class="w-full animate-message bg-red-200 text-red-600 rounded py-1 px-3 mt-4 font-semibold">
+	<p id="deleteError" data-show="!$deleting" class="w-full animate-result bg-red-200 text-red-600 rounded py-1 px-3 mt-4 font-semibold">
 		{ message }
 	</p>
 }
