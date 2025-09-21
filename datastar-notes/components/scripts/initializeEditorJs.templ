@@ -81,38 +81,52 @@ templ EditorJsInitializeScript() {
             });         
             return editor;       
         }
-        function convertToStringAndReplaceCharacters(editorData){    
+        function convertToStringAndReplaceCharacters(editorData){   
             editorData.blocks.forEach((block)=>{
                 if(block.data){
                     if(block.data.text){
-                        block.data.text=block.data.text.replaceAll("'","SINGLE_QUOTE")
-                                        .replaceAll('$','DOLLAR_SIGN').replaceAll('"','DOUBLE_QUOTE')
-                                        .replaceAll('\\','BACKSLASH');
+                        block.data.text=replaceCharacters(block.data.text);
                     } else if(block.data.items){
                         block.data.items.forEach((item)=>{
                             recursiveItemContentReplaceCharacters(item);
                         });
                     } else if(block.data.code){
-                        block.data.code=block.data.code.replaceAll("'","SINGLE_QUOTE")
-                                        .replaceAll('$','DOLLAR_SIGN').replaceAll('"','DOUBLE_QUOTE')
-                                        .replaceAll('\\','BACKSLASH');
+                        block.data.code=replaceCharacters(block.data.code);
+                    } else if(block.data.title){
+                        block.data.title=replaceCharacters(block.data.title);
+                        if (block.data.message){
+                            block.data.message=replaceCharacters(block.data.message);
+                        }
+                    } else if(block.data.content && block.data.content.length){
+                        for(let rowIdx=0;rowIdx<block.data.content.length;rowIdx++){
+                            if(block.data.content[rowIdx] && block.data.content[rowIdx].length){
+                                for (let colIdx=0;colIdx<block.data.content[rowIdx].length;colIdx++){
+                                    if(block.data.content[rowIdx][colIdx]){
+                                        block.data.content[rowIdx][colIdx]=replaceCharacters(block.data.content[rowIdx][colIdx]);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             })     
             const retData= JSON.stringify(editorData); 
             return retData;
         }
-        function recursiveItemContentReplaceCharacters(item){
+        function recursiveItemContentReplaceCharacters(item){   
             if(item.content){
-                item.content=item.content.replaceAll("'","SINGLE_QUOTE")
-                            .replaceAll('$','DOLLAR_SIGN').replaceAll('"','DOUBLE_QUOTE')
-                            .replaceAll('\\','BACKSLASH');;
+                item.content=replaceCharacters(item.content);
             }
             if(item.items){
                 item.items.forEach((subItem)=>{
                     recursiveItemContentReplaceCharacters(subItem);
                 });
             }
+        }
+        function replaceCharacters(val){
+            return val.replaceAll("'","SINGLE_QUOTE")
+                        .replaceAll('$','DOLLAR_SIGN').replaceAll('"','DOUBLE_QUOTE')
+                        .replaceAll('\\','BACKSLASH');
         }
     </script>
 }
