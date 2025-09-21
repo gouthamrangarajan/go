@@ -81,7 +81,7 @@ templ EditorJsInitializeScript() {
             });         
             return editor;       
         }
-        function convertToStringAndReplaceCharacters(editorData){                        
+        function convertToStringAndReplaceCharacters(editorData){    
             editorData.blocks.forEach((block)=>{
                 if(block.data){
                     if(block.data.text){
@@ -92,6 +92,10 @@ templ EditorJsInitializeScript() {
                         block.data.items.forEach((item)=>{
                             recursiveItemContentReplaceCharacters(item);
                         });
+                    } else if(block.data.code){
+                        block.data.code=block.data.code.replaceAll("'","SINGLE_QUOTE")
+                                        .replaceAll('$','DOLLAR_SIGN').replaceAll('"','DOUBLE_QUOTE')
+                                        .replaceAll('\\','BACKSLASH');
                     }
                 }
             })     

@@ -76,6 +76,7 @@ templ NoteTitleEditUI(data models.NoteData, replacedId string) {
 		class="border-b-2 border-indigo-600 py-2 px-4 h-12 text-lg cursor-pointer flex items-center gap-2 group"
 		id={ "titleUI_" + replacedId }
 		style={ "view-transition-name:title-" + replacedId }
+		data-on-save-title={ "$noteId='" + data.Id + "';$noteTitle=$_noteTitleInp_" + replacedId + ".value;@post('/notes/title/edit');" }
 	>
 		<input
 			type="text"
@@ -83,12 +84,13 @@ templ NoteTitleEditUI(data models.NoteData, replacedId string) {
 			value={ data.Title }
 			autofocus
 			data-ref={ "_noteTitleInp_" + replacedId }
+			data-on-keyup="evt.key == 'Enter' && evt.target.dispatchEvent(new CustomEvent('save-title',{bubbles:true}));"
 		/>
 		<button
 			class="appearance-none outline-none rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50 disabled:opacity-80 disabled:cursor-not-allowed"
 			alt="Save Note Title"
 			title="Save Note Title"
-			data-on-click={ "$noteId='" + data.Id + "';$noteTitle=$_noteTitleInp_" + replacedId + ".value;@post('/notes/title/edit');" }
+			data-on-click="evt.target.dispatchEvent(new CustomEvent('save-title',{bubbles:true}));"
 			data-indicator={ "_savingTitle_" + replacedId }
 			data-attr-disabled={ "$_savingTitle_" + replacedId }
 		>
