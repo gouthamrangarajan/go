@@ -1,0 +1,14 @@
+package components
+
+templ loader(dataShowSignal string) {
+	if dataShowSignal == "" {
+		<span
+			class="h-1 bg-indigo-600 animate-loader absolute top-0 left-0 w-full"
+		></span>
+	} else {
+		<span
+			class="h-1 bg-indigo-600 animate-loader absolute top-0 left-0 w-full"
+			data-show={ dataShowSignal }
+		></span>
+	}
+}

@@ -1,0 +1,72 @@
+package components
+
+import "datastar-notes/models"
+
+func ReplaceHypenInId(id string) string {
+	result := ""
+	for _, char := range id {
+		if char != '-' {
+			result += string(char)
+		}
+	}
+	return result
+}
+
+templ EditorList(items []models.NoteData) {
+	for _,item := range items {
+		@Editor(item)
+	}
+}
+
+templ Editor(data models.NoteData) {
+	{{ replacedId := ReplaceHypenInId(data.Id) }}
+	<div
+		class="relative animate-fade-in shrink-0 max-w-none flex flex-col shadow border-2 border-gray-300 rounded overflow-hidden"
+		id={ "editorContainer_" + replacedId }
+	>
+		@NoteTitleUI(data, replacedId)
+		<div
+			id={ "editor_" + replacedId }
+			data-signals={ "{_editorShowActions_" + replacedId + ": false}" }
+			data-on-load={ "$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "')" }
+			data-on-changed={ "$_editorShowActions_" + replacedId + "=true" }
+			class=" h-[50vh] min-w-[95vw] lg:h-[80vh] lg:min-w-[70vw] xl:min-w-[50vw] overflow-y-auto transition duration-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 focus:ring-1 focus:ring-gray-200"
+		></div>
+		@SaveEditorChangesButton(data, replacedId)
+		@CancelEditorChangesButton(data, replacedId)
+		@loader("$_savingEditor_" + replacedId + " || $_fetchingEditTitleUI_" + replacedId)
+	</div>
+}
+
+templ SaveEditorChangesButton(data models.NoteData, replacedId string) {
+	<button
+		class="appearance-none outline-none animate-action-button absolute bottom-2 right-12 rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+		data-on-save={ "$noteContent=convertToStringAndReplaceCharacters(evt.detail.data);$noteId=evt.detail.id;@post('/notes/save');$_editorShowActions_" + replacedId + "=false" }
+		data-on-click__viewtransition={ "$_editor_" + replacedId + ".save().then(dt=>evt.target.dispatchEvent(new CustomEvent('save',{bubbles:true,detail: {data: dt,id:'" + data.Id + "'}}))).catch(err=>console.error(err))" }
+		data-indicator={ "_savingEditor_" + replacedId }
+		data-show={ "$_editorShowActions_" + replacedId + "" }
+		alt="Save Note"
+		title="Save Note"
+		style="display:none"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+			<path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd"></path>
+		</svg>
+	</button>
+}
+
+templ CancelEditorChangesButton(data models.NoteData, replacedId string) {
+	<button
+		id={ "cancelBtn_" + replacedId + "" }
+		class="appearance-none outline-none animate-action-button absolute bottom-2 right-2 rounded shadow p-1 bg-red-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
+		data-on-click__viewtransition={ "$_editor_" + replacedId + ".destroy();$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false" }
+		data-show={ "$_editorShowActions_" + replacedId + "" }
+		alt="Cancel Changes"
+		title="Cancel Changes"
+		style="display:none"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+			<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
+		</svg>
+	</button>
+}
