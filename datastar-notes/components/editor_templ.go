@@ -146,7 +146,7 @@ func Editor(data models.NoteData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\" h-[50vh] min-w-[95vw] lg:h-[80vh] lg:min-w-[70vw] xl:min-w-[50vw] overflow-y-auto transition duration-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 focus:ring-1 focus:ring-gray-200\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\" h-[50vh] min-w-[95vw] lg:h-[80vh] lg:min-w-[70vw] xl:min-w-[50vw] prose prose-indigo overflow-y-auto transition duration-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 focus:ring-1 focus:ring-gray-200\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
