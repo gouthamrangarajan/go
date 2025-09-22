@@ -20,6 +20,7 @@ templ MainEl() {
 		<section
 			class="w-full h-full py-2 px-4 pb-4 flex flex-col gap-2 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200 scrollbar-thumb-indigo-600 lg:flex-row lg:overflow-x-auto lg:overflow-y-hidden"
 			id="section"
+			style="view-transition-name:section"
 		></section>
 		@deleteModal()
 		@loader("$_loading || $_deleting")

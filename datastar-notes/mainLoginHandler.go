@@ -14,6 +14,10 @@ import (
 func loginPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	components.Login().Render(request.Context(), responseWriter)
 }
+func loginRetryHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(components.GetVerificationCodeUI(), datastar.WithUseViewTransitions(true))
+}
 func sendVerificationCodeHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	channel := make(chan string)
 	defer close(channel)

@@ -25,6 +25,7 @@ func main() {
 	router.Use(middlewares.Authorization)
 
 	router.Get("/login", loginPageHandler)
+	router.Get("/login/retry", loginRetryHandler)
 	router.Post("/otp", sendVerificationCodeHandler)
 	router.Post("/otp/verify", verifyOTPHandler)
 
