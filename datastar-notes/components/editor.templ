@@ -21,8 +21,9 @@ templ EditorList(items []models.NoteData) {
 templ Editor(data models.NoteData) {
 	{{ replacedId := ReplaceHypenInId(data.Id) }}
 	<div
-		class="relative animate-fade-in shrink-0 max-w-none flex flex-col shadow border-2 border-gray-300 rounded overflow-hidden"
+		class="relative animate-fade-in shrink-0 max-w-none flex flex-col shadow border-2 border-blue-300 rounded overflow-hidden"
 		id={ "editorContainer_" + replacedId }
+		style={ "view-transition-name:editor-container-" + replacedId }
 	>
 		@NoteTitleUI(data, replacedId)
 		<div
