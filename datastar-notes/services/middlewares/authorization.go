@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"datastar-notes/components"
+	"datastar-notes/models"
 	"datastar-notes/services"
 	"net/http"
 	"strings"
@@ -44,7 +45,11 @@ func Authorization(next http.Handler) http.Handler {
 		if request.URL.Path == "/login" || path == "/otp" || path == "/otp/verify" {
 			if request.Header.Get("datastar-request") == "true" {
 				sse := datastar.NewSSE(responseWriter, request)
-				sse.PatchElementTempl(components.MainEl(), datastar.WithUseViewTransitions(true))
+				channel := make(chan []models.NoteData)
+				defer close(channel)
+				go services.GetAllNotes(accessToken, channel)
+				data := <-channel
+				sse.PatchElementTempl(components.MainEl(data), datastar.WithUseViewTransitions(true))
 			} else {
 				http.Redirect(responseWriter, request, "/", http.StatusSeeOther)
 			}

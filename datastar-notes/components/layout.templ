@@ -47,12 +47,14 @@ templ layout() {
 			<!-- main -->
 			<script src="/assets/scripts/editorjs/index.min.js"></script>
 			<!--End Editor JS-->
+			<script src="/assets//scripts//sortable.min.js"></script>
 			<script src="/assets/scripts/data-star.min.js" type="module"></script>
 		</head>
 		<body class="w-full h-full bg-neutral-50  text-neutral-800 d font-[Inter,san_serif]">
 			{ children... }
 			@scripts.EditorJsInitializeScript()
 			@scripts.FocusTrap()
+			@scripts.InitializeSortable()
 		</body>
 	</html>
 }

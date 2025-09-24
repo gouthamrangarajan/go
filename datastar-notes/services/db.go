@@ -115,7 +115,7 @@ func GetNote(accessToken string, req models.UINote, channel chan<- models.NoteDa
 		channel <- response
 		return
 	}
-	data, _, err := client.From("notes").Select("id, title, content_editorjs, updated_at, user_id", "exact", false).Eq("id", req.Id).Execute()
+	data, _, err := client.From("notes").Select("id, title,order, content_editorjs, updated_at, user_id", "exact", false).Eq("id", req.Id).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- response
@@ -182,7 +182,35 @@ func UpdateTitle(accessToken string, req models.UINote, channel chan<- bool) {
 	}
 	channel <- true
 }
-func InsertNote(accessToken string, channel chan<- models.NoteData) {
+func GetMaxOrder(accessToken string, channel chan<- int) {
+	publishableKey := os.Getenv("SUPABASE_PUBLISHABLE_KEY")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	response := 0
+	client, err := supabase.NewClient(apiUrl, publishableKey, &supabase.ClientOptions{
+		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
+	})
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- response
+		return
+	}
+	data, _, err := client.From("notes").Select("order", "exact", false).Order("order", &postgrest.OrderOpts{Ascending: false}).Execute()
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- response
+		return
+	}
+	var notes []models.NoteData
+	if err := json.Unmarshal(data, &notes); err != nil {
+		fmt.Printf("Error unmarshalling results %v\n", err.Error())
+	}
+	if len(notes) > 0 {
+		channel <- notes[0].Order
+		return
+	}
+	channel <- response
+}
+func InsertNote(accessToken string, order int, channel chan<- models.NoteData) {
 	response := models.NoteData{}
 	parsedToken, _, err := jwt.NewParser().ParseUnverified(accessToken, jwt.MapClaims{})
 	if err == nil {
@@ -203,7 +231,7 @@ func InsertNote(accessToken string, channel chan<- models.NoteData) {
 		channel <- response
 		return
 	}
-	data, _, err := client.From("notes").Insert(map[string]string{"user_id": response.UserId}, false, "", "", "exact").Execute()
+	data, _, err := client.From("notes").Insert(map[string]any{"user_id": response.UserId, "order": order}, false, "", "", "exact").Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- response
@@ -230,6 +258,30 @@ func DeleteNote(accessToken string, req models.UINote, channel chan<- bool) {
 		return
 	}
 	_, count, err := client.From("notes").Delete("minimal", "exact").Eq("id", req.Id).Execute()
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- false
+		return
+	}
+	if count == 0 {
+		fmt.Printf("No records affected\n")
+		channel <- false
+		return
+	}
+	channel <- true
+}
+func UpdateOrder(accessToken string, req models.ReorderNote, channel chan<- bool) {
+	publishableKey := os.Getenv("SUPABASE_PUBLISHABLE_KEY")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	client, err := supabase.NewClient(apiUrl, publishableKey, &supabase.ClientOptions{
+		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
+	})
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- false
+		return
+	}
+	_, count, err := client.From("notes").Update(map[string]any{"order": req.Info.NewIndex, "updated_at": time.Now()}, "minimal", "exact").Eq("id", req.Info.Id).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- false

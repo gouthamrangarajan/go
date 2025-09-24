@@ -10,3 +10,13 @@ type UINote struct {
 	Content string `json:"noteContent"`
 	Title   string `json:"noteTitle"`
 }
+
+type ReorderNoteInfo struct {
+	Id       string `json:"id"`
+	NewIndex int    `json:"newIndex"`
+	OldIndex int    `json:"oldIndex"`
+}
+
+type ReorderNote struct {
+	Info ReorderNoteInfo `json:"orderInfo"`
+}
