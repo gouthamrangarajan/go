@@ -138,7 +138,7 @@ func deleteNoteHandler(responseWriter http.ResponseWriter, request *http.Request
 	}
 }
 
-func reorderNotesHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func reorderNotesUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	accessToken := request.Context().Value(services.UserTokenKey).(string)
 	channel := make(chan []models.NoteData)
 	defer close(channel)

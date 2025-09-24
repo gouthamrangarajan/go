@@ -35,7 +35,7 @@ func main() {
 	router.Post("/notes/title/edit", saveTitleHandler)
 	router.Post("/notes/add", addNoteHandler)
 	router.Post("/notes/delete", deleteNoteHandler)
-	router.Get("/notes/reorder", reorderNotesHandler)
+	router.Get("/notes/reorder", reorderNotesUIHandler)
 	router.Post("/notes/reorder", saveReorderedNotesHandler)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
