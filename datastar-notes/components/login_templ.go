@@ -88,7 +88,7 @@ func LoginMainEl() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = loader("$_verifyingOtp").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = loader("$verifyingOtp").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -151,7 +151,7 @@ func OTPResult(message string, isError bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if !isError {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<form class=\"w-full flex flex-col gap-2\" id=\"sendOtpBtnOrResult\" data-on-submit=\"@post('/otp/verify',{contentType:'form'})\" data-indicator=\"_verifyingOtp\"><label class=\"text-slate-700\">Code: <input type=\"number\" name=\"code\" required class=\"appearance-none outline-none  rounded w-full py-2 px-4 border border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-50 focus:ring-indigo-600\"></label> <button type=\"submit\" data-attr-disabled=\"$_verifyingOtp\" class=\"appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:otp-btn\">Submit</button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<form class=\"w-full flex flex-col gap-2\" id=\"sendOtpBtnOrResult\" data-on-submit=\"@post('/otp/verify',{contentType:'form'})\" data-signals=\"{verifyingOtp: false}\"><label class=\"text-slate-700\">Code: <input type=\"number\" name=\"code\" required class=\"appearance-none outline-none  rounded w-full py-2 px-4 border border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-50 focus:ring-indigo-600\"></label> <button type=\"submit\" data-attr-disabled=\"$verifyingOtp\" class=\"appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:otp-btn\">Submit</button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

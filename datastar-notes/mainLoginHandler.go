@@ -41,6 +41,7 @@ func verifyOTPHandler(responseWriter http.ResponseWriter, request *http.Request)
 	if result.AccessToken == "" {
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(components.OTPResult("The code is invalid or has expired. Please generate a new verification code.", true), datastar.WithUseViewTransitions(true))
+		sse.PatchSignals([]byte("{verifyingOtp:false}"))
 	} else {
 		secure := true
 		if os.Getenv("ENV") == "Development" {

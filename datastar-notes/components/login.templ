@@ -23,7 +23,7 @@ templ LoginMainEl() {
 			</span>
 			@GetVerificationCodeUI()
 		</section>
-		@loader("$_verifyingOtp")
+		@loader("$verifyingOtp")
 	</main>
 }
 
@@ -43,8 +43,8 @@ templ OTPResult(message string, isError bool) {
 		<form
 			class="w-full flex flex-col gap-2"
 			id="sendOtpBtnOrResult"
-			data-on-submit="@post('/otp/verify',{contentType:'form'})"
-			data-indicator="_verifyingOtp"
+			data-signals="{verifyingOtp: false}"
+			data-on-submit="$verifyingOtp=true;@post('/otp/verify',{contentType:'form'})"
 		>
 			<label class="text-slate-700">
 				Code:
@@ -57,7 +57,7 @@ templ OTPResult(message string, isError bool) {
 			</label>
 			<button
 				type="submit"
-				data-attr-disabled="$_verifyingOtp"
+				data-attr-disabled="$verifyingOtp"
 				class="appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80"
 				style="view-transition-name:otp-btn"
 			>
