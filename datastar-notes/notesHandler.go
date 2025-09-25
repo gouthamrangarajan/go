@@ -150,7 +150,7 @@ func reorderNotesUIHandler(responseWriter http.ResponseWriter, request *http.Req
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchElementTempl(components.SectionForReorder(data), datastar.WithUseViewTransitions(true))
 	sse.PatchElementTempl(components.ViewEditorsUIButton(), datastar.WithUseViewTransitions(true))
-	sse.PatchElementTempl(components.AddButtonDisabled(), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.AddButtonDisabled())
 	sse.ExecuteScript("initializeSortable()", datastar.WithExecuteScriptAutoRemove(true))
 
 }
