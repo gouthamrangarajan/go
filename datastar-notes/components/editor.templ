@@ -46,7 +46,7 @@ templ SaveEditorChangesButton(data models.NoteData, replacedId string) {
 		data-on-click__viewtransition={ "$_editor_" + replacedId + ".save().then(dt=>evt.target.dispatchEvent(new CustomEvent('save',{bubbles:true,detail: {data: dt,id:'" + data.Id + "'}}))).catch(err=>console.error(err))" }
 		data-indicator={ "_savingEditor_" + replacedId }
 		data-show={ "$_editorShowActions_" + replacedId + "" }
-		alt="Save Note"
+		aria-label="Save Note"
 		title="Save Note"
 		style="display:none"
 	>
@@ -62,7 +62,7 @@ templ CancelEditorChangesButton(data models.NoteData, replacedId string) {
 		class="appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-2 rounded shadow p-1 bg-red-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
 		data-on-click__viewtransition={ "$_editor_" + replacedId + ".destroy();$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false" }
 		data-show={ "$_editorShowActions_" + replacedId + "" }
-		alt="Cancel Changes"
+		aria-label="Cancel Changes"
 		title="Cancel Changes"
 		style="display:none"
 	>

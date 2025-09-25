@@ -14,7 +14,7 @@ templ NoteTitleUI(data models.NoteData, replacedId string) {
 			data-on-click={ "$noteId='" + data.Id + "';$noteTitle='" + data.Title + "';@get('/notes/title/edit');" }
 			data-indicator={ "_fetchingEditTitleUI_" + replacedId }
 			data-attr-disabled={ "$_fetchingEditTitleUI_" + replacedId }
-			alt="Edit Note Title"
+			aria-label="Edit Note Title"
 			title="Edit Note Title"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -24,7 +24,7 @@ templ NoteTitleUI(data models.NoteData, replacedId string) {
 		<button
 			class="appearance-none outline-none transition duration-300 cursor-pointer text-red-600 p-1 rounded-full flex focus:ring-1 focus:ring-red-600 disabled:opacity-80 disabled:cursor-not-allowed"
 			data-on-click={ "$noteId='" + data.Id + "';$showDeleteModal=true;" }
-			alt="Delete Note"
+			aria-label="Delete Note"
 			title="Delete Note"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -51,7 +51,7 @@ templ NoteTitleEditUI(data models.NoteData, replacedId string) {
 		/>
 		<button
 			class="appearance-none outline-none rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50 disabled:opacity-80 disabled:cursor-not-allowed"
-			alt="Save Note Title"
+			aria-label="Save Note Title"
 			title="Save Note Title"
 			data-on-click="evt.target.dispatchEvent(new CustomEvent('save-title',{bubbles:true}));"
 			data-indicator={ "_savingTitle_" + replacedId }
@@ -63,7 +63,7 @@ templ NoteTitleEditUI(data models.NoteData, replacedId string) {
 		</button>
 		<button
 			class="appearance-none outline-none  rounded shadow p-1 bg-red-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50 disabled:opacity-80 disabled:cursor-not-allowed"
-			alt="Cancel Title Edit Changes"
+			aria-label="Cancel Title Edit Changes"
 			title="Cancel Title Edit Changes"
 			data-on-click={ "$noteId='" + data.Id + "';$noteTitle='" + data.Title + "';@post('/notes/title/edit');" }
 			data-indicator={ "_savingTitle_" + replacedId }
