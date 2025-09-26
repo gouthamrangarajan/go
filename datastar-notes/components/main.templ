@@ -58,7 +58,7 @@ templ header() {
 			<span class="tracking-widest font-[Meow_Script,cursive] font-bold text-4xl text-indigo-600">RG</span>
 			<span>Notes</span>
 		</div>
-		<div class="flex items-center gap-3">
+		<div class="flex items-center gap-3" id="headerActionsContainer">
 			@AddButton()
 			@ReorderButton()
 		</div>
@@ -71,19 +71,6 @@ templ AddButton() {
 		data-on-click="@post('/notes/add')"
 		data-indicator="_creatingNote"
 		data-attr-disabled="$_creatingNote"
-		id="addBtn"
-	>
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-			<path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
-		</svg>
-		<span>Add</span>
-	</button>
-}
-
-templ AddButtonDisabled() {
-	<button
-		class="appearance-none outline-none flex gap-2 items-center rounded shadow py-1 px-3 bg-indigo-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:ring-offset-indigo-50 disabled:opacity-80 disabled:cursor-not-allowed"
-		data-attr-disabled="true"
 		id="addBtn"
 	>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">

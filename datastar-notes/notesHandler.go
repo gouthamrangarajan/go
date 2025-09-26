@@ -26,7 +26,7 @@ func getNotesHandler(responseWriter http.ResponseWriter, request *http.Request) 
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(components.Section(data), datastar.WithUseViewTransitions(true))
 		sse.PatchElementTempl(components.ReorderButton(), datastar.WithUseViewTransitions(true))
-		sse.PatchElementTempl(components.AddButton(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.AddButton(), datastar.WithModePrepend(), datastar.WithSelectorID("headerActionsContainer"), datastar.WithUseViewTransitions(true))
 	} else {
 		components.Main(data).Render(request.Context(), responseWriter)
 	}
@@ -150,7 +150,7 @@ func reorderNotesUIHandler(responseWriter http.ResponseWriter, request *http.Req
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchElementTempl(components.SectionForReorder(data), datastar.WithUseViewTransitions(true))
 	sse.PatchElementTempl(components.ViewEditorsUIButton(), datastar.WithUseViewTransitions(true))
-	sse.PatchElementTempl(components.AddButtonDisabled())
+	sse.RemoveElement("#addBtn", datastar.WithUseViewTransitions(true))
 	sse.ExecuteScript("initializeSortable()", datastar.WithExecuteScriptAutoRemove(true))
 
 }
