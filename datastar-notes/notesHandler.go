@@ -175,7 +175,6 @@ func saveReorderedNotesHandler(responseWriter http.ResponseWriter, request *http
 	}
 	allNotes := <-getChannel
 	saveChannel := []chan bool{}
-	fmt.Println(uiRequest)
 	if uiRequest.Info.OldIndex < uiRequest.Info.NewIndex {
 		for loopIndex := uiRequest.Info.OldIndex; loopIndex <= uiRequest.Info.NewIndex; loopIndex++ {
 			note := allNotes[loopIndex]
@@ -218,4 +217,43 @@ func saveReorderedNotesHandler(responseWriter http.ResponseWriter, request *http
 		close(ch)
 	}
 	responseWriter.WriteHeader(http.StatusOK)
+}
+func summarizeNoteHandler(responsWriter http.ResponseWriter, request *http.Request) {
+	accessToken := request.Context().Value(services.UserTokenKey).(string)
+	getNoteChannel := make(chan models.NoteData)
+	defer close(getNoteChannel)
+	var uiRequest models.UINote
+	requestBody, err := io.ReadAll(request.Body)
+	if err != nil {
+		fmt.Printf("Error reading request body in summarizing note: %v\n", err)
+		return
+	}
+	err = json.Unmarshal(requestBody, &uiRequest)
+	if err != nil {
+		fmt.Printf("Error unmarshalling request body in summarizing note: %v\n", err)
+		return
+	}
+	go services.GetNote(accessToken, uiRequest, getNoteChannel)
+	note := <-getNoteChannel
+	if note.Content != "" {
+		geminiChannel := make(chan string)
+		defer close(geminiChannel)
+		geminiReqest := models.GeminiRequest{
+			Contents: make([]models.GeminiRequestContent, 1),
+		}
+		geminiReqest.Contents[0] = models.GeminiRequestContent{
+			Role: "user",
+			Parts: []models.GeminiRequestParts{
+				{
+					Text: fmt.Sprintf(services.SummarizePrompt, note.Content),
+				},
+			},
+		}
+		go services.CallGeminiAPI(geminiReqest, geminiChannel)
+		summary := <-geminiChannel
+		sse := datastar.NewSSE(responsWriter, request)
+		sse.PatchElementTempl(components.SummaryText(summary))
+		return
+	}
+	responsWriter.WriteHeader(http.StatusOK)
 }

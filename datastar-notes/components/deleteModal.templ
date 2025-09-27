@@ -5,7 +5,7 @@ templ deleteModal() {
 		class="absolute top-0 left-0 bg-black/50 w-full h-full flex items-center justify-center z-10"
 		data-show="$showDeleteModal"
 		data-signals="{_modalAbortController:new AbortController()}"
-		data-effect="$showDeleteModal?$_modalAbortController=focusTrap('dialog[open]'):$_modalAbortController.abort()"
+		data-effect="$showDeleteModal?$_modalAbortController=focusTrap('#deleteModal'):$_modalAbortController.abort()"
 		style="display:none;"
 	>
 		<dialog

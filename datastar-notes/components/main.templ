@@ -12,12 +12,13 @@ templ MainEl(data []models.NoteData) {
 	<main
 		class="relative w-full h-full flex flex-col gap-2"
 		id="main"
-		data-signals="{showDeleteModal:false}"
+		data-signals="{showDeleteModal:false,showSummaryModal:false}"
 	>
 		@header()
 		@Section(data)
+		@summarizeNotesModal()
 		@deleteModal()
-		@loader("$_deleting || $_fetchingReorderUI || $_fetchingEditorUI || $_savingReorder")
+		@loader("$_deleting || $_fetchingReorderUI || $_fetchingEditorUI || $_savingReorder || $_summarizingNote")
 	</main>
 }
 
