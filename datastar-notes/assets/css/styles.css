@@ -816,6 +816,9 @@
   .gap-4 {
     gap: calc(var(--spacing) * 4);
   }
+  .overflow-auto {
+    overflow: auto;
+  }
   .overflow-hidden {
     overflow: hidden;
   }
