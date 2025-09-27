@@ -717,6 +717,10 @@
   .table {
     display: table;
   }
+  .size-5 {
+    width: calc(var(--spacing) * 5);
+    height: calc(var(--spacing) * 5);
+  }
   .size-6 {
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
@@ -927,6 +931,9 @@
   .pb-4 {
     padding-bottom: calc(var(--spacing) * 4);
   }
+  .pl-9 {
+    padding-left: calc(var(--spacing) * 9);
+  }
   .text-center {
     text-align: center;
   }
@@ -968,9 +975,6 @@
   }
   .text-red-600 {
     color: var(--color-red-600);
-  }
-  .text-slate-600 {
-    color: var(--color-slate-600);
   }
   .text-slate-700 {
     color: var(--color-slate-700);
