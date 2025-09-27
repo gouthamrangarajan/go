@@ -5,7 +5,10 @@ type UICookie struct {
 	Value string
 }
 type OTPForm struct {
-	Email string `json:"email"`
+	Email   string `json:"email"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	IsError bool   `json:"isError"`
 }
 type UINote struct {
 	Id      string `json:"noteId"`

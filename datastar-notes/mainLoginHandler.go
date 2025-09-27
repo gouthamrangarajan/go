@@ -29,22 +29,23 @@ func sendVerificationCodeHandler(responseWriter http.ResponseWriter, request *ht
 	}
 	sse := datastar.NewSSE(responseWriter, request)
 	if result == "ERROR" {
-		sse.PatchElementTempl(components.OTPResult("Error Generating Verification Code. Please try again later.", true), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.OTPFormOrLoginResult(models.OTPForm{Message: "Error Generating Verification Code. Please try again later.", IsError: true}), datastar.WithUseViewTransitions(true))
 		return
 	}
-	sse.PatchElementTempl(components.OTPResult("", false), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.OTPFormOrLoginResult(models.OTPForm{Message: "", Email: email}), datastar.WithUseViewTransitions(true))
 }
 
 func verifyOTPHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	channel := make(chan models.OTPVerificationResponse)
 	defer close(channel)
 	code := request.FormValue("code")
-	go services.VerifyCode(code, channel)
+	email := request.FormValue("email")
+	go services.VerifyCode(models.OTPForm{Code: code, Email: email}, channel)
 	result := <-channel
 
 	if result.AccessToken == "" {
 		sse := datastar.NewSSE(responseWriter, request)
-		sse.PatchElementTempl(components.OTPResult("The code is invalid or has expired. Please generate a new verification code.", true), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.OTPFormOrLoginResult(models.OTPForm{Message: "The code is invalid or has expired. Please generate a new verification code.", IsError: true}), datastar.WithUseViewTransitions(true))
 		sse.PatchSignals([]byte("{verifyingOtp:false}"))
 	} else {
 		secure := true

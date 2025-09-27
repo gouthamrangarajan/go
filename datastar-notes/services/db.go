@@ -39,7 +39,7 @@ func SendVerificationCode(email string, channel chan<- string) {
 	channel <- "SUCCESS"
 }
 
-func VerifyCode(code string, channel chan<- models.OTPVerificationResponse) {
+func VerifyCode(otpForm models.OTPForm, channel chan<- models.OTPVerificationResponse) {
 	var retData models.OTPVerificationResponse
 	publicKey := os.Getenv("SUPABASE_PUBLISHABLE_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
@@ -50,13 +50,12 @@ func VerifyCode(code string, channel chan<- models.OTPVerificationResponse) {
 		return
 	}
 	req := types.VerifyForUserRequest{
-		Token:      code,
+		Token:      otpForm.Code,
 		Type:       types.VerificationType(types.VerificationTypeMagiclink),
-		Email:      os.Getenv("EMAIL"),
+		Email:      otpForm.Email,
 		RedirectTo: os.Getenv("LOGIN_REDIRECT_TO"),
 	}
 	resp, err := client.Auth.VerifyForUser(req)
-
 	if err != nil {
 		dataStr := err.Error()
 		if strings.Contains(dataStr, "code 200:") {

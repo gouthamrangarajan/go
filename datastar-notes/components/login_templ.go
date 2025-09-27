@@ -8,6 +8,8 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "datastar-notes/models"
+
 func Login() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -129,7 +131,7 @@ func GetVerificationCodeForm() templ.Component {
 	})
 }
 
-func OTPResult(message string, isError bool) templ.Component {
+func OTPFormOrLoginResult(result models.OTPForm) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -150,26 +152,39 @@ func OTPResult(message string, isError bool) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if !isError {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<form class=\"w-full flex flex-col gap-2\" id=\"sendOtpFormOrResult\" data-signals=\"{verifyingOtp: false}\" data-on-submit=\"$verifyingOtp=true;@post('/otp/verify',{contentType:'form'})\"><label class=\"text-slate-700\">Code: <input type=\"number\" name=\"code\" required class=\"appearance-none outline-none  rounded w-full py-2 px-4 border border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-50 focus:ring-indigo-600\"></label> <button type=\"submit\" data-attr-disabled=\"$verifyingOtp\" class=\"appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:otp-btn\">Submit</button></form>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"sendOtpFormOrResult\" class=\"flex flex-col gap-2\"><p class=\"py-2 px-4 animate-result bg-red-300/20 text-red-600 font-semibold rounded w-full\">")
+		if !result.IsError {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<form class=\"w-full flex flex-col gap-2\" id=\"sendOtpFormOrResult\" data-signals=\"{verifyingOtp: false}\" data-on-submit=\"$verifyingOtp=true;@post('/otp/verify',{contentType:'form'})\"><input type=\"hidden\" name=\"email\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(result.Email)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 86, Col: 13}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 65, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p><button class=\"appearance-none outline-none rounded w-full flex gap-2 items-center py-2 px-4 bg-indigo-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:ring-offset-indigo-50 disabled:opacity-80 disabled:cursor-not-allowed\" data-on-click=\"@get('/login/retry')\" data-indicator=\"_retryLogin\" data-attr-disabled=\"$_retryLogin\" style=\"view-transition-name:otp-btn\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z\" clip-rule=\"evenodd\"></path></svg> <span class=\"flex-1 text-center\">Back</span></button></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"> <label class=\"text-slate-700\">Code: <input type=\"number\" name=\"code\" required class=\"appearance-none outline-none  rounded w-full py-2 px-4 border border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-50 focus:ring-indigo-600\"></label> <button type=\"submit\" data-attr-disabled=\"$verifyingOtp\" class=\"appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:otp-btn\">Submit</button></form>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div id=\"sendOtpFormOrResult\" class=\"flex flex-col gap-2\"><p class=\"py-2 px-4 animate-result bg-red-300/20 text-red-600 font-semibold rounded w-full\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(result.Message)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 89, Col: 20}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</p><button class=\"appearance-none outline-none rounded w-full flex gap-2 items-center py-2 px-4 bg-indigo-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:ring-offset-indigo-50 disabled:opacity-80 disabled:cursor-not-allowed\" data-on-click=\"@get('/login/retry')\" data-indicator=\"_retryLogin\" data-attr-disabled=\"$_retryLogin\" style=\"view-transition-name:otp-btn\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M11.03 3.97a.75.75 0 0 1 0 1.06l-6.22 6.22H21a.75.75 0 0 1 0 1.5H4.81l6.22 6.22a.75.75 0 1 1-1.06 1.06l-7.5-7.5a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 0 1 1.06 0Z\" clip-rule=\"evenodd\"></path></svg> <span class=\"flex-1 text-center\">Back</span></button></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
