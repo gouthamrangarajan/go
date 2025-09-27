@@ -29,7 +29,7 @@ func summarizeNotesModal() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-0 left-0 bg-black/50 w-full h-full flex items-center justify-center z-10\" data-show=\"$showSummaryModal\" data-signals=\"{_summaryModalAbortController:new AbortController()}\" data-effect=\"$showSummaryModal?$_summaryModalAbortController=focusTrap('#summaryModal'):$_summaryModalAbortController.abort()\" style=\"display:none;\"><dialog open class=\"w-11/12 mx-auto animate-modal bg-white py-4 px-6 rounded flex flex-col md:w-8/12 lg:w-6/12\" id=\"summaryModal\" style=\"view-transition-name:delete-dialog\"><h1 class=\"text-lg font-semibold text-indigo-600 \">Summary</h1><div class=\"mt-4 flex flex-col\"><p id=\"summaryTxt\" class=\"py-2 px-4 animate-pulse h-40 lg:h-80 \" style=\"view-transition-name:summary-text\">Summarizing...</p><div class=\"flex items-center justify-end gap-2 w-full mt-5\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-slate-200 transition duration-300 hover:bg-slate-300 focus:ring-1 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50 disabled:cursor-not-allowed disabled:opacity-80\" data-on-click__viewTransition=\"$showSummaryModal=false;\">Close</button></div></div></dialog></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-0 left-0 bg-black/50 w-full h-full flex items-center justify-center z-10\" data-show=\"$showSummaryModal\" data-signals=\"{_summaryModalAbortController:new AbortController()}\" data-effect=\"$showSummaryModal?$_summaryModalAbortController=focusTrap('#summaryModal'):$_summaryModalAbortController.abort()\" style=\"display:none;\"><dialog open class=\"w-11/12 mx-auto animate-modal bg-white py-4 px-6 rounded flex flex-col md:w-8/12 lg:w-6/12\" id=\"summaryModal\" style=\"view-transition-name:delete-dialog\"><h1 class=\"text-lg font-semibold text-indigo-600 \">Summary</h1><div class=\"mt-4 flex flex-col\"><p id=\"summaryTxt\" class=\"py-2 px-4 animate-pulse h-40 lg:h-80 \" style=\"view-transition-name:summary-text\">Generating...</p><div class=\"flex items-center justify-end gap-2 w-full mt-5\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-slate-200 transition duration-300 hover:bg-slate-300 focus:ring-1 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50 disabled:cursor-not-allowed disabled:opacity-80\" data-on-click__viewTransition=\"$showSummaryModal=false;\">Close</button></div></div></dialog></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -71,7 +71,7 @@ func SummaryText(text string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><p class=\"animate-pulse\" data-show=\"$_summarizingNote\">Summarizing...</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><p class=\"animate-pulse\" data-show=\"$_summarizingNote\">Generating...</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
