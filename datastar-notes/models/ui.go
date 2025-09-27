@@ -4,7 +4,9 @@ type UICookie struct {
 	Name  string
 	Value string
 }
-
+type OTPForm struct {
+	Email string `json:"email"`
+}
 type UINote struct {
 	Id      string `json:"noteId"`
 	Content string `json:"noteContent"`

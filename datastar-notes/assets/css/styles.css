@@ -221,8 +221,8 @@
   .right-2 {
     right: calc(var(--spacing) * 2);
   }
-  .right-12 {
-    right: calc(var(--spacing) * 12);
+  .right-10 {
+    right: calc(var(--spacing) * 10);
   }
   .bottom-2 {
     bottom: calc(var(--spacing) * 2);

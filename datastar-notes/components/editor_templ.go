@@ -204,7 +204,7 @@ func SaveEditorChangesButton(data models.NoteData, replacedId string) templ.Comp
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button class=\"appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-12 rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50\" data-on-save=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button class=\"appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-10 rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50\" data-on-save=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -14,7 +14,7 @@ import (
 	"github.com/supabase-community/supabase-go"
 )
 
-func SendVerificationCode(channel chan<- string) {
+func SendVerificationCode(email string, channel chan<- string) {
 	publicKey := os.Getenv("SUPABASE_PUBLISHABLE_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	client, err := supabase.NewClient(apiUrl, publicKey, &supabase.ClientOptions{})
@@ -24,8 +24,9 @@ func SendVerificationCode(channel chan<- string) {
 		return
 	}
 	req := types.OTPRequest{
-		Email: os.Getenv("EMAIL"),
-		Data:  map[string]interface{}{},
+		Email:      email,
+		Data:       map[string]interface{}{},
+		CreateUser: true,
 	}
 	req.Data["emailRedirectTo"] = os.Getenv("LOGIN_REDIRECT_TO")
 	err = client.Auth.OTP(req)

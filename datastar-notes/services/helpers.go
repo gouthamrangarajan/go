@@ -17,7 +17,7 @@ type contextKey string
 
 const UserTokenKey contextKey = "accessToken"
 
-var SummarizePrompt = `You are an intelligent assistant designed to summarize notes.
+const SummarizePrompt = `You are an intelligent assistant designed to summarize notes.
 I will provide you with the content of a note in Editor.js JSON format.
 Your task is to provide a concise, clear, and relevant summary of the note.
 

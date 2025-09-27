@@ -80,7 +80,7 @@ func LoginMainEl() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = GetVerificationCodeUI().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = GetVerificationCodeForm().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -100,7 +100,7 @@ func LoginMainEl() templ.Component {
 	})
 }
 
-func GetVerificationCodeUI() templ.Component {
+func GetVerificationCodeForm() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -121,7 +121,7 @@ func GetVerificationCodeUI() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<button id=\"sendOtpBtnOrResult\" data-on-click=\"@post('/otp')\" data-indicator=\"_sendingOtp\" data-attr-disabled=\"$_sendingOtp\" style=\"view-transition-name:otp-btn\" class=\"appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\">Send Verification Code</button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form class=\"flex flex-col w-full items-center gap-3\" id=\"sendOtpFormOrResult\" data-indicator=\"_sendingOtp\" data-on-submit=\"@post('/otp',{contentType:'form'})\"><label class=\"text-slate-700 w-full\">Email: <input type=\"email\" class=\"appearance-none outline-none  rounded w-full py-2 px-4 border border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-50 focus:ring-indigo-600\" name=\"email\" required></label> <button type=\"submit\" data-attr-disabled=\"$_sendingOtp\" style=\"view-transition-name:otp-btn\" class=\"appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\">Send Verification Code</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -151,19 +151,19 @@ func OTPResult(message string, isError bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if !isError {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<form class=\"w-full flex flex-col gap-2\" id=\"sendOtpBtnOrResult\" data-signals=\"{verifyingOtp: false}\" data-on-submit=\"$verifyingOtp=true;@post('/otp/verify',{contentType:'form'})\"><label class=\"text-slate-700\">Code: <input type=\"number\" name=\"code\" required class=\"appearance-none outline-none  rounded w-full py-2 px-4 border border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-50 focus:ring-indigo-600\"></label> <button type=\"submit\" data-attr-disabled=\"$verifyingOtp\" class=\"appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:otp-btn\">Submit</button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<form class=\"w-full flex flex-col gap-2\" id=\"sendOtpFormOrResult\" data-signals=\"{verifyingOtp: false}\" data-on-submit=\"$verifyingOtp=true;@post('/otp/verify',{contentType:'form'})\"><label class=\"text-slate-700\">Code: <input type=\"number\" name=\"code\" required class=\"appearance-none outline-none  rounded w-full py-2 px-4 border border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-50 focus:ring-indigo-600\"></label> <button type=\"submit\" data-attr-disabled=\"$verifyingOtp\" class=\"appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:otp-btn\">Submit</button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"sendOtpBtnOrResult\" class=\"flex flex-col gap-2\"><p class=\"py-2 px-4 animate-result bg-red-300/20 text-red-600 font-semibold rounded w-full\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"sendOtpFormOrResult\" class=\"flex flex-col gap-2\"><p class=\"py-2 px-4 animate-result bg-red-300/20 text-red-600 font-semibold rounded w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 72, Col: 13}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/login.templ`, Line: 86, Col: 13}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

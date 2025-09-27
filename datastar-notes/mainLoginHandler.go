@@ -16,13 +16,17 @@ func loginPageHandler(responseWriter http.ResponseWriter, request *http.Request)
 }
 func loginRetryHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.PatchElementTempl(components.GetVerificationCodeUI(), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.GetVerificationCodeForm(), datastar.WithUseViewTransitions(true))
 }
 func sendVerificationCodeHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	channel := make(chan string)
 	defer close(channel)
-	go services.SendVerificationCode(channel)
-	result := <-channel
+	result := "ERROR"
+	email := request.FormValue("email")
+	if email != "" {
+		go services.SendVerificationCode(email, channel)
+		result = <-channel
+	}
 	sse := datastar.NewSSE(responseWriter, request)
 	if result == "ERROR" {
 		sse.PatchElementTempl(components.OTPResult("Error Generating Verification Code. Please try again later.", true), datastar.WithUseViewTransitions(true))

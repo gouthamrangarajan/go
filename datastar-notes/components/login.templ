@@ -21,28 +21,42 @@ templ LoginMainEl() {
 				<span class="tracking-widest font-[Meow_Script,cursive] font-bold text-4xl">RG</span>
 				<span>Notes</span>
 			</span>
-			@GetVerificationCodeUI()
+			@GetVerificationCodeForm()
 		</section>
 		@loader("$verifyingOtp")
 	</main>
 }
 
-templ GetVerificationCodeUI() {
-	<button
-		id="sendOtpBtnOrResult"
-		data-on-click="@post('/otp')"
+templ GetVerificationCodeForm() {
+	<form
+		class="flex flex-col w-full items-center gap-3"
+		id="sendOtpFormOrResult"
 		data-indicator="_sendingOtp"
-		data-attr-disabled="$_sendingOtp"
-		style="view-transition-name:otp-btn"
-		class="appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80"
-	>Send Verification Code</button>
+		data-on-submit="@post('/otp',{contentType:'form'})"
+	>
+		<label class="text-slate-700 w-full">
+			Email:
+			<input
+				type="email"
+				class="appearance-none outline-none  rounded w-full py-2 px-4 border border-indigo-600 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-50 focus:ring-indigo-600"
+				name="email"
+				required
+			/>
+		</label>
+		<button
+			type="submit"
+			data-attr-disabled="$_sendingOtp"
+			style="view-transition-name:otp-btn"
+			class="appearance-none outline-none cursor-pointer bg-teal-600 py-2 px-4 text-white transition duration-300 rounded w-full focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80"
+		>Send Verification Code</button>
+	</form>
 }
 
 templ OTPResult(message string, isError bool) {
 	if !isError {
 		<form
 			class="w-full flex flex-col gap-2"
-			id="sendOtpBtnOrResult"
+			id="sendOtpFormOrResult"
 			data-signals="{verifyingOtp: false}"
 			data-on-submit="$verifyingOtp=true;@post('/otp/verify',{contentType:'form'})"
 		>
@@ -65,7 +79,7 @@ templ OTPResult(message string, isError bool) {
 			</button>
 		</form>
 	} else {
-		<div id="sendOtpBtnOrResult" class="flex flex-col gap-2">
+		<div id="sendOtpFormOrResult" class="flex flex-col gap-2">
 			<p
 				class="py-2 px-4 animate-result bg-red-300/20 text-red-600 font-semibold rounded w-full"
 			>
