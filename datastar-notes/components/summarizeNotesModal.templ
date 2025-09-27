@@ -38,6 +38,10 @@ templ SummaryText(text string) {
 		style="view-transition-name:summary-text"
 		class="py-2 px-4 h-40 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 lg:h-80 "
 	>
-		<p>{ text } </p>
+		<p data-show="!$_summarizingNote">{ text } </p>
+		<p
+			class="animate-pulse"
+			data-show="$_summarizingNote"
+		>Generating...</p>
 	</div>
 }
