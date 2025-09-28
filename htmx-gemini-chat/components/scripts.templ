@@ -75,7 +75,7 @@ templ bodyScript() {
                     Alpine.store('data').fullPageFetchProcessing=false;
                     domContentLoadedEvent();
                 }
-                else{   
+                else{                       
                     const chatSessionId=document.getElementById("chatSessionId").value;
                     Alpine.store('data').currentSessionId=chatSessionId;
                     const chatSessionIdParsed=parseInt(chatSessionId);                    

@@ -1042,6 +1042,9 @@
     }
   }
 }
+@view-transition {
+  navigation: auto;
+}
 .animate-scale-y {
   animation: scaleY 0.2s var(--ease-elastic-in-5);
 }
