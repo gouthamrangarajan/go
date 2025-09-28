@@ -88,12 +88,7 @@ templ MenuItem(session models.ChatSession) {
 			class="apperance-none outline-none w-full flex-1 transition duration-300 truncate rounded focus:underline focus:underline-offset-4 hover:underline hover:underline-offset-4"
 			x-bind:class={ "$store.data.currentSessionId==" + strconv.Itoa(session.Id) + "?'underline underline-offset-4':''" }
 			href={ templ.SafeURL(url) }
-			hx-get={ string(templ.SafeURL(url)) }
-			hx-swap="outerHTML"
-			hx-target="#section"
-			hx-trigger="FETCH_FULL_PAGE_EVENT"
-			hx-push-url="true"
-			x-on:click.stop="$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')"
+			x-on:click="$store.data.closeMenu()"
 			style={ "view-transition-name:title-" + strconv.Itoa(session.Id) }
 		>
 			{ session.Title }
@@ -172,3 +167,18 @@ templ searchMenu() {
 		</div>
 	</div>
 }
+
+// <a
+// 			class="apperance-none outline-none w-full flex-1 transition duration-300 truncate rounded focus:underline focus:underline-offset-4 hover:underline hover:underline-offset-4"
+// 			x-bind:class={ "$store.data.currentSessionId==" + strconv.Itoa(session.Id) + "?'underline underline-offset-4':''" }
+// 			href={ templ.SafeURL(url) }
+// 			hx-get={ string(templ.SafeURL(url)) }
+// 			hx-swap="outerHTML transition:true"
+// 			hx-target="#section"
+// 			hx-trigger="FETCH_FULL_PAGE_EVENT"
+// 			hx-push-url="true"
+// 			x-on:click.stop="$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')"
+// 			style={ "view-transition-name:title-" + strconv.Itoa(session.Id) }
+// 		>
+// 			{ session.Title }
+// 		</a>

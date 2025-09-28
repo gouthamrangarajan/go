@@ -218,59 +218,46 @@ func MenuItem(session models.ChatSession) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" hx-get=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" x-on:click=\"$store.data.closeMenu()\" style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(string(templ.SafeURL(url)))
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:title-" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 91, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 92, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" hx-swap=\"outerHTML\" hx-target=\"#section\" hx-trigger=\"FETCH_FULL_PAGE_EVENT\" hx-push-url=\"true\" x-on:click.stop=\"$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
-		templ_7745c5c3_Var12, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:title-" + strconv.Itoa(session.Id))
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 97, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 94, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</a> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90\" x-on:click=\"showDelete=!showDelete\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z\" clip-rule=\"evenodd\"></path></svg></button> <button x-show=\"showDelete\" x-transition:enter=\"transition duration-200 ease-(--ease-elastic-in-5)\" x-transition:enter-start=\"opacity-0 scale-x-0\" class=\"appearance-none outline-none origin-right absolute right-12 top-2 py-1 px-3 bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-slate-600 dark:focus:ring-red-300 hover:ring-2 hover:ring-slate-600 dark:hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80\" hx-delete=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("/delete/" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 99, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 109, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</a> <button class=\"appearance-none outline-none p-1 rounded-full cursor-pointer focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90\" x-on:click=\"showDelete=!showDelete\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M10.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm0 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z\" clip-rule=\"evenodd\"></path></svg></button> <button x-show=\"showDelete\" x-transition:enter=\"transition duration-200 ease-(--ease-elastic-in-5)\" x-transition:enter-start=\"opacity-0 scale-x-0\" class=\"appearance-none outline-none origin-right absolute right-12 top-2 py-1 px-3 bg-slate-600 dark:bg-white text-slate-100 dark:text-red-600 flex gap-2 items-center  rounded cursor-pointer transition duration-300 focus:ring-2 focus:ring-slate-600 dark:focus:ring-red-300 hover:ring-2 hover:ring-slate-600 dark:hover:ring-red-300 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-80\" hx-delete=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var14 string
-		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("/delete/" + strconv.Itoa(session.Id))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/menu.templ`, Line: 114, Col: 52}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" hx-trigger=\"DELETE_CHAT_SESSION_EVENT\" x-on:click=\"$store.data.checkAndSetDeleteProcessing($event,'DELETE_CHAT_SESSION_EVENT')\" x-on:click.outside=\"showDelete=false\" hx-swap=\"outerHTML transition:true\" hx-target=\"closest li\" hx-include=\"[name='chatSessionId']\" hx-confirm=\"Are you sure you want to delete this chat session?\" x-bind:disabled=\"$store.data.deleteChatSessionProcessing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z\" clip-rule=\"evenodd\"></path></svg> <span>Delete</span></button></li>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" hx-trigger=\"DELETE_CHAT_SESSION_EVENT\" x-on:click=\"$store.data.checkAndSetDeleteProcessing($event,'DELETE_CHAT_SESSION_EVENT')\" x-on:click.outside=\"showDelete=false\" hx-swap=\"outerHTML transition:true\" hx-target=\"closest li\" hx-include=\"[name='chatSessionId']\" hx-confirm=\"Are you sure you want to delete this chat session?\" x-bind:disabled=\"$store.data.deleteChatSessionProcessing\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z\" clip-rule=\"evenodd\"></path></svg> <span>Delete</span></button></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -294,12 +281,12 @@ func newChatButton() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var15 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var15 == nil {
-			templ_7745c5c3_Var15 = templ.NopComponent
+		templ_7745c5c3_Var14 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var14 == nil {
+			templ_7745c5c3_Var14 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<button hx-post=\"/new\" hx-target=\"#ul_menu\" hx-swap=\"beforeend transition:true\" hx-trigger=\"ADD_NEW_CHAT_SESSION_EVENT\" class=\"appearance-none outline-none cursor-pointer shrink-0 w-11/12 h-10 mx-auto bg-slate-600 border border-slate-600 rounded py-1 px-3 mt-4 shadow text-white font-semibold transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-white hover:opacity-80 disabled:cursor-not-allowed dark:bg-slate-200 dark:focus:ring-slate-200 dark:focus:ring-offset-slate-600 dark:border-0 dark:text-slate-600\" x-on:click=\"$store.data.checkAndSetAddNewProcessing($event,'ADD_NEW_CHAT_SESSION_EVENT')\" x-bind:disabled=\"$store.data.addNewChatSessionProcessing\"><span x-show=\"!$store.data.addNewChatSessionProcessing\">New Chat</span><div class=\"w-full flex justify-center items-center gap-1 flex-1\" x-show=\"$store.data.addNewChatSessionProcessing\"><span class=\"h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-two\"></span></div></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<button hx-post=\"/new\" hx-target=\"#ul_menu\" hx-swap=\"beforeend transition:true\" hx-trigger=\"ADD_NEW_CHAT_SESSION_EVENT\" class=\"appearance-none outline-none cursor-pointer shrink-0 w-11/12 h-10 mx-auto bg-slate-600 border border-slate-600 rounded py-1 px-3 mt-4 shadow text-white font-semibold transition duration-300 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-white hover:opacity-80 disabled:cursor-not-allowed dark:bg-slate-200 dark:focus:ring-slate-200 dark:focus:ring-offset-slate-600 dark:border-0 dark:text-slate-600\" x-on:click=\"$store.data.checkAndSetAddNewProcessing($event,'ADD_NEW_CHAT_SESSION_EVENT')\" x-bind:disabled=\"$store.data.addNewChatSessionProcessing\"><span x-show=\"!$store.data.addNewChatSessionProcessing\">New Chat</span><div class=\"w-full flex justify-center items-center gap-1 flex-1\" x-show=\"$store.data.addNewChatSessionProcessing\"><span class=\"h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 rounded-full animate-loader-two\"></span></div></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -323,12 +310,12 @@ func searchMenu() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var16 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var16 == nil {
-			templ_7745c5c3_Var16 = templ.NopComponent
+		templ_7745c5c3_Var15 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var15 == nil {
+			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"flex gap-1 w-full items-center mt-6  py-2 px-4 transition duration-300 border-y border-cyan-500 dark:border-cyan-600 text-slate-900 dark:text-slate-100 focus-within:border-cyan-700 dark:focus-within:border-cyan-400\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" name=\"srchTxt\" hx-trigger=\"input delay:500ms\" hx-get=\"/search\" hx-target=\"#ul_menu\" hx-swap=\"outerHTML transition:true\" hx-indicator=\"#searchIndicator\" class=\"appearance-none outline-none flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400\" placeholder=\"Find your past conversations...\"><div class=\"items-center gap-1 hidden\" id=\"searchIndicator\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"flex gap-1 w-full items-center mt-6  py-2 px-4 transition duration-300 border-y border-cyan-500 dark:border-cyan-600 text-slate-900 dark:text-slate-100 focus-within:border-cyan-700 dark:focus-within:border-cyan-400\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" name=\"srchTxt\" hx-trigger=\"input delay:500ms\" hx-get=\"/search\" hx-target=\"#ul_menu\" hx-swap=\"outerHTML transition:true\" hx-indicator=\"#searchIndicator\" class=\"appearance-none outline-none flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400\" placeholder=\"Find your past conversations...\"><div class=\"items-center gap-1 hidden\" id=\"searchIndicator\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -336,4 +323,19 @@ func searchMenu() templ.Component {
 	})
 }
 
+// <a
+//
+//		class="apperance-none outline-none w-full flex-1 transition duration-300 truncate rounded focus:underline focus:underline-offset-4 hover:underline hover:underline-offset-4"
+//		x-bind:class={ "$store.data.currentSessionId==" + strconv.Itoa(session.Id) + "?'underline underline-offset-4':''" }
+//		href={ templ.SafeURL(url) }
+//		hx-get={ string(templ.SafeURL(url)) }
+//		hx-swap="outerHTML transition:true"
+//		hx-target="#section"
+//		hx-trigger="FETCH_FULL_PAGE_EVENT"
+//		hx-push-url="true"
+//		x-on:click.stop="$store.data.sendFullPageFetchEvent($event,'FETCH_FULL_PAGE_EVENT')"
+//		style={ "view-transition-name:title-" + strconv.Itoa(session.Id) }
+//	>
+//		{ session.Title }
+//	</a>
 var _ = templruntime.GeneratedTemplate
