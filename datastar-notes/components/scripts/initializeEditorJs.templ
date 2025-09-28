@@ -1,8 +1,8 @@
 package scripts
 
 templ EditorJsInitializeScript() {
-	<script type="text/javascript">   
-        function initializeEditor(elementId,dataStr) {    
+	<script type="text/javascript">          
+        function initializeEditor(elementId,dataStr) {                
             if (dataStr.trim()==''){
                 dataStr='{"blocks":[]}';
             } else  {
@@ -22,7 +22,7 @@ templ EditorJsInitializeScript() {
             const editor = new EditorJS({
                 holder: elementId, // ID of the element where Editor.js will be initialized
                 tools: {
-                    // ... your tools
+                    // ... your tools                  
                     header: {
                         class: Header,
                         inlineToolbar: ['marker', 'link'],
@@ -124,5 +124,10 @@ templ EditorJsInitializeScript() {
                         .replaceAll('$','DOLLAR_SIGN').replaceAll('"','DOUBLE_QUOTE')
                         .replaceAll('\\','BACKSLASH');
         }
+        function destroyEditor(editorInstance){            
+            if(editorInstance && editorInstance.destroy){
+                editorInstance.destroy();
+            }
+        }        
     </script>
 }

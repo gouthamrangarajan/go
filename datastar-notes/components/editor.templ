@@ -29,9 +29,9 @@ templ Editor(data models.NoteData) {
 		<div
 			id={ "editor_" + replacedId }
 			data-signals={ "{_editorShowActions_" + replacedId + ": false}" }
-			data-on-load={ "$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "')" }
+			data-on-load={ "destroyEditor($_editor_" + replacedId + ");$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');" }
 			data-on-changed={ "$_editorShowActions_" + replacedId + "=true" }
-			class="h-[50vh] min-w-[95vw] pl-9 prose prose-indigo overflow-auto transition duration-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 focus:ring-1 focus:ring-gray-200 lg:h-[80vh] lg:min-w-[70vw] xl:min-w-[50vw]"
+			class="h-[50vh] min-w-[95vw] prose prose-indigo overflow-auto transition duration-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 focus:ring-1 focus:ring-gray-200  md:pl-9 lg:h-[80vh] lg:min-w-[70vw] xl:pl-0  xl:min-w-[50vw]"
 			tabindex="0"
 		></div>
 		@SaveEditorChangesButton(data, replacedId)
@@ -42,7 +42,7 @@ templ Editor(data models.NoteData) {
 
 templ SaveEditorChangesButton(data models.NoteData, replacedId string) {
 	<button
-		class="appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-10 rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
+		class="appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-11 rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
 		data-on-save={ "$noteContent=convertToStringAndReplaceCharacters(evt.detail.data);$noteId=evt.detail.id;@post('/notes/save');$_editorShowActions_" + replacedId + "=false" }
 		data-on-click__viewtransition={ "$_editor_" + replacedId + ".save().then(dt=>evt.target.dispatchEvent(new CustomEvent('save',{bubbles:true,detail: {data: dt,id:'" + data.Id + "'}}))).catch(err=>console.error(err))" }
 		data-indicator={ "_savingEditor_" + replacedId }
@@ -61,7 +61,7 @@ templ CancelEditorChangesButton(data models.NoteData, replacedId string) {
 	<button
 		id={ "cancelBtn_" + replacedId }
 		class="appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-2 rounded shadow p-1 bg-red-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
-		data-on-click__viewtransition={ "$_editor_" + replacedId + ".destroy();$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false" }
+		data-on-click__viewtransition={ "detroyEditor($_editor_" + replacedId + ");$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false" }
 		data-show={ "$_editorShowActions_" + replacedId + "" }
 		aria-label="Cancel Changes"
 		title="Cancel Changes"

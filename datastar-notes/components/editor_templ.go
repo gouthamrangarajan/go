@@ -138,9 +138,9 @@ func Editor(data models.NoteData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "')")
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("destroyEditor($_editor_" + replacedId + ");$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editor.templ`, Line: 32, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editor.templ`, Line: 32, Col: 160}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -159,7 +159,7 @@ func Editor(data models.NoteData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"h-[50vh] min-w-[95vw] pl-9 prose prose-indigo overflow-auto transition duration-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 focus:ring-1 focus:ring-gray-200 lg:h-[80vh] lg:min-w-[70vw] xl:min-w-[50vw]\" tabindex=\"0\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"h-[50vh] min-w-[95vw] prose prose-indigo overflow-auto transition duration-300 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 focus:ring-1 focus:ring-gray-200  md:pl-9 lg:h-[80vh] lg:min-w-[70vw] xl:pl-0  xl:min-w-[50vw]\" tabindex=\"0\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -204,7 +204,7 @@ func SaveEditorChangesButton(data models.NoteData, replacedId string) templ.Comp
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button class=\"appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-10 rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50\" data-on-save=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button class=\"appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-11 rounded shadow p-1 bg-green-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50\" data-on-save=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -303,9 +303,9 @@ func CancelEditorChangesButton(data models.NoteData, replacedId string) templ.Co
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var16 string
-		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("$_editor_" + replacedId + ".destroy();$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false")
+		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("detroyEditor($_editor_" + replacedId + ");$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editor.templ`, Line: 64, Col: 215}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editor.templ`, Line: 64, Col: 219}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
