@@ -61,7 +61,7 @@ templ CancelEditorChangesButton(data models.NoteData, replacedId string) {
 	<button
 		id={ "cancelBtn_" + replacedId }
 		class="appearance-none outline-none z-10 animate-action-button absolute bottom-2 right-2 rounded shadow p-1 bg-red-600 text-white cursor-pointer transition duration-300 focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
-		data-on-click__viewtransition={ "detroyEditor($_editor_" + replacedId + ");$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false" }
+		data-on-click__viewtransition={ "destroyEditor($_editor_" + replacedId + ");$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false" }
 		data-show={ "$_editorShowActions_" + replacedId + "" }
 		aria-label="Cancel Changes"
 		title="Cancel Changes"

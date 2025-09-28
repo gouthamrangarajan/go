@@ -124,7 +124,7 @@ templ EditorJsInitializeScript() {
                         .replaceAll('$','DOLLAR_SIGN').replaceAll('"','DOUBLE_QUOTE')
                         .replaceAll('\\','BACKSLASH');
         }
-        function destroyEditor(editorInstance){            
+        function destroyEditor(editorInstance){                        
             if(editorInstance && editorInstance.destroy){
                 editorInstance.destroy();
             }

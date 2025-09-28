@@ -303,9 +303,9 @@ func CancelEditorChangesButton(data models.NoteData, replacedId string) templ.Co
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var16 string
-		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("detroyEditor($_editor_" + replacedId + ");$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false")
+		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("destroyEditor($_editor_" + replacedId + ");$_editor_" + replacedId + "=initializeEditor('editor_" + replacedId + "','" + data.Content + "');$_editorShowActions_" + replacedId + "=false")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editor.templ`, Line: 64, Col: 219}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editor.templ`, Line: 64, Col: 220}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
