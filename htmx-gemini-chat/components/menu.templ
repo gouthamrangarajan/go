@@ -89,7 +89,7 @@ templ MenuItem(session models.ChatSession) {
 			x-bind:class={ "$store.data.currentSessionId==" + strconv.Itoa(session.Id) + "?'underline underline-offset-4':''" }
 			href={ templ.SafeURL(url) }
 			hx-get={ string(templ.SafeURL(url)) }
-			hx-swap="outerHTML transition:true"
+			hx-swap="outerHTML"
 			hx-target="#section"
 			hx-trigger="FETCH_FULL_PAGE_EVENT"
 			hx-push-url="true"
