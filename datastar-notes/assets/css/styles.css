@@ -1204,9 +1204,9 @@
       min-width: 50vw;
     }
   }
-  .xl\:pl-0 {
+  .xl\:pl-2 {
     @media (width >= 80rem) {
-      padding-left: calc(var(--spacing) * 0);
+      padding-left: calc(var(--spacing) * 2);
     }
   }
 }
