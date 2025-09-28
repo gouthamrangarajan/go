@@ -37,7 +37,12 @@ func main() {
 	router.Post("/notes/delete", deleteNoteHandler)
 	router.Get("/notes/reorder", reorderNotesUIHandler)
 	router.Post("/notes/reorder", saveReorderedNotesHandler)
-	router.Post("/notes/summarize", summarizeNoteHandler)
+	router.Post("/notes/summarize", func(responseWriter http.ResponseWriter, request *http.Request) {
+		summarizeNoteHandler(responseWriter, request, false)
+	})
+	router.Post("/notes/summarize/retry", func(responseWriter http.ResponseWriter, request *http.Request) {
+		summarizeNoteHandler(responseWriter, request, true)
+	})
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))

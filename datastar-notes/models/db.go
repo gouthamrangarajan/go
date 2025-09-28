@@ -9,6 +9,7 @@ type NoteData struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	UserId    string    `json:"user_id"`
 	Order     int       `json:"order"`
+	Summary   string    `json:"summary"`
 }
 
 type OTPVerificationResponse struct {

@@ -23,6 +23,11 @@ templ summarizeNotesModal() {
 				>Generating...</p>
 				<div class="flex items-center justify-end gap-2 w-full mt-5">
 					<button
+						data-indicator="_summarizingNote"
+						data-on-click="@post('/notes/summarize/retry')"
+						class="appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-teal-600 text-white transition duration-300 hover:opacity-90 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80"
+					>Re-Generate</button>
+					<button
 						class="appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-slate-200 transition duration-300 hover:bg-slate-300 focus:ring-1 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50 disabled:cursor-not-allowed disabled:opacity-80"
 						data-on-click__viewTransition="$showSummaryModal=false;"
 					>Close</button>
@@ -32,13 +37,17 @@ templ summarizeNotesModal() {
 	</div>
 }
 
-templ SummaryText(text string) {
+templ SummaryText(text string, isError bool) {
 	<div
 		id="summaryTxt"
 		style="view-transition-name:summary-text"
 		class="py-2 px-4 h-40 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 lg:h-80 "
 	>
-		<p data-show="!$_summarizingNote">{ text } </p>
+		if !isError {
+			<p data-show="!$_summarizingNote">{ text } </p>
+		} else {
+			<p data-show="!$_summarizingNote" class="text-red-600">{ text } </p>
+		}
 		<p
 			class="animate-pulse"
 			data-show="$_summarizingNote"

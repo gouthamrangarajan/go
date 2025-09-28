@@ -115,7 +115,7 @@ func GetNote(accessToken string, req models.UINote, channel chan<- models.NoteDa
 		channel <- response
 		return
 	}
-	data, _, err := client.From("notes").Select("id, title,order, content_editorjs, updated_at, user_id", "exact", false).Eq("id", req.Id).Execute()
+	data, _, err := client.From("notes").Select("id, title,order, content_editorjs,summary, updated_at, user_id", "exact", false).Eq("id", req.Id).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- response
@@ -282,6 +282,31 @@ func UpdateOrder(accessToken string, req models.ReorderNote, channel chan<- bool
 		return
 	}
 	_, count, err := client.From("notes").Update(map[string]any{"order": req.Info.NewIndex, "updated_at": time.Now()}, "minimal", "exact").Eq("id", req.Info.Id).Execute()
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- false
+		return
+	}
+	if count == 0 {
+		fmt.Printf("No records affected\n")
+		channel <- false
+		return
+	}
+	channel <- true
+}
+
+func UpdateSummary(accessToken string, req models.NoteData, channel chan<- bool) {
+	publishableKey := os.Getenv("SUPABASE_PUBLISHABLE_KEY")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	client, err := supabase.NewClient(apiUrl, publishableKey, &supabase.ClientOptions{
+		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
+	})
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- false
+		return
+	}
+	_, count, err := client.From("notes").Update(map[string]any{"summary": req.Summary, "updated_at": time.Now()}, "minimal", "exact").Eq("id", req.Id).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- false

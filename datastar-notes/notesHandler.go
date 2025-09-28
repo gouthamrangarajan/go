@@ -218,10 +218,16 @@ func saveReorderedNotesHandler(responseWriter http.ResponseWriter, request *http
 	}
 	responseWriter.WriteHeader(http.StatusOK)
 }
-func summarizeNoteHandler(responsWriter http.ResponseWriter, request *http.Request) {
+func summarizeNoteHandler(responsWriter http.ResponseWriter, request *http.Request, retry bool) {
 	accessToken := request.Context().Value(services.UserTokenKey).(string)
+
 	getNoteChannel := make(chan models.NoteData)
 	defer close(getNoteChannel)
+
+	saveSummaryChannel := make(chan bool)
+	defer close(saveSummaryChannel)
+	saveSummaryCalled := false
+
 	var uiRequest models.UINote
 	requestBody, err := io.ReadAll(request.Body)
 	if err != nil {
@@ -235,7 +241,8 @@ func summarizeNoteHandler(responsWriter http.ResponseWriter, request *http.Reque
 	}
 	go services.GetNote(accessToken, uiRequest, getNoteChannel)
 	note := <-getNoteChannel
-	if note.Content != "" {
+	summary := note.Summary
+	if (summary == "" || retry) && note.Content != "" {
 		geminiChannel := make(chan string)
 		defer close(geminiChannel)
 		geminiReqest := models.GeminiRequest{
@@ -250,10 +257,21 @@ func summarizeNoteHandler(responsWriter http.ResponseWriter, request *http.Reque
 			},
 		}
 		go services.CallGeminiAPI(geminiReqest, geminiChannel)
-		summary := <-geminiChannel
-		sse := datastar.NewSSE(responsWriter, request)
-		sse.PatchElementTempl(components.SummaryText(summary))
+		summary = <-geminiChannel
+		go services.UpdateSummary(accessToken, models.NoteData{Id: uiRequest.Id, Summary: summary}, saveSummaryChannel)
+		saveSummaryCalled = true
+	}
+	sse := datastar.NewSSE(responsWriter, request)
+	if summary != "" {
+		sse.PatchElementTempl(components.SummaryText(summary, false))
+		if saveSummaryCalled {
+			<-saveSummaryChannel
+		}
 		return
 	}
-	responsWriter.WriteHeader(http.StatusOK)
+	if note.Content == "" {
+		sse.PatchElementTempl(components.SummaryText("Note is too short or empty to summarize. Please add more content.", true), datastar.WithUseViewTransitions(true))
+	} else {
+		sse.PatchElementTempl(components.SummaryText("Failed to generate summary. Please try again later.", true), datastar.WithUseViewTransitions(true))
+	}
 }

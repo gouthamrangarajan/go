@@ -29,7 +29,7 @@ func summarizeNotesModal() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-0 left-0 bg-black/50 w-full h-full flex items-center justify-center z-10\" data-show=\"$showSummaryModal\" data-signals=\"{_summaryModalAbortController:new AbortController()}\" data-effect=\"$showSummaryModal?$_summaryModalAbortController=focusTrap('#summaryModal'):$_summaryModalAbortController.abort()\" style=\"display:none;\"><dialog open class=\"w-11/12 mx-auto animate-modal bg-white py-4 px-6 rounded flex flex-col md:w-8/12 lg:w-6/12\" id=\"summaryModal\" style=\"view-transition-name:delete-dialog\"><h1 class=\"text-lg font-semibold text-indigo-600 \">Summary</h1><div class=\"mt-4 flex flex-col\"><p id=\"summaryTxt\" class=\"py-2 px-4 animate-pulse h-40 lg:h-80 \" style=\"view-transition-name:summary-text\">Generating...</p><div class=\"flex items-center justify-end gap-2 w-full mt-5\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-slate-200 transition duration-300 hover:bg-slate-300 focus:ring-1 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50 disabled:cursor-not-allowed disabled:opacity-80\" data-on-click__viewTransition=\"$showSummaryModal=false;\">Close</button></div></div></dialog></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-0 left-0 bg-black/50 w-full h-full flex items-center justify-center z-10\" data-show=\"$showSummaryModal\" data-signals=\"{_summaryModalAbortController:new AbortController()}\" data-effect=\"$showSummaryModal?$_summaryModalAbortController=focusTrap('#summaryModal'):$_summaryModalAbortController.abort()\" style=\"display:none;\"><dialog open class=\"w-11/12 mx-auto animate-modal bg-white py-4 px-6 rounded flex flex-col md:w-8/12 lg:w-6/12\" id=\"summaryModal\" style=\"view-transition-name:delete-dialog\"><h1 class=\"text-lg font-semibold text-indigo-600 \">Summary</h1><div class=\"mt-4 flex flex-col\"><p id=\"summaryTxt\" class=\"py-2 px-4 animate-pulse h-40 lg:h-80 \" style=\"view-transition-name:summary-text\">Generating...</p><div class=\"flex items-center justify-end gap-2 w-full mt-5\"><button data-indicator=\"_summarizingNote\" data-on-click=\"@post('/notes/summarize/retry')\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-teal-600 text-white transition duration-300 hover:opacity-90 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:opacity-80\">Re-Generate</button> <button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-slate-200 transition duration-300 hover:bg-slate-300 focus:ring-1 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-50 disabled:cursor-not-allowed disabled:opacity-80\" data-on-click__viewTransition=\"$showSummaryModal=false;\">Close</button></div></div></dialog></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -37,7 +37,7 @@ func summarizeNotesModal() templ.Component {
 	})
 }
 
-func SummaryText(text string) templ.Component {
+func SummaryText(text string, isError bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -58,20 +58,48 @@ func SummaryText(text string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div id=\"summaryTxt\" style=\"view-transition-name:summary-text\" class=\"py-2 px-4 h-40 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 lg:h-80 \"><p data-show=\"!$_summarizingNote\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div id=\"summaryTxt\" style=\"view-transition-name:summary-text\" class=\"py-2 px-4 h-40 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-indigo-600 lg:h-80 \">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(text)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/summarizeNotesModal.templ`, Line: 41, Col: 42}
+		if !isError {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<p data-show=\"!$_summarizingNote\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(text)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/summarizeNotesModal.templ`, Line: 47, Col: 43}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<p data-show=\"!$_summarizingNote\" class=\"text-red-600\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(text)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/summarizeNotesModal.templ`, Line: 49, Col: 64}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><p class=\"animate-pulse\" data-show=\"$_summarizingNote\">Generating...</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<p class=\"animate-pulse\" data-show=\"$_summarizingNote\">Generating...</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
