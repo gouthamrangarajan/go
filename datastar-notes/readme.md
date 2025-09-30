@@ -41,7 +41,6 @@ To get started with the Claude Chat application, follow these steps:
    - SUPABASE_PUBLISHABLE_KEY
    - SUPABASE_SECRET_KEY
    - SUPABASE_API_URL
-   - SUPABASE_DATA_FETCH_URL
 
 4. Use Go & Templ (Terminal 1)
    ```bash
