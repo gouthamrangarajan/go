@@ -15,13 +15,12 @@ DataStar Notes is a project designed to help users manage and organize their not
 - Golang , templ , chi
 - Datastar
 - Editor js
-- Zero md
 - Tailwind, Open Props
 - Supabase
 
 ### Installation
 
-To get started with the Claude Chat application, follow these steps:
+To get started with the notes application, follow these steps:
 
 1. Clone the repository:
    ```bash
