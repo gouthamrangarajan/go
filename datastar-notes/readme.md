@@ -62,4 +62,4 @@ Open your browser and navigate to `http://http://127.0.0.1:7331/` to start creat
 
 [rg-notes](https://rg-notes.up.railway.app/)
 
-![screenshot](Datastar_Notes.png)
+![screenshot](screenshot.png)
