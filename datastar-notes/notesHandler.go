@@ -54,9 +54,7 @@ func updateNoteHandler(responseWriter http.ResponseWriter, request *http.Request
 		replacedId := components.ReplaceHypenInId(uiRequest.Id)
 		sse.PatchElementTempl(components.CancelEditorChangesButton(models.NoteData{Id: uiRequest.Id, Content: uiRequest.Content}, replacedId))
 	} else {
-		sse.PatchSignals([]byte("{errorMessage:'Error saving note. Please try again later.'}"))
-		time.Sleep(5 * time.Second)
-		sse.PatchSignals([]byte("{errorMessage:''}"))
+		handleErrorSignal(sse, "Error saving note. Please try again later.")
 	}
 }
 
@@ -117,9 +115,7 @@ func addNoteHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		time.Sleep(600 * time.Millisecond)
 		sse.ExecuteScript(fmt.Sprintf("document.getElementById('editorContainer_%v').scrollIntoView();", replacedId), datastar.WithExecuteScriptAutoRemove(true))
 	} else {
-		sse.PatchSignals([]byte("{errorMessage:'Error adding note. Please try again later.'}"))
-		time.Sleep(5 * time.Second)
-		sse.PatchSignals([]byte("{errorMessage:''}"))
+		handleErrorSignal(sse, "Error adding note. Please try again later.")
 	}
 }
 func deleteNoteHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -144,9 +140,7 @@ func deleteNoteHandler(responseWriter http.ResponseWriter, request *http.Request
 		sse.RemoveElement("#editorContainer_"+components.ReplaceHypenInId(uiRequest.Id), datastar.WithUseViewTransitions(true))
 		sse.PatchSignals([]byte("{showDeleteModal:false}"))
 	} else {
-		sse.PatchSignals([]byte("{errorMessage:'Error deleting note. Please try again later.'}"))
-		time.Sleep(5 * time.Second)
-		sse.PatchSignals([]byte("{errorMessage:''}"))
+		handleErrorSignal(sse, "Error deleting note. Please try again later.")
 	}
 }
 
@@ -286,4 +280,10 @@ func summarizeNoteHandler(responsWriter http.ResponseWriter, request *http.Reque
 	} else {
 		sse.PatchElementTempl(components.SummaryText("Failed to generate summary. Please try again later.", true), datastar.WithUseViewTransitions(true))
 	}
+}
+
+func handleErrorSignal(sse *datastar.ServerSentEventGenerator, message string) {
+	sse.PatchSignals([]byte("{errorMessage:'" + message + "'}"))
+	time.Sleep(5 * time.Second)
+	sse.PatchSignals([]byte("{errorMessage:''}"))
 }
