@@ -1,0 +1,11 @@
+package components
+
+templ errorMessage() {
+	<p
+		class="animate-action-button absolute bottom-2 left-2 py-2 px-4 rounded shadow-2xl bg-red-600 text-white font-semibold"
+		style="display:none"
+		data-show="$errorMessage!=''"
+		data-text="$errorMessage"
+		style="view-transition-name:error-message"
+	></p>
+}

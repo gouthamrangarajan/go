@@ -49,10 +49,14 @@ func updateNoteHandler(responseWriter http.ResponseWriter, request *http.Request
 	}
 	go services.UpdateContentFromEditorJs(accessToken, uiRequest, channel)
 	success := <-channel
+	sse := datastar.NewSSE(responseWriter, request)
 	if success {
 		replacedId := components.ReplaceHypenInId(uiRequest.Id)
-		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(components.CancelEditorChangesButton(models.NoteData{Id: uiRequest.Id, Content: uiRequest.Content}, replacedId))
+	} else {
+		sse.PatchSignals([]byte("{errorMessage:'Error saving note. Please try again later.'}"))
+		time.Sleep(5 * time.Second)
+		sse.PatchSignals([]byte("{errorMessage:''}"))
 	}
 }
 
@@ -106,12 +110,16 @@ func addNoteHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	defer close(insertChannel)
 	go services.InsertNote(accessToken, maxOrder+1, insertChannel)
 	note := <-insertChannel
+	sse := datastar.NewSSE(responseWriter, request)
 	if note.Id != "" {
-		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(components.Editor(note), datastar.WithModeAppend(), datastar.WithSelectorID("section"), datastar.WithUseViewTransitions(true))
 		replacedId := components.ReplaceHypenInId(note.Id)
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(600 * time.Millisecond)
 		sse.ExecuteScript(fmt.Sprintf("document.getElementById('editorContainer_%v').scrollIntoView();", replacedId), datastar.WithExecuteScriptAutoRemove(true))
+	} else {
+		sse.PatchSignals([]byte("{errorMessage:'Error adding note. Please try again later.'}"))
+		time.Sleep(5 * time.Second)
+		sse.PatchSignals([]byte("{errorMessage:''}"))
 	}
 }
 func deleteNoteHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -131,10 +139,14 @@ func deleteNoteHandler(responseWriter http.ResponseWriter, request *http.Request
 	}
 	go services.DeleteNote(accessToken, uiRequest, channel)
 	result := <-channel
+	sse := datastar.NewSSE(responseWriter, request)
 	if result {
-		sse := datastar.NewSSE(responseWriter, request)
 		sse.RemoveElement("#editorContainer_"+components.ReplaceHypenInId(uiRequest.Id), datastar.WithUseViewTransitions(true))
 		sse.PatchSignals([]byte("{showDeleteModal:false}"))
+	} else {
+		sse.PatchSignals([]byte("{errorMessage:'Error deleting note. Please try again later.'}"))
+		time.Sleep(5 * time.Second)
+		sse.PatchSignals([]byte("{errorMessage:''}"))
 	}
 }
 
