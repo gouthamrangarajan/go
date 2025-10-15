@@ -33,10 +33,8 @@ templ YTPlayer() {
                 },
                 events: {
                     'onReady': function(event){
-                        // console.log("Player is ready",event);
                     },
                     'onStateChange': function(event){
-                        // console.log("Player state changed",event,player);
                         if(event.data == YT.PlayerState.PLAYING ){
                             player.g.dispatchEvent(new CustomEvent('video-playing',{bubbles:true,detail:{videoId:vId}}));
                         }
