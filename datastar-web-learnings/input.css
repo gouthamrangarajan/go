@@ -1,0 +1,41 @@
+@import "tailwindcss";
+@plugin 'tailwind-scrollbar';
+
+
+@theme {
+    --color-background: #1A1A2E;
+    --color-primary: #E0E0E0;
+    --color-secondary: #8C9EFF;
+    --color-background-2: #282845;
+    --font-roboto: "Roboto", sans-serif;
+}
+
+.animate-card {
+    animation: card 0.6s var(--ease-elastic-out-5) forwards;
+}
+
+@keyframes card {
+    0% {
+        opacity: 0;
+        transform: translateY(15%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-loader {
+    animation: loader 2s var(--ease-spring-5) infinite;
+}
+
+@keyframes loader {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}

@@ -1,0 +1,112 @@
+package components
+
+import (
+	"datastar-web-learnings/models"
+	"strconv"
+	"strings"
+)
+
+func replaceSpecialCharsVideoId(videoId string) string {
+	return strings.ReplaceAll(videoId, "-", "")
+}
+
+templ Main() {
+	@layout() {
+		<header class="py-2 px-4 border-b border-secondary/20">
+			<div class="flex gap-2">
+				<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-play-icon lucide-square-play"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"></path></svg>
+				<div class="flex flex-col">
+					<span class="text-2xl font-semibold">Tech Tube</span>
+					<span class="text-secondary text-sm">My curated technology video collection</span>
+				</div>
+			</div>
+		</header>
+		<main
+			data-on-load="@get('/data/0')"
+			class="px-4 py-2 relative overflow-x-hidden"
+			data-signals="{currentlyPlayingVideoId:null}"
+			data-on-video-playing="$currentlyPlayingVideoId=evt.detail.videoId;"
+		>
+			<section class="grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
+			@loader("$_loading")
+		</main>
+	}
+}
+
+templ PlayerList(videos []models.VideoResponse) {
+	for idx,video := range videos {
+		@Player(video, idx)
+	}
+}
+
+templ Player(video models.VideoResponse, idx int) {
+	{{ animationDelayStyle := "" }}
+	{{ videoIdReplaced := replaceSpecialCharsVideoId(video.VideoId) }}
+	{{
+	switch idx {
+	case 0:
+		animationDelayStyle = "0"
+	case 1:
+		animationDelayStyle = "100ms"
+	case 2:
+		animationDelayStyle = "200ms"
+	case 3:
+		animationDelayStyle = "300ms"
+	case 4:
+		animationDelayStyle = "400ms"
+	case 5:
+		animationDelayStyle = "500ms"
+	case 6:
+		animationDelayStyle = "600ms"
+	case 7:
+		animationDelayStyle = "700ms"
+	case 8:
+		animationDelayStyle = "800ms"
+	case 9:
+		animationDelayStyle = "900ms"
+	default:
+		animationDelayStyle = "1000ms"
+	}
+	}}
+	<div
+		class={ " animate-card shadow bg-secondary/20 rounded-xl grid grid-cols-1 gap-1 overflow-hidden " }
+		style={ " opacity:0;animation-delay: " + animationDelayStyle }
+		data-signals={ "{_video_" + videoIdReplaced + ":null}" }
+		data-on-load={ "initYTPlayer('" + video.VideoId + "',0).then(player=>{$_video_" + videoIdReplaced + "=player;});" }
+		data-effect={ "'" + videoIdReplaced + "'!=$currentlyPlayingVideoId.replaceAll('-','') && $currentlyPlayingVideoId && $_video_" + videoIdReplaced + ".getPlayerState && $_video_" + videoIdReplaced + ".getPlayerState()==1 && $_video_" + videoIdReplaced + ".pauseVideo()" }
+	>
+		<div
+			class="h-64"
+			id={ "player_" + video.VideoId }
+		></div>
+		<div class="py-1 px-3 grid grid-cols-1 gap-1">
+			<h3 class="text-lg  font-semibold">{ video.Title }</h3>
+			<h4 class="text-secondary italic text-sm">{ video.Subtitle }</h4>
+		</div>
+	</div>
+}
+
+templ LoadMore(offset int) {
+	<div
+		id="loadMore"
+		data-indicator="_loading"
+		data-on-intersect__once={ "@get('/data/" + strconv.Itoa(offset) + "')" }
+	></div>
+}
+
+templ loader(dataShowSignal string) {
+	<div class="flex gap-2 items-center justify-center py-10" data-show={ dataShowSignal }>
+		<div
+			class="w-2 h-2 bg-secondary rounded-full animate-loader"
+			style="animation-delay: 0ms"
+		></div>
+		<div
+			class="w-2 h-2 bg-secondary rounded-full animate-loader"
+			style="animation-delay: 200ms"
+		></div>
+		<div
+			class="w-2 h-2 bg-secondary rounded-full animate-loader"
+			style="animation-delay: 400ms"
+		></div>
+	</div>
+}
