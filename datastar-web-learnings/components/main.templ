@@ -23,7 +23,7 @@ templ Main() {
 		</header>
 		<main
 			data-on-load="@get('/data/0')"
-			class="px-4 py-2 relative overflow-x-hidden"
+			class="px-4 py-2 relative overflow-x-hidden overflow-y-hidden"
 			data-signals="{currentlyPlayingVideoId:null}"
 			data-on-video-playing="$currentlyPlayingVideoId=evt.detail.videoId;"
 		>

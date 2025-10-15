@@ -254,6 +254,9 @@
   .overflow-y-auto {
     overflow-y: auto;
   }
+  .overflow-y-hidden {
+    overflow-y: hidden;
+  }
   .rounded-full {
     border-radius: calc(infinity * 1px);
   }
