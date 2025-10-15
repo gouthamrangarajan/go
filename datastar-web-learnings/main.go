@@ -42,15 +42,12 @@ func main() {
 		if err != nil {
 			noOfItems = 12
 		}
-		// fmt.Println("Fetching data with offset:", offset)
 		channel := make(chan []models.VideoResponse)
 		go services.GetVideos(request.Context(), models.GetVideosRequest{Limit: noOfItems, Offset: offset}, channel)
 		videos := <-channel
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(components.PlayerList(videos), datastar.WithSelector("section"), datastar.WithModeAppend())
-		// for _, video := range videos {
-		// 	sse.ExecuteScript("initYTPlayer('"+video.VideoId+"',0)", datastar.WithExecuteScriptAutoRemove(true))
-		// }
+
 		if len(videos) < noOfItems {
 			sse.RemoveElementByID("loadMore")
 			return
