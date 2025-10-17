@@ -1,7 +1,6 @@
 package components
 
 import (
-	"datastar-web-learnings/models"
 	"strconv"
 	"strings"
 )
@@ -31,59 +30,6 @@ templ Main() {
 			@loader("$_loading")
 		</main>
 	}
-}
-
-templ PlayerList(videos []models.VideoResponse) {
-	for idx,video := range videos {
-		@Player(video, idx)
-	}
-}
-
-templ Player(video models.VideoResponse, idx int) {
-	{{ animationDelayStyle := "" }}
-	{{ videoIdReplaced := replaceSpecialCharsVideoId(video.VideoId) }}
-	{{
-	switch idx {
-	case 0:
-		animationDelayStyle = "0"
-	case 1:
-		animationDelayStyle = "100ms"
-	case 2:
-		animationDelayStyle = "200ms"
-	case 3:
-		animationDelayStyle = "300ms"
-	case 4:
-		animationDelayStyle = "400ms"
-	case 5:
-		animationDelayStyle = "500ms"
-	case 6:
-		animationDelayStyle = "600ms"
-	case 7:
-		animationDelayStyle = "700ms"
-	case 8:
-		animationDelayStyle = "800ms"
-	case 9:
-		animationDelayStyle = "900ms"
-	default:
-		animationDelayStyle = "1000ms"
-	}
-	}}
-	<div
-		class={ " animate-card shadow bg-secondary/20 rounded-xl grid grid-cols-1 gap-1 overflow-hidden " }
-		style={ " opacity:0;animation-delay: " + animationDelayStyle }
-		data-signals={ "{_video_" + videoIdReplaced + ":null}" }
-		data-on-load={ "initYTPlayer('" + video.VideoId + "',0).then(player=>{$_video_" + videoIdReplaced + "=player;});" }
-		data-effect={ "'" + videoIdReplaced + "'!=$currentlyPlayingVideoId.replaceAll('-','') && $currentlyPlayingVideoId && $_video_" + videoIdReplaced + ".getPlayerState && $_video_" + videoIdReplaced + ".getPlayerState()==1 && $_video_" + videoIdReplaced + ".pauseVideo()" }
-	>
-		<div
-			class="h-64"
-			id={ "player_" + video.VideoId }
-		></div>
-		<div class="py-1 px-3 grid grid-cols-1 gap-1">
-			<h3 class="text-lg  font-semibold">{ video.Title }</h3>
-			<h4 class="text-secondary italic text-sm">{ video.Subtitle }</h4>
-		</div>
-	</div>
 }
 
 templ LoadMore(offset int) {
