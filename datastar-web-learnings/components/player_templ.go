@@ -248,14 +248,14 @@ func Tags(videoIdReplaced string, tags []string) templ.Component {
 			templ_7745c5c3_Var13 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"py-1 px-3 absolute top-0 left-0 w-full h-full overflow-hidden z-10 bg-background-2 transition duration-300 transform opacity-0 ease-(--ease-3) flex gap-1 items-start\" data-class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"py-1 px-3 absolute top-0 left-0 w-full h-full overflow-hidden bg-background-2 transition duration-300 transform opacity-0 ease-(--ease-3) flex gap-1 items-start\" data-class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var14 string
-		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("{'opacity-0 translate-y-[100%]':!$_video_" + videoIdReplaced + "_showTags,'opacity-100 translate-y-0':$_video_" + videoIdReplaced + "_showTags}")
+		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("{'opacity-0 translate-y-[100%]':!$_video_" + videoIdReplaced + "_showTags,'z-10 opacity-100 translate-y-0':$_video_" + videoIdReplaced + "_showTags}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/player.templ`, Line: 72, Col: 160}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/player.templ`, Line: 72, Col: 165}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {

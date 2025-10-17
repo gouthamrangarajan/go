@@ -68,8 +68,8 @@ templ Player(video models.VideoResponse, idx int) {
 
 templ Tags(videoIdReplaced string, tags []string) {
 	<div
-		class="py-1 px-3 absolute top-0 left-0 w-full h-full overflow-hidden z-10 bg-background-2 transition duration-300 transform opacity-0 ease-(--ease-3) flex gap-1 items-start"
-		data-class={ "{'opacity-0 translate-y-[100%]':!$_video_" + videoIdReplaced + "_showTags,'opacity-100 translate-y-0':$_video_" + videoIdReplaced + "_showTags}" }
+		class="py-1 px-3 absolute top-0 left-0 w-full h-full overflow-hidden bg-background-2 transition duration-300 transform opacity-0 ease-(--ease-3) flex gap-1 items-start"
+		data-class={ "{'opacity-0 translate-y-[100%]':!$_video_" + videoIdReplaced + "_showTags,'z-10 opacity-100 translate-y-0':$_video_" + videoIdReplaced + "_showTags}" }
 	>
 		<div class="flex gap-2 flex-wrap items-center justify-start flex-1">
 			for _,tag := range tags {
