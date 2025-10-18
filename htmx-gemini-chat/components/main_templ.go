@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "htmx-gemini-chat/models"
 
-func Main(conversations []models.ChatConversation, sessions []models.ChatSession, model models.Section) templ.Component {
+func Main(conversations []models.ChatConversation, model models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -63,7 +63,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = menu(sessions).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = menu(model.MenuSrchTxt).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -89,7 +89,7 @@ func Main(conversations []models.ChatConversation, sessions []models.ChatSession
 	})
 }
 
-func NewChatSession(session models.ChatSession) templ.Component {
+func NewChatSession(session models.ChatSession, menuSrchTxt string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -110,7 +110,7 @@ func NewChatSession(session models.ChatSession) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = MenuItem(session).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = MenuItem(session, menuSrchTxt).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

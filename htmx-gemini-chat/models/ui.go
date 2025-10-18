@@ -6,6 +6,7 @@ type Section struct {
 	ImageGeneration bool
 	IsOob           bool
 	HelperTextShow  bool
+	MenuSrchTxt     string
 }
 
 type PromptInput struct {

@@ -40,6 +40,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	prompt := request.FormValue("prompt")
 	fileData := request.FormValue("base64")
 	fileName := request.FormValue("fileName")
+	menuSrchTxt := request.FormValue("menuSrchTxt")
 	chatSessionIdStr := request.FormValue("chatSessionId")
 	chatSessionId, err := strconv.Atoi(chatSessionIdStr)
 
@@ -138,7 +139,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	if newChatSessionInserted {
 		// send new session UI
 		eventDataBuffer.Reset()
-		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(context.Background(), eventDataBuffer)
+		components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, menuSrchTxt).Render(context.Background(), eventDataBuffer)
 		sendMessageAndFlush("event: MENU_ITEM\ndata: "+eventDataBuffer.String()+"\n\n", response)
 
 		eventDataBuffer.Reset()
@@ -157,7 +158,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		rowsAffectedTitleUpdate := <-chatSessionTitleChannel
 		if rowsAffectedTitleUpdate > 0 {
 			eventDataBuffer.Reset()
-			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}).Render(context.Background(), eventDataBuffer)
+			components.MenuItem(models.ChatSession{Id: chatSessionId, Title: prompt}, menuSrchTxt).Render(context.Background(), eventDataBuffer)
 			sendMessageAndFlush("event: MENU_ITEM\ndata: "+eventDataBuffer.String()+"\n\n", response)
 		}
 	}

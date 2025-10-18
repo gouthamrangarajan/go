@@ -8,6 +8,7 @@ import (
 )
 
 func NewChatSessionHandler(response http.ResponseWriter, request *http.Request) {
+	menuSrchTxt := request.FormValue("srchTxt")
 	userId, ok := request.Context().Value(UserIDKey).(string)
 	if !ok {
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
@@ -23,7 +24,7 @@ func NewChatSessionHandler(response http.ResponseWriter, request *http.Request) 
 		go callGeminiEmbeddingAndUpdateSessionTitleVector(newChatSessionId, "New Chat", embeddingChannel)
 		<-embeddingChannel
 	}
-	component := components.NewChatSession(models.ChatSession{Id: newChatSessionId, Title: "New Chat"})
+	component := components.NewChatSession(models.ChatSession{Id: newChatSessionId, Title: "New Chat"}, menuSrchTxt)
 	component.Render(request.Context(), response)
 }
 

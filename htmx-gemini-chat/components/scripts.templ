@@ -66,11 +66,16 @@ templ bodyScript() {
                 });
             }
             document.body.addEventListener('htmx:afterSwap', function(event) {	
+                const menuSrchTxt=Alpine.store('data').menuSrchTxt;       
                 if(Alpine.store('data').addNewChatSessionProcessing){
                     Alpine.store('data').addNewChatSessionProcessing=false;
                     const newChatSessionId=document.getElementById("chatSessionId").value;
                     Alpine.store('data').currentSessionId=newChatSessionId;
-                    window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
+                    if (menuSrchTxt){
+                        window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId+"?menu_search="+menuSrchTxt);                     
+                    }else{
+                        window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
+                    }
                 } else if(Alpine.store('data').fullPageFetchProcessing){
                     Alpine.store('data').fullPageFetchProcessing=false;
                     domContentLoadedEvent();
@@ -78,13 +83,18 @@ templ bodyScript() {
                 else{                       
                     const chatSessionId=document.getElementById("chatSessionId").value;
                     Alpine.store('data').currentSessionId=chatSessionId;
-                    const chatSessionIdParsed=parseInt(chatSessionId);                    
-                     if(!window.location.pathname.endsWith("/"+chatSessionId)){
+                    const chatSessionIdParsed=parseInt(chatSessionId);          
+                    let shouldEndWith= "/"+chatSessionId;         
+                    if (menuSrchTxt)
+                    {                        
+                        shouldEndWith += "?search_menu="+menuSrchTxt;
+                    }
+                     if(!window.location.pathname.endsWith(shouldEndWith)){
                         if(isNaN(chatSessionIdParsed) || chatSessionIdParsed==0){
-                            window.history.replaceState({},document.title,window.location.origin);                     
+                            window.history.replaceState({},document.title,window.location.origin+"?search_menu="+menuSrchTxt);                     
                         }
                         else {
-                            window.history.replaceState({},document.title,window.location.origin+"/"+chatSessionId); 
+                            window.history.replaceState({},document.title,window.location.origin+shouldEndWith); 
                             domContentLoadedEvent();                    
                         }  
                      }
@@ -132,6 +142,7 @@ templ bodyScript() {
                     imgGeneration:false,
                     disableImgGeneration:false,
                     disableFileUpload:false,
+                    menuSrchTxt:'',
                     init(){                       
                        initAlpineStore();
                     },
@@ -191,7 +202,7 @@ templ bodyScript() {
                 });
                 Alpine.data('chatInput',()=>({
                     currentMessageId:-1,
-                    prompt:'',
+                    prompt:"",
                     base64:"",
                     fileName:"",  
                     abortController:new AbortController(),                             
@@ -280,7 +291,8 @@ templ bodyScript() {
                             fm.append("fileName",this.fileName);
                             fm.append("chatSessionId",this.$store.data.currentSessionId);   
                             fm.append("webSearch",this.$store.data.webSearch);    
-                            fm.append("imgGeneration",this.$store.data.imgGeneration);                                                 
+                            fm.append("imgGeneration",this.$store.data.imgGeneration);  
+                            fm.append("menuSrchTxt",this.$store.data.menuSrchTxt);                                               
                             try{
                                 let decodedValueMerged ="";                                
                                 const resp= await fetch('/send',{
@@ -402,8 +414,13 @@ templ bodyScript() {
             function initAlpineStore(){
                 Alpine.store('data').currentSessionId=document.getElementById("chatSessionId").value;
                 Alpine.store('data').fullPageFetchProcessing=false;
-                Alpine.store('data').webSearch= document.getElementsByName("webSearch")[0].value=='true';
+                Alpine.store('data').webSearch = document.getElementsByName("webSearch")[0].value=='true';
                 Alpine.store('data').imgGeneration=document.getElementsByName("imgGeneration")[0].value=='true';
+                new URLSearchParams(window.location.search).forEach((value,key)=>{
+                    if(key==='search_menu'){                        
+                        Alpine.store('data').menuSrchTxt=value;
+                    }
+                });
                 if (Alpine.store('data').imgGeneration){
                     Alpine.store('data').disableWebSearch=true;
                 }

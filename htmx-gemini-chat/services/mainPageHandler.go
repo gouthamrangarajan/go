@@ -43,12 +43,13 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 		go GetChatConversations(userId, chatSessionId, conversationsChannel)
 		conversations = <-conversationsChannel
 	}
+	menuSrchTxt := strings.TrimSpace(request.URL.Query().Get("search_menu"))
 	if request.Header.Get("HX-Request") == "true" {
 		time.Sleep(200 * time.Millisecond) // Simulate a delay for the sake of UX so that menu closes before the chat session is loaded
-		component := components.SectionAndChatSessionIdInput(conversations, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, IsOob: true})
+		component := components.SectionAndChatSessionIdInput(conversations, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, IsOob: true, MenuSrchTxt: menuSrchTxt})
 		component.Render(request.Context(), response)
 	} else {
-		component := components.Main(conversations, sessions, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, HelperTextShow: len(conversations) == 0})
+		component := components.Main(conversations, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, HelperTextShow: len(conversations) == 0, MenuSrchTxt: menuSrchTxt})
 		component.Render(request.Context(), response)
 	}
 }
@@ -62,18 +63,28 @@ func SearchMenuHandler(response http.ResponseWriter, request *http.Request) {
 	var sessions []models.ChatSession
 	srchTxt := strings.TrimSpace(request.URL.Query().Get("srchTxt"))
 	if srchTxt != "" {
-		embeddingRequest := GenerateGeminiEmbeddingRequest(srchTxt)
-		embeddingChannel := make(chan models.GeminiEmbeddingResponse)
-		defer close(embeddingChannel)
-		go CallGeminiEmbedding(embeddingRequest, embeddingChannel)
-		embeddingResponse := <-embeddingChannel
-
-		chatSessionsChannel := make(chan []models.ChatSession)
-		defer close(chatSessionsChannel)
-		go SearchChatSessions(userId, embeddingResponse.Embedding.Values, chatSessionsChannel)
-		sessions = <-chatSessionsChannel
+		sessions = filterSessionsWitheEmbeddings(struct {
+			UserId      string
+			MenuSrchTxt string
+		}{UserId: userId, MenuSrchTxt: srchTxt})
 	} else {
 		sessions = GetChatSessionsViaChannel(userId)
 	}
-	components.MenuContainer(sessions).Render(request.Context(), response)
+	components.MenuContainer(sessions, srchTxt).Render(request.Context(), response)
+}
+
+func filterSessionsWitheEmbeddings(model struct {
+	UserId      string
+	MenuSrchTxt string
+}) []models.ChatSession {
+	embeddingRequest := GenerateGeminiEmbeddingRequest(model.MenuSrchTxt)
+	embeddingChannel := make(chan models.GeminiEmbeddingResponse)
+	defer close(embeddingChannel)
+	go CallGeminiEmbedding(embeddingRequest, embeddingChannel)
+	embeddingResponse := <-embeddingChannel
+
+	chatSessionsChannel := make(chan []models.ChatSession)
+	defer close(chatSessionsChannel)
+	go SearchChatSessions(model.UserId, embeddingResponse.Embedding.Values, chatSessionsChannel)
+	return <-chatSessionsChannel
 }
