@@ -84,11 +84,8 @@ templ bodyScript() {
                     const chatSessionId=document.getElementById("chatSessionId").value;
                     Alpine.store('data').currentSessionId=chatSessionId;
                     const chatSessionIdParsed=parseInt(chatSessionId);          
-                    let shouldEndWith= "/"+chatSessionId;         
-                    if (menuSrchTxt)
-                    {                        
-                        shouldEndWith += "?search_menu="+menuSrchTxt;
-                    }
+                    let shouldEndWith= "/"+chatSessionId;                                                   
+                    shouldEndWith += "?search_menu="+menuSrchTxt;                    
                      if(!window.location.pathname.endsWith(shouldEndWith)){
                         if(isNaN(chatSessionIdParsed) || chatSessionIdParsed==0){
                             window.history.replaceState({},document.title,window.location.origin+"?search_menu="+menuSrchTxt);                     
