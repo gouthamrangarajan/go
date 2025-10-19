@@ -25,7 +25,7 @@ templ LoginMainEl() {
 			</span>
 			@GetVerificationCodeForm()
 		</section>
-		@loader("$verifyingOtp")
+		@loader("$verifyingOtp || $_sendingOtp")
 	</main>
 }
 
