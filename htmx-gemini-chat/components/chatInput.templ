@@ -20,7 +20,7 @@ templ chatInput(model models.Section) {
 			x-model="prompt"
 			x-on:keyup.enter="submitMessage($event,'section')"
 			x-on:click.stop
-			x-on:paste="checkAndHandlePasterForImageAndPdf($event)"
+			x-on:paste="checkAndHandlePasteForImageAndPdf($event)"
 		></textarea>
 		@fileUpload()
 		@toolsDropDown(model)
@@ -101,14 +101,14 @@ templ fileUpload() {
 	<input
 		type="file"
 		name="image"
-		x-ref="imageInput"
+		x-ref="imageOrPdfInput"
 		class="hidden"
 		accept="image/jpeg, image/png, image/webp, image/jpg, application/pdf"
-		x-on:change="fileInputChanged"
+		x-on:change="imageOrPdfFileInputChanged"
 	/>
 	<button
 		class="appearance-none outline-none p-2 rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80"
-		x-on:click="$refs.imageInput.click()"
+		x-on:click="$refs.imageOrPdfInput.click()"
 		x-bind:disabled="$store.data.promptProcessing"
 	>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">

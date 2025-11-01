@@ -53,16 +53,7 @@ templ bodyScript() {
                                 el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
                             }
                         }
-                    });
-                                      
-                    //Below is doubtful and never called
-                    // el.addEventListener('zero-md-error', function() {                          
-                    //     if(el.parentElement.parentElement.classList.contains("hidden")){
-                    //         el.parentElement.parentElement.classList.replace("hidden","flex");
-                    //     }else if(el.parentElement.parentElement.parentElement.classList.contains("hidden")){
-                    //         el.parentElement.parentElement.parentElement.classList.replace("hidden","flex");
-                    //     }
-                    // });
+                    });                                                          
                 });
             }
             document.body.addEventListener('htmx:afterSwap', function(event) {	
@@ -244,42 +235,14 @@ templ bodyScript() {
                             this.$store.data.promptProcessing=val;                            
                         }
                     },    
-                    checkAndHandlePasterForImageAndPdf(ev){
-                        const items = (ev.clipboardData || ev.originalEvent.clipboardData).items;
-                        for (const item of items) {
-                            if (item.kind === 'file') {
-                                const file = item.getAsFile();
-                                const reader = new FileReader();
-                                reader.addEventListener("load",() => {
-                                    if (typeof reader.result == "string") {
-                                        if(reader.result.startsWith("data:image/") 
-                                            || reader.result.startsWith("data:application/pdf")){
-                                            this.base64=reader.result;
-                                            this.fileName=file.name;
-                                        }else{
-                                            addErrorMessage('Invalid file type. Please upload an file with type (JPG, PNG, WEBP, PDF)')
-                                        }
-                                    }else{
-                                        addErrorMessage('Invalid file type. Please upload an file with type (JPG, PNG, WEBP, PDF)')
-                                    }
-                                });
-                                if (file.size <= 1024 * 1024) {//1 mb
-                                    reader.readAsDataURL(file);
-                                }else{
-                                    addErrorMessage('File size exceeds the limit of 1 MB');                                 
-                                }
-                            }
-                        }
-                    },                                    
-                    fileInputChanged(ev){
-                        const fl=ev.currentTarget.files[0];
+                    validateFileAndSetData(file){
                         const reader = new FileReader();
                         reader.addEventListener("load",() => {
                             if (typeof reader.result == "string") {
                                 if(reader.result.startsWith("data:image/") 
                                     || reader.result.startsWith("data:application/pdf")){
                                     this.base64=reader.result;
-                                    this.fileName=fl.name;
+                                    this.fileName=file.name;
                                 }else{
                                     addErrorMessage('Invalid file type. Please upload an file with type (JPG, PNG, WEBP, PDF)')
                                 }
@@ -287,11 +250,25 @@ templ bodyScript() {
                                 addErrorMessage('Invalid file type. Please upload an file with type (JPG, PNG, WEBP, PDF)')
                             }
                         });
-                        if (fl.size <= 1024 * 1024) {//1 mb
-                            reader.readAsDataURL(fl);
+                        if (file.size <= 1024 * 1024) {//1 mb
+                            reader.readAsDataURL(file);
                         }else{
                             addErrorMessage('File size exceeds the limit of 1 MB');                                 
                         }
+                    },
+                    checkAndHandlePasteForImageAndPdf(ev){
+                        const items = (ev.clipboardData || ev.originalEvent.clipboardData).items;
+                        for (const item of items) {
+                            if (item.kind === 'file') {
+                                const file = item.getAsFile();
+                                this.validateFileAndSetData(file);
+                                break;
+                            }
+                        }
+                    },                                    
+                    imageOrPdfFileInputChanged(ev){
+                        const fl=ev.currentTarget.files[0];
+                        this.validateFileAndSetData(fl);
                     },
                     clearFileInput(){         
                         if(document.startViewTransition){
@@ -304,7 +281,7 @@ templ bodyScript() {
                             this.base64='';
                             this.fileName=''; 
                         }                        
-                        this.$refs.imageInput.value=''
+                        this.$refs.imageOrPdfInput.value=''
                     },
                     async submitMessage(ev,idToAppendData){
                         if(!ev.shiftKey && this.prompt.trim()!='' && !this.$store.data.promptProcessing){
