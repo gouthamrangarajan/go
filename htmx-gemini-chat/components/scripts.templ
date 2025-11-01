@@ -244,7 +244,7 @@ templ bodyScript() {
                             this.$store.data.promptProcessing=val;                            
                         }
                     },    
-                    checkAndHandlePasterForImage(ev){
+                    checkAndHandlePasterForImageAndPdf(ev){
                         const items = (ev.clipboardData || ev.originalEvent.clipboardData).items;
                         for (const item of items) {
                             if (item.kind === 'file') {

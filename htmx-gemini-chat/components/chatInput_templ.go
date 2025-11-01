@@ -55,7 +55,7 @@ func chatInput(model models.Section) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<textarea class=\"appearance-none outline-none field-sizing-content min-h-22 max-h-[50vh] w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4\" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"prompt\" x-on:keyup.enter=\"submitMessage($event,'section')\" x-on:click.stop x-on:paste=\"checkAndHandlePasterForImage($event)\"></textarea>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<textarea class=\"appearance-none outline-none field-sizing-content min-h-22 max-h-[50vh] w-full py-1 px-3 flex-1 resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-lime-500 placeholder:text-gray-500 dark:placeholder:text-gray-400 lg:py-2 lg:px-4\" placeholder=\"Send a message\" rows=\"3\" name=\"prompt\" x-model=\"prompt\" x-on:keyup.enter=\"submitMessage($event,'section')\" x-on:click.stop x-on:paste=\"checkAndHandlePasterForImageAndPdf($event)\"></textarea>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
