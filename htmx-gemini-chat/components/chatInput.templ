@@ -20,6 +20,7 @@ templ chatInput(model models.Section) {
 			x-model="prompt"
 			x-on:keyup.enter="submitMessage($event,'section')"
 			x-on:click.stop
+			x-on:paste="checkAndHandlePasterForImage($event)"
 		></textarea>
 		@fileUpload()
 		@toolsDropDown(model)

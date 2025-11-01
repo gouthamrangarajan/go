@@ -243,7 +243,34 @@ templ bodyScript() {
                         else{
                             this.$store.data.promptProcessing=val;                            
                         }
-                    },                                        
+                    },    
+                    checkAndHandlePasterForImage(ev){
+                        const items = (ev.clipboardData || ev.originalEvent.clipboardData).items;
+                        for (const item of items) {
+                            if (item.kind === 'file') {
+                                const file = item.getAsFile();
+                                const reader = new FileReader();
+                                reader.addEventListener("load",() => {
+                                    if (typeof reader.result == "string") {
+                                        if(reader.result.startsWith("data:image/") 
+                                            || reader.result.startsWith("data:application/pdf")){
+                                            this.base64=reader.result;
+                                            this.fileName=file.name;
+                                        }else{
+                                            addErrorMessage('Invalid file type. Please upload an file with type (JPG, PNG, WEBP, PDF)')
+                                        }
+                                    }else{
+                                        addErrorMessage('Invalid file type. Please upload an file with type (JPG, PNG, WEBP, PDF)')
+                                    }
+                                });
+                                if (file.size <= 1024 * 1024) {//1 mb
+                                    reader.readAsDataURL(file);
+                                }else{
+                                    addErrorMessage('File size exceeds the limit of 1 MB');                                 
+                                }
+                            }
+                        }
+                    },                                    
                     fileInputChanged(ev){
                         const fl=ev.currentTarget.files[0];
                         const reader = new FileReader();
