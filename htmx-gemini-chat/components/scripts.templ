@@ -63,7 +63,7 @@ templ bodyScript() {
                     const newChatSessionId=document.getElementById("chatSessionId").value;
                     Alpine.store('data').currentSessionId=newChatSessionId;
                     if (menuSrchTxt){
-                        window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId+"?menu_search="+menuSrchTxt);                     
+                        window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId+"?search_menu="+menuSrchTxt);                     
                     }else{
                         window.history.replaceState({},document.title,window.location.origin+"/"+newChatSessionId);                     
                     }
