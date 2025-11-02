@@ -39,7 +39,7 @@ templ searchInput() {
 	<div class="flex gap-1 transition duration-300 rounded items-center border border-primary py-2 px-4 w-full focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background md:w-7/12 lg:w-6/12 xl:w-5/12">
 		<input
 			type="text"
-			data-on-input__debounce.600ms="@get('/search/'+evt.target.value)"
+			data-on-input__debounce.500ms="@get('/search/'+evt.target.value)"
 			class="appearance-none outline-none flex-1 placeholder:text-secondary/70"
 			placeholder="Search..."
 			data-indicator="_searching"
