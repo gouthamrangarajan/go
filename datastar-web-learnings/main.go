@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
 	"github.com/joho/godotenv"
 )
 
@@ -17,14 +19,21 @@ func main() {
 		fmt.Println("Loaded .env file successfully")
 	}
 	router := chi.NewRouter()
+	dataRouter := chi.NewRouter()
+
 	router.Use(middleware.Logger)
 	router.Use(middleware.Compress(5))
+	router.Use(middleware.Recoverer)
+
+	dataRouter.Use(httprate.LimitByIP(3, 5*time.Second)) // 3 request in 5 seconds
+
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
 	})
 	router.Get("/", landingPageHandler)
-	router.Get("/data/{offset}", landingPageDataHandler)
-	router.Get("/search/", emptySearchHandler)
-	router.Get("/search/{query}", searchHandler)
+	dataRouter.Get("/data/{offset}", landingPageDataHandler)
+	dataRouter.Get("/search/", emptySearchHandler)
+	dataRouter.Get("/search/{query}", searchHandler)
+	router.Mount("/", dataRouter)
 	http.ListenAndServe(":3000", router)
 }
