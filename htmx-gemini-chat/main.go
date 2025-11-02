@@ -22,6 +22,7 @@ func main() {
 	}
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
 	router.Use(middlewares.Authorization)
 	router.Post("/send", services.PromptHandler)
 
