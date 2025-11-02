@@ -11,7 +11,7 @@ func replaceSpecialCharsVideoId(videoId string) string {
 
 templ Main() {
 	@layout() {
-		<header class="py-2 px-4 border-b border-secondary/20">
+		<header class="py-2 px-4 border-b border-secondary/20 flex gap-2 items-center w-full justify-between">
 			<div class="flex gap-2">
 				<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-play-icon lucide-square-play"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"></path></svg>
 				<div class="flex flex-col">
@@ -22,14 +22,30 @@ templ Main() {
 		</header>
 		<main
 			data-on-load="@get('/data/0')"
-			class="px-4 py-2 relative overflow-x-hidden overflow-y-hidden"
+			class="px-4 py-2 relative overflow-x-hidden overflow-y-hidden flex flex-col gap-2 items-center"
 			data-signals="{currentlyPlayingVideoId:null}"
 			data-on-video-playing="$currentlyPlayingVideoId=evt.detail.videoId;"
 		>
+			@searchInput()
 			<section class="grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
-			@loader("$_loading")
+			<div class="py-10">
+				@loader("$_loading")
+			</div>
 		</main>
 	}
+}
+
+templ searchInput() {
+	<div class="flex gap-1 transition duration-300 rounded items-center border border-primary py-2 px-4 w-full focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-background md:w-7/12 lg:w-6/12 xl:w-5/12">
+		<input
+			type="text"
+			data-on-input__debounce.600ms="@get('/search/'+evt.target.value)"
+			class="appearance-none outline-none flex-1 placeholder:text-secondary/70"
+			placeholder="Search..."
+			data-indicator="_searching"
+		/>
+		@loader("$_searching")
+	</div>
 }
 
 templ LoadMore(offset int) {
@@ -41,7 +57,7 @@ templ LoadMore(offset int) {
 }
 
 templ loader(dataShowSignal string) {
-	<div class="flex gap-2 items-center justify-center py-10" data-show={ dataShowSignal }>
+	<div class="flex gap-2 items-center justify-center" data-show={ dataShowSignal }>
 		<div
 			class="w-2 h-2 bg-secondary rounded-full animate-loader"
 			style="animation-delay: 0ms"
