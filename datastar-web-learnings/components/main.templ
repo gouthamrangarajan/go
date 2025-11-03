@@ -62,7 +62,7 @@ templ LoadMore(offset int) {
 }
 
 templ loader(dataShowSignal string) {
-	<div class="flex gap-2 items-center justify-center" data-show={ dataShowSignal }>
+	<div class="flex gap-2 items-center justify-center" data-show={ dataShowSignal } style="display:none;">
 		<div
 			class="w-2 h-2 bg-secondary rounded-full animate-loader"
 			style="animation-delay: 0ms"

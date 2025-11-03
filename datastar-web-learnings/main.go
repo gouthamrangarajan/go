@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -25,7 +27,19 @@ func main() {
 	router.Use(middleware.Compress(5))
 	router.Use(middleware.Recoverer)
 
-	dataRouter.Use(httprate.LimitByIP(3, 5*time.Second)) // 3 request in 5 seconds
+	rateLimitSecondsStr := os.Getenv("RATE_LIMIT_SECONDS")
+	rateLimitRequestsStr := os.Getenv("RATE_LIMIT_REQUESTS")
+
+	rateLimitSeconds, err := strconv.Atoi(rateLimitSecondsStr)
+	if err != nil {
+		rateLimitSeconds = 5
+	}
+	rateLimitRequests, err := strconv.Atoi(rateLimitRequestsStr)
+	if err != nil {
+		rateLimitRequests = 10
+	}
+
+	dataRouter.Use(httprate.LimitByIP(rateLimitRequests, time.Duration(rateLimitSeconds)*time.Second)) // 10 request in 5 seconds
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
