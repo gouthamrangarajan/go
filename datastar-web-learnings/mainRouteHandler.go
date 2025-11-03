@@ -54,7 +54,8 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	videoIds := <-pineconeChannel
 	if len(videoIds) == 0 {
 		sse.PatchElementTempl(components.PlayerList([]models.VideoResponse{}), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
-		sse.RemoveElementByID("loadMore")
+		// sse.RemoveElementByID("loadMore")
+		sse.ExecuteScript("document.getElementById('loadMore')?.remove();", datastar.WithExecuteScriptAutoRemove(true))
 		return
 	}
 
@@ -63,7 +64,8 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	go services.FilterVideos(request.Context(), videoIds, dbChannel)
 	videos := <-dbChannel
 	sse.PatchElementTempl(components.PlayerList(videos), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
-	sse.RemoveElementByID("loadMore")
+	// sse.RemoveElementByID("loadMore")
+	sse.ExecuteScript("document.getElementById('loadMore')?.remove();", datastar.WithExecuteScriptAutoRemove(true))
 }
 
 func loadVideosWithOffset(offset int, append bool, sse *datastar.ServerSentEventGenerator) {
@@ -82,7 +84,8 @@ func loadVideosWithOffset(offset int, append bool, sse *datastar.ServerSentEvent
 	}
 
 	if len(videos) < noOfItems {
-		sse.RemoveElementByID("loadMore")
+		// sse.RemoveElementByID("loadMore")
+		sse.ExecuteScript("document.getElementById('loadMore')?.remove();", datastar.WithExecuteScriptAutoRemove(true))
 		return
 	}
 	if offset == 0 {
