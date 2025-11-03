@@ -479,6 +479,11 @@
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
   }
+  .focus\:ring-primary {
+    &:focus {
+      --tw-ring-color: var(--color-primary);
+    }
+  }
   .focus\:ring-red-300 {
     &:focus {
       --tw-ring-color: var(--color-red-300);
