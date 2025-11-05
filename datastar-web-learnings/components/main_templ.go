@@ -58,7 +58,7 @@ func Main() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<section class=\"grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3\"></section><div class=\"py-10\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<section class=\"w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3\"></section><div class=\"py-10\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
