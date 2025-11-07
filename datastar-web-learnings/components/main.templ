@@ -23,7 +23,7 @@ templ Main() {
 		<main
 			data-indicator="_firstLoad"
 			data-on-load="new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')"
-			class="px-4 py-2 relative overflow-x-hidden overflow-y-hidden flex flex-col gap-2 items-center"
+			class="mt-1 px-4 py-2 relative overflow-x-hidden overflow-y-hidden flex flex-col gap-2 items-center"
 			data-signals="{currentlyPlayingVideoId:null}"
 			data-on-video-playing="$currentlyPlayingVideoId=evt.detail.videoId;"
 		>
@@ -43,7 +43,7 @@ templ searchInput() {
 		</svg>
 		<input
 			type="text"
-			data-on-input__debounce.500ms="window.history.replaceState({},document.title,window.location.origin+'/?search='+evt.target.value);@get('/search/'+evt.target.value)"
+			data-on-input__debounce.300ms="window.history.replaceState({},document.title,window.location.origin+'/?search='+evt.target.value);@get('/search/'+evt.target.value)"
 			class="appearance-none outline-none flex-1 placeholder:text-secondary/70"
 			placeholder="Search..."
 			data-indicator="_searching"
@@ -79,6 +79,11 @@ templ loader(dataShowSignal string) {
 	</div>
 }
 
-templ NoDataFound() {
-	<p class="text-center text-red-300 font-semibold animate-card">No data found matching search criteria...</p>
+templ NoDataFound(message string) {
+	<p
+		class="pt-10 text-center text-red-300 font-semibold animate-card col-span-1 md:col-span-2 xl:col-span-3"
+		style="view-transition-name:no-data-found-msg"
+	>
+		{ message }
+	</p>
 }

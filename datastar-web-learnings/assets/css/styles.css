@@ -192,6 +192,12 @@
   .z-10 {
     z-index: 10;
   }
+  .col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+  .mt-1 {
+    margin-top: calc(var(--spacing) * 1);
+  }
   .scrollbar-thin {
     &::-webkit-scrollbar-track {
       background-color: var(--scrollbar-track);
@@ -369,6 +375,12 @@
   .py-10 {
     padding-block: calc(var(--spacing) * 10);
   }
+  .pt-10 {
+    padding-top: calc(var(--spacing) * 10);
+  }
+  .text-center {
+    text-align: center;
+  }
   .font-roboto {
     font-family: var(--font-roboto);
   }
@@ -494,6 +506,11 @@
       --tw-ring-color: var(--color-secondary);
     }
   }
+  .md\:col-span-2 {
+    @media (width >= 48rem) {
+      grid-column: span 2 / span 2;
+    }
+  }
   .md\:w-7\/12 {
     @media (width >= 48rem) {
       width: calc(7/12 * 100%);
@@ -507,6 +524,11 @@
   .lg\:w-6\/12 {
     @media (width >= 64rem) {
       width: calc(6/12 * 100%);
+    }
+  }
+  .xl\:col-span-3 {
+    @media (width >= 80rem) {
+      grid-column: span 3 / span 3;
     }
   }
   .xl\:w-5\/12 {

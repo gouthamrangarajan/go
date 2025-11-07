@@ -46,7 +46,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	openAIResponse := <-openAIResponseChannel
 	if !openAIResponse {
 		fmt.Printf("Query not related to technology topics: %v\n", query)
-		sse.PatchElementTempl(components.NoDataFound(), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.NoDataFound("Looks like your search isn’t technology-related. Please try a tech-related query."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 		removeLoaderMore(sse)
 		return
 	}
@@ -56,7 +56,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	vector := <-openAIVectorChannel
 	if vector == nil {
 		fmt.Printf("No embedding vector received from OpenAI for %v\n", query)
-		sse.PatchElementTempl(components.NoDataFound(), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.NoDataFound("No technology videos found matching your search."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 		removeLoaderMore(sse)
 		return
 	}
@@ -65,8 +65,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	go services.QueryPineconeDb(vector, pineconeChannel)
 	videoIds := <-pineconeChannel
 	if len(videoIds) == 0 {
-		sse.PatchElementTempl(components.PlayerList([]models.VideoResponse{}), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
-		// sse.RemoveElementByID("loadMore")
+		sse.PatchElementTempl(components.NoDataFound("No technology videos found matching your search."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 		removeLoaderMore(sse)
 		return
 	}
@@ -75,12 +74,14 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	defer close(dbChannel)
 	go services.FilterVideos(request.Context(), videoIds, dbChannel)
 	videos := <-dbChannel
-	sse.PatchElementTempl(components.PlayerList(videos), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
-	// sse.RemoveElementByID("loadMore")
+	if len(videos) == 0 {
+		sse.PatchElementTempl(components.NoDataFound("No technology videos found matching your search."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
+	} else {
+		sse.PatchElementTempl(components.PlayerList(videos), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
+	}
 	removeLoaderMore(sse)
 }
 func removeLoaderMore(sse *datastar.ServerSentEventGenerator) {
-	// sse.RemoveElementByID("loadMore")
 	sse.ExecuteScript("document.getElementById('loadMore')?.remove();", datastar.WithExecuteScriptAutoRemove(true))
 }
 func loadVideosWithOffset(offset int, append bool, sse *datastar.ServerSentEventGenerator) {
