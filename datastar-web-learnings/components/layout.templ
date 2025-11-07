@@ -17,11 +17,33 @@ templ layout() {
 			<link href="/assets/css/styles.css" rel="stylesheet"/>
 			<link href="/assets/css/open-props.min.css" rel="stylesheet"/>
 		</head>
-		<body class="w-full h-full font-roboto bg-background text-primary relative overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2">
+		<body
+			class="w-full h-full font-roboto bg-background text-primary relative overflow-x-hidden scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
+			data-signals="{_showLogin: false}"
+			data-class="{ 'overflow-y-hidden': $_showLogin, 'overflow-y-auto': !$_showLogin }"
+		>
 			{ children... }
+			@login()
 			<script type="module" src="/assets/scripts/data-star.min.js"></script>
+			@scripts.FocusTrap()
 			@scripts.AddYTPlayerScript()
 			@scripts.YTPlayer()
+			<script type="module">
+			    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'
+				import { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'
+				const firebaseApp=initializeApp({apiKey: 'AIzaSyD7kPSuaLnsaYqYqZWULRSQlcOckwP8AJE',
+									authDomain: 'weblearnings-e679a.firebaseapp.com',
+									databaseURL: 'https://weblearnings-e679a.firebaseio.com',
+									projectId: 'weblearnings-e679a',
+									storageBucket: 'weblearnings-e679a.appspot.com',
+									messagingSenderId: '752494598086',
+									appId: '1:752494598086:web:7efe252503205699bac4c7',});
+  				window.AUTH=getAuth(firebaseApp);
+				window.LOGIN=signInWithEmailAndPassword;
+				onAuthStateChanged(window.AUTH,(user)=>{
+					window.dispatchEvent(new Event('firebase-loaded'));
+				});
+			</script>
 		</body>
 	</html>
 }

@@ -39,3 +39,48 @@
         transform: scale(1);
     }
 }
+
+::view-transition-new(login-modal) {
+    animation: modal 0.6s var(--ease-elastic-out-5) forwards;
+}
+
+::view-transition-old(login-modal) {
+    animation: modal-out 0.2s var(--ease-out-5) forwards;
+}
+
+@keyframes modal {
+    0% {
+        opacity: 0;
+        transform: translateY(-15%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modal-out {
+    to {
+        opacity: 0;
+        transform: translateY(-15%);
+    }
+}
+
+.animate-result {
+    animation: result 0.5s var(--ease-elastic-out-5) forwards;
+}
+
+@keyframes result {
+    0% {
+        opacity: 0;
+        transform: scaleY(0.8);
+        transform-origin: top;
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+        transform-origin: top;
+    }
+}

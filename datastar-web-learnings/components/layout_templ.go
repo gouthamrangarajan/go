@@ -31,7 +31,7 @@ func layout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Collection of You Tube videos regarding front end frameworks\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/svg\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Collection of You Tube videos regarding front end frameworks\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/svg\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-x-hidden scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2\" data-signals=\"{_showLogin: false}\" data-class=\"{ 'overflow-y-hidden': $_showLogin, 'overflow-y-auto': !$_showLogin }\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,7 +39,15 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = login().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script type=\"module\" src=\"/assets/scripts/data-star.min.js\"></script>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = scripts.FocusTrap().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -51,7 +59,7 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"module\">\n\t\t\t    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'\n\t\t\t\timport { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'\n\t\t\t\tconst firebaseApp=initializeApp({apiKey: 'AIzaSyD7kPSuaLnsaYqYqZWULRSQlcOckwP8AJE',\n\t\t\t\t\t\t\t\t\tauthDomain: 'weblearnings-e679a.firebaseapp.com',\n\t\t\t\t\t\t\t\t\tdatabaseURL: 'https://weblearnings-e679a.firebaseio.com',\n\t\t\t\t\t\t\t\t\tprojectId: 'weblearnings-e679a',\n\t\t\t\t\t\t\t\t\tstorageBucket: 'weblearnings-e679a.appspot.com',\n\t\t\t\t\t\t\t\t\tmessagingSenderId: '752494598086',\n\t\t\t\t\t\t\t\t\tappId: '1:752494598086:web:7efe252503205699bac4c7',});\n  \t\t\t\twindow.AUTH=getAuth(firebaseApp);\n\t\t\t\twindow.LOGIN=signInWithEmailAndPassword;\n\t\t\t\tonAuthStateChanged(window.AUTH,(user)=>{\n\t\t\t\t\twindow.dispatchEvent(new Event('firebase-loaded'));\n\t\t\t\t});\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
