@@ -21,6 +21,7 @@ templ Main() {
 			</div>
 		</header>
 		<main
+			data-indicator="_firstLoad"
 			data-on-load="new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')"
 			class="px-4 py-2 relative overflow-x-hidden overflow-y-hidden flex flex-col gap-2 items-center"
 			data-signals="{currentlyPlayingVideoId:null}"
@@ -49,7 +50,7 @@ templ searchInput() {
 			data-bind="_search"
 			data-on-load="new URLSearchParams(window.location.search).get('search')?$_search=new URLSearchParams(window.location.search).get('search'):$_search=''"
 		/>
-		@loader("$_searching")
+		@loader("$_searching || $_firstLoad")
 	</div>
 }
 
@@ -76,4 +77,8 @@ templ loader(dataShowSignal string) {
 			style="animation-delay: 400ms"
 		></div>
 	</div>
+}
+
+templ NoDataFound() {
+	<p class="text-center text-red-300 font-semibold animate-card">No data found matching search criteria...</p>
 }

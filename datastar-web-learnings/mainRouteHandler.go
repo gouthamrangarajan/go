@@ -40,12 +40,24 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		loadVideosWithOffset(0, false, sse)
 		return
 	}
-	openAIChannel := make(chan []float32)
-	defer close(openAIChannel)
-	go services.GetOpenAIEmbeddings(query, openAIChannel)
-	vector := <-openAIChannel
+	openAIResponseChannel := make(chan bool)
+	defer close(openAIResponseChannel)
+	go services.VerifyTechnologyTopicsSearch(query, openAIResponseChannel)
+	openAIResponse := <-openAIResponseChannel
+	if !openAIResponse {
+		fmt.Printf("Query not related to technology topics: %v\n", query)
+		sse.PatchElementTempl(components.NoDataFound(), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
+		removeLoaderMore(sse)
+		return
+	}
+	openAIVectorChannel := make(chan []float32)
+	defer close(openAIVectorChannel)
+	go services.GetOpenAIEmbeddings(query, openAIVectorChannel)
+	vector := <-openAIVectorChannel
 	if vector == nil {
-		fmt.Printf("No embedding vector received from OpenAI\n")
+		fmt.Printf("No embedding vector received from OpenAI for %v\n", query)
+		sse.PatchElementTempl(components.NoDataFound(), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
+		removeLoaderMore(sse)
 		return
 	}
 	pineconeChannel := make(chan []string)
@@ -55,7 +67,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	if len(videoIds) == 0 {
 		sse.PatchElementTempl(components.PlayerList([]models.VideoResponse{}), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 		// sse.RemoveElementByID("loadMore")
-		sse.ExecuteScript("document.getElementById('loadMore')?.remove();", datastar.WithExecuteScriptAutoRemove(true))
+		removeLoaderMore(sse)
 		return
 	}
 
@@ -65,9 +77,12 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	videos := <-dbChannel
 	sse.PatchElementTempl(components.PlayerList(videos), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 	// sse.RemoveElementByID("loadMore")
+	removeLoaderMore(sse)
+}
+func removeLoaderMore(sse *datastar.ServerSentEventGenerator) {
+	// sse.RemoveElementByID("loadMore")
 	sse.ExecuteScript("document.getElementById('loadMore')?.remove();", datastar.WithExecuteScriptAutoRemove(true))
 }
-
 func loadVideosWithOffset(offset int, append bool, sse *datastar.ServerSentEventGenerator) {
 	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
 	noOfItems, err := strconv.Atoi(noOfItemsStr)
