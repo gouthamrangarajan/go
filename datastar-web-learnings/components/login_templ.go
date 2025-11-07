@@ -38,7 +38,7 @@ func login() templ.Component {
                                 const targetEl=evt.currentTarget;
                                 $_loginError=false;
                                  LOGIN(AUTH,
-                                    new FormData(evt.currentTarget).get('username'),
+                                    new FormData(evt.currentTarget).get('username').trim(),
                                     new FormData(evt.currentTarget).get('password'))
                                 .then(result=>{                                    
                                     if(result && result.user && result.user!=null){
