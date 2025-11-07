@@ -43,7 +43,7 @@ templ searchInput() {
 		</svg>
 		<input
 			type="text"
-			data-on-input__debounce.300ms="window.history.replaceState({},document.title,window.location.origin+'/?search='+evt.target.value);@get('/search/'+evt.target.value)"
+			data-on-input__debounce.500ms="window.history.replaceState({},document.title,window.location.origin+'/?search='+evt.target.value);@get('/search/'+evt.target.value)"
 			class="appearance-none outline-none flex-1 placeholder:text-secondary/70"
 			placeholder="Search..."
 			data-indicator="_searching"
