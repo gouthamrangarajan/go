@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -76,7 +77,11 @@ func QueryPineconeDb(vector []float32, channel chan<- []string) {
 		channel <- resp
 		return
 	}
+	sort.Slice(pineconeResponse.Matches, func(i, j int) bool {
+		return pineconeResponse.Matches[i].Score > pineconeResponse.Matches[j].Score
+	})
 	for _, match := range pineconeResponse.Matches {
+		// fmt.Printf("Score %v\n", match.Score)
 		resp = append(resp, match.ID)
 	}
 	// fmt.Printf("Pinecone response IDs: %v\n", resp)
