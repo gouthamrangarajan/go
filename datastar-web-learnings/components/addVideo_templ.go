@@ -151,11 +151,15 @@ func AddVideo() templ.Component {
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(`
                 evt.preventDefault();
                 if(!$_addingVideo){
+                    $videoIdError=false;
+                    $rankError=false;
+                    $tagsError=false;
+                    $titleError=false;                    
                     @post('/add');
                 }
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 68, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 72, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -178,7 +182,7 @@ func AddVideo() templ.Component {
                                     }
                                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 136, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 140, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {

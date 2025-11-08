@@ -63,6 +63,10 @@ templ AddVideo() {
 			data-on-submit={ `
                 evt.preventDefault();
                 if(!$_addingVideo){
+                    $videoIdError=false;
+                    $rankError=false;
+                    $tagsError=false;
+                    $titleError=false;                    
                     @post('/add');
                 }
                 ` }
