@@ -9,7 +9,7 @@
       "Courier New", monospace;
     --color-red-300: oklch(80.8% 0.114 19.571);
     --color-teal-300: oklch(85.5% 0.138 181.071);
-    --color-gray-700: oklch(37.3% 0.034 259.733);
+    --color-slate-700: oklch(37.2% 0.044 257.287);
     --spacing: 0.25rem;
     --text-sm: 0.875rem;
     --text-sm--line-height: calc(1.25 / 0.875);
@@ -456,9 +456,6 @@
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
   }
-  .text-gray-700 {
-    color: var(--color-gray-700);
-  }
   .text-primary {
     color: var(--color-primary);
   }
@@ -467,6 +464,9 @@
   }
   .text-secondary {
     color: var(--color-secondary);
+  }
+  .text-slate-700 {
+    color: var(--color-slate-700);
   }
   .italic {
     font-style: italic;
@@ -603,14 +603,19 @@
       width: calc(7/12 * 100%);
     }
   }
-  .md\:w-9\/12 {
+  .md\:w-8\/12 {
     @media (width >= 48rem) {
-      width: calc(9/12 * 100%);
+      width: calc(8/12 * 100%);
     }
   }
   .md\:grid-cols-2 {
     @media (width >= 48rem) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .lg\:w-5\/12 {
+    @media (width >= 64rem) {
+      width: calc(5/12 * 100%);
     }
   }
   .lg\:w-6\/12 {
@@ -621,6 +626,11 @@
   .xl\:col-span-3 {
     @media (width >= 80rem) {
       grid-column: span 3 / span 3;
+    }
+  }
+  .xl\:w-4\/12 {
+    @media (width >= 80rem) {
+      width: calc(4/12 * 100%);
     }
   }
   .xl\:w-5\/12 {

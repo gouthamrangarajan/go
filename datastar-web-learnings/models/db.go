@@ -15,7 +15,10 @@ type FirebaseConfig struct {
 	ClientX509CertURL       string `json:"client_x509_cert_url"`
 	UniverseDomain          string `json:"universe_domain"`
 }
-
+type FirebaseAuthConfig struct {
+	ApiKey string
+	Domain string
+}
 type GetVideosRequest struct {
 	Limit  int `json:"limit"`
 	Offset int `json:"offset"`

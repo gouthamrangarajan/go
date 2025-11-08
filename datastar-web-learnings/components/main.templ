@@ -1,6 +1,7 @@
 package components
 
 import (
+	"datastar-web-learnings/models"
 	"strconv"
 	"strings"
 )
@@ -9,8 +10,8 @@ func replaceSpecialCharsVideoId(videoId string) string {
 	return strings.ReplaceAll(videoId, "-", "")
 }
 
-templ Main() {
-	@layout() {
+templ Main(authConfig models.FirebaseAuthConfig) {
+	@layout(authConfig) {
 		<header
 			class="py-2 px-4 border-b border-secondary/20 flex gap-2 items-center w-full justify-between"
 			data-signals="{_showLoginButton:false}"

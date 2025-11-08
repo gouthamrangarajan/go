@@ -15,7 +15,11 @@ import (
 )
 
 func landingPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	components.Main().Render(request.Context(), responseWriter)
+	authConfig := models.FirebaseAuthConfig{
+		ApiKey: os.Getenv("FIREBASE_API_KEY"),
+		Domain: os.Getenv("FIREBASE_AUTH_DOMAIN"),
+	}
+	components.Main(authConfig).Render(request.Context(), responseWriter)
 }
 
 func landingPageDataHandler(responseWriter http.ResponseWriter, request *http.Request) {

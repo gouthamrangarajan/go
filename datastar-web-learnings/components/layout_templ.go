@@ -8,9 +8,12 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "datastar-web-learnings/components/scripts"
+import (
+	"datastar-web-learnings/components/scripts"
+	"datastar-web-learnings/models"
+)
 
-func layout() templ.Component {
+func layout(authConfig models.FirebaseAuthConfig) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -59,7 +62,31 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"module\">\n\t\t\t    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'\n\t\t\t\timport { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'\n\t\t\t\tconst firebaseApp=initializeApp({apiKey: 'AIzaSyD7kPSuaLnsaYqYqZWULRSQlcOckwP8AJE',\n\t\t\t\t\t\t\t\t\tauthDomain: 'weblearnings-e679a.firebaseapp.com',\n\t\t\t\t\t\t\t\t\tdatabaseURL: 'https://weblearnings-e679a.firebaseio.com',\n\t\t\t\t\t\t\t\t\tprojectId: 'weblearnings-e679a',\n\t\t\t\t\t\t\t\t\tstorageBucket: 'weblearnings-e679a.appspot.com',\n\t\t\t\t\t\t\t\t\tmessagingSenderId: '752494598086',\n\t\t\t\t\t\t\t\t\tappId: '1:752494598086:web:7efe252503205699bac4c7',});\n  \t\t\t\twindow.AUTH=getAuth(firebaseApp);\n\t\t\t\twindow.LOGIN=signInWithEmailAndPassword;\n\t\t\t\tonAuthStateChanged(window.AUTH,(user)=>{\n\t\t\t\t\twindow.dispatchEvent(new Event('firebase-loaded'));\n\t\t\t\t});\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"module\">\n\t\t\t    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'\n\t\t\t\timport { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'\n\t\t\t\t\n\t\t\t\tconst firebaseApp=initializeApp({apiKey: ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var2, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(authConfig.ApiKey)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 38, Col: 65}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, ", \n\t\t\t\t\t\t\t\t\tauthDomain: ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var3, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(authConfig.Domain)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 39, Col: 41}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, ", \n\t\t\t\t\t\t\t\t\t});\n  \t\t\t\twindow.AUTH=getAuth(firebaseApp);\n\t\t\t\twindow.LOGIN=signInWithEmailAndPassword;\n\t\t\t\tonAuthStateChanged(window.AUTH,(user)=>{\n\t\t\t\t\twindow.dispatchEvent(new Event('firebase-loaded'));\n\t\t\t\t});\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

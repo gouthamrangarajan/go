@@ -1,8 +1,11 @@
 package components
 
-import "datastar-web-learnings/components/scripts"
+import (
+	"datastar-web-learnings/components/scripts"
+	"datastar-web-learnings/models"
+)
 
-templ layout() {
+templ layout(authConfig models.FirebaseAuthConfig) {
 	<!DOCTYPE html>
 	<html lang="en" class="w-full h-full">
 		<head>
@@ -31,13 +34,10 @@ templ layout() {
 			<script type="module">
 			    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'
 				import { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'
-				const firebaseApp=initializeApp({apiKey: 'AIzaSyD7kPSuaLnsaYqYqZWULRSQlcOckwP8AJE',
-									authDomain: 'weblearnings-e679a.firebaseapp.com',
-									databaseURL: 'https://weblearnings-e679a.firebaseio.com',
-									projectId: 'weblearnings-e679a',
-									storageBucket: 'weblearnings-e679a.appspot.com',
-									messagingSenderId: '752494598086',
-									appId: '1:752494598086:web:7efe252503205699bac4c7',});
+				
+				const firebaseApp=initializeApp({apiKey: {{ authConfig.ApiKey }}, 
+									authDomain: {{ authConfig.Domain }}, 
+									});
   				window.AUTH=getAuth(firebaseApp);
 				window.LOGIN=signInWithEmailAndPassword;
 				onAuthStateChanged(window.AUTH,(user)=>{
