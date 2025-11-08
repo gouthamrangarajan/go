@@ -45,6 +45,8 @@ func main() {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
 	})
 	router.Get("/", landingPageHandler)
+	router.Get("/add", addPageHandler)
+
 	dataRouter.Get("/data/{offset}", landingPageDataHandler)
 	dataRouter.Get("/search/", emptySearchHandler)
 	dataRouter.Get("/search/{query}", searchHandler)

@@ -42,7 +42,7 @@ templ Player(video models.VideoResponse, idx int) {
 		style={ " opacity:0;animation-delay: " + animationDelayStyle + ";view-transition-name:video_" + videoIdReplaced }
 		data-signals={ "{_video_" + videoIdReplaced + ":null,_video_" + videoIdReplaced + "_showTags:false}" }
 		data-on-load={ "initYTPlayer('" + video.VideoId + "',0).then(player=>{$_video_" + videoIdReplaced + "=player;});" }
-		data-effect={ "'" + videoIdReplaced + "'!=$currentlyPlayingVideoId.replaceAll('-','') && $currentlyPlayingVideoId && $_video_" + videoIdReplaced + ".getPlayerState && $_video_" + videoIdReplaced + ".getPlayerState()==1 && $_video_" + videoIdReplaced + ".pauseVideo()" }
+		data-effect={ "'" + videoIdReplaced + "'!=$_currentlyPlayingVideoId.replaceAll('-','') && $_currentlyPlayingVideoId && $_video_" + videoIdReplaced + ".getPlayerState && $_video_" + videoIdReplaced + ".getPlayerState()==1 && $_video_" + videoIdReplaced + ".pauseVideo()" }
 	>
 		<div
 			class="h-64"

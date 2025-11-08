@@ -28,25 +28,27 @@ templ login() {
 			</div>
 			<form
 				class="mt-4 flex flex-col gap-3 w-full"
-				data-signals="{_loginError:false}"
+				data-signals="{_loginError:false,_loggingIn:false}"
 				data-on-success__viewTransition="$_showLogin=false;"
 				data-on-submit={ `evt.preventDefault();
                                 const targetEl=evt.currentTarget;
                                 $_loginError=false;
+                                $_loggingIn=true;
                                  LOGIN(AUTH,
                                     new FormData(evt.currentTarget).get('username').trim(),
                                     new FormData(evt.currentTarget).get('password'))
-                                .then(result=>{                                    
+                                .then(result=>{     
+                                    $_loggingIn=false;                               
                                     if(result && result.user && result.user!=null){
                                        targetEl.dispatchEvent(new CustomEvent('success'));
                                     }
-                                    }).catch(err=>{$_loginError=true;});` }
+                                    }).catch(err=>{$_loginError=true;$_loggingIn=false;});` }
 			>
 				<p data-show="$_loginError" class="text-red-300 animate-result">
 					Login failed. Please check your username and password.
 				</p>
 				<label for="username" class=" flex flex-col gap-1">
-					Username:
+					Username
 					<input
 						type="text"
 						id="username"
@@ -57,7 +59,7 @@ templ login() {
 					/>
 				</label>
 				<label for="password" class="flex flex-col gap-1">
-					Password:
+					Password
 					<input
 						type="password"
 						id="password"
@@ -69,7 +71,8 @@ templ login() {
 				</label>
 				<button
 					type="submit"
-					class=" appearance-none outline-none text-slate-700 w-full py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90"
+					class=" appearance-none outline-none cursor-pointer text-slate-700 w-full py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+					data-attr-diabled="$_loggingIn"
 				>
 					Submit
 				</button>

@@ -10,11 +10,11 @@ func replaceSpecialCharsVideoId(videoId string) string {
 	return strings.ReplaceAll(videoId, "-", "")
 }
 
-templ Main(authConfig models.FirebaseAuthConfig) {
+templ Landing(authConfig models.FirebaseAuthConfig) {
 	@layout(authConfig) {
 		<header
 			class="py-2 px-4 border-b border-secondary/20 flex gap-2 items-center w-full justify-between"
-			data-signals="{_showLoginButton:false}"
+			data-signals="{_showLoginButton:false,_showAddVideoButton:false,idToken:''}"
 		>
 			<div class="flex gap-2">
 				<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-play-icon lucide-square-play"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z"></path></svg>
@@ -28,25 +28,51 @@ templ Main(authConfig models.FirebaseAuthConfig) {
 				aria-label="Log In"
 				data-on-click__viewTransition="$_showLogin = true"
 				data-show="$_showLoginButton"
-				data-on-firebase-loaded__window="AUTH.currentUser!=null?setTimeout(()=>{$_showLoginButton = false;_showLogin=false;}):$_showLoginButton = true"
+				data-on-firebase-loaded__window={ `AUTH.currentUser!=null ?
+												 setTimeout(()=>{
+												 	$_showLoginButton = false;
+													$_showLogin=false;
+													$_showAddVideoButton=true;
+													$accessToken=AUTH.currentUser.accessToken;
+													},1) : 
+													$_showLoginButton = true` }
+				style="view-transition-name:log-in-or-add-video"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-in-icon lucide-log-in"><path d="m10 17 5-5-5-5"></path><path d="M15 12H3"></path><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path></svg>
 			</button>
+			// <button
+			// 	class="appearance-none outline-none cursor-pointer p-1 rounded-full text-secondary transition duration-300 focus:ring-1 focus:ring-secondary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+			// 	aria-label="Add Video"
+			// 	data-show="$_showAddVideoButton"
+			// 	style="view-transition-name:log-in-or-add-video"
+			// 	data-on-click="AUTH.currentUser.getIdToken().then(result=>{$idToken=result;@get('/add');})"
+			// 	data-indicator="_fetchingAddVideo"
+			// 	data-attr-disabled="$_fetchingAddVideo"
+			// >
+			// 	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+			// 		<path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
+			// 	</svg>
+			// </button>
 		</header>
-		<main
-			data-indicator="_firstLoad"
-			data-on-load="new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')"
-			class="mt-1 px-4 py-2 relative overflow-x-hidden overflow-y-hidden flex flex-col gap-2 items-center"
-			data-signals="{currentlyPlayingVideoId:null}"
-			data-on-video-playing="$currentlyPlayingVideoId=evt.detail.videoId;"
-		>
-			@searchInput()
-			<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
-			<div class="py-10">
-				@loader("$_loading")
-			</div>
-		</main>
+		@LandingMain()
 	}
+}
+
+templ LandingMain() {
+	<main
+		data-indicator="_firstLoad"
+		data-on-load="new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')"
+		class="mt-1 px-4 py-2 relative overflow-x-hidden overflow-y-hidden flex flex-col gap-2 items-center"
+		data-signals="{_currentlyPlayingVideoId:null}"
+		data-on-video-playing="$_currentlyPlayingVideoId=evt.detail.videoId;"
+		style="view-transition-name:main"
+	>
+		@searchInput()
+		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
+		<div class="py-10">
+			@loader("$_loading")
+		</div>
+	</main>
 }
 
 templ searchInput() {

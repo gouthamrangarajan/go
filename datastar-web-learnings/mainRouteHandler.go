@@ -4,6 +4,7 @@ import (
 	"datastar-web-learnings/components"
 	"datastar-web-learnings/models"
 	"datastar-web-learnings/services"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -19,7 +20,7 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 		ApiKey: os.Getenv("FIREBASE_API_KEY"),
 		Domain: os.Getenv("FIREBASE_AUTH_DOMAIN"),
 	}
-	components.Main(authConfig).Render(request.Context(), responseWriter)
+	components.Landing(authConfig).Render(request.Context(), responseWriter)
 }
 
 func landingPageDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -95,6 +96,7 @@ func loadVideosWithOffset(offset int, append bool, sse *datastar.ServerSentEvent
 		noOfItems = 12
 	}
 	channel := make(chan []models.VideoResponse)
+	defer close(channel)
 	go services.GetVideos(sse.Context(), models.GetVideosRequest{Limit: noOfItems, Offset: offset}, channel)
 	videos := <-channel
 	if append {
@@ -113,4 +115,21 @@ func loadVideosWithOffset(offset int, append bool, sse *datastar.ServerSentEvent
 	} else {
 		sse.PatchElementTempl(components.LoadMore(noOfItems + offset))
 	}
+}
+func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	uiSignalsString := request.URL.Query().Get("datastar")
+	var uiSignals models.UISignals
+	err := json.Unmarshal([]byte(uiSignalsString), &uiSignals)
+	if err == nil && uiSignals.IdToken != "" {
+		channel := make(chan bool)
+		defer close(channel)
+		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, channel)
+		isValidToken := <-channel
+		if isValidToken {
+			sse := datastar.NewSSE(responseWriter, request)
+			sse.PatchElementTempl(components.AddVideo(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
+			return
+		}
+	}
+	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 }

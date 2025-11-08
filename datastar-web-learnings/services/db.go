@@ -13,7 +13,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func getFirebasConfigJson() ([]byte, error) {
+func getFirebaseConfigJson() ([]byte, error) {
 	firebaseConfig := models.FirebaseConfig{
 		Type:                    os.Getenv("FIREBASE_TYPE"),
 		ProjectID:               os.Getenv("FIREBASE_PROJECT_ID"),
@@ -31,11 +31,11 @@ func getFirebasConfigJson() ([]byte, error) {
 	return firebaseConfigJson, firebaseConfigErr
 }
 
-func FilterVideos(ctx context.Context, videoIds []string, channel chan<- []models.VideoResponse) {
+func GetVideos(ctx context.Context, request models.GetVideosRequest, channel chan<- []models.VideoResponse) {
 	var videos []models.VideoResponse
-	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
+	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
 	if firebaseConfigErr != nil {
-		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
 		channel <- videos
 		return
 	}
@@ -44,7 +44,7 @@ func FilterVideos(ctx context.Context, videoIds []string, channel chan<- []model
 	))
 
 	if appErr != nil {
-		fmt.Println("Error initializing Firebase app:", appErr)
+		fmt.Printf("Error initializing Firebase app:%v\n", appErr)
 		channel <- videos
 		return
 	}
@@ -52,14 +52,14 @@ func FilterVideos(ctx context.Context, videoIds []string, channel chan<- []model
 	fireStore, err := app.Firestore(ctx)
 
 	if err != nil {
-		fmt.Println("Error getting Firestore client:", err)
+		fmt.Printf("Error getting Firestore client:%v\n", err)
 		channel <- videos
 		return
 	}
 	defer fireStore.Close()
-	docSnaps, err := fireStore.Collection("data").Where("videoId", "in", videoIds).OrderBy("createdAt", firestore.Desc).Documents(ctx).GetAll()
+	docSnaps, err := fireStore.Collection("data").Where("videoId", "!=", "").OrderBy("createdAt", firestore.Desc).Limit(request.Limit).Offset(request.Offset).Documents(ctx).GetAll()
 	if err != nil {
-		fmt.Println("Error getting documents:", err)
+		fmt.Printf("Error getting documents%v\n:", err)
 		channel <- videos
 		return
 	}
@@ -71,11 +71,11 @@ func FilterVideos(ctx context.Context, videoIds []string, channel chan<- []model
 	channel <- videos
 }
 
-func GetVideos(ctx context.Context, request models.GetVideosRequest, channel chan<- []models.VideoResponse) {
+func FilterVideos(ctx context.Context, videoIds []string, channel chan<- []models.VideoResponse) {
 	var videos []models.VideoResponse
-	firebaseConfigJson, firebaseConfigErr := getFirebasConfigJson()
+	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
 	if firebaseConfigErr != nil {
-		fmt.Println("Error marshalling FirebaseConfig:", firebaseConfigErr)
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
 		channel <- videos
 		return
 	}
@@ -84,7 +84,7 @@ func GetVideos(ctx context.Context, request models.GetVideosRequest, channel cha
 	))
 
 	if appErr != nil {
-		fmt.Println("Error initializing Firebase app:", appErr)
+		fmt.Printf("Error initializing Firebase app:%v\n", appErr)
 		channel <- videos
 		return
 	}
@@ -92,14 +92,14 @@ func GetVideos(ctx context.Context, request models.GetVideosRequest, channel cha
 	fireStore, err := app.Firestore(ctx)
 
 	if err != nil {
-		fmt.Println("Error getting Firestore client:", err)
+		fmt.Printf("Error getting Firestore client:%v\n", err)
 		channel <- videos
 		return
 	}
 	defer fireStore.Close()
-	docSnaps, err := fireStore.Collection("data").Where("videoId", "!=", "").OrderBy("createdAt", firestore.Desc).Limit(request.Limit).Offset(request.Offset).Documents(ctx).GetAll()
+	docSnaps, err := fireStore.Collection("data").Where("videoId", "in", videoIds).OrderBy("createdAt", firestore.Desc).Documents(ctx).GetAll()
 	if err != nil {
-		fmt.Println("Error getting documents:", err)
+		fmt.Printf("Error getting documents:%v\n", err)
 		channel <- videos
 		return
 	}
@@ -109,4 +109,35 @@ func GetVideos(ctx context.Context, request models.GetVideosRequest, channel cha
 		videos = append(videos, video)
 	}
 	channel <- videos
+}
+
+func VerifyIdToken(ctx context.Context, idToken string, channel chan<- bool) {
+	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+		channel <- false
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Printf("Error initializing Firebase app:%v\n", appErr)
+		channel <- false
+		return
+	}
+	auth, err := app.Auth(ctx)
+	if err != nil {
+		fmt.Printf("Error getting Auth client:%v\n", err)
+		channel <- false
+		return
+	}
+	_, err = auth.VerifyIDToken(ctx, idToken)
+	if err != nil {
+		fmt.Printf("Error verifying ID token:%v\n", err)
+		channel <- false
+		return
+	}
+	channel <- true
 }

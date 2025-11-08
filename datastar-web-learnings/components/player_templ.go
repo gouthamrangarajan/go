@@ -151,9 +151,9 @@ func Player(video models.VideoResponse, idx int) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("'" + videoIdReplaced + "'!=$currentlyPlayingVideoId.replaceAll('-','') && $currentlyPlayingVideoId && $_video_" + videoIdReplaced + ".getPlayerState && $_video_" + videoIdReplaced + ".getPlayerState()==1 && $_video_" + videoIdReplaced + ".pauseVideo()")
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("'" + videoIdReplaced + "'!=$_currentlyPlayingVideoId.replaceAll('-','') && $_currentlyPlayingVideoId && $_video_" + videoIdReplaced + ".getPlayerState && $_video_" + videoIdReplaced + ".getPlayerState()==1 && $_video_" + videoIdReplaced + ".pauseVideo()")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/player.templ`, Line: 45, Col: 269}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/player.templ`, Line: 45, Col: 271}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
