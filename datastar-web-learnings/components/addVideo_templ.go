@@ -8,7 +8,10 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func AddVideo() templ.Component {
+import "strconv"
+import "strings"
+
+func HomeButton() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +32,159 @@ func AddVideo() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main style=\"view-transition-name:main\" class=\"flex flex-col gap-3 container max-w-4xl py-4 px-6 mx-auto lg:pt-10\"><div class=\"flex flex-col gap-1\"><h1 class=\"text-3xl font-semibold text-primary\">Add New Video</h1><h2 class=\"text-lg text-secondary\">Add a new YouTube video to your technology collection</h2></div><form class=\"border border-gray-600 py-2 px-4 rounded-xl flex flex-col gap-3\" data-signals=\"{videoIdError: false,rankError:false}\"><h3>Video Details</h3><label for=\"videoId\" class=\" flex flex-col gap-1\">Video ID <input type=\"text\" id=\"videoId\" name=\"videoId\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$videoIdError, 'border-secondary focus:ring-secondary':!$videoIdError}\" required></label> <label for=\"subtitle\" class=\"flex flex-col gap-1\">Subtitle <input type=\"text\" id=\"subtitle\" name=\"subtitle\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border border-secondary focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\"></label> <label for=\"rank\" class=\" flex flex-col gap-1\">Rank <input type=\"number\" id=\"rank\" name=\"rank\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$rankError, 'border-secondary focus:ring-secondary':!$rankError}\" required></label> <label for=\"transcript\" class=\" flex flex-col gap-1\">Transcript <textarea type=\"number\" id=\"transcript\" name=\"transcript\" rows=\"3\" class=\"appearance-none outline-none rounded transion duration-300 field-sizing-content min-h-22 max-h-[50vh] w-full py-2 px-4 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-secondary border border-secondary focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\"></textarea></label> <button type=\"submit\" class=\" appearance-none outline-none text-slate-700 w-full py-2 px-4 rounded bg-teal-300 transition duration-300 cursor-pointer focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\">Add Video</button></form></main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<button id=\"pageAction\" class=\"appearance-none outline-none cursor-pointer p-1 rounded-full text-secondary transition duration-300 focus:ring-1 focus:ring-secondary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" aria-label=\"Go to Home\" style=\"view-transition-name:page-action\" data-on-click=\"@get('/')\" data-indicator=\"_fetchingHomePage\" data-attr-disabled=\"$_fetchingHomePage\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path d=\"M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z\"></path> <path d=\"m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z\"></path></svg></button>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func TagsList(tags []string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex flex-wrap gap-2 w-full\" id=\"tagsContainer\" style=\"view-transition-name:tags-list\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, tag := range tags {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex items-center gap-1 py-1 px-3 bg-background-2 text-sm text-primary rounded-full\" style=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:tag-" + strings.ReplaceAll(tag, " ", ""))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 28, Col: 74}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 30, Col: 15}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span> <button class=\"appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90\" type=\"button\" aria-label=\"remove tag\" data-on-click=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(`
+                        evt.preventDefault();
+                        $tags=$tags.filter(t=>t!==` + strconv.Quote(tag) + `);
+                        @post('/tags/ui')
+                    `)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 39, Col: 21}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\" fill=\"currentColor\" class=\"size-4\"><path d=\"M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z\"></path></svg></button></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func AddVideo() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<main style=\"view-transition-name:main\" class=\"flex flex-col gap-6 container max-w-4xl py-4 px-6 mx-auto lg:pt-10\"><div class=\"flex flex-col gap-1\"><h1 class=\"text-3xl font-semibold text-primary\">Add New Video</h1><h2 class=\"text-lg text-secondary\">Add a new YouTube video to your technology collection</h2></div><form class=\"border border-gray-600 py-2 px-4 rounded-xl flex flex-col gap-3\" data-signals=\"{videoIdError: false,rankError:false,tagsError:false,titleError:false,videoId:'',title:'',subtitle:'',rank:1,transcript:'',tags:[]}\" data-indicator=\"_addingVideo\" data-on-submit=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(`
+                evt.preventDefault();
+                if(!$_addingVideo){
+                    @post('/add');
+                }
+                `)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 68, Col: 17}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"><h3>Video Details</h3><label for=\"videoId\" class=\" flex flex-col gap-1\">Video ID <input type=\"text\" id=\"videoId\" name=\"videoId\" data-bind=\"videoId\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$videoIdError, 'border-secondary focus:ring-secondary':!$videoIdError}\" required></label> <label for=\"title\" class=\"flex flex-col gap-1\">Title <input type=\"text\" id=\"title\" name=\"title\" data-bind=\"title\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border  focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$titleError, 'border-secondary focus:ring-secondary':!$titleError}\" required></label> <label for=\"subtitle\" class=\"flex flex-col gap-1\">Subtitle <input type=\"text\" id=\"subtitle\" name=\"subtitle\" data-bind=\"subtitle\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border border-secondary focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\"></label> <label for=\"rank\" class=\" flex flex-col gap-1\">Rank <input type=\"number\" id=\"rank\" name=\"rank\" data-bind=\"rank\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$rankError, 'border-secondary focus:ring-secondary':!$rankError}\" required min=\"1\" max=\"5\"></label><div class=\"flex flex-col gap-2\" style=\"view-transition-name:tags\"><label for=\"tags\" class=\"flex flex-col gap-1\">Tags <input type=\"text\" id=\"tags\" name=\"tags\" data-on-keydown=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(`
+                                    if(evt.key==='Enter'){
+                                        evt.preventDefault();
+                                        const tagValue=evt.currentTarget.value.trim();
+                                        if(tagValue && !$tags.includes(tagValue)){
+                                            $tags.push(tagValue);
+                                        }
+                                        evt.currentTarget.value='';
+                                        @post('/tags/ui')
+                                    }
+                                `)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 136, Col: 33}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border placeholder:text-secondary/70 focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" placeholder=\"Add a tag and press Enter\" data-class=\"{'border-red-300 focus:ring-red-300':$tagsError, 'border-secondary focus:ring-secondary':!$tagsError}\"></label><div class=\"flex flex-wrap gap-2 w-full\" id=\"tagsContainer\" style=\"view-transition-name:tags-list\"></div></div><label for=\"transcript\" class=\" flex flex-col gap-1\">Transcript <textarea type=\"number\" id=\"transcript\" name=\"transcript\" data-bind=\"transcript\" rows=\"3\" class=\"appearance-none outline-none rounded transion duration-300 field-sizing-content min-h-22 max-h-[25vh] w-full py-2 px-4 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-secondary border border-secondary focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\"></textarea></label> <button type=\"submit\" class=\" appearance-none outline-none text-slate-700 w-full py-2 px-4 rounded bg-teal-300 transition duration-300 cursor-pointer focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" data-attr-disabled=\"$_addingVideo\">Add Video</button></form></main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

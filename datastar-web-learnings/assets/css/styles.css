@@ -10,12 +10,9 @@
     --color-red-300: oklch(80.8% 0.114 19.571);
     --color-teal-300: oklch(85.5% 0.138 181.071);
     --color-slate-700: oklch(37.2% 0.044 257.287);
-    --color-gray-300: oklch(87.2% 0.01 258.338);
     --color-gray-600: oklch(44.6% 0.03 256.802);
     --spacing: 0.25rem;
-    --container-3xl: 48rem;
     --container-4xl: 56rem;
-    --container-5xl: 64rem;
     --text-sm: 0.875rem;
     --text-sm--line-height: calc(1.25 / 0.875);
     --text-lg: 1.125rem;
@@ -266,6 +263,10 @@
   .field-sizing-content {
     field-sizing: content;
   }
+  .size-4 {
+    width: calc(var(--spacing) * 4);
+    height: calc(var(--spacing) * 4);
+  }
   .size-5 {
     width: calc(var(--spacing) * 5);
     height: calc(var(--spacing) * 5);
@@ -283,8 +284,8 @@
   .h-full {
     height: 100%;
   }
-  .max-h-\[50vh\] {
-    max-height: 50vh;
+  .max-h-\[25vh\] {
+    max-height: 25vh;
   }
   .min-h-22 {
     min-height: calc(var(--spacing) * 22);
@@ -362,6 +363,9 @@
   }
   .gap-3 {
     gap: calc(var(--spacing) * 3);
+  }
+  .gap-6 {
+    gap: calc(var(--spacing) * 6);
   }
   .overflow-hidden {
     overflow: hidden;

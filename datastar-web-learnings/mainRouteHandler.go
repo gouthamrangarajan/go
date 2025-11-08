@@ -6,6 +6,7 @@ import (
 	"datastar-web-learnings/services"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -16,6 +17,12 @@ import (
 )
 
 func landingPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	if request.Header.Get("Datastar-Request") == "true" {
+		sse := datastar.NewSSE(responseWriter, request)
+		sse.PatchElementTempl(components.LandingMain(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.AddVideoButton(), datastar.WithUseViewTransitions(true))
+		return
+	}
 	authConfig := models.FirebaseAuthConfig{
 		ApiKey: os.Getenv("FIREBASE_API_KEY"),
 		Domain: os.Getenv("FIREBASE_AUTH_DOMAIN"),
@@ -127,8 +134,36 @@ func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		isValidToken := <-channel
 		if isValidToken {
 			sse := datastar.NewSSE(responseWriter, request)
+			sse.PatchElementTempl(components.HomeButton(), datastar.WithUseViewTransitions(true))
 			sse.PatchElementTempl(components.AddVideo(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
 			return
+		}
+	}
+	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+}
+func tagsUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	uiSignalsBytes, _ := io.ReadAll(request.Body)
+	uiSignals := models.UISignals{}
+	_ = json.Unmarshal(uiSignalsBytes, &uiSignals)
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(components.TagsList(uiSignals.Tags), datastar.WithUseViewTransitions(true))
+}
+
+func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	uiSignalsBytes, err := io.ReadAll(request.Body)
+	if err == nil {
+		var uiSignals models.UISignals
+		err = json.Unmarshal(uiSignalsBytes, &uiSignals)
+		if err == nil && uiSignals.IdToken != "" {
+			verifyTokenChannel := make(chan bool)
+			defer close(verifyTokenChannel)
+			go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
+			isValidToken := <-verifyTokenChannel
+			if isValidToken {
+				// fmt.Printf("received add video request: %v\n", uiSignals)
+				sse := datastar.NewSSE(responseWriter, request)
+				sse.PatchSignals([]byte("{videoIdError:true,rankError:true,tagsError:true,titleError:true}"))
+			}
 		}
 	}
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
