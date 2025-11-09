@@ -212,6 +212,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					sse.PatchElementTempl(components.AddVideoSuccessResult(), datastar.WithUseViewTransitions(true))
 					sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1}`))
 					sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(true))
+
 					textToVectorize := uiSignals.Title + " " + uiSignals.Subtitle + " " + strings.Join(trimmedTags, " ") + " " + ytResponse.Items[0].Snippet.Description
 					openAIVectorChannel := make(chan []float32)
 					defer close(openAIVectorChannel)
