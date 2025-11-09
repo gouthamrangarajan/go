@@ -31,13 +31,13 @@ func QueryPineconeDb(vector []float32, channel chan<- []string) {
 	}
 	pineConeRequestBodyStr, err := json.Marshal(pineConeRequestBody)
 	if err != nil {
-		fmt.Printf("Error marshalling Pinecone request body: %v\n", err)
+		fmt.Printf("Error marshalling Pinecone query request body: %v\n", err)
 		channel <- resp
 		return
 	}
 	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(pineConeRequestBodyStr))
 	if err != nil {
-		fmt.Printf("Error creating HTTP request for Pinecone: %v\n", err)
+		fmt.Printf("Error creating HTTP request for Pinecone query: %v\n", err)
 		channel <- resp
 		return
 	}
@@ -47,19 +47,19 @@ func QueryPineconeDb(vector []float32, channel chan<- []string) {
 	client := &http.Client{}
 	response, err := client.Do(httpRequest)
 	if err != nil {
-		fmt.Printf("Error making HTTP request for Pinecone: %v\n", err)
+		fmt.Printf("Error making HTTP request for Pinecone query: %v\n", err)
 		channel <- resp
 		return
 	}
 	defer response.Body.Close()
 	responseBodyRaw, err := io.ReadAll(response.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body for Pinecone request: %v\n", err)
+		fmt.Printf("Error reading response body for Pinecone query request: %v\n", err)
 		channel <- resp
 		return
 	}
 	if response.StatusCode != http.StatusOK {
-		fmt.Printf("Non 200 respone received calling Pinecone: %v\n", response.StatusCode)
+		fmt.Printf("Non 200 respone received calling Pinecone query: %v\n", response.StatusCode)
 		fmt.Printf("Response body: %v\n", string(responseBodyRaw))
 		channel <- resp
 		return
@@ -67,13 +67,13 @@ func QueryPineconeDb(vector []float32, channel chan<- []string) {
 	var pineconeResponse models.PineconeQueryResponse
 	err = json.Unmarshal(responseBodyRaw, &pineconeResponse)
 	if err != nil {
-		fmt.Printf("Error unmarshalling response body for Pinecone request: %v\n", err)
+		fmt.Printf("Error unmarshalling response body for Pinecone query request: %v\n", err)
 		fmt.Printf("Response body: %v\n", string(responseBodyRaw))
 		channel <- resp
 		return
 	}
 	if len(pineconeResponse.Matches) == 0 {
-		fmt.Printf("No matches found in Pinecone response, response body: %v\n", string(responseBodyRaw))
+		fmt.Printf("No matches found in Pinecone query response, response body: %v\n", string(responseBodyRaw))
 		channel <- resp
 		return
 	}
@@ -86,4 +86,71 @@ func QueryPineconeDb(vector []float32, channel chan<- []string) {
 	}
 	// fmt.Printf("Pinecone response IDs: %v\n", resp)
 	channel <- resp
+}
+
+func UpsertPineconeDb(videoId string, vector []float32, channel chan<- int) {
+	resp := 0
+	key := os.Getenv("PINECONE_API_KEY")
+	hostUrl := os.Getenv("PINECONE_HOST_URL")
+	url := fmt.Sprintf("%v/vectors/upsert", hostUrl)
+
+	apiVersion := os.Getenv("PINECONE_API_VERSION")
+	pineConeRequestBody := models.PineconeUpsertRequest{
+		Vectors: []struct {
+			Id     string    `json:"id"`
+			Values []float32 `json:"values"`
+		}{
+			{Id: videoId, Values: vector},
+		},
+	}
+	pineConeRequestBodyStr, err := json.Marshal(pineConeRequestBody)
+	if err != nil {
+		fmt.Printf("Error marshalling Pinecone upsert request body: %v\n", err)
+		channel <- resp
+		return
+	}
+	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(pineConeRequestBodyStr))
+	if err != nil {
+		fmt.Printf("Error creating HTTP request for Pinecone upsert: %v\n", err)
+		channel <- resp
+		return
+	}
+	httpRequest.Header.Set("Content-Type", "application/json")
+	httpRequest.Header.Set("Api-Key", key)
+	httpRequest.Header.Set("X-Pinecone-API-Version", apiVersion)
+	client := &http.Client{}
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		fmt.Printf("Error making HTTP request for Pinecone upsert: %v\n", err)
+		channel <- resp
+		return
+	}
+	defer response.Body.Close()
+	responseBodyRaw, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body for Pinecone upsert request: %v\n", err)
+		channel <- resp
+		return
+	}
+	if response.StatusCode != http.StatusOK {
+		fmt.Printf("Non 200 respone received calling Pinecone upsert: %v\n", response.StatusCode)
+		fmt.Printf("Response body: %v\n", string(responseBodyRaw))
+		channel <- resp
+		return
+	}
+	var pineconeResponse models.PineconeUpsertResponse
+	err = json.Unmarshal(responseBodyRaw, &pineconeResponse)
+	if err != nil {
+		fmt.Printf("Error unmarshalling response body for Pinecone upsert request: %v\n", err)
+		fmt.Printf("Response body: %v\n", string(responseBodyRaw))
+		channel <- resp
+		return
+	}
+	if pineconeResponse.UpsertedCount == 0 {
+		fmt.Printf("No vectors upserted in Pinecone upsert response, response body: %v\n", string(responseBodyRaw))
+		channel <- resp
+		return
+	}
+	fmt.Printf("Pinecone response : %v\n", string(responseBodyRaw))
+	channel <- pineconeResponse.UpsertedCount
 }

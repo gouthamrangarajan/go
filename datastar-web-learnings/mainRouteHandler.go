@@ -161,8 +161,72 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 			isValidToken := <-verifyTokenChannel
 			if isValidToken {
 				// fmt.Printf("received add video request: %v\n", uiSignals)
+				errorMessages := []string{}
+				errorSignals := ""
+				if len(strings.TrimSpace(uiSignals.Title)) < 3 {
+					errorMessages = append(errorMessages, "Please enter a title of at least 3 characters.")
+					errorSignals += "titleError:true,"
+				}
+				trimmedTags := []string{}
+				for _, tag := range uiSignals.Tags {
+					trimmedTag := strings.TrimSpace(tag)
+					if trimmedTag != "" {
+						trimmedTags = append(trimmedTags, trimmedTag)
+					}
+				}
+				if len(trimmedTags) == 0 {
+					errorMessages = append(errorMessages, "Please add at least one meaningful tag to describe your video.")
+					errorSignals += "tagsError:true,"
+				}
+				if uiSignals.Rank < 1 || uiSignals.Rank > 5 {
+					errorMessages = append(errorMessages, "Please enter a valid rank between 1 and 5.")
+					errorSignals += "rankError:true,"
+				}
+				if len(strings.TrimSpace(uiSignals.VideoId)) != 11 {
+					errorMessages = append(errorMessages, "Please enter a valid YouTube video ID.")
+					errorSignals += "videoIdError:true,"
+				}
+				var ytResponse models.YoutubeVideoSearchResponse
+				if len(errorMessages) == 0 {
+					ytVideoSearchChannel := make(chan models.YoutubeVideoSearchResponse)
+					defer close(ytVideoSearchChannel)
+					go services.GetYTVideoResponse(uiSignals.VideoId, ytVideoSearchChannel)
+					ytResponse = <-ytVideoSearchChannel
+					if len(ytResponse.Items) == 0 || ytResponse.Items[0].Id == "" {
+						errorMessages = append(errorMessages, "Please enter a valid YouTube video ID.")
+						errorSignals += "videoIdError:true,"
+					}
+				}
 				sse := datastar.NewSSE(responseWriter, request)
-				sse.PatchSignals([]byte("{videoIdError:true,rankError:true,tagsError:true,titleError:true}"))
+				if len(errorMessages) > 0 {
+					sse.PatchElementTempl(components.AddVideoValidationError(errorMessages), datastar.WithUseViewTransitions(true))
+					sse.PatchSignals([]byte(`{` + errorSignals + `}`))
+					return
+				}
+				textToVectorize := uiSignals.Title + " " + uiSignals.Subtitle + " " + strings.Join(trimmedTags, " ") + " " + ytResponse.Items[0].Snippet.Description
+				openAIVectorChannel := make(chan []float32)
+				defer close(openAIVectorChannel)
+				go services.GetOpenAIEmbeddings(textToVectorize, openAIVectorChannel)
+				vector := <-openAIVectorChannel
+				if vector != nil {
+					upsertPineconeChannel := make(chan int)
+					defer close(upsertPineconeChannel)
+					go services.UpsertPineconeDb(uiSignals.VideoId, vector, upsertPineconeChannel)
+					<-upsertPineconeChannel
+					// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", textToVectorize)
+				}
+				saveToDbChannel := make(chan bool)
+				defer close(saveToDbChannel)
+				go services.UpsertVideo(uiSignals, saveToDbChannel)
+				success := <-saveToDbChannel
+				if success {
+					sse.PatchElementTempl(components.AddVideoSuccessResult(), datastar.WithUseViewTransitions(true))
+					sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1}`))
+					sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(true))
+				} else {
+					sse.PatchElementTempl(components.AddVideoErrorResult(), datastar.WithUseViewTransitions(true))
+				}
+				return
 			}
 		}
 	}

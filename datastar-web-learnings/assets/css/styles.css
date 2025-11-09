@@ -322,6 +322,9 @@
   .resize-none {
     resize: none;
   }
+  .list-decimal {
+    list-style-type: decimal;
+  }
   .appearance-none {
     appearance: none;
   }
@@ -423,6 +426,9 @@
   .bg-background-2 {
     background-color: var(--color-background-2);
   }
+  .bg-red-300 {
+    background-color: var(--color-red-300);
+  }
   .bg-secondary {
     background-color: var(--color-secondary);
   }
@@ -461,6 +467,9 @@
   }
   .pt-10 {
     padding-top: calc(var(--spacing) * 10);
+  }
+  .pl-5 {
+    padding-left: calc(var(--spacing) * 5);
   }
   .text-center {
     text-align: center;

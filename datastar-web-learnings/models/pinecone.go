@@ -14,3 +14,14 @@ type PineconeQueryResponse struct {
 		Score float32 `json:"score"`
 	} `json:"matches"`
 }
+
+type PineconeUpsertRequest struct {
+	Vectors []struct {
+		Id     string    `json:"id"`
+		Values []float32 `json:"values"`
+	} `json:"vectors"`
+}
+
+type PineconeUpsertResponse struct {
+	UpsertedCount int `json:"upsertedCount"`
+}

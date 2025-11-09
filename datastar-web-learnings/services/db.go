@@ -141,3 +141,43 @@ func VerifyIdToken(ctx context.Context, idToken string, channel chan<- bool) {
 	}
 	channel <- true
 }
+func UpsertVideo(request models.UISignals, channel chan<- bool) {
+	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+		channel <- false
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Printf("Error initializing Firebase app:%v\n", appErr)
+		channel <- false
+		return
+	}
+
+	fireStore, err := app.Firestore(context.Background())
+
+	if err != nil {
+		fmt.Printf("Error getting Firestore client:%v\n", err)
+		channel <- false
+		return
+	}
+	defer fireStore.Close()
+	_, err = fireStore.Collection("data").Doc(request.VideoId).Set(context.Background(), map[string]interface{}{
+		"title":     request.Title,
+		"videoId":   request.VideoId,
+		"tags":      request.Tags,
+		"rank":      request.Rank,
+		"subtitle":  request.Subtitle,
+		"createdAt": firestore.ServerTimestamp,
+	})
+	if err != nil {
+		fmt.Printf("Error saving documents%v\n:", err)
+		channel <- false
+		return
+	}
+	channel <- true
+}
