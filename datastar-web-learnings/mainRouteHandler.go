@@ -203,18 +203,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					sse.PatchSignals([]byte(`{` + errorSignals + `}`))
 					return
 				}
-				textToVectorize := uiSignals.Title + " " + uiSignals.Subtitle + " " + strings.Join(trimmedTags, " ") + " " + ytResponse.Items[0].Snippet.Description
-				openAIVectorChannel := make(chan []float32)
-				defer close(openAIVectorChannel)
-				go services.GetOpenAIEmbeddings(textToVectorize, openAIVectorChannel)
-				vector := <-openAIVectorChannel
-				if vector != nil {
-					upsertPineconeChannel := make(chan int)
-					defer close(upsertPineconeChannel)
-					go services.UpsertPineconeDb(uiSignals.VideoId, vector, upsertPineconeChannel)
-					<-upsertPineconeChannel
-					// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", textToVectorize)
-				}
+
 				saveToDbChannel := make(chan bool)
 				defer close(saveToDbChannel)
 				go services.UpsertVideo(uiSignals, saveToDbChannel)
@@ -223,6 +212,18 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					sse.PatchElementTempl(components.AddVideoSuccessResult(), datastar.WithUseViewTransitions(true))
 					sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1}`))
 					sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(true))
+					textToVectorize := uiSignals.Title + " " + uiSignals.Subtitle + " " + strings.Join(trimmedTags, " ") + " " + ytResponse.Items[0].Snippet.Description
+					openAIVectorChannel := make(chan []float32)
+					defer close(openAIVectorChannel)
+					go services.GetOpenAIEmbeddings(textToVectorize, openAIVectorChannel)
+					vector := <-openAIVectorChannel
+					if vector != nil {
+						upsertPineconeChannel := make(chan int)
+						defer close(upsertPineconeChannel)
+						go services.UpsertPineconeDb(uiSignals.VideoId, vector, upsertPineconeChannel)
+						<-upsertPineconeChannel
+						// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", textToVectorize)
+					}
 				} else {
 					sse.PatchElementTempl(components.AddVideoErrorResult(), datastar.WithUseViewTransitions(true))
 				}
