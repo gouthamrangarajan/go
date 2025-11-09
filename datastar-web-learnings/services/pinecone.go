@@ -151,6 +151,6 @@ func UpsertPineconeDb(videoId string, vector []float32, channel chan<- int) {
 		channel <- resp
 		return
 	}
-	fmt.Printf("Pinecone response : %v\n", string(responseBodyRaw))
+	// fmt.Printf("Pinecone response : %v\n", string(responseBodyRaw))
 	channel <- pineconeResponse.UpsertedCount
 }

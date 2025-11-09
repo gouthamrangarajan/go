@@ -213,6 +213,10 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1}`))
 					sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(true))
 
+					deleteDocIdAndVideoIdNotMatchChannel := make(chan bool)
+					defer close(deleteDocIdAndVideoIdNotMatchChannel)
+					go services.CheckAndDeleteIfDocIdAndVideoIdAreNotSame(uiSignals.VideoId, deleteDocIdAndVideoIdNotMatchChannel)
+
 					textToVectorize := uiSignals.Title + " " + uiSignals.Subtitle + " " + strings.Join(trimmedTags, " ") + " " + ytResponse.Items[0].Snippet.Description
 					openAIVectorChannel := make(chan []float32)
 					defer close(openAIVectorChannel)
@@ -225,6 +229,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 						<-upsertPineconeChannel
 						// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", textToVectorize)
 					}
+					<-deleteDocIdAndVideoIdNotMatchChannel
 				} else {
 					sse.PatchElementTempl(components.AddVideoErrorResult(), datastar.WithUseViewTransitions(true))
 				}
