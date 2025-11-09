@@ -142,6 +142,7 @@ func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 }
 func tagsUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	fmt.Printf("User Agent %v\n", request.Header.Get("User-Agent"))
 	uiSignalsBytes, _ := io.ReadAll(request.Body)
 	uiSignals := models.UISignals{}
 	_ = json.Unmarshal(uiSignalsBytes, &uiSignals)
