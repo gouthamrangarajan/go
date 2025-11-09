@@ -38,7 +38,7 @@ templ Player(video models.VideoResponse, idx int) {
 	}
 	}}
 	<div
-		class={ " animate-card h-86 shadow bg-secondary/20 rounded-xl grid grid-cols-1 gap-1 overflow-hidden relative" }
+		class={ " animate-card shadow bg-secondary/20 rounded-xl grid grid-cols-1 gap-1 overflow-hidden relative h-88 lg:h-86" }
 		style={ " opacity:0;animation-delay: " + animationDelayStyle + ";view-transition-name:video_" + videoIdReplaced }
 		data-signals={ "{_video_" + videoIdReplaced + ":null,_video_" + videoIdReplaced + "_showTags:false}" }
 		data-on-load={ "initYTPlayer('" + video.VideoId + "',0).then(player=>{$_video_" + videoIdReplaced + "=player;});" }

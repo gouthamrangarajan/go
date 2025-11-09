@@ -89,7 +89,7 @@ func Player(video models.VideoResponse, idx int) templ.Component {
 		default:
 			animationDelayStyle = "1000ms"
 		}
-		var templ_7745c5c3_Var3 = []any{" animate-card h-86 shadow bg-secondary/20 rounded-xl grid grid-cols-1 gap-1 overflow-hidden relative"}
+		var templ_7745c5c3_Var3 = []any{" animate-card shadow bg-secondary/20 rounded-xl grid grid-cols-1 gap-1 overflow-hidden relative h-88 lg:h-86"}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

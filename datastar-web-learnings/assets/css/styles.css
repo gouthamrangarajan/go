@@ -281,8 +281,8 @@
   .h-64 {
     height: calc(var(--spacing) * 64);
   }
-  .h-86 {
-    height: calc(var(--spacing) * 86);
+  .h-88 {
+    height: calc(var(--spacing) * 88);
   }
   .h-full {
     height: 100%;
@@ -672,6 +672,11 @@
   .md\:grid-cols-2 {
     @media (width >= 48rem) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .lg\:h-86 {
+    @media (width >= 64rem) {
+      height: calc(var(--spacing) * 86);
     }
   }
   .lg\:w-5\/12 {

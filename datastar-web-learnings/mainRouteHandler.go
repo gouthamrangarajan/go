@@ -142,15 +142,24 @@ func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 }
 func tagsUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	fmt.Printf("User Agent %v\n", request.Header.Get("User-Agent"))
+	userAgent := request.Header.Get("User-Agent")
+	useViewTransition := true
+	if strings.Contains(strings.ToLower(userAgent), "mobile") {
+		useViewTransition = false
+	}
 	uiSignalsBytes, _ := io.ReadAll(request.Body)
 	uiSignals := models.UISignals{}
 	_ = json.Unmarshal(uiSignalsBytes, &uiSignals)
 	sse := datastar.NewSSE(responseWriter, request)
-	sse.PatchElementTempl(components.TagsList(uiSignals.Tags), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.TagsList(uiSignals.Tags), datastar.WithUseViewTransitions(useViewTransition))
 }
 
 func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userAgent := request.Header.Get("User-Agent")
+	useViewTransition := true
+	if strings.Contains(strings.ToLower(userAgent), "mobile") {
+		useViewTransition = false
+	}
 	uiSignalsBytes, err := io.ReadAll(request.Body)
 	if err == nil {
 		var uiSignals models.UISignals
@@ -200,7 +209,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 				}
 				sse := datastar.NewSSE(responseWriter, request)
 				if len(errorMessages) > 0 {
-					sse.PatchElementTempl(components.AddVideoValidationError(errorMessages), datastar.WithUseViewTransitions(true))
+					sse.PatchElementTempl(components.AddVideoValidationError(errorMessages), datastar.WithUseViewTransitions(useViewTransition))
 					sse.PatchSignals([]byte(`{` + errorSignals + `}`))
 					return
 				}
@@ -210,9 +219,9 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 				go services.UpsertVideo(uiSignals, saveToDbChannel)
 				success := <-saveToDbChannel
 				if success {
-					sse.PatchElementTempl(components.AddVideoSuccessResult(), datastar.WithUseViewTransitions(true))
+					sse.PatchElementTempl(components.AddVideoSuccessResult(), datastar.WithUseViewTransitions(useViewTransition))
 					sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1}`))
-					sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(true))
+					sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(useViewTransition))
 
 					deleteDocIdAndVideoIdNotMatchChannel := make(chan bool)
 					defer close(deleteDocIdAndVideoIdNotMatchChannel)
@@ -232,7 +241,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					}
 					<-deleteDocIdAndVideoIdNotMatchChannel
 				} else {
-					sse.PatchElementTempl(components.AddVideoErrorResult(), datastar.WithUseViewTransitions(true))
+					sse.PatchElementTempl(components.AddVideoErrorResult(), datastar.WithUseViewTransitions(useViewTransition))
 				}
 				return
 			}
