@@ -287,6 +287,9 @@
   .h-88 {
     height: calc(var(--spacing) * 88);
   }
+  .h-\[91\.5vh\] {
+    height: 91.5vh;
+  }
   .h-full {
     height: 100%;
   }

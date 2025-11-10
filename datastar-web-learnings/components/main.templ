@@ -70,7 +70,7 @@ templ LandingMain() {
 	<main
 		data-indicator="_firstLoad"
 		data-on-load="new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')"
-		class="mt-1 px-4 py-2 pb-19 relative overflow-x-hidden h-full overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
+		class="mt-1 px-4 py-2 pb-19 relative overflow-x-hidden h-[91.5vh] overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
 		data-signals="{_currentlyPlayingVideoId:null,videoToDelete:''}"
 		data-on-video-playing="$_currentlyPlayingVideoId=evt.detail.videoId;"
 	>
