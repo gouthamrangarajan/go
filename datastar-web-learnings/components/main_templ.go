@@ -179,7 +179,7 @@ func LandingMain() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<main data-indicator=\"_firstLoad\" data-on-load=\"new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')\" class=\"mt-1 px-4 py-2 relative overflow-x-hidden overflow-y-hidden flex flex-col gap-2 items-center\" data-signals=\"{_currentlyPlayingVideoId:null,videoToDelete:''}\" data-on-video-playing=\"$_currentlyPlayingVideoId=evt.detail.videoId;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<main data-indicator=\"_firstLoad\" data-on-load=\"new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')\" class=\"mt-1 px-4 py-2 pb-19 relative overflow-x-hidden h-full overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2\" data-signals=\"{_currentlyPlayingVideoId:null,videoToDelete:''}\" data-on-video-playing=\"$_currentlyPlayingVideoId=evt.detail.videoId;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

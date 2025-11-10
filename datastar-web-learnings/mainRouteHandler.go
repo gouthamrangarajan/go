@@ -135,8 +135,8 @@ func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		isValidToken := <-channel
 		if isValidToken {
 			sse := datastar.NewSSE(responseWriter, request)
-			sse.PatchElementTempl(components.HomeButton(), datastar.WithUseViewTransitions(true))
 			sse.PatchElementTempl(components.AddVideo(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
+			sse.PatchElementTempl(components.HomeButton(), datastar.WithUseViewTransitions(true))
 			return
 		}
 	}
