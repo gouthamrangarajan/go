@@ -23,7 +23,7 @@ templ layout(authConfig models.FirebaseAuthConfig) {
 		<body
 			class="w-full h-full font-roboto bg-background text-primary relative overflow-x-hidden scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
 			data-signals="{_showLogin: false,showDeleteConfirm:false}"
-			data-class="{ 'overflow-y-hidden': $_showLogin, 'overflow-y-auto': !$_showLogin }"
+			data-class="{ 'overflow-y-hidden': $_showLogin || $showDeleteConfirm, 'overflow-y-auto': !$_showLogin && !$showDeleteConfirm }"
 		>
 			{ children... }
 			@login()
