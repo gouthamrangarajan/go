@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/starfederation/datastar/sdk/go/datastar"
@@ -245,6 +246,45 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 				}
 				return
 			}
+		}
+	}
+	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+}
+
+func deleteVideoHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	uiSignalsBytes, err := io.ReadAll(request.Body)
+	if err == nil {
+		var uiSignals models.UISignals
+		err = json.Unmarshal(uiSignalsBytes, &uiSignals)
+		if err == nil && uiSignals.IdToken != "" {
+			verifyTokenChannel := make(chan bool)
+			defer close(verifyTokenChannel)
+			go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
+			isValidToken := <-verifyTokenChannel
+			if isValidToken {
+				if uiSignals.VideoToDelete == "" {
+					http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+					return
+				}
+				sse := datastar.NewSSE(responseWriter, request)
+				deleteVideoChannel := make(chan bool)
+				defer close(deleteVideoChannel)
+				go services.DeleteVideo(uiSignals.VideoToDelete, deleteVideoChannel)
+				success := <-deleteVideoChannel
+				if success {
+					sse.PatchElementTempl(components.EmptyDeleteVideoResult(), datastar.WithUseViewTransitions(true))
+					sse.PatchSignals([]byte(`{videoToDelete:'',showDeleteConfirm:false}`))
+					time.Sleep(200 * time.Millisecond) //wait for UI animation
+					sse.RemoveElement("#playerContainer_"+uiSignals.VideoToDelete, datastar.WithUseViewTransitions(true))
+					deletePineconeRecordChannel := make(chan bool)
+					defer close(deletePineconeRecordChannel)
+					go services.DeleteRecordPineconeDb(uiSignals.VideoToDelete, deletePineconeRecordChannel)
+					<-deletePineconeRecordChannel
+				} else {
+					sse.PatchElementTempl(components.DeleteVideoErrorResult(), datastar.WithUseViewTransitions(false))
+				}
+			}
+
 		}
 	}
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)

@@ -1,0 +1,66 @@
+package components
+
+templ confirmDelete() {
+	<div
+		class="absolute  top-0 left-0 bg-secondary/20 w-full h-full grid place-items-center"
+		data-show="$showDeleteConfirm"
+		data-signals="{_abortControllerForDeleteConfirm:new AbortController()}"
+		data-effect="{$showDeleteConfirm?$_abortControllerForDeleteConfirm=focusTrap('#deleteConfirmDialog'):$_abortControllerForDeleteConfirm.abort()}"
+		style="display:none;"
+	>
+		<dialog
+			open
+			class="rounded-xl text-primary bg-background-2 py-4 px-6 mx-auto w-11/12 md:w-8/12 lg:w-5/12 xl:w-4/12"
+			id="deleteConfirmDialog"
+			style="view-transition-name:delete-modal"
+		>
+			<div class="flex items-center justify-between">
+				<h2 class="text-xl text-red-300 font-semibold">Are you absolutely sure?</h2>
+				<button
+					class="appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
+					aria-label="close delete confirm"
+					data-on-click__viewTransition={ `$videoToDelete='';$showDeleteConfirm = false;document.getElementById('deleteResult').outerHTML='<p id="deleteResult"></p>';` }
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+						<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
+					</svg>
+				</button>
+			</div>
+			@EmptyDeleteVideoResult()
+			<p class="mt-4">
+				This action will permanently delete the record and cannot be undone.
+			</p>
+			<div class="mt-10 w-full flex gap-2 justify-end items-center">
+				<button
+					class="appearance-none outline-none cursor-pointer py-2 px-4 text-primary border border-primary rounded font-semibold transition duration-300 hover:opacity-90 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-2"
+					data-on-click__viewTransition={ `$videoToDelete='';$showDeleteConfirm = false;document.getElementById('deleteResult').outerHTML='<p id="deleteResult"></p>';` }
+				>
+					Cancel
+				</button>
+				<button
+					class="appearance-none outline-none cursor-pointer py-2 px-4 bg-secondary text-slate-700 rounded font-semibold transition duration-300 hover:opacity-90 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-background-2 disabled:cursor-not-allowed disabled:opacity-50"
+					data-indicator="_deletingVideo"
+					data-attr-disabled="$_deletingVideo"
+					data-on-click={ `
+							AUTH.currentUser.getIdToken().then(result=>{
+								$idToken=result;
+								@post('/delete');
+							})
+					` }
+				>
+					Yes, Delete
+				</button>
+			</div>
+		</dialog>
+	</div>
+}
+
+templ DeleteVideoErrorResult() {
+	<p id="deleteResult" class="animate-result py-1 px-3 rounded w-full bg-red-300 text-slate-700 font-semibold">
+		Error deleting video. Please try again later.
+	</p>
+}
+
+templ EmptyDeleteVideoResult() {
+	<p id="deleteResult"></p>
+}

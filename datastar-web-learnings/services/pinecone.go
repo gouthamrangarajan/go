@@ -154,3 +154,52 @@ func UpsertPineconeDb(videoId string, vector []float32, channel chan<- int) {
 	// fmt.Printf("Pinecone response : %v\n", string(responseBodyRaw))
 	channel <- pineconeResponse.UpsertedCount
 }
+func DeleteRecordPineconeDb(videoId string, channel chan<- bool) {
+
+	key := os.Getenv("PINECONE_API_KEY")
+	hostUrl := os.Getenv("PINECONE_HOST_URL")
+	url := fmt.Sprintf("%v/vectors/delete", hostUrl)
+
+	apiVersion := os.Getenv("PINECONE_API_VERSION")
+	pineConeRequestBody := map[string]interface{}{
+		"ids": []string{videoId + "-1"},
+	}
+	pineConeRequestBodyStr, err := json.Marshal(pineConeRequestBody)
+	if err != nil {
+		fmt.Printf("Error marshalling Pinecone delete request body: %v\n", err)
+		channel <- false
+		return
+	}
+	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(pineConeRequestBodyStr))
+	if err != nil {
+		fmt.Printf("Error creating HTTP request for Pinecone delete: %v\n", err)
+		channel <- false
+		return
+	}
+	httpRequest.Header.Set("Content-Type", "application/json")
+	httpRequest.Header.Set("Api-Key", key)
+	httpRequest.Header.Set("X-Pinecone-API-Version", apiVersion)
+	client := &http.Client{}
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		fmt.Printf("Error making HTTP request for Pinecone delete: %v\n", err)
+		channel <- false
+		return
+	}
+	defer response.Body.Close()
+	responseBodyRaw, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("Error reading response body for Pinecone delete request: %v\n", err)
+		channel <- false
+		return
+	}
+	if response.StatusCode != http.StatusOK && response.StatusCode != http.StatusNoContent {
+		fmt.Printf("Non 200 & 204 respone received calling Pinecone delete: %v\n", response.StatusCode)
+		fmt.Printf("Response body: %v\n", string(responseBodyRaw))
+		channel <- false
+		return
+	}
+
+	// fmt.Printf("Pinecone response : %v %v\n", string(responseBodyRaw), response.StatusCode)
+	channel <- true
+}

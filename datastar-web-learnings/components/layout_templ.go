@@ -34,7 +34,7 @@ func layout(authConfig models.FirebaseAuthConfig) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Collection of You Tube videos regarding front end frameworks\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/svg\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-x-hidden scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2\" data-signals=\"{_showLogin: false}\" data-class=\"{ 'overflow-y-hidden': $_showLogin, 'overflow-y-auto': !$_showLogin }\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Collection of You Tube videos regarding front end frameworks\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/svg\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-x-hidden scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2\" data-signals=\"{_showLogin: false,showDeleteConfirm:false}\" data-class=\"{ 'overflow-y-hidden': $_showLogin, 'overflow-y-auto': !$_showLogin }\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -43,6 +43,10 @@ func layout(authConfig models.FirebaseAuthConfig) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = login().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = confirmDelete().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -68,7 +72,7 @@ func layout(authConfig models.FirebaseAuthConfig) templ.Component {
 		}
 		templ_7745c5c3_Var2, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(authConfig.ApiKey)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 38, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 39, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -80,7 +84,7 @@ func layout(authConfig models.FirebaseAuthConfig) templ.Component {
 		}
 		templ_7745c5c3_Var3, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(authConfig.Domain)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 39, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 40, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {

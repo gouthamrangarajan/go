@@ -8,6 +8,7 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-red-300: oklch(80.8% 0.114 19.571);
+    --color-red-400: oklch(70.4% 0.191 22.216);
     --color-teal-300: oklch(85.5% 0.138 181.071);
     --color-slate-700: oklch(37.2% 0.044 257.287);
     --color-gray-600: oklch(44.6% 0.03 256.802);
@@ -230,6 +231,9 @@
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
   }
+  .mt-10 {
+    margin-top: calc(var(--spacing) * 10);
+  }
   .scrollbar-thin {
     &::-webkit-scrollbar-track {
       background-color: var(--scrollbar-track);
@@ -354,6 +358,9 @@
   }
   .justify-center {
     justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
   }
   .justify-normal {
     justify-content: normal;
@@ -739,10 +746,10 @@
     transform: scale(1);
   }
 }
-::view-transition-new(login-modal) {
+::view-transition-new(login-modal), ::view-transition-new(delete-modal) {
   animation: modal 0.6s var(--ease-elastic-out-5) forwards;
 }
-::view-transition-old(login-modal) {
+::view-transition-old(login-modal), ::view-transition-old(delete-modal) {
   animation: modal-out 0.2s var(--ease-out-5) forwards;
 }
 @keyframes modal {

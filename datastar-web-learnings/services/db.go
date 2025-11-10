@@ -224,3 +224,48 @@ func CheckAndDeleteIfDocIdAndVideoIdAreNotSame(videoId string, channel chan<- bo
 	}
 	channel <- true
 }
+func DeleteVideo(videoId string, channel chan<- bool) {
+	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+		channel <- false
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Printf("Error initializing Firebase app:%v\n", appErr)
+		channel <- false
+		return
+	}
+
+	fireStore, err := app.Firestore(context.Background())
+
+	if err != nil {
+		fmt.Printf("Error getting Firestore client:%v\n", err)
+		channel <- false
+		return
+	}
+	defer fireStore.Close()
+	docSnaps, err := fireStore.Collection("data").Where("videoId", "==", videoId).Documents(context.Background()).GetAll()
+	if err != nil {
+		fmt.Printf("Error getting documents:%v\n", err)
+		channel <- false
+		return
+	}
+	if len(docSnaps) == 0 {
+		channel <- false
+		return
+	}
+	for _, docSnap := range docSnaps {
+		_, err = fireStore.Collection("data").Doc(docSnap.Ref.ID).Delete(context.Background())
+		if err != nil {
+			fmt.Printf("Error deleting document:%v\n", err)
+			channel <- false
+			return
+		}
+	}
+	channel <- true
+}
