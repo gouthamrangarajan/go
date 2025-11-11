@@ -68,7 +68,7 @@ templ Player(video models.VideoResponse, idx int) {
 			<button
 				class="appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
 				data-on-click__viewTransition={ `$videoToDelete='" + video.VideoId + "';$showDeleteConfirm=true;` }
-				data-show={ "!$_video_" + videoIdReplaced + "_showTags" }
+				data-show={ "!$_video_" + videoIdReplaced + "_showTags && !$_showLoginButton" }
 				aria-label="Delete Video"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
