@@ -22,7 +22,7 @@ templ layout(authConfig models.FirebaseAuthConfig) {
 		</head>
 		<body
 			class="w-full h-full font-roboto bg-background text-primary relative overflow-hidden"
-			data-signals="{_showLogin: false,showDeleteConfirm:false}"
+			data-signals="{_showLogin: false,_showLoginButton:false,_showAddVideoButton:false,showDeleteConfirm:false,idToken:''}"
 		>
 			{ children... }
 			@login()
