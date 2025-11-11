@@ -135,7 +135,7 @@ func loginButton() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<button class=\"appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" data-class=\"{'z-10':!$showLogin}\" aria-label=\"Log In\" data-on-click__viewTransition=\"$_showLogin = true\" data-show=\"$_showLoginButton\" data-on-firebase-loaded__window=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<button class=\"appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" data-class=\"{'z-10':!$_showLogin}\" aria-label=\"Log In\" data-on-click__viewTransition=\"$_showLogin = true\" data-show=\"$_showLoginButton\" data-on-firebase-loaded__window=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

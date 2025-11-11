@@ -37,7 +37,7 @@ templ header() {
 templ loginButton() {
 	<button
 		class="appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-		data-class="{'z-10':!$showLogin}"
+		data-class="{'z-10':!$_showLogin}"
 		aria-label="Log In"
 		data-on-click__viewTransition="$_showLogin = true"
 		data-show="$_showLoginButton"
