@@ -29,30 +29,36 @@ templ header() {
 				<span class="text-secondary text-sm">My curated technology video collection</span>
 			</div>
 		</div>
-		<button
-			class="appearance-none outline-none cursor-pointer p-1 rounded-full text-secondary transition duration-300 focus:ring-1 focus:ring-secondary hover:opacity-90"
-			aria-label="Log In"
-			data-on-click__viewTransition="$_showLogin = true"
-			data-show="$_showLoginButton"
-			data-on-firebase-loaded__window={ `AUTH.currentUser!=null ?
+		@loginButton()
+		@AddVideoButton()
+	</header>
+}
+
+templ loginButton() {
+	<button
+		class="appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+		data-class="{'z-10':!$showLogin}"
+		aria-label="Log In"
+		data-on-click__viewTransition="$_showLogin = true"
+		data-show="$_showLoginButton"
+		data-on-firebase-loaded__window={ `AUTH.currentUser!=null ?
 												 setTimeout(()=>{
 												 	$_showLoginButton = false;
 													$_showLogin=false;
 													$_showAddVideoButton=true;
 													},1) : 
 													$_showLoginButton = true` }
-			style="view-transition-name:page-action"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-in-icon lucide-log-in"><path d="m10 17 5-5-5-5"></path><path d="M15 12H3"></path><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path></svg>
-		</button>
-		@AddVideoButton()
-	</header>
+		style="view-transition-name:page-action"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-in-icon lucide-log-in"><path d="m10 17 5-5-5-5"></path><path d="M15 12H3"></path><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path></svg>
+	</button>
 }
 
 templ AddVideoButton() {
 	<button
 		id="pageAction"
-		class="appearance-none outline-none cursor-pointer p-1 rounded-full text-secondary transition duration-300 focus:ring-1 focus:ring-secondary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+		class="appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+		data-class="{'z-10':!$showDeleteConfirm}"
 		aria-label="Add Video"
 		data-show="$_showAddVideoButton"
 		style="view-transition-name:page-action"

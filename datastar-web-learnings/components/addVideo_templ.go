@@ -32,7 +32,7 @@ func HomeButton() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<button id=\"pageAction\" class=\"appearance-none outline-none cursor-pointer p-1 rounded-full text-secondary transition duration-300 focus:ring-1 focus:ring-secondary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" aria-label=\"Go to Home\" style=\"view-transition-name:page-action\" data-on-click=\"@get('/')\" data-indicator=\"_fetchingHomePage\" data-attr-disabled=\"$_fetchingHomePage\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path d=\"M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z\"></path> <path d=\"m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z\"></path></svg></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<button id=\"pageAction\" class=\"appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" data-class=\"{'z-10':!$showDeleteConfirm}\" aria-label=\"Go to Home\" style=\"view-transition-name:page-action\" data-on-click=\"@get('/')\" data-indicator=\"_fetchingHomePage\" data-attr-disabled=\"$_fetchingHomePage\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path d=\"M11.47 3.841a.75.75 0 0 1 1.06 0l8.69 8.69a.75.75 0 1 0 1.06-1.061l-8.689-8.69a2.25 2.25 0 0 0-3.182 0l-8.69 8.69a.75.75 0 1 0 1.061 1.06l8.69-8.689Z\"></path> <path d=\"m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z\"></path></svg></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -73,7 +73,7 @@ func TagsList(tags []string) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:tag-" + strings.ReplaceAll(tag, " ", ""))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 28, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 29, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -86,7 +86,7 @@ func TagsList(tags []string) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 30, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 31, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -103,7 +103,7 @@ func TagsList(tags []string) templ.Component {
                         @post('/tags/ui')
                     `)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 39, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 40, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -213,7 +213,7 @@ func AddVideoValidationError(messages []string) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 67, Col: 17}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 68, Col: 17}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -269,7 +269,7 @@ func AddVideo() templ.Component {
                 }
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 94, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 95, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -292,7 +292,7 @@ func AddVideo() templ.Component {
                                     }
                                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 164, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 165, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
