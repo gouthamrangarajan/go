@@ -90,7 +90,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	if len(videos) == 0 {
 		sse.PatchElementTempl(components.NoDataFound("No technology videos found matching your search."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 	} else {
-		sse.PatchElementTempl(components.PlayerList(videos), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.PlayerList(videos, query), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 	}
 	removeLoaderMore(sse)
 }
@@ -108,9 +108,9 @@ func loadVideosWithOffset(offset int, append bool, sse *datastar.ServerSentEvent
 	go services.GetVideos(sse.Context(), models.GetVideosRequest{Limit: noOfItems, Offset: offset}, channel)
 	videos := <-channel
 	if append {
-		sse.PatchElementTempl(components.PlayerList(videos), datastar.WithSelector("section"), datastar.WithModeAppend())
+		sse.PatchElementTempl(components.PlayerList(videos, ""), datastar.WithSelector("section"), datastar.WithModeAppend())
 	} else {
-		sse.PatchElementTempl(components.PlayerList(videos), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.PlayerList(videos, ""), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 	}
 
 	if len(videos) < noOfItems {
