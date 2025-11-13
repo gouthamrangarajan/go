@@ -53,11 +53,11 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		loadVideosWithOffset(0, false, sse)
 		return
 	}
-	openAIResponseChannel := make(chan bool)
+	openAIResponseChannel := make(chan string)
 	defer close(openAIResponseChannel)
-	go services.VerifyTechnologyTopicsSearch(query, openAIResponseChannel)
+	go services.VerifyTechnologyTopicsSearchAndOptimizeQuery(query, openAIResponseChannel)
 	openAIResponse := <-openAIResponseChannel
-	if !openAIResponse {
+	if openAIResponse == "" {
 		fmt.Printf("Query not related to technology topics: %v\n", query)
 		sse.PatchElementTempl(components.NoDataFound("Looks like your search isn’t technology-related. Please try a tech-related query."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 		removeLoaderMore(sse)
@@ -65,7 +65,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	openAIVectorChannel := make(chan []float32)
 	defer close(openAIVectorChannel)
-	go services.GetOpenAIEmbeddings(query, openAIVectorChannel)
+	go services.GetOpenAIEmbeddings(openAIResponse, openAIVectorChannel)
 	vector := <-openAIVectorChannel
 	if vector == nil {
 		fmt.Printf("No embedding vector received from OpenAI for %v\n", query)
