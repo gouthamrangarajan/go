@@ -274,7 +274,15 @@ func searchInput() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><div class=\"flex gap-2 transition duration-300 rounded-l-full items-center border border-primary/50 py-2 px-4 flex-1 focus-within:border-primary \"><input type=\"text\" name=\"search\" class=\"appearance-none outline-none flex-1 placeholder:text-secondary/70\" placeholder=\"Search...\" data-bind=\"_search\" data-on-load=\"new URLSearchParams(window.location.search).get('search')?$_search=new URLSearchParams(window.location.search).get('search'):$_search=''\"> <button type=\"button\" class=\"appearance-none outline-none cursor-pointer rounded-full text-red-300 border border-transparent transition duration-300 focus:border-red-300  hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" aria-label=\"clear search\" data-on-click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><div class=\"flex gap-2 transition duration-300 rounded-l-full items-center border border-primary/50 py-2 px-4 flex-1 focus-within:border-primary \"><input type=\"text\" name=\"search\" class=\"appearance-none outline-none flex-1 placeholder:text-secondary/70\" placeholder=\"Search...\" data-bind=\"_search\" data-on-load=\"new URLSearchParams(window.location.search).get('search')?$_search=new URLSearchParams(window.location.search).get('search'):$_search=''\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = loader("$_searching || $_firstLoad").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<button type=\"button\" class=\"appearance-none outline-none cursor-pointer rounded-full text-red-300 border border-transparent transition duration-300 focus:border-red-300  hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" aria-label=\"clear search\" data-on-click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -288,34 +296,26 @@ func searchInput() templ.Component {
 					}
 				`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 121, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 122, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" data-show=\"$_showClearButton\" data-attr-disabled=\"$_searching\" data-effect=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" data-show=\"$_showClearButton\" data-attr-disabled=\"$_searching\" data-effect__viewTransition=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("$_showClearButton=$_search.trim()!=''")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 124, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 125, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path d=\"M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z\"></path></svg></button>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = loader("$_searching || $_firstLoad").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div><button type=\"submit\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded-r-full bg-background text-primary border border-primary/50 transition duration-300 focus:border-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" data-attr-disabled=\"$_searching || $_firstLoad\" aria-label=\"Submit Search\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg></button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" style=\"view-transition-name:clear-search-button\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path d=\"M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z\"></path></svg></button></div><button type=\"submit\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded-r-full bg-background text-primary border border-primary/50 transition duration-300 focus:border-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" data-attr-disabled=\"$_searching || $_firstLoad\" aria-label=\"Submit Search\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg></button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -351,7 +351,7 @@ func LoadMore(offset int) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("@get('/data/" + strconv.Itoa(offset) + "')")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 149, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 150, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -393,7 +393,7 @@ func loader(dataShowSignal string) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(dataShowSignal)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 154, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 155, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -435,7 +435,7 @@ func NoDataFound(message string) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 175, Col: 11}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 176, Col: 11}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {

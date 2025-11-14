@@ -107,6 +107,7 @@ templ searchInput() {
 				data-bind="_search"
 				data-on-load="new URLSearchParams(window.location.search).get('search')?$_search=new URLSearchParams(window.location.search).get('search'):$_search=''"
 			/>
+			@loader("$_searching || $_firstLoad")
 			<button
 				type="button"
 				class="appearance-none outline-none cursor-pointer rounded-full text-red-300 border border-transparent transition duration-300 focus:border-red-300  hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
@@ -121,13 +122,13 @@ templ searchInput() {
 				` }
 				data-show="$_showClearButton"
 				data-attr-disabled="$_searching"
-				data-effect={ "$_showClearButton=$_search.trim()!=''" }
+				data-effect__viewTransition={ "$_showClearButton=$_search.trim()!=''" }
+				style="view-transition-name:clear-search-button"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
 					<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"></path>
 				</svg>
 			</button>
-			@loader("$_searching || $_firstLoad")
 		</div>
 		<button
 			type="submit"
