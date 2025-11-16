@@ -71,7 +71,11 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		chatSessionId = InsertChatSessionViaChannel(userId, models.ChatSession{Title: prompt, AllowWebSearch: allowWebSearch, ImageGeneration: generateImg})
 		newChatSessionInserted = true
 		if chatSessionId > 0 {
-			go callGeminiEmbeddingAndUpdateSessionTitleVector(chatSessionId, prompt, embeddingCallChannel)
+			if len(prompt) > 500 {
+				go callGeminiEmbeddingAndUpdateSessionTitleVector(chatSessionId, prompt[:500], embeddingCallChannel)
+			} else {
+				go callGeminiEmbeddingAndUpdateSessionTitleVector(chatSessionId, prompt, embeddingCallChannel)
+			}
 			embeddingCalled = true
 		}
 	} else {
