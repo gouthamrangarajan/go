@@ -1,6 +1,6 @@
 package scripts
 
-templ AddYTPlayerScript() {
+templ AddYTPlayer() {
 	<script type="text/javascript">                
         let tag = document.createElement('script');
         // tag.src = "https://www.youtube.com/player_api";
@@ -32,7 +32,8 @@ templ YTPlayer() {
                     'playsinline': 1
                 },
                 events: {
-                    'onReady': function(event){
+                    'onReady': function(event){    
+                        // console.log(player);                
                     },
                     'onStateChange': function(event){
                         if(event.data == YT.PlayerState.PLAYING ){
@@ -42,6 +43,33 @@ templ YTPlayer() {
                 }
             });   
             return player;         
-        }        
+        }   
+        function initDockedYTPlayer(vId,dockedPlayerSignal){            
+            if(dockedPlayerSignal){            
+                dockedPlayerSignal.loadVideoById(vId);
+                return dockedPlayerSignal;
+            }
+             const player= new YT.Player('docker_player', {
+                height: '100%', 
+                width: '100%',
+                videoId: vId,
+                playerVars: {
+                    'playsinline': 1
+                },
+                events: {
+                    'onReady': function(event){
+                        player.playVideo();
+                    },
+                    'onStateChange': function(event){
+                        if(event.data == YT.PlayerState.PLAYING ){                                
+                            player.g.dispatchEvent(new CustomEvent('docked-video-playing',{bubbles:true,detail:{videoId:vId}}));
+                        } else if(event.data == YT.PlayerState.ENDED || event.data == YT.PlayerState.PAUSED){                            
+                            player.g.dispatchEvent(new CustomEvent('docked-video-stopped',{bubbles:true,detail:{videoId:vId}}));
+                        }
+                    }
+                }
+            });               
+            return player;
+        }     
     </script>
 }

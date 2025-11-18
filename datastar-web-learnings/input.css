@@ -84,3 +84,21 @@
         transform-origin: top;
     }
 }
+
+.animate-docked-player {
+    animation: docked-player 0.3s var(--ease-in-5) forwards;
+}
+
+@keyframes docked-player {
+    0% {
+        transform: scaleY(0);
+        opacity: 0;
+        transform-origin: bottom;
+    }
+
+    100% {
+        transform: scaleY(1);
+        opacity: 1;
+        transform-origin: bottom;
+    }
+}

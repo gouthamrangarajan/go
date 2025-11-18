@@ -61,7 +61,15 @@ templ AddVideoButton() {
 		aria-label="Add Video"
 		data-show="$_showAddVideoButton"
 		style="view-transition-name:page-action"
-		data-on-click="AUTH.currentUser.getIdToken().then(result=>{$idToken=result;@get('/add');})"
+		data-on-click={ `$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
+						$_allNotInViewportObservers=[];
+						if($_dockedPlayer){
+							$_dockedPlayer.pauseVideo();
+							$_dockedPlayerVideoId=null;
+						}
+						setTimeout(()=>{
+							AUTH.currentUser.getIdToken().then(result=>{$idToken=result;@get('/add');});
+						},1)` }
 		data-indicator="_fetchingAddVideo"
 		data-attr-disabled="$_fetchingAddVideo"
 	>
@@ -75,15 +83,23 @@ templ LandingMain() {
 	<main
 		data-indicator="_firstLoad"
 		data-on-load="new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')"
-		class="mt-1 px-4 py-2 pb-24 relative overflow-x-hidden h-[91.5vh] overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
-		data-signals="{_currentlyPlayingVideoId:null,videoToDelete:''}"
-		data-on-video-playing="$_currentlyPlayingVideoId=evt.detail.videoId;"
+		class="mt-1 px-4 py-2 pb-24 overflow-x-hidden h-[91.5vh] overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
+		data-signals={ `{_activeInlinePlayerVideoId:null,videoToDelete:'',
+						_showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
+						 showDeleteConfirm:false,idToken:'',_allNotInViewportObservers:[],
+						_dockedPlayerVideoId:null,_dockedPlayer:null,isDockedPlayerActive:false}` }
+		data-on-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
+		data-on-docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId=null;"
+		data-on-docked-video-stopped="$_isDockedPlayerActive=false;"
 	>
 		@searchInput()
 		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
 		<div class="py-10">
 			@loader("$_loading")
 		</div>
+		@dockedPlayer()
+		@login()
+		@confirmDelete()
 	</main>
 }
 
@@ -94,6 +110,8 @@ templ searchInput() {
 		dats-signals="{_search:'',_showClearButton:false}"
 		data-on-submit={ `evt.preventDefault();
 						if(!$_searching && new URLSearchParams(window.location.search).get('search')!=$_search.trim()){							
+							$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
+							$_allNotInViewportObservers=[];
 							window.history.replaceState({},document.title,window.location.origin+'/?search='+$_search.trim());							
 							@get('/search/'+$_search.trim(),{openWhenHidden: true});
 						}` }
@@ -116,6 +134,8 @@ templ searchInput() {
 					evt.preventDefault();					
 					$_search='';
 					if (new URLSearchParams(window.location.search).get('search')){
+						$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
+						$_allNotInViewportObservers=[];
 						window.history.replaceState({},document.title,window.location.origin+'/');					
 						@get('/search/',{openWhenHidden: true});
 					}

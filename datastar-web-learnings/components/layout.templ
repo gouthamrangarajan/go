@@ -22,15 +22,13 @@ templ layout(authConfig models.FirebaseAuthConfig) {
 		</head>
 		<body
 			class="w-full h-full font-roboto bg-background text-primary relative overflow-hidden"
-			data-signals="{_showLogin: false,_showLoginButton:false,_showAddVideoButton:false,showDeleteConfirm:false,idToken:''}"
 		>
 			{ children... }
-			@login()
-			@confirmDelete()
 			<script type="module" src="/assets/scripts/data-star.min.js"></script>
 			@scripts.FocusTrap()
-			@scripts.AddYTPlayerScript()
+			@scripts.AddYTPlayer()
 			@scripts.YTPlayer()
+			@scripts.NotInViewportObserver()
 			<script type="module">
 			    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'
 				import { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'

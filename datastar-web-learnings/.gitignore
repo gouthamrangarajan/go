@@ -3,3 +3,4 @@ node_modules
 serviceAccount.json
 *secret*.json
 *.http
+analysis.txt
