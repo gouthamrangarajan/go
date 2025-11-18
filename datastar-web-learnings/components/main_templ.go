@@ -249,7 +249,7 @@ func LandingMain() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" data-on-video-playing=\"$_activeInlinePlayerVideoId=evt.detail.videoId;\" data-on-docked-video-playing=\"$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId=null;\" data-on-docked-video-stopped=\"$_isDockedPlayerActive=false;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" data-on-inline-video-playing=\"$_activeInlinePlayerVideoId=evt.detail.videoId;\" data-on-docked-video-playing=\"$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId=null;\" data-on-docked-video-stopped=\"$_isDockedPlayerActive=false;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

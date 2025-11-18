@@ -88,7 +88,7 @@ templ LandingMain() {
 						_showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
 						 showDeleteConfirm:false,idToken:'',_allNotInViewportObservers:[],
 						_dockedPlayerVideoId:null,_dockedPlayer:null,isDockedPlayerActive:false}` }
-		data-on-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
+		data-on-inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
 		data-on-docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId=null;"
 		data-on-docked-video-stopped="$_isDockedPlayerActive=false;"
 	>

@@ -46,30 +46,36 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 		class={ " animate-card shadow bg-secondary/20 rounded-xl grid grid-cols-1 gap-1 overflow-hidden relative h-88 lg:h-86" }
 		style={ " opacity:0;animation-delay: " + animationDelayStyle + ";view-transition-name:video_" + videoIdReplaced }
 		data-signals={ "{_video_" + videoIdReplaced + ":null,_video_" + videoIdReplaced + "_showTags:false}" }
-		data-on-load={ `initYTPlayer('` + video.VideoId + `',0)
+		data-on-load={ `
+						initYTPlayer('` + video.VideoId + `',0)
 						.then(player=>{$_video_` + videoIdReplaced + `=player;});
-						$_allNotInViewportObservers.push(notInViewportObserver('#` + containerId + `'));` }
-		data-effect={ `'` + videoIdReplaced + `'!=$_activeInlinePlayerVideoId.replaceAll('-','') 
+						$_allNotInViewportObservers.push(notInViewportObserver('#` + containerId + `'));
+					` }
+		data-effect={ `
+						'` + videoIdReplaced + `'!=$_activeInlinePlayerVideoId.replaceAll('-','') 
 						&& $_activeInlinePlayerVideoId && $_video_` + videoIdReplaced + `.getPlayerState
 					    && $_video_` + videoIdReplaced + `.getPlayerState()==1 
-						&& $_video_` + videoIdReplaced + `.pauseVideo()` }
-		data-on-not-in-viewport={ `$_video_` + videoIdReplaced + `.getPlayerState 
+						? $_video_` + videoIdReplaced + `.pauseVideo() : null
+					` }
+		data-on-not-in-viewport={ `
+									$_video_` + videoIdReplaced + `.getPlayerState 
 									&& $_video_` + videoIdReplaced + `.getPlayerState()==1 ? 
 									setTimeout(()=>{
 										$_video_` + videoIdReplaced + `.pauseVideo();										
 										$_dockedPlayerVideoId='` + video.VideoId + `';
 									},1)
-									: null` }
+									: null
+								` }
 	>
 		<div
 			class="h-64"
 			id={ "player_" + video.VideoId }
 			data-show={ "!$_video_" + videoIdReplaced + "_showTags" }
-			data-effect={ `$_isDockedPlayerActive && $_video_` + videoIdReplaced + `.getPlayerState 
+			data-effect={ `
+							$_isDockedPlayerActive && $_video_` + videoIdReplaced + `.getPlayerState 
 							&& $_video_` + videoIdReplaced + `.getPlayerState()==1 
-							&& setTimeout(()=>{								
-								$_video_` + videoIdReplaced + `.pauseVideo();
-							},1);` }
+							? $_video_` + videoIdReplaced + `.pauseVideo() : null
+							` }
 		></div>
 		<div class="py-1 px-3 flex gap-1 items-center">
 			<div class="flex flex-col flex-1 gap-1">
@@ -138,18 +144,18 @@ templ dockedPlayer() {
 		class="animate-docked-player h-[30vh] w-11/12 fixed bottom-0 left-0.5 md:left-1.5 md:w-9/12 lg:h-[50vh] lg:left-3 lg:w-6/12  xl:left-3.5 xl:w-5/12"
 		style="display:none;"
 		data-show="$_dockedPlayerVideoId"
-		data-effect={ `$_dockedPlayerVideoId && $_dockedPlayerVideoId ? 						
-						setTimeout(()=>{							
+		data-effect={ `
+						$_dockedPlayerVideoId ? 																		
+						setTimeout(()=>{
 							$_dockedPlayer=initDockedYTPlayer($_dockedPlayerVideoId,$_dockedPlayer);
 						},1)
-						: null` }
+						:null												
+					` }
 	>
 		<button
 			class="appearance-none outline-none absolute top-2 right-2 cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
 			aria-label="close player"
-			data-on-click__viewTransition={ `$_dockedPlayer.pauseVideo();
-											 $_dockedPlayerVideoId=null;
-											 ` }
+			data-on-click__viewTransition={ `$_dockedPlayer.pauseVideo();$_dockedPlayerVideoId=null;` }
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 				<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
@@ -158,11 +164,12 @@ templ dockedPlayer() {
 		<div
 			class="w-full h-full"
 			id="docker_player"
-			data-effect={ ` $_activeInlinePlayerVideoId && $_dockedPlayer && $_dockedPlayer.getPlayerState &&
-						   $_dockedPlayer.getPlayerState()==1 && 
-						   setTimeout(()=>{
-						   	$_dockedPlayer.pauseVideo();
-						   },1);` }
+			data-effect={ ` 
+						 $_activeInlinePlayerVideoId && $_dockedPlayer &&
+						 $_dockedPlayer.getPlayerState &&
+						 $_dockedPlayer.getPlayerState()==1 
+						 ? $_dockedPlayer.pauseVideo() : null						   
+						` }
 		></div>
 	</div>
 }

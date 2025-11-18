@@ -36,16 +36,19 @@ templ YTPlayer() {
                         // console.log(player);                
                     },
                     'onStateChange': function(event){
-                        if(event.data == YT.PlayerState.PLAYING ){
-                            player.g.dispatchEvent(new CustomEvent('video-playing',{bubbles:true,detail:{videoId:vId}}));
-                        }
+                        if(event.data == YT.PlayerState.PLAYING ){                                
+                            player.g.dispatchEvent(new CustomEvent('inline-video-playing',{bubbles:true,detail:{videoId:vId}}));
+                        } 
+                        // else if(event.data == YT.PlayerState.ENDED || event.data == YT.PlayerState.PAUSED){                            
+                        //     player.g.dispatchEvent(new CustomEvent('inline-video-stopped',{bubbles:true,detail:{videoId:vId}}));
+                        // }
                     }
                 }
             });   
             return player;         
         }   
         function initDockedYTPlayer(vId,dockedPlayerSignal){            
-            if(dockedPlayerSignal){            
+            if(dockedPlayerSignal && dockedPlayerSignal.loadVideoById){            
                 dockedPlayerSignal.loadVideoById(vId);
                 return dockedPlayerSignal;
             }
