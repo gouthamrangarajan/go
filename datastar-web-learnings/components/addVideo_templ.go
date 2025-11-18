@@ -253,12 +253,29 @@ func AddVideo() templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<main class=\"flex flex-col gap-6 container max-w-4xl py-4 px-6 pb-19  mx-auto overflow-x-hidden h-[91.5vh] overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2 lg:pt-10\"><div class=\"flex flex-col gap-1\"><h1 class=\"text-3xl font-semibold text-primary\">Add New Video</h1><h2 class=\"text-lg text-secondary\">Add a new YouTube video to your technology collection</h2></div><form class=\"border border-gray-600 py-2 px-4 rounded-xl flex flex-col gap-3\" data-signals=\"{videoIdError: false,rankError:false,tagsError:false,titleError:false,videoId:'',title:'',subtitle:'',rank:1,tags:[]}\" data-indicator=\"_addingVideo\" data-on-submit=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<main class=\"flex flex-col gap-6 container max-w-4xl py-4 px-6 pb-19  mx-auto overflow-x-hidden h-[91.5vh] overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2 lg:pt-10\"><div class=\"flex flex-col gap-1\"><h1 class=\"text-3xl font-semibold text-primary\">Add New Video</h1><h2 class=\"text-lg text-secondary\">Add a new YouTube video to your technology collection</h2></div><form class=\"border border-gray-600 py-2 px-4 rounded-xl flex flex-col gap-3\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(`
+							{ videoIdError: false,rankError:false,tagsError:false,titleError:false,
+							  videoId:'',title:'',subtitle:'',rank:1,tags:[]
+							}
+						 `)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 88, Col: 8}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" data-indicator=\"_addingVideo\" data-on-submit=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(`
                 evt.preventDefault();
                 if(!$_addingVideo){
                     $videoIdError=false;
@@ -269,18 +286,18 @@ func AddVideo() templ.Component {
                 }
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 95, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 99, Col: 17}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><h3>Video Details</h3><p id=\"result\"></p><label for=\"videoId\" class=\" flex flex-col gap-1\">Video ID <input type=\"text\" id=\"videoId\" name=\"videoId\" data-bind=\"videoId\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$videoIdError, 'border-secondary focus:ring-secondary':!$videoIdError}\" required></label> <label for=\"title\" class=\"flex flex-col gap-1\">Title <input type=\"text\" id=\"title\" name=\"title\" data-bind=\"title\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border  focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$titleError, 'border-secondary focus:ring-secondary':!$titleError}\" required minlength=\"3\"></label> <label for=\"subtitle\" class=\"flex flex-col gap-1\">Subtitle <input type=\"text\" id=\"subtitle\" name=\"subtitle\" data-bind=\"subtitle\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border border-secondary focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\"></label> <label for=\"rank\" class=\" flex flex-col gap-1\">Rank <input type=\"number\" id=\"rank\" name=\"rank\" data-bind=\"rank\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$rankError, 'border-secondary focus:ring-secondary':!$rankError}\" required min=\"1\" max=\"5\"></label><div class=\"flex flex-col gap-2\" style=\"view-transition-name:tags\"><label for=\"tags\" class=\"flex flex-col gap-1\">Tags <input type=\"text\" id=\"tags\" name=\"tags\" data-on-keydown=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"><h3>Video Details</h3><p id=\"result\"></p><label for=\"videoId\" class=\" flex flex-col gap-1\">Video ID <input type=\"text\" id=\"videoId\" name=\"videoId\" data-bind=\"videoId\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$videoIdError, 'border-secondary focus:ring-secondary':!$videoIdError}\" required></label> <label for=\"title\" class=\"flex flex-col gap-1\">Title <input type=\"text\" id=\"title\" name=\"title\" data-bind=\"title\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border  focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$titleError, 'border-secondary focus:ring-secondary':!$titleError}\" required minlength=\"3\"></label> <label for=\"subtitle\" class=\"flex flex-col gap-1\">Subtitle <input type=\"text\" id=\"subtitle\" name=\"subtitle\" data-bind=\"subtitle\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border border-secondary focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\"></label> <label for=\"rank\" class=\" flex flex-col gap-1\">Rank <input type=\"number\" id=\"rank\" name=\"rank\" data-bind=\"rank\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" data-class=\"{'border-red-300 focus:ring-red-300':$rankError, 'border-secondary focus:ring-secondary':!$rankError}\" required min=\"1\" max=\"5\"></label><div class=\"flex flex-col gap-2\" style=\"view-transition-name:tags\"><label for=\"tags\" class=\"flex flex-col gap-1\">Tags <input type=\"text\" id=\"tags\" name=\"tags\" data-on-keydown=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var12 string
-		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(`
+		var templ_7745c5c3_Var13 string
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(`
                                     if(evt.key==='Enter'){
                                         evt.preventDefault();
                                         const tagValue=evt.currentTarget.value.trim();
@@ -292,13 +309,13 @@ func AddVideo() templ.Component {
                                     }
                                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 165, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addVideo.templ`, Line: 169, Col: 33}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border placeholder:text-secondary/70 focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" placeholder=\"Add a tag and press Enter\" data-class=\"{'border-red-300 focus:ring-red-300':$tagsError, 'border-secondary focus:ring-secondary':!$tagsError}\"></label><div class=\"flex flex-wrap gap-2 w-full\" id=\"tagsContainer\" style=\"view-transition-name:tags-list\"></div></div><button type=\"submit\" class=\" appearance-none outline-none text-slate-700 w-full py-2 px-4 rounded bg-teal-300 transition duration-300 cursor-pointer focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" data-attr-disabled=\"$_addingVideo\">Add Video</button></form></main>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"appearance-none outline-none py-2 px-4 transition duration-300 rounded border placeholder:text-secondary/70 focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2\" placeholder=\"Add a tag and press Enter\" data-class=\"{'border-red-300 focus:ring-red-300':$tagsError, 'border-secondary focus:ring-secondary':!$tagsError}\"></label><div class=\"flex flex-wrap gap-2 w-full\" id=\"tagsContainer\" style=\"view-transition-name:tags-list\"></div></div><button type=\"submit\" class=\" appearance-none outline-none text-slate-700 w-full py-2 px-4 rounded bg-teal-300 transition duration-300 cursor-pointer focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50\" data-attr-disabled=\"$_addingVideo\">Add Video</button></form></main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

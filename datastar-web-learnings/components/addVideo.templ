@@ -81,7 +81,11 @@ templ AddVideo() {
 		</div>
 		<form
 			class="border border-gray-600 py-2 px-4 rounded-xl flex flex-col gap-3"
-			data-signals="{videoIdError: false,rankError:false,tagsError:false,titleError:false,videoId:'',title:'',subtitle:'',rank:1,tags:[]}"
+			data-signals={ `
+							{ videoIdError: false,rankError:false,tagsError:false,titleError:false,
+							  videoId:'',title:'',subtitle:'',rank:1,tags:[]
+							}
+						 ` }
 			data-indicator="_addingVideo"
 			data-on-submit={ `
                 evt.preventDefault();
