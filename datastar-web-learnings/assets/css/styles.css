@@ -311,8 +311,8 @@
   .h-88 {
     height: calc(var(--spacing) * 88);
   }
-  .h-\[50vh\] {
-    height: 50vh;
+  .h-\[30vh\] {
+    height: 30vh;
   }
   .h-\[91\.5vh\] {
     height: 91.5vh;
@@ -759,6 +759,11 @@
   .lg\:h-86 {
     @media (width >= 64rem) {
       height: calc(var(--spacing) * 86);
+    }
+  }
+  .lg\:h-\[50vh\] {
+    @media (width >= 64rem) {
+      height: 50vh;
     }
   }
   .lg\:w-5\/12 {

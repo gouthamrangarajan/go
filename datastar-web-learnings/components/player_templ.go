@@ -475,7 +475,7 @@ func dockedPlayer() templ.Component {
 			templ_7745c5c3_Var27 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"animate-docked-player h-[50vh] w-11/12 fixed bottom-0 left-0.5 md:left-1.5 md:w-9/12 lg:left-3 lg:w-6/12 xl:left-3.5 xl:w-5/12\" style=\"display:none;\" data-show=\"$_dockedPlayerVideoId\" data-effect=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"animate-docked-player h-[30vh] w-11/12 fixed bottom-0 left-0.5 md:left-1.5 md:w-9/12 lg:h-[50vh] lg:left-3 lg:w-6/12  xl:left-3.5 xl:w-5/12\" style=\"display:none;\" data-show=\"$_dockedPlayerVideoId\" data-effect=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
