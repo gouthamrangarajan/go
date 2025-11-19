@@ -131,6 +131,7 @@ templ bodyScript() {
                     disableImgGeneration:false,
                     disableFileUpload:false,
                     menuSrchTxt:'',
+                    theme:'light',
                     init(){                       
                        initAlpineStore();
                     },
@@ -186,7 +187,18 @@ templ bodyScript() {
                                 ev.currentTarget.dispatchEvent(new Event(eventNameToDispatch));
                             }
                         }
-                    },                    
+                    },       
+                    setTheme(val){
+                        if(document.startViewTransition){
+                            document.startViewTransition(()=>{
+                                this.theme=val;                                
+                            });
+                        }
+                        else{
+                            this.theme=val;                            
+                        }
+                        localStorage.setItem("theme",val);
+                    }             
                 });
                 Alpine.data('chatInput',()=>({
                     currentMessageId:-1,
@@ -428,6 +440,15 @@ templ bodyScript() {
                 if(document.getElementById('section').children.length>0){
                     Alpine.store('data').disableImgGeneration=true;
                 }
+                let theme = "light";
+                if (localStorage.getItem("theme") != null
+                    && ["light","dark"].includes(localStorage.getItem("theme")))
+                {
+                    theme = localStorage.getItem("theme");
+                }else if (window.matchMedia("(prefers-color-scheme: dark)").matches){                    
+                    theme = "dark"
+                }
+                Alpine.store('data').theme=theme;
             }
             function createNewMessageUIAndGetMessageId(idToAppendHTML,messageUI){                
                 const divEl=document.createElement("div");

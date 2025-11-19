@@ -282,6 +282,9 @@
   .mt-6 {
     margin-top: calc(var(--spacing) * 6);
   }
+  .mr-1 {
+    margin-right: calc(var(--spacing) * 1);
+  }
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
@@ -424,6 +427,9 @@
   .items-start {
     align-items: flex-start;
   }
+  .justify-between {
+    justify-content: space-between;
+  }
   .justify-center {
     justify-content: center;
   }
@@ -536,6 +542,9 @@
   }
   .pl-0\.5 {
     padding-left: calc(var(--spacing) * 0.5);
+  }
+  .text-center {
+    text-align: center;
   }
   .font-\(family-name\:--font-geometric-humanist\) {
     font-family: var(--font-geometric-humanist);
@@ -855,13 +864,13 @@
     }
   }
   .dark\:border-0 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       border-style: var(--tw-border-style);
       border-width: 0px;
     }
   }
   .dark\:border-cyan-400\/50 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       border-color: color-mix(in srgb, oklch(78.9% 0.154 211.53) 50%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
         border-color: color-mix(in oklab, var(--color-cyan-400) 50%, transparent);
@@ -869,32 +878,32 @@
     }
   }
   .dark\:border-cyan-600 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       border-color: var(--color-cyan-600);
     }
   }
   .dark\:border-slate-600 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       border-color: var(--color-slate-600);
     }
   }
   .dark\:bg-\[\#151b23\] {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       background-color: #151b23;
     }
   }
   .dark\:bg-gray-800 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       background-color: var(--color-gray-800);
     }
   }
   .dark\:bg-gray-900 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       background-color: var(--color-gray-900);
     }
   }
   .dark\:bg-gray-900\/40 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       background-color: color-mix(in srgb, oklch(21% 0.034 264.665) 40%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
         background-color: color-mix(in oklab, var(--color-gray-900) 40%, transparent);
@@ -902,72 +911,72 @@
     }
   }
   .dark\:bg-lime-500 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       background-color: var(--color-lime-500);
     }
   }
   .dark\:bg-slate-100 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       background-color: var(--color-slate-100);
     }
   }
   .dark\:bg-slate-200 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       background-color: var(--color-slate-200);
     }
   }
   .dark\:bg-white {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       background-color: var(--color-white);
     }
   }
   .dark\:text-amber-200 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-amber-200);
     }
   }
   .dark\:text-cyan-400 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-cyan-400);
     }
   }
   .dark\:text-gray-50 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-gray-50);
     }
   }
   .dark\:text-green-300 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-green-300);
     }
   }
   .dark\:text-lime-500 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-lime-500);
     }
   }
   .dark\:text-red-600 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-red-600);
     }
   }
   .dark\:text-slate-100 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-slate-100);
     }
   }
   .dark\:text-slate-200 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-slate-200);
     }
   }
   .dark\:text-slate-600 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       color: var(--color-slate-600);
     }
   }
   .dark\:inset-shadow-cyan-400 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       --tw-inset-shadow-color: oklch(78.9% 0.154 211.53);
       @supports (color: color-mix(in lab, red, red)) {
         --tw-inset-shadow-color: color-mix(in oklab, var(--color-cyan-400) var(--tw-inset-shadow-alpha), transparent);
@@ -975,7 +984,7 @@
     }
   }
   .dark\:inset-shadow-cyan-400\/50 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       --tw-inset-shadow-color: color-mix(in srgb, oklch(78.9% 0.154 211.53) 50%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
         --tw-inset-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-cyan-400) 50%, transparent) var(--tw-inset-shadow-alpha), transparent);
@@ -983,26 +992,26 @@
     }
   }
   .dark\:scrollbar-track-gray-300 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       --scrollbar-track: oklch(87.2% 0.01 258.338);
     }
   }
   .dark\:placeholder\:text-gray-400 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       &::placeholder {
         color: var(--color-gray-400);
       }
     }
   }
   .dark\:focus-within\:border-cyan-400 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       &:focus-within {
         border-color: var(--color-cyan-400);
       }
     }
   }
   .dark\:focus-within\:inset-shadow-cyan-400 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       &:focus-within {
         --tw-inset-shadow-color: oklch(78.9% 0.154 211.53);
         @supports (color: color-mix(in lab, red, red)) {
@@ -1012,7 +1021,7 @@
     }
   }
   .dark\:hover\:ring-red-300 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       &:hover {
         @media (hover: hover) {
           --tw-ring-color: var(--color-red-300);
@@ -1021,21 +1030,21 @@
     }
   }
   .dark\:focus\:ring-red-300 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       &:focus {
         --tw-ring-color: var(--color-red-300);
       }
     }
   }
   .dark\:focus\:ring-slate-200 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       &:focus {
         --tw-ring-color: var(--color-slate-200);
       }
     }
   }
   .dark\:focus\:ring-offset-slate-600 {
-    @media (prefers-color-scheme: dark) {
+    &:where(.dark, .dark *) {
       &:focus {
         --tw-ring-offset-color: var(--color-slate-600);
       }

@@ -2,6 +2,9 @@
 @plugin 'tailwind-scrollbar';
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+
 @view-transition {
     navigation: auto;
 }
