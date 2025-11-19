@@ -282,8 +282,8 @@
   .mt-6 {
     margin-top: calc(var(--spacing) * 6);
   }
-  .mr-1 {
-    margin-right: calc(var(--spacing) * 1);
+  .mr-6 {
+    margin-right: calc(var(--spacing) * 6);
   }
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
