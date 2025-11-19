@@ -1140,6 +1140,10 @@
 #searchIndicator.htmx-request {
   display: flex;
 }
+body[theme="dark"] {
+  --zero-md-theme-bg: var(--color-gray-900) !important;
+  --zero-md-theme-color: var(--color-gray-50) !important;
+}
 @layer base {
   * {
     scrollbar-color: initial;

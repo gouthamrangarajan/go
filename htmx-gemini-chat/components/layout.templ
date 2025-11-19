@@ -32,16 +32,17 @@ templ layout() {
                                   </button>`;
                     async load() { 
                         await super.load();                         
-                        this.template += `<style>                                           
-                                            @media(prefers-color-scheme: dark){
-                                                .markdown-body {
-                                                    background-color:  var(--color-gray-900) !important; 
-                                                    color:var(--color-gray-50) !important;
-                                                } 
-                                                .markdown-body table{
-                                                    color:var(--color-gray-50) !important;
-                                                }
-                                            }  	
+                        this.template += `<style>                                                                                       
+                                            .markdown-body {
+                                                background-color:  var(--zero-md-theme-bg) !important; 
+                                                color:var(--zero-md-theme-color) !important;
+                                            } 
+                                            .markdown-body table{                                              
+                                                color:var(--zero-md-theme-color) !important;
+                                            }       
+                                            .markdown-body table tr{
+                                                background-color:  var(--zero-md-theme-bg) !important; 
+                                            }                                     
                                             .zero-md-copy{position:relative;}
                                             .zero-md-copy button{
                                                 position:absolute;
@@ -107,6 +108,7 @@ templ layout() {
 			class="w-full h-full relative font-(family-name:--font-geometric-humanist) bg-white dark:bg-gray-900 text-slate-700  dark:text-gray-50 "
 			x-data="{}"
 			x-bind:class="$store.data.theme"
+			x-bind:theme="$store.data.theme"
 		>
 			{ children... }
 			@bodyScript()
