@@ -61,8 +61,9 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 									$_video_` + videoIdReplaced + `.getPlayerState 
 									&& $_video_` + videoIdReplaced + `.getPlayerState()==1 ? 
 									setTimeout(()=>{
+										$_dockedPlayerDurationToStart=$_video_` + videoIdReplaced + `.getCurrentTime();
 										$_video_` + videoIdReplaced + `.pauseVideo();										
-										$_dockedPlayerVideoId='` + video.VideoId + `';
+										$_dockedPlayerVideoId='` + video.VideoId + `';										
 									},1)
 									: null
 								` }
@@ -147,7 +148,7 @@ templ dockedPlayer() {
 		data-effect={ `
 						$_dockedPlayerVideoId ? 																		
 						setTimeout(()=>{
-							$_dockedPlayer=initDockedYTPlayer($_dockedPlayerVideoId,$_dockedPlayer);
+							$_dockedPlayer=initDockedYTPlayer($_dockedPlayerVideoId,$_dockedPlayer,$_dockedPlayerDurationToStart);
 						},1)
 						:null												
 					` }

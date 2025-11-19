@@ -33,7 +33,7 @@ templ YTPlayer() {
                 },
                 events: {
                     'onReady': function(event){    
-                        // console.log(player);                
+                        //   console.log(player);                
                     },
                     'onStateChange': function(event){
                         if(event.data == YT.PlayerState.PLAYING ){                                
@@ -47,9 +47,14 @@ templ YTPlayer() {
             });   
             return player;         
         }   
-        function initDockedYTPlayer(vId,dockedPlayerSignal){            
+        function initDockedYTPlayer(vId,dockedPlayerSignal,durationToPlaySignal){            
             if(dockedPlayerSignal && dockedPlayerSignal.loadVideoById){            
                 dockedPlayerSignal.loadVideoById(vId);
+                setTimeout(()=>{
+                    if(durationToPlaySignal) {
+                        dockedPlayerSignal.seekTo(durationToPlaySignal);;
+                    }
+                },500);                
                 return dockedPlayerSignal;
             }
              const player= new YT.Player('docker_player', {
@@ -61,6 +66,9 @@ templ YTPlayer() {
                 },
                 events: {
                     'onReady': function(event){
+                        if(durationToPlaySignal) {
+                           player.seekTo(durationToPlaySignal);;
+                        }
                         player.playVideo();
                     },
                     'onStateChange': function(event){
