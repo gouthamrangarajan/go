@@ -54,6 +54,7 @@ templ YTPlayer() {
                     if(durationToPlaySignal) {
                         dockedPlayerSignal.seekTo(durationToPlaySignal);;
                     }
+                    dockedPlayerSignal.playVideo();
                 },500);                
                 return dockedPlayerSignal;
             }
@@ -69,7 +70,7 @@ templ YTPlayer() {
                         if(durationToPlaySignal) {
                            player.seekTo(durationToPlaySignal);;
                         }
-                        player.playVideo();
+                         player.playVideo();
                     },
                     'onStateChange': function(event){
                         if(event.data == YT.PlayerState.PLAYING ){                                
