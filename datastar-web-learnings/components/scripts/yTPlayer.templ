@@ -67,10 +67,12 @@ templ YTPlayer() {
                 },
                 events: {
                     'onReady': function(event){
-                        if(durationToPlaySignal) {
-                           player.seekTo(durationToPlaySignal);;
-                        }
-                         player.playVideo();
+                        setTimeout(()=>{
+                            if(durationToPlaySignal) {
+                                player.seekTo(durationToPlaySignal);;
+                            }
+                            player.playVideo();
+                        },500);
                     },
                     'onStateChange': function(event){
                         if(event.data == YT.PlayerState.PLAYING ){                                
