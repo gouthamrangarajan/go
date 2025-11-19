@@ -441,11 +441,12 @@ templ bodyScript() {
                     Alpine.store('data').disableImgGeneration=true;
                 }
                 let theme = "light";
-                if (localStorage.getItem("theme") != null
-                    && ["light","dark"].includes(localStorage.getItem("theme")))
-                {
-                    theme = localStorage.getItem("theme");
-                }else if (window.matchMedia("(prefers-color-scheme: dark)").matches){                    
+                // if (localStorage.getItem("theme") != null
+                //     && ["light","dark"].includes(localStorage.getItem("theme")))
+                // {
+                //     theme = localStorage.getItem("theme");
+                // }else
+                 if (window.matchMedia("(prefers-color-scheme: dark)").matches){                    
                     theme = "dark"
                 }
                 Alpine.store('data').theme=theme;
