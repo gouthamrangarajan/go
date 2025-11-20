@@ -32,7 +32,10 @@ templ layout() {
                                   </button>`;
                     async load() { 
                         await super.load();                         
-                        this.template += `<style>                                                                                       
+                        this.template += `<style>   
+                                            ::selection {
+                                                background-color: var(--selection-color);
+                                            }                                                                                 
                                             .markdown-body {
                                                 background-color:  var(--zero-md-theme-bg) !important; 
                                                 color:var(--zero-md-theme-color) !important;

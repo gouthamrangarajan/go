@@ -120,8 +120,12 @@
     display: flex;
 }
 
+:root {
+    --selection-color: var(--color-cyan-300);
+}
 
 body[theme="dark"] {
     --zero-md-theme-bg: var(--color-gray-900) !important;
     --zero-md-theme-color: var(--color-gray-50) !important;
+    --selection-color: var(--color-cyan-600);
 }
