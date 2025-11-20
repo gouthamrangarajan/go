@@ -2,7 +2,7 @@
 @plugin 'tailwind-scrollbar';
 @plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 
 @view-transition {
@@ -124,7 +124,7 @@
     --selection-color: var(--color-slate-300);
 }
 
-body[theme="dark"] {
+body[data-theme="dark"] {
     --zero-md-theme-bg: var(--color-gray-900) !important;
     --zero-md-theme-color: var(--color-gray-50) !important;
     --selection-color: var(--color-slate-600);

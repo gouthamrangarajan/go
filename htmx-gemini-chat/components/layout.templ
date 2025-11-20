@@ -110,8 +110,7 @@ templ layout() {
 			x-cloak
 			class="w-full h-full relative font-(family-name:--font-geometric-humanist) bg-white dark:bg-gray-900 text-slate-700  dark:text-gray-50 "
 			x-data="{}"
-			x-bind:class="$store.data.theme"
-			x-bind:theme="$store.data.theme"
+			x-bind:data-theme="$store.data.theme"
 		>
 			{ children... }
 			@bodyScript()
