@@ -71,14 +71,14 @@ func Message(model models.ChatConversation) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex-1 flex flex-col gap-1\" data-signals=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex-1 flex flex-col gap-1 max-w-full\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("{__message_" + strconv.Itoa(model.Id) + ":`" + formatMessageForDataStar(model.Message) + "`}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 31, Col: 151}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 31, Col: 162}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -209,14 +209,14 @@ func MessageForStreaming(model models.ChatConversation) templ.Component {
 			}
 		}
 		if model.Message != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"flex-1 flex flex-col gap-1\" data-signals=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"flex-1 flex flex-col gap-1 max-w-full\" data-signals=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs("{__message_" + strconv.Itoa(model.Id) + ":`" + formatMessageForDataStar(model.Message) + "`}")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 60, Col: 152}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatMessage.templ`, Line: 60, Col: 163}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
