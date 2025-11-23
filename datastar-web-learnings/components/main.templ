@@ -113,7 +113,12 @@ templ searchInput() {
 		data-indicator="_searching"
 		dats-signals="{_search:'',_showClearButton:false}"
 		data-on-submit={ `evt.preventDefault();
-						if(!$_searching && new URLSearchParams(window.location.search).get('search')!=$_search.trim()){							
+						const urlParams=new URLSearchParams(window.location.search).get('search');
+						if(!$_searching && ( 
+								(urlParams!=null && urlParams!=$_search.trim())
+								|| (urlParams==null && $_search.trim()!='')
+											)
+						  ){							
 							$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
 							$_allNotInViewportObservers=[];
 							window.history.replaceState({},document.title,window.location.origin+'/?search='+$_search.trim());							
