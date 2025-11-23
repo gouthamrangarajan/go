@@ -278,7 +278,7 @@ func searchWebInput(allowWebSearch bool) templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<button type=\"button\" class=\"appearance-none outline-none p-1 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-class=\"{'text-yellow-600':$searchWeb,'text-slate-600':!$searchWeb}\" data-on-click=\"$searchWeb=!$searchWeb\" data-attr-disabled=\"$promptProcessing\" style=\"display:none;\" data-show=\"true\" aria-label=\"Search Web\" title=\"Search Web\" data-on-load=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<button type=\"button\" class=\"appearance-none outline-none p-1 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-class=\"{'text-primary font-semibold focus:ring-primary':$searchWeb,'text-slate-600 focus:ring-slate-600':!$searchWeb}\" data-on-click=\"$searchWeb=!$searchWeb\" data-attr-disabled=\"$promptProcessing\" style=\"display:none;\" data-show=\"true\" aria-label=\"Search Web\" title=\"Search Web\" data-on-load=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

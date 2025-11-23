@@ -124,8 +124,8 @@ templ FileDataDisplay(model models.FileDataDisplay, isImg bool) {
 templ searchWebInput(allowWebSearch bool) {
 	<button
 		type="button"
-		class="appearance-none outline-none p-1 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-		data-class="{'text-yellow-600':$searchWeb,'text-slate-600':!$searchWeb}"
+		class="appearance-none outline-none p-1 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+		data-class="{'text-primary font-semibold focus:ring-primary':$searchWeb,'text-slate-600 focus:ring-slate-600':!$searchWeb}"
 		data-on-click="$searchWeb=!$searchWeb"
 		data-attr-disabled="$promptProcessing"
 		style="display:none;"
