@@ -34,7 +34,24 @@ func layout(authConfig models.FirebaseAuthConfig) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Collection of You Tube videos regarding front end frameworks\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/svg\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-hidden\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Collection of You Tube videos regarding front end frameworks\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/svg\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-hidden\" data-signals=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(`
+					{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
+					  idToken:'',_allNotInViewportObservers:[],
+					}
+				`)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 29, Col: 5}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -42,7 +59,7 @@ func layout(authConfig models.FirebaseAuthConfig) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script type=\"module\" src=\"/assets/scripts/data-star.min.js\"></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"module\" src=\"/assets/scripts/data-star.min.js\"></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -62,31 +79,31 @@ func layout(authConfig models.FirebaseAuthConfig) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"module\">\n\t\t\t    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'\n\t\t\t\timport { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'\n\t\t\t\t\n\t\t\t\tconst firebaseApp=initializeApp({apiKey: ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script type=\"module\">\n\t\t\t    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'\n\t\t\t\timport { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'\n\t\t\t\t\n\t\t\t\tconst firebaseApp=initializeApp({apiKey: ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var2, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(authConfig.ApiKey)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(authConfig.ApiKey)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 36, Col: 65}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, ", \n\t\t\t\t\t\t\t\t\tauthDomain: ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var3, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(authConfig.Domain)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 37, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 41, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, ", \n\t\t\t\t\t\t\t\t\t});\n  \t\t\t\twindow.AUTH=getAuth(firebaseApp);\n\t\t\t\twindow.LOGIN=signInWithEmailAndPassword;\n\t\t\t\tonAuthStateChanged(window.AUTH,(user)=>{\n\t\t\t\t\twindow.dispatchEvent(new Event('firebase-loaded'));\n\t\t\t\t});\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, ", \n\t\t\t\t\t\t\t\t\tauthDomain: ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var4, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(authConfig.Domain)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 42, Col: 41}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, ", \n\t\t\t\t\t\t\t\t\t});\n  \t\t\t\twindow.AUTH=getAuth(firebaseApp);\n\t\t\t\twindow.LOGIN=signInWithEmailAndPassword;\n\t\t\t\tonAuthStateChanged(window.AUTH,(user)=>{\n\t\t\t\t\twindow.dispatchEvent(new Event('firebase-loaded'));\n\t\t\t\t});\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

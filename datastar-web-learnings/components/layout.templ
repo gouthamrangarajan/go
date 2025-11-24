@@ -22,6 +22,11 @@ templ layout(authConfig models.FirebaseAuthConfig) {
 		</head>
 		<body
 			class="w-full h-full font-roboto bg-background text-primary relative overflow-hidden"
+			data-signals={ `
+					{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
+					  idToken:'',_allNotInViewportObservers:[],
+					}
+				` }
 		>
 			{ children... }
 			<script type="module" src="/assets/scripts/data-star.min.js"></script>

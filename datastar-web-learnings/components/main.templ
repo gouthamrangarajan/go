@@ -85,11 +85,9 @@ templ LandingMain() {
 		data-on-load="new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')"
 		class="mt-1 px-4 py-2 pb-24 overflow-x-hidden h-[91.5vh] overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
 		data-signals={ `
-						{ _activeInlinePlayerVideoId:null,videoToDelete:'',
-						_showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
-						 showDeleteConfirm:false,idToken:'',_allNotInViewportObservers:[],
-						_dockedPlayerVideoId:null,_dockedPlayer:null,isDockedPlayerActive:false,
-						_dockedPlayerDurationToStart:0
+						{ _activeInlinePlayerVideoId:null,videoToDelete:'',showDeleteConfirm:false,
+						  _dockedPlayerVideoId:null,_dockedPlayer:null,isDockedPlayerActive:false,
+						  _dockedPlayerDurationToStart:0
 						}
 					 ` }
 		data-on-inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
