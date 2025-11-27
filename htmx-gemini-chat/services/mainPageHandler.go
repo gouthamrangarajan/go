@@ -43,14 +43,15 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 		conversations = <-conversationsChannel
 	}
 	srchTxt := strings.TrimSpace(request.URL.Query().Get("search_menu"))
-
-	sessionsChannel := make(chan []models.ChatSession)
-	defer close(sessionsChannel)
-	filterOrGetSessions(struct {
-		UserId      string
-		MenuSrchTxt string
-	}{UserId: userId, MenuSrchTxt: srchTxt}, sessionsChannel)
-	sessions = <-sessionsChannel
+	if srchTxt != "" {
+		filterSessionsChannel := make(chan []models.ChatSession)
+		defer close(filterSessionsChannel)
+		filterOrGetSessions(struct {
+			UserId      string
+			MenuSrchTxt string
+		}{UserId: userId, MenuSrchTxt: srchTxt}, filterSessionsChannel)
+		sessions = <-filterSessionsChannel
+	}
 	component := components.Main(conversations, sessions, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, HelperTextShow: len(conversations) == 0, MenuSrchTxt: srchTxt})
 	component.Render(request.Context(), response)
 
