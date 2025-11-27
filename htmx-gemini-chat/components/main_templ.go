@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "htmx-gemini-chat/models"
 
-func Main(conversations []models.ChatConversation, model models.Section) templ.Component {
+func Main(conversations []models.ChatConversation, sessions []models.ChatSession, sectionModel models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -55,15 +55,15 @@ func Main(conversations []models.ChatConversation, model models.Section) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = section(conversations, model).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = section(conversations, sectionModel).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = chatInput(model).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = chatInput(sectionModel).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = menu(model.MenuSrchTxt).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = menu(sectionModel.MenuSrchTxt, sessions).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -196,7 +196,7 @@ func SectionAndChatSessionIdInput(conversations []models.ChatConversation, model
 	})
 }
 
-func section(conversations []models.ChatConversation, model models.Section) templ.Component {
+func section(conversations []models.ChatConversation, sectionModel models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -217,7 +217,7 @@ func section(conversations []models.ChatConversation, model models.Section) temp
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		if model.IsOob {
+		if sectionModel.IsOob {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<section id=\"section\" class=\"w-11/12 shrink-0 mx-auto flex flex-col gap-2  mt-2 py-1 px-3 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 xl:w-9/12\" style=\"view-transition-name:section\" hx-swap-oob=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -239,7 +239,7 @@ func section(conversations []models.ChatConversation, model models.Section) temp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = HelperText(model.HelperTextShow).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = HelperText(sectionModel.HelperTextShow).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -265,7 +265,7 @@ func section(conversations []models.ChatConversation, model models.Section) temp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = HelperText(model.HelperTextShow).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = HelperText(sectionModel.HelperTextShow).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

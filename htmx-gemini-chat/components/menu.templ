@@ -23,7 +23,7 @@ templ menuBarButton() {
 	</button>
 }
 
-templ menu(menuSrchTxt string) {
+templ menu(menuSrchTxt string, sessions []models.ChatSession) {
 	<div
 		class="absolute z-10 top-0 left-0 flex items-start gap-2 h-full w-full bg-white/60 dark:bg-gray-900/40"
 		x-trap="$store.data.menuOpen"
@@ -43,7 +43,7 @@ templ menu(menuSrchTxt string) {
 		>
 			@newChatButton()
 			@searchMenu()
-			@MenuContainer([]models.ChatSession{}, menuSrchTxt)
+			@MenuContainer(sessions, menuSrchTxt)
 		</aside>
 		<button
 			class="appearance-none outline-none  rounded cursor-pointer p-1 mt-5 bg-cyan-600 text-red-100 hover:opacity-80 focus:ring-2 focus:ring-cyan-600 focus:ring-offset-2 focus:ring-offset-cyan-50"
@@ -158,7 +158,7 @@ templ searchMenu() {
 		<input
 			type="text"
 			name="srchTxt"
-			hx-trigger="input delay:500ms, load"
+			hx-trigger="input delay:500ms"
 			hx-get="/search"
 			hx-target="#ul_menu"
 			hx-swap="outerHTML transition:true"

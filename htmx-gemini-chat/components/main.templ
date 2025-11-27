@@ -2,7 +2,7 @@ package components
 
 import "htmx-gemini-chat/models"
 
-templ Main(conversations []models.ChatConversation, model models.Section) {
+templ Main(conversations []models.ChatConversation, sessions []models.ChatSession, sectionModel models.Section) {
 	@layout() {
 		<main class="w-full h-full flex flex-col items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-gray-200 dark:scrollbar-track-gray-300 scrollbar-thumb-lime-500" style="view-transition-name:main">
 			@menuBarButton()
@@ -33,9 +33,9 @@ templ Main(conversations []models.ChatConversation, model models.Section) {
 					</button>
 				</template>
 			</div>
-			@section(conversations, model)
-			@chatInput(model)
-			@menu(model.MenuSrchTxt)
+			@section(conversations, sectionModel)
+			@chatInput(sectionModel)
+			@menu(sectionModel.MenuSrchTxt, sessions)
 			@errorToast()
 			@PageLoader()
 		</main>
@@ -59,8 +59,8 @@ templ SectionAndChatSessionIdInput(conversations []models.ChatConversation, mode
 	@setWebSearchAndImgGenerationScript(model, len(conversations) > 0)
 }
 
-templ section(conversations []models.ChatConversation, model models.Section) {
-	if (model.IsOob) {
+templ section(conversations []models.ChatConversation, sectionModel models.Section) {
+	if (sectionModel.IsOob) {
 		<section
 			id="section"
 			class="w-11/12 shrink-0 mx-auto flex flex-col gap-2  mt-2 py-1 px-3 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 xl:w-9/12"
@@ -75,7 +75,7 @@ templ section(conversations []models.ChatConversation, model models.Section) {
 				}
 			}
 		</section>
-		@HelperText(model.HelperTextShow)
+		@HelperText(sectionModel.HelperTextShow)
 	} else {
 		<section
 			id="section"
@@ -90,7 +90,7 @@ templ section(conversations []models.ChatConversation, model models.Section) {
 				}
 			}
 		</section>
-		@HelperText(model.HelperTextShow)
+		@HelperText(sectionModel.HelperTextShow)
 	}
 }
 

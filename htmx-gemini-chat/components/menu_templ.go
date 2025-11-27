@@ -42,7 +42,7 @@ func menuBarButton() templ.Component {
 	})
 }
 
-func menu(menuSrchTxt string) templ.Component {
+func menu(menuSrchTxt string, sessions []models.ChatSession) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -75,7 +75,7 @@ func menu(menuSrchTxt string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = MenuContainer([]models.ChatSession{}, menuSrchTxt).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = MenuContainer(sessions, menuSrchTxt).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -318,7 +318,7 @@ func searchMenu() templ.Component {
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"flex gap-1 w-full items-center mt-6  py-2 px-4 transition duration-300 border-y border-cyan-500 dark:border-cyan-600 text-slate-900 dark:text-slate-100 focus-within:border-cyan-700 dark:focus-within:border-cyan-400\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" name=\"srchTxt\" hx-trigger=\"input delay:500ms, load\" hx-get=\"/search\" hx-target=\"#ul_menu\" hx-swap=\"outerHTML transition:true\" hx-indicator=\"#searchIndicator\" class=\"appearance-none outline-none flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400\" placeholder=\"Find your past conversations...\" x-model=\"$store.data.menuSrchTxt\"><div class=\"items-center gap-1 hidden\" id=\"searchIndicator\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"flex gap-1 w-full items-center mt-6  py-2 px-4 transition duration-300 border-y border-cyan-500 dark:border-cyan-600 text-slate-900 dark:text-slate-100 focus-within:border-cyan-700 dark:focus-within:border-cyan-400\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" name=\"srchTxt\" hx-trigger=\"input delay:500ms\" hx-get=\"/search\" hx-target=\"#ul_menu\" hx-swap=\"outerHTML transition:true\" hx-indicator=\"#searchIndicator\" class=\"appearance-none outline-none flex-1 placeholder:text-gray-500 dark:placeholder:text-gray-400\" placeholder=\"Find your past conversations...\" x-model=\"$store.data.menuSrchTxt\"><div class=\"items-center gap-1 hidden\" id=\"searchIndicator\"><span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-one\"></span> <span class=\"h-1.5 w-1.5 bg-slate-600 dark:bg-slate-100 rounded-full animate-loader-two\"></span></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

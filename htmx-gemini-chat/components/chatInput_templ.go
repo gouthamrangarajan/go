@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-func chatInput(model models.Section) templ.Component {
+func chatInput(sectionModel models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -51,7 +51,7 @@ func chatInput(model models.Section) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ChatSessionIdInput(model.ChatSessionId, false).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ChatSessionIdInput(sectionModel.ChatSessionId, false).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,7 +63,7 @@ func chatInput(model models.Section) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = toolsDropDown(model).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = toolsDropDown(sectionModel).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -199,7 +199,7 @@ func fileUpload() templ.Component {
 	})
 }
 
-func toolsDropDown(model models.Section) templ.Component {
+func toolsDropDown(sectionModel models.Section) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -224,7 +224,7 @@ func toolsDropDown(model models.Section) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = searchWebButton(model.WebSearch).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = searchWebButton(sectionModel.WebSearch).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -232,7 +232,7 @@ func toolsDropDown(model models.Section) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = imageGenerationButton(model.ImageGeneration).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = imageGenerationButton(sectionModel.ImageGeneration).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

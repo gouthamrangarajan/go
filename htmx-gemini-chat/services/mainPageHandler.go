@@ -5,7 +5,6 @@ import (
 	"htmx-gemini-chat/models"
 	"net/http"
 	"strings"
-	"time"
 )
 
 func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSessionId int) {
@@ -43,15 +42,18 @@ func MainPageHandler(response http.ResponseWriter, request *http.Request, chatSe
 		go GetChatConversations(userId, chatSessionId, conversationsChannel)
 		conversations = <-conversationsChannel
 	}
-	menuSrchTxt := strings.TrimSpace(request.URL.Query().Get("search_menu"))
-	if request.Header.Get("HX-Request") == "true" {
-		time.Sleep(200 * time.Millisecond) // Simulate a delay for the sake of UX so that menu closes before the chat session is loaded
-		component := components.SectionAndChatSessionIdInput(conversations, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, IsOob: true, MenuSrchTxt: menuSrchTxt})
-		component.Render(request.Context(), response)
-	} else {
-		component := components.Main(conversations, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, HelperTextShow: len(conversations) == 0, MenuSrchTxt: menuSrchTxt})
-		component.Render(request.Context(), response)
-	}
+	srchTxt := strings.TrimSpace(request.URL.Query().Get("search_menu"))
+
+	sessionsChannel := make(chan []models.ChatSession)
+	defer close(sessionsChannel)
+	filterOrGetSessions(struct {
+		UserId      string
+		MenuSrchTxt string
+	}{UserId: userId, MenuSrchTxt: srchTxt}, sessionsChannel)
+	sessions = <-sessionsChannel
+	component := components.Main(conversations, sessions, models.Section{ChatSessionId: chatSessionId, WebSearch: allowWebSearch, ImageGeneration: imgGeneration, HelperTextShow: len(conversations) == 0, MenuSrchTxt: srchTxt})
+	component.Render(request.Context(), response)
+
 }
 
 func SearchMenuHandler(response http.ResponseWriter, request *http.Request) {
@@ -60,31 +62,29 @@ func SearchMenuHandler(response http.ResponseWriter, request *http.Request) {
 		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	var sessions []models.ChatSession
 	srchTxt := strings.TrimSpace(request.URL.Query().Get("srchTxt"))
-	if srchTxt != "" {
-		sessions = filterSessionsWitheEmbeddings(struct {
-			UserId      string
-			MenuSrchTxt string
-		}{UserId: userId, MenuSrchTxt: srchTxt})
-	} else {
-		sessions = GetChatSessionsViaChannel(userId)
-	}
+	channel := make(chan []models.ChatSession)
+	defer close(channel)
+	filterOrGetSessions(struct {
+		UserId      string
+		MenuSrchTxt string
+	}{UserId: userId, MenuSrchTxt: srchTxt}, channel)
+	sessions := <-channel
 	components.MenuContainer(sessions, srchTxt).Render(request.Context(), response)
 }
 
-func filterSessionsWitheEmbeddings(model struct {
+func filterOrGetSessions(filterSessionModel struct {
 	UserId      string
 	MenuSrchTxt string
-}) []models.ChatSession {
-	embeddingRequest := GenerateGeminiEmbeddingRequest(model.MenuSrchTxt)
-	embeddingChannel := make(chan models.GeminiEmbeddingResponse)
-	defer close(embeddingChannel)
-	go CallGeminiEmbedding(embeddingRequest, embeddingChannel)
-	embeddingResponse := <-embeddingChannel
-
-	chatSessionsChannel := make(chan []models.ChatSession)
-	defer close(chatSessionsChannel)
-	go SearchChatSessions(model.UserId, embeddingResponse.Embedding.Values, chatSessionsChannel)
-	return <-chatSessionsChannel
+}, channel chan<- []models.ChatSession) {
+	if filterSessionModel.MenuSrchTxt != "" {
+		embeddingRequest := GenerateGeminiEmbeddingRequest(filterSessionModel.MenuSrchTxt)
+		embeddingChannel := make(chan models.GeminiEmbeddingResponse)
+		defer close(embeddingChannel)
+		go CallGeminiEmbedding(embeddingRequest, embeddingChannel)
+		embeddingResponse := <-embeddingChannel
+		go SearchChatSessions(filterSessionModel.UserId, embeddingResponse.Embedding.Values, channel)
+	} else {
+		go GetChatSessions(filterSessionModel.UserId, channel)
+	}
 }
