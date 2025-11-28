@@ -82,30 +82,29 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 
 	_ = json.Unmarshal(requestBody, &clientSignal)
 
-	fileData := ""
+	fileDataForUI := ""
 	fileName := ""
 	if len(clientSignal.FileData) > 0 && len(clientSignal.FileDataMimes) > 0 {
-		fileData = "data:" + clientSignal.FileDataMimes[0] + ";base64," + clientSignal.FileData[0]
+		fileDataForUI = "data:" + clientSignal.FileDataMimes[0] + ";base64," + clientSignal.FileData[0]
 	}
 	if len(clientSignal.FileDataNames) > 0 {
 		fileName = clientSignal.FileDataNames[0]
 	}
 	sse := datastar.NewSSE(responseWriter, request)
-	imgMatches := services.ImgRegex.FindStringSubmatch(fileData)
-	pdfMatches := services.PdfRegex.FindStringSubmatch(fileData)
+	imgMatches := services.ImgRegex.FindStringSubmatch(fileDataForUI)
 	if len(clientSignal.FileData) == 0 {
 		fileName = ""
-		fileData = ""
+		fileDataForUI = ""
 	} else if len(clientSignal.FileData) > 1 {
 		sse.PatchSignals([]byte("{fileData:''}"))
 		services.SendErrorMessageToUI(sse, "Please select only one file at a time.")
 		fileName = ""
-		fileData = ""
-	} else if len(imgMatches) != 4 && len(pdfMatches) != 2 {
+		fileDataForUI = ""
+	} else if len(imgMatches) != 4 {
 		sse.PatchSignals([]byte("{fileData:''}"))
-		services.SendErrorMessageToUI(sse, "Invalid file type. Please upload an file with type (JPG, PNG, WEBP, GIF, PDF)")
+		services.SendErrorMessageToUI(sse, "Invalid file type. Please upload an file with type (JPG, PNG, WEBP, GIF)")
 		fileName = ""
-		fileData = ""
+		fileDataForUI = ""
 	}
 
 	decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0])
@@ -113,25 +112,13 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 		sse.PatchSignals([]byte("{fileData:''}"))
 		services.SendErrorMessageToUI(sse, "File size exceeds the limit of 1 MB")
 		fileName = ""
-		fileData = ""
+		fileDataForUI = ""
 	}
-	if fileData != "" {
-		channel := make(chan string)
-		defer close(channel)
-		go services.CallClaudeAPIFileUpload(decodedBytes, fileName, channel)
-		uploadResponse := <-channel
-		if uploadResponse == "Error" {
-			sse.PatchSignals([]byte("{fileData:''}"))
-			services.SendErrorMessageToUI(sse, "Failed to upload Image.Please try again later.")
-			fileName = ""
-			fileData = ""
-		} else {
-			// fmt.Printf("fileid sent to UI:%v\n", uploadResponse)
-			sse.PatchSignals([]byte("{fileId:'" + uploadResponse + "'}"))
-		}
+	if fileDataForUI != "" {
+		sse.PatchElementTempl(components.FileDataDisplay(models.FileDataDisplay{FileData: fileDataForUI, FileName: fileName}, len(imgMatches) == 4), datastar.WithUseViewTransitions(true))
 	}
-	sse.PatchElementTempl(components.FileDataDisplay(models.FileDataDisplay{FileData: fileData, FileName: fileName}, len(imgMatches) == 4), datastar.WithUseViewTransitions(true))
 }
+
 func deleteChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
 	requestBody, _ := io.ReadAll(request.Body)

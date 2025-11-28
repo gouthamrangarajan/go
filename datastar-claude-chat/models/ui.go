@@ -1,14 +1,14 @@
 package models
 
 type ClientSignals struct {
-	SessionId         int      `json:"sessionId"`
-	Prompt            string   `json:"prompt"`
-	FileData          []string `json:"fileData"`
-	FileDataMimes     []string `json:"fileDataMimes"`
-	FileDataNames     []string `json:"fileDataNames"`
-	SearchWeb         bool     `json:"searchWeb"`
-	FileId            string   `json:"fileId"`
-	SessionIdToDelete int      `json:"sessionIdToDelete"`
+	SessionId     int      `json:"sessionId"`
+	Prompt        string   `json:"prompt"`
+	FileData      []string `json:"fileData"`
+	FileDataMimes []string `json:"fileDataMimes"`
+	FileDataNames []string `json:"fileDataNames"`
+	SearchWeb     bool     `json:"searchWeb"`
+	// FileId            string   `json:"fileId"`
+	SessionIdToDelete int `json:"sessionIdToDelete"`
 }
 
 type FileDataDisplay struct {
@@ -23,8 +23,10 @@ type UICookie struct {
 }
 
 type PromptRequest struct {
-	SessionId    int
-	Prompt       string
-	PromptFileId string
-	SearchWeb    bool
+	SessionId int
+	Prompt    string
+	// PromptFileId string
+	SearchWeb     bool
+	FileMediaType string
+	FileData      string
 }

@@ -21,7 +21,7 @@ templ inputAndError(allowWebSearch bool) {
 			@promptField()
 			<div class="flex items-center gap-1">
 				@searchWebInput(allowWebSearch)
-				// @fileUpload()
+				@fileUpload()
 				@submitButton()
 			</div>
 		</form>
@@ -80,12 +80,12 @@ templ fileUpload() {
 		class="hidden"
 		name="fileData"
 		data-ref="fileInputRef"
-		accept="image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf"
+		accept="image/jpeg, image/png, image/webp, image/jpg, image/gif"
 		data-bind-file-data
-		data-on-change="setTimeout(()=>{@post('/fileupload',{openWhenHidden: true,retryMaxCount:0});},100)"
+		data-effect="$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden: true,retryMaxCount:0});"
 	/>
 	<button
-		class="appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+		class="appearance-none outline-none p-1 mr-2 text-slate-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
 		data-attr-disabled="$promptProcessing"
 		data-on-click="$fileInputRef.click()"
 		aria-label="Submit"
@@ -101,7 +101,7 @@ templ FileDataDisplay(model models.FileDataDisplay, isImg bool) {
 	<div class="absolute bottom-28.5 left-0 w-full" id="fileDataDisplay">
 		<div
 			class="animate-error-message shadow py-2 px-4 rounded bg-white flex justify-between mx-auto w-11/12 lg:w-10/12 xl:w-9/12"
-			data-show={ "$fileData!='' && '" + model.FileData + "'!=''" }
+			data-show={ "$fileData && $fileData.length && $fileData.length >0 && ('" + model.FileData + "').endsWith($fileData[0])" }
 		>
 			<div class="flex-1 flex items-center gap-3">
 				if isImg {

@@ -64,6 +64,10 @@ func inputAndError(allowWebSearch bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = fileUpload().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = submitButton().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -171,7 +175,7 @@ func fileUpload() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<input type=\"file\" class=\"hidden\" name=\"fileData\" data-ref=\"fileInputRef\" accept=\"image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf\" data-bind-file-data data-on-change=\"setTimeout(()=>{@post('/fileupload',{openWhenHidden: true,retryMaxCount:0});},100)\"> <button class=\"appearance-none outline-none p-1 mr-2 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"$fileInputRef.click()\" aria-label=\"Submit\" title=\"Submit\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<input type=\"file\" class=\"hidden\" name=\"fileData\" data-ref=\"fileInputRef\" accept=\"image/jpeg, image/png, image/webp, image/jpg, image/gif\" data-bind-file-data data-effect=\"$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden: true,retryMaxCount:0});\"> <button class=\"appearance-none outline-none p-1 mr-2 text-slate-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70\" data-attr-disabled=\"$promptProcessing\" data-on-click=\"$fileInputRef.click()\" aria-label=\"Submit\" title=\"Submit\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -205,9 +209,9 @@ func FileDataDisplay(model models.FileDataDisplay, isImg bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("$fileData!='' && '" + model.FileData + "'!=''")
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("$fileData && $fileData.length && $fileData.length >0 && ('" + model.FileData + "').endsWith($fileData[0])")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 104, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/chatInputAndError.templ`, Line: 104, Col: 122}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {

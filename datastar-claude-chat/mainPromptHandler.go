@@ -54,13 +54,15 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	// return
 
 	fileData := ""
+	fileDataForDb := ""
+	fileMediaType := ""
 	fileName := ""
 	var imgMatches []string
-	var pdfMatches []string
 	if len(clientSignal.FileData) > 0 && len(clientSignal.FileDataMimes) > 0 {
-		fileData = "data:" + clientSignal.FileDataMimes[0] + ";base64," + clientSignal.FileData[0]
-		imgMatches = services.ImgRegex.FindStringSubmatch(fileData)
-		pdfMatches = services.PdfRegex.FindStringSubmatch(fileData)
+		fileDataForDb = "data:" + clientSignal.FileDataMimes[0] + ";base64," + clientSignal.FileData[0]
+		fileData = clientSignal.FileData[0]
+		fileMediaType = clientSignal.FileDataMimes[0]
+		imgMatches = services.ImgRegex.FindStringSubmatch(fileDataForDb)
 		if len(clientSignal.FileDataNames) > 0 {
 			fileName = clientSignal.FileDataNames[0]
 		}
@@ -78,7 +80,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	newSessionInserted := false
 	if prompt == "" || err != nil ||
 		fileDataDecodeErr != nil || len(decodedBytes) > 1024*1024 || len(clientSignal.FileData) > 1 ||
-		(len(clientSignal.FileData) == 1 && len(imgMatches) != 4 && len(pdfMatches) != 2) {
+		(len(clientSignal.FileData) == 1 && len(imgMatches) != 4) {
 		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 		return
 	} else if sessionId == 0 {
@@ -90,6 +92,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	if len(imgMatches) != 4 && fileData != "" {
 		fileData = ""
+		fileDataForDb = ""
 	}
 	sessionsChannel := make(chan []models.ChatSession)
 	defer close(sessionsChannel)
@@ -108,7 +111,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, models.PromptRequest{SessionId: sessionId, Prompt: prompt, PromptFileId: clientSignal.FileId, SearchWeb: clientSignal.SearchWeb})
+	claudeRequest, errMsg := services.GenerateClaudeRequest(userId, models.PromptRequest{SessionId: sessionId, Prompt: prompt, FileMediaType: fileMediaType, FileData: fileData, SearchWeb: clientSignal.SearchWeb})
 
 	if errMsg != "" {
 		http.Error(responseWriter, "Internal Server Error", http.StatusInternalServerError)
@@ -133,7 +136,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	userMessageInsertDbChannel := make(chan int)
 	defer close(userMessageInsertDbChannel)
-	go services.InsertChatConversation(models.ChatConversation{SessionId: sessionId, Message: prompt, ImgData: fileData, FileId: clientSignal.FileId, FileName: fileName, Sender: "user"}, userMessageInsertDbChannel)
+	go services.InsertChatConversation(models.ChatConversation{SessionId: sessionId, Message: prompt, ImgData: fileDataForDb, FileId: "", FileName: fileName, Sender: "user"}, userMessageInsertDbChannel)
 	userMessageId := <-userMessageInsertDbChannel
 
 	if userMessageId == 0 {
@@ -141,8 +144,11 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		services.SendErrorMessageToUI(sse, "Failed to save conversation. Please try again later.")
 		return
 	}
-	sse.PatchElementTempl(components.MessageForStreaming(models.ChatConversation{Id: userMessageId, Message: prompt, ImgData: fileData, FileName: fileName, Sender: "user"}), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
+	sse.PatchElementTempl(components.MessageForStreaming(models.ChatConversation{Id: userMessageId, Message: prompt, ImgData: fileDataForDb, FileName: fileName, Sender: "user"}), datastar.WithModeAppend(), datastar.WithSelectorID("messages"))
 	sse.PatchSignals([]byte("{prompt:''}"))
+	if fileData != "" {
+		sse.PatchSignals([]byte("{fileData:''}"))
+	}
 	sse.ExecuteScript(`document.getElementById('messageContainer_`+strconv.Itoa(userMessageId)+`').scrollIntoView()`, datastar.WithExecuteScriptAutoRemove(true))
 
 	isSessionTitleUpdate := false
