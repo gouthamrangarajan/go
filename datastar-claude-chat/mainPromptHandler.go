@@ -17,16 +17,16 @@ import (
 
 // ALGO
 // all validation/error messages stops the flow except for claude message error
-// Check for invalid/bad request : prompt empty , invalid session id, invalid image/pdf, invalid size & send bad request
+// Check for invalid/bad request : prompt empty , invalid session id, invalid image, invalid size & send bad request
 // If session id is 0 in incoming request , insert new chat session
 // generate fileData for images so that they can be stored in db , if not image , make this field empty
 // Check if the session id is not part of user sessions, send unauthorized if so
-// if unable to generate claude request , send internal server error (prompt + uploaded fileid + allowWebsearch)
-// append new chat session UI && window url replace using data star sse if insert new chat session was sucessful
+// if unable to generate claude request , send internal server error (prompt + uploaded image data + allowWebsearch)
+// append new chat session UI && window url replace using data star sse if insert new chat session was successful
 // send error message using data star sse if insert new chat session has failed
 // insert chat conversation from user and send error message via data star sse if failed
 // send message template for user to append to UI via data star sse
-// clear the prompt signal & scroll the user message into view using data star sse
+// clear the prompt signal, file data signal, file data UI & scroll the user message into view using data star sse
 // if the request is first for the session call session title update via channel
 // call session allow web search flag update via channel
 // insert chat conversation for assistant and send error message via data star sse if failed
@@ -35,7 +35,6 @@ import (
 // range over channel , as long as its not closed , read the message string from channel
 // consolidate the message , keep patching the assistant message UI with consolidate message for every loop iteration
 // if there was at least one message with "Error" , dont consolidate this string and send error message via data star sse
-// reset img data & remove fileupload ui using data start sse
 // wait for session title update to be completed if called & if success send patchelement to ui via data star sse
 // if only one response from claude api call and thats error then delete the message
 // otherwise update the assistant message to db & wait
@@ -146,6 +145,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse.PatchSignals([]byte("{prompt:''}"))
 	if fileData != "" {
 		sse.PatchSignals([]byte("{fileData:''}"))
+		sse.PatchElementTempl(components.FileDataDisplay(models.FileDataDisplay{}, false), datastar.WithUseViewTransitions(true))
 	}
 	sse.ExecuteScript(`document.getElementById('messageContainer_`+strconv.Itoa(userMessageId)+`').scrollIntoView()`, datastar.WithExecuteScriptAutoRemove(true))
 
@@ -191,9 +191,6 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	if errored {
 		time.Sleep(3000 * time.Millisecond)
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
-	} else if fileData != "" {
-		sse.PatchSignals([]byte("{fileData:''}"))
-		sse.PatchElementTempl(components.FileDataDisplay(models.FileDataDisplay{}, false), datastar.WithUseViewTransitions(true))
 	}
 	if isSessionTitleUpdate && <-sessionTitleUpdateChannel > 0 {
 		chatSession := models.ChatSession{Id: sessionId, Title: prompt}
