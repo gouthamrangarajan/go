@@ -20,8 +20,7 @@ type contextKey string
 const UserIDKey contextKey = "userId"
 
 var ImgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp|gif));base64,([A-Za-z0-9+/=]+)$`)
-
-// var PdfRegex = regexp.MustCompile(`^data:application/pdf;base64,([A-Za-z0-9+/=]+)$`)
+var PdfRegex = regexp.MustCompile(`^data:application/pdf;base64,([A-Za-z0-9+/=]+)$`)
 
 func GenerateSignedStrForCookie(model models.UICookie) string {
 	cookieSecret := os.Getenv("COOKIE_SECRET")
@@ -102,21 +101,32 @@ func GenerateClaudeRequest(userId string, request models.PromptRequest) (models.
 	for _, conversation := range conversations {
 		if strings.TrimSpace(conversation.Message) != "" {
 			imgMatches := ImgRegex.FindStringSubmatch(conversation.ImgData)
-			if conversation.ImgData != "" && len(imgMatches) == 4 {
-				contentWithImage := []models.ClaudeRequestImageInlineContent{}
-				contentWithImage = append(contentWithImage, models.ClaudeRequestImageInlineContent{
-					Type: "image",
-					Source: &models.ClaudeRequestImageInlineContentSource{Type: "base64",
-						MediaType: imgMatches[1],
-						Data:      imgMatches[3]},
-				})
-				contentWithImage = append(contentWithImage, models.ClaudeRequestImageInlineContent{
+			pdfMatches := PdfRegex.FindStringSubmatch(conversation.PdfData)
+			if (conversation.ImgData != "" && len(imgMatches) == 4) ||
+				(conversation.PdfData != "" && len(pdfMatches) == 2) {
+				contentWithImageOrPdf := []models.ClaudeRequestImageOrPdfInlineContent{}
+				if conversation.ImgData != "" && len(imgMatches) == 4 {
+					contentWithImageOrPdf = append(contentWithImageOrPdf, models.ClaudeRequestImageOrPdfInlineContent{
+						Type: "image",
+						Source: &models.ClaudeRequestImageOrPdfInlineContentSource{Type: "base64",
+							MediaType: imgMatches[1],
+							Data:      imgMatches[3]},
+					})
+				} else if conversation.PdfData != "" && len(pdfMatches) == 2 {
+					contentWithImageOrPdf = append(contentWithImageOrPdf, models.ClaudeRequestImageOrPdfInlineContent{
+						Type: "document",
+						Source: &models.ClaudeRequestImageOrPdfInlineContentSource{Type: "base64",
+							MediaType: "application/pdf",
+							Data:      pdfMatches[1]},
+					})
+				}
+				contentWithImageOrPdf = append(contentWithImageOrPdf, models.ClaudeRequestImageOrPdfInlineContent{
 					Type: "text",
 					Text: conversation.Message,
 				})
 				claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
-					Role:             conversation.Sender,
-					ContentWithImage: contentWithImage,
+					Role:                  conversation.Sender,
+					ContentWithImageOrPdf: contentWithImageOrPdf,
 				})
 			} else {
 				claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
@@ -127,21 +137,31 @@ func GenerateClaudeRequest(userId string, request models.PromptRequest) (models.
 		}
 	}
 	if request.FileData != "" {
-		contentWithImage := []models.ClaudeRequestImageInlineContent{}
-		contentWithImage = append(contentWithImage, models.ClaudeRequestImageInlineContent{
-			Type: "image",
-			Source: &models.ClaudeRequestImageInlineContentSource{Type: "base64",
-				MediaType: request.FileMediaType,
-				Data:      request.FileData},
-		})
-		contentWithImage = append(contentWithImage, models.ClaudeRequestImageInlineContent{
+		contentWithImageOrPdf := []models.ClaudeRequestImageOrPdfInlineContent{}
+		if request.FileMediaType != "application/pdf" {
+			contentWithImageOrPdf = append(contentWithImageOrPdf, models.ClaudeRequestImageOrPdfInlineContent{
+				Type: "image",
+				Source: &models.ClaudeRequestImageOrPdfInlineContentSource{Type: "base64",
+					MediaType: request.FileMediaType,
+					Data:      request.FileData},
+			})
+		} else {
+			contentWithImageOrPdf = append(contentWithImageOrPdf, models.ClaudeRequestImageOrPdfInlineContent{
+				Type: "document",
+				Source: &models.ClaudeRequestImageOrPdfInlineContentSource{Type: "base64",
+					MediaType: "application/pdf",
+					Data:      request.FileData},
+			})
+		}
+		contentWithImageOrPdf = append(contentWithImageOrPdf, models.ClaudeRequestImageOrPdfInlineContent{
 			Type: "text",
 			Text: request.Prompt,
 		})
 		claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
-			Role:             "user",
-			ContentWithImage: contentWithImage,
+			Role:                  "user",
+			ContentWithImageOrPdf: contentWithImageOrPdf,
 		})
+
 	} else {
 		claudeRequest.Messages = append(claudeRequest.Messages, models.ClaudeRequestMessage{
 			Role:    "user",

@@ -86,11 +86,13 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 	fileName := ""
 	if len(clientSignal.FileData) > 0 {
 		fileDataForUI = "data:" + clientSignal.FileData[0].Mime + ";base64," + clientSignal.FileData[0].Contents
+		fileName = clientSignal.FileData[0].Name
 	}
 
-	fileName = clientSignal.FileData[0].Name
 	sse := datastar.NewSSE(responseWriter, request)
 	imgMatches := services.ImgRegex.FindStringSubmatch(fileDataForUI)
+	pdfMatches := services.PdfRegex.FindStringSubmatch(fileDataForUI)
+
 	if len(clientSignal.FileData) == 0 {
 		fileName = ""
 		fileDataForUI = ""
@@ -99,9 +101,10 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 		services.SendErrorMessageToUI(sse, "Please select only one file at a time.")
 		fileName = ""
 		fileDataForUI = ""
-	} else if len(imgMatches) != 4 {
+	} else if (clientSignal.FileData[0].Mime == "application/pdf" && len(pdfMatches) != 2) ||
+		(clientSignal.FileData[0].Mime != "application/pdf" && len(imgMatches) != 4) {
 		sse.PatchSignals([]byte("{fileData:''}"))
-		services.SendErrorMessageToUI(sse, "Invalid file type. Please upload an file with type (JPG, PNG, WEBP, GIF)")
+		services.SendErrorMessageToUI(sse, "Invalid file type. Please upload an file with type (JPG, PNG, WEBP, GIF, PDF)")
 		fileName = ""
 		fileDataForUI = ""
 	}

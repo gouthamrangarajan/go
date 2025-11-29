@@ -80,7 +80,7 @@ templ fileUpload() {
 		class="hidden"
 		name="fileData"
 		data-ref="fileInputRef"
-		accept="image/jpeg, image/png, image/webp, image/jpg, image/gif"
+		accept="image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf"
 		data-bind:file-data
 		data-effect="$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden: true,retryMaxCount:0});"
 	/>

@@ -32,7 +32,7 @@ templ Message(model models.ChatConversation) {
 			if model.ImgData!="" {
 				<img src={ model.ImgData } class="w-full h-full"/>
 			} else if model.FileName!="" {
-				<p class="text-primary truncate">{ model.FileName }</p>
+				<p class="text-primary truncate font-semibold">{ model.FileName }</p>
 			}
 			<zero-md>
 				<script type="text/markdown" id={ "message_" + strconv.Itoa(model.Id) } data-text={ "$__message_" + strconv.Itoa(model.Id) }>					
@@ -61,7 +61,7 @@ templ MessageForStreaming(model models.ChatConversation) {
 				if model.ImgData!="" {
 					<img src={ model.ImgData } class="w-full h-full"/>
 				} else if model.FileName!="" {
-					<p class="text-primary truncate">{ model.FileName }</p>
+					<p class="text-primary truncate font-semibold">{ model.FileName }</p>
 				}
 				<zero-md>
 					<script type="text/markdown" id={ "message_" + strconv.Itoa(model.Id) } data-text={ "$__message_" + strconv.Itoa(model.Id) }>					

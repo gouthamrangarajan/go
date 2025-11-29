@@ -308,7 +308,7 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,img_data,file_id,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
+	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,img_data,pdf_data,file_id,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- data
@@ -319,7 +319,7 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 	for rows.Next() {
 		var item models.ChatConversation
 
-		if err := rows.Scan(&item.Id, &item.SessionId, &item.Message, &item.Sender, &item.ImgData, &item.FileId, &item.FileName); err != nil {
+		if err := rows.Scan(&item.Id, &item.SessionId, &item.Message, &item.Sender, &item.ImgData, &item.PdfData, &item.FileId, &item.FileName); err != nil {
 			fmt.Printf("Error scanning row:%v\n", err.Error())
 		} else {
 			data = append(data, item)
@@ -339,7 +339,7 @@ func GetChatConversation(userId string, conversationId int, session models.ChatS
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,img_data,file_id,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE conversation_id=? AND chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", conversationId, session.Id, userId)
+	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,img_data,pdf_data,file_id,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE conversation_id=? AND chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", conversationId, session.Id, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- data
@@ -350,7 +350,7 @@ func GetChatConversation(userId string, conversationId int, session models.ChatS
 	for rows.Next() {
 		var item models.ChatConversation
 
-		if err := rows.Scan(&item.Id, &item.SessionId, &item.Message, &item.Sender, &item.ImgData, &item.FileId, &item.FileName); err != nil {
+		if err := rows.Scan(&item.Id, &item.SessionId, &item.Message, &item.Sender, &item.ImgData, &item.PdfData, &item.FileId, &item.FileName); err != nil {
 			fmt.Printf("Error scanning row:%v\n", err.Error())
 		} else {
 			data = item
@@ -370,7 +370,7 @@ func InsertChatConversation(data models.ChatConversation, channel chan<- int) {
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("INSERT INTO chat_conversations (session_id,message,sender,img_data,file_id,file_name, timestamp) VALUES (?, ?,?,?,?,?,?)", data.SessionId, data.Message, data.Sender, data.ImgData, data.FileId, data.FileName, time.Now().Unix())
+	result, err := db.Exec("INSERT INTO chat_conversations (session_id,message,sender,img_data,pdf_data,file_id,file_name, timestamp) VALUES (?, ?,?,?,?,?,?,?)", data.SessionId, data.Message, data.Sender, data.ImgData, data.PdfData, data.FileId, data.FileName, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0

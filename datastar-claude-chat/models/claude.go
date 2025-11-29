@@ -18,20 +18,20 @@ type ClaudeFileUploadResponse struct {
 	Id string `json:"id"`
 }
 
-type ClaudeRequestImageInlineContentSource struct {
+type ClaudeRequestImageOrPdfInlineContentSource struct {
 	Type      string `json:"type,omitempty"`
 	MediaType string `json:"media_type,omitempty"`
 	Data      string `json:"data,omitempty"`
 }
-type ClaudeRequestImageInlineContent struct {
-	Type   string                                 `json:"type"`
-	Source *ClaudeRequestImageInlineContentSource `json:"source,omitempty"`
-	Text   string                                 `json:"text,omitempty"`
+type ClaudeRequestImageOrPdfInlineContent struct {
+	Type   string                                      `json:"type"`
+	Source *ClaudeRequestImageOrPdfInlineContentSource `json:"source,omitempty"`
+	Text   string                                      `json:"text,omitempty"`
 }
 type ClaudeRequestMessage struct {
-	Role             string `json:"role"`
-	Content          string
-	ContentWithImage []ClaudeRequestImageInlineContent
+	Role                  string `json:"role"`
+	Content               string
+	ContentWithImageOrPdf []ClaudeRequestImageOrPdfInlineContent
 	// ContentWithFile []ClaudeRequestFileContent `json:",omitempty"`
 }
 type ClaudeRequestTools struct {
@@ -67,8 +67,8 @@ func (requestMessage ClaudeRequestMessage) MarshalJSON() ([]byte, error) {
 	output["role"] = requestMessage.Role
 	var outErr error
 	var outputBytes []byte
-	if len(requestMessage.ContentWithImage) > 0 {
-		if bytes, err := json.Marshal(requestMessage.ContentWithImage); err == nil {
+	if len(requestMessage.ContentWithImageOrPdf) > 0 {
+		if bytes, err := json.Marshal(requestMessage.ContentWithImageOrPdf); err == nil {
 			output["content"] = string(bytes)
 			// output["content"] = strings.ReplaceAll(output["content"].(string), ",\"source\":{}", "")
 		} else {

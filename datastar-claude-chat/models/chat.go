@@ -12,6 +12,7 @@ type ChatConversation struct {
 	Message   string
 	Sender    string
 	ImgData   string
+	PdfData   string
 	FileId    string
 	FileName  string
 }
