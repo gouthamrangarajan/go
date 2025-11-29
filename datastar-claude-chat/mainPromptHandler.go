@@ -58,14 +58,12 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	fileMediaType := ""
 	fileName := ""
 	var imgMatches []string
-	if len(clientSignal.FileData) > 0 && len(clientSignal.FileDataMimes) > 0 {
-		fileDataForDb = "data:" + clientSignal.FileDataMimes[0] + ";base64," + clientSignal.FileData[0]
-		fileData = clientSignal.FileData[0]
-		fileMediaType = clientSignal.FileDataMimes[0]
+	if len(clientSignal.FileData) > 0 {
+		fileDataForDb = "data:" + clientSignal.FileData[0].Mime + ";base64," + clientSignal.FileData[0].Contents
+		fileData = clientSignal.FileData[0].Contents
+		fileMediaType = clientSignal.FileData[0].Mime
 		imgMatches = services.ImgRegex.FindStringSubmatch(fileDataForDb)
-		if len(clientSignal.FileDataNames) > 0 {
-			fileName = clientSignal.FileDataNames[0]
-		}
+		fileName = clientSignal.FileData[0].Name
 	}
 
 	userId := request.Context().Value(services.UserIDKey).(string)
@@ -74,7 +72,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var decodedBytes []byte
 	var fileDataDecodeErr error
 	if len(clientSignal.FileData) > 0 {
-		decodedBytes, fileDataDecodeErr = base64.StdEncoding.DecodeString(clientSignal.FileData[0])
+		decodedBytes, fileDataDecodeErr = base64.StdEncoding.DecodeString(clientSignal.FileData[0].Contents)
 	}
 
 	newSessionInserted := false

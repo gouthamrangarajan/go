@@ -10,13 +10,13 @@ templ inputAndError(allowWebSearch bool) {
 	<div class="absolute bottom-0 left-0 w-full">
 		<form
 			class="py-2 px-4 mx-auto bg-white rounded-t flex items-end justify-center transition-all duration-200 inset-shadow-sm inset-shadow-primary/60 w-11/12 focus-within:inset-shadow-primary lg:w-10/12 xl:w-9/12 "
-			data-on-submit="evt.preventDefault();"
+			data-on:submit="evt.preventDefault();"
 			data-signals="{searchWeb:false}"
 			data-indicator="promptProcessing"
-			data-attr-disabled="$promptProcessing"
-			data-on-call-api={ "!$promptProcessing && $prompt.trim()!='' && @post('/prompt?sessionId='+$sessionId,{openWhenHidden: true,retryMaxCount:0})" }
-			data-on-datastar-fetch="evt.detail.type === 'error' && evt.detail.el.dispatchEvent(new CustomEvent('show-api-error',{isTrusted:true}))"
-			data-on-show-api-error="$showErrorMessage = true; $errorMessage = 'Error. Please try again later.';setTimeout(() => { $showErrorMessage = false; }, 3000);"
+			data-attr:disabled="$promptProcessing"
+			data-on:call-api={ "!$promptProcessing && $prompt.trim()!='' && @post('/prompt?sessionId='+$sessionId,{openWhenHidden: true,retryMaxCount:0})" }
+			data-on:datastar-fetch="evt.detail.type === 'error' && evt.detail.el.dispatchEvent(new CustomEvent('show-api-error',{isTrusted:true}))"
+			data-on:show-api-error="$showErrorMessage = true; $errorMessage = 'Error. Please try again later.';setTimeout(() => { $showErrorMessage = false; }, 3000);"
 		>
 			@promptField()
 			<div class="flex items-center gap-1">
@@ -42,15 +42,15 @@ templ promptField() {
 		id="prompt"
 		data-bind="prompt"
 		placeholder="Send a message"
-		data-on-keydown__window=" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
+		data-on:keydown__window=" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
 	></textarea>
 }
 
 templ submitButton() {
 	<button
 		class="appearance-none outline-none p-1 mr-2 h-7 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-		data-attr-disabled="$promptProcessing"
-		data-on-click="evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
+		data-attr:disabled="$promptProcessing"
+		data-on:click="evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
 	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -81,13 +81,13 @@ templ fileUpload() {
 		name="fileData"
 		data-ref="fileInputRef"
 		accept="image/jpeg, image/png, image/webp, image/jpg, image/gif"
-		data-bind-file-data
+		data-bind:file-data
 		data-effect="$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden: true,retryMaxCount:0});"
 	/>
 	<button
 		class="appearance-none outline-none p-1 mr-2 text-slate-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-slate-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-		data-attr-disabled="$promptProcessing"
-		data-on-click="$fileInputRef.click()"
+		data-attr:disabled="$promptProcessing"
+		data-on:click="$fileInputRef.click()"
 		aria-label="Submit"
 		title="Submit"
 	>
@@ -101,7 +101,7 @@ templ FileDataDisplay(model models.FileDataDisplay, isImg bool) {
 	<div class="absolute bottom-28.5 left-0 w-full" id="fileDataDisplay">
 		<div
 			class="animate-error-message shadow py-2 px-4 rounded bg-white flex justify-between mx-auto w-11/12 lg:w-10/12 xl:w-9/12"
-			data-show={ "$fileData && $fileData.length && $fileData.length >0 && ('" + model.FileData + "').endsWith($fileData[0])" }
+			data-show={ "$fileData && $fileData.length && $fileData.length >0 && ('" + model.FileData + "').endsWith($fileData[0].contents)" }
 		>
 			<div class="flex-1 flex items-center gap-3">
 				if isImg {
@@ -111,7 +111,7 @@ templ FileDataDisplay(model models.FileDataDisplay, isImg bool) {
 			</div>
 			<button
 				class="appearance-none outline-none p-1 text-yellow-600 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 focus:ring-yellow-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-				data-on-click__viewtransition="$fileData=''"
+				data-on:click__viewtransition="$fileData=''"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 					<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
@@ -126,13 +126,13 @@ templ searchWebInput(allowWebSearch bool) {
 		type="button"
 		class="appearance-none outline-none p-1 font-semibold rounded-full cursor-pointer transition duration-300 focus:ring-1 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
 		data-class="{'text-primary font-semibold focus:ring-primary':$searchWeb,'text-slate-600 focus:ring-slate-600':!$searchWeb}"
-		data-on-click="$searchWeb=!$searchWeb"
-		data-attr-disabled="$promptProcessing"
+		data-on:click="$searchWeb=!$searchWeb"
+		data-attr:disabled="$promptProcessing"
 		style="display:none;"
 		data-show="true"
 		aria-label="Search Web"
 		title="Search Web"
-		data-on-load={ "$searchWeb=" + strconv.FormatBool(allowWebSearch) }
+		data-init={ "$searchWeb=" + strconv.FormatBool(allowWebSearch) }
 	>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 			<path d="M21.721 12.752a9.711 9.711 0 0 0-.945-5.003 12.754 12.754 0 0 1-4.339 2.708 18.991 18.991 0 0 1-.214 4.772 17.165 17.165 0 0 0 5.498-2.477ZM14.634 15.55a17.324 17.324 0 0 0 .332-4.647c-.952.227-1.945.347-2.966.347-1.021 0-2.014-.12-2.966-.347a17.515 17.515 0 0 0 .332 4.647 17.385 17.385 0 0 0 5.268 0ZM9.772 17.119a18.963 18.963 0 0 0 4.456 0A17.182 17.182 0 0 1 12 21.724a17.18 17.18 0 0 1-2.228-4.605ZM7.777 15.23a18.87 18.87 0 0 1-.214-4.774 12.753 12.753 0 0 1-4.34-2.708 9.711 9.711 0 0 0-.944 5.004 17.165 17.165 0 0 0 5.498 2.477ZM21.356 14.752a9.765 9.765 0 0 1-7.478 6.817 18.64 18.64 0 0 0 1.988-4.718 18.627 18.627 0 0 0 5.49-2.098ZM2.644 14.752c1.682.971 3.53 1.688 5.49 2.099a18.64 18.64 0 0 0 1.988 4.718 9.765 9.765 0 0 1-7.478-6.816ZM13.878 2.43a9.755 9.755 0 0 1 6.116 3.986 11.267 11.267 0 0 1-3.746 2.504 18.63 18.63 0 0 0-2.37-6.49ZM12 2.276a17.152 17.152 0 0 1 2.805 7.121c-.897.23-1.837.353-2.805.353-.968 0-1.908-.122-2.805-.353A17.151 17.151 0 0 1 12 2.276ZM10.122 2.43a18.629 18.629 0 0 0-2.37 6.49 11.266 11.266 0 0 1-3.746-2.504 9.754 9.754 0 0 1 6.116-3.985Z"></path>

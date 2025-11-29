@@ -84,12 +84,11 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 
 	fileDataForUI := ""
 	fileName := ""
-	if len(clientSignal.FileData) > 0 && len(clientSignal.FileDataMimes) > 0 {
-		fileDataForUI = "data:" + clientSignal.FileDataMimes[0] + ";base64," + clientSignal.FileData[0]
+	if len(clientSignal.FileData) > 0 {
+		fileDataForUI = "data:" + clientSignal.FileData[0].Mime + ";base64," + clientSignal.FileData[0].Contents
 	}
-	if len(clientSignal.FileDataNames) > 0 {
-		fileName = clientSignal.FileDataNames[0]
-	}
+
+	fileName = clientSignal.FileData[0].Name
 	sse := datastar.NewSSE(responseWriter, request)
 	imgMatches := services.ImgRegex.FindStringSubmatch(fileDataForUI)
 	if len(clientSignal.FileData) == 0 {
@@ -107,7 +106,7 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 		fileDataForUI = ""
 	}
 
-	decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0])
+	decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0].Contents)
 	if err != nil || len(decodedBytes) > 1024*1024 {
 		sse.PatchSignals([]byte("{fileData:''}"))
 		services.SendErrorMessageToUI(sse, "File size exceeds the limit of 1 MB")

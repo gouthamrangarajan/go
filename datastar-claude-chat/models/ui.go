@@ -1,12 +1,14 @@
 package models
 
 type ClientSignals struct {
-	SessionId     int      `json:"sessionId"`
-	Prompt        string   `json:"prompt"`
-	FileData      []string `json:"fileData"`
-	FileDataMimes []string `json:"fileDataMimes"`
-	FileDataNames []string `json:"fileDataNames"`
-	SearchWeb     bool     `json:"searchWeb"`
+	SessionId int    `json:"sessionId"`
+	Prompt    string `json:"prompt"`
+	FileData  []struct {
+		Name     string `json:"name"`
+		Contents string `json:"contents"`
+		Mime     string `json:"mime"`
+	} `json:"fileData"`
+	SearchWeb bool `json:"searchWeb"`
 	// FileId            string   `json:"fileId"`
 	SessionIdToDelete int `json:"sessionIdToDelete"`
 }
