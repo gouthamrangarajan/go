@@ -103,18 +103,14 @@ func GenerateClaudeRequest(userId string, request models.PromptRequest) (models.
 		if strings.TrimSpace(conversation.Message) != "" {
 			imgMatches := ImgRegex.FindStringSubmatch(conversation.ImgData)
 			if conversation.ImgData != "" && len(imgMatches) == 4 {
-				contentWithImage := []models.ClaudeRequestImageContentMessage{}
-				contentWithImage = append(contentWithImage, models.ClaudeRequestImageContentMessage{
+				contentWithImage := []models.ClaudeRequestImageInlineContent{}
+				contentWithImage = append(contentWithImage, models.ClaudeRequestImageInlineContent{
 					Type: "image",
-					Source: struct {
-						Type      string `json:"type,omitempty"`
-						MediaType string `json:"media_type,omitempty"`
-						Data      string `json:"data,omitempty"`
-					}{Type: "base64",
+					Source: &models.ClaudeRequestImageInlineContentSource{Type: "base64",
 						MediaType: imgMatches[1],
 						Data:      imgMatches[3]},
 				})
-				contentWithImage = append(contentWithImage, models.ClaudeRequestImageContentMessage{
+				contentWithImage = append(contentWithImage, models.ClaudeRequestImageInlineContent{
 					Type: "text",
 					Text: conversation.Message,
 				})
@@ -131,18 +127,14 @@ func GenerateClaudeRequest(userId string, request models.PromptRequest) (models.
 		}
 	}
 	if request.FileData != "" {
-		contentWithImage := []models.ClaudeRequestImageContentMessage{}
-		contentWithImage = append(contentWithImage, models.ClaudeRequestImageContentMessage{
+		contentWithImage := []models.ClaudeRequestImageInlineContent{}
+		contentWithImage = append(contentWithImage, models.ClaudeRequestImageInlineContent{
 			Type: "image",
-			Source: struct {
-				Type      string `json:"type,omitempty"`
-				MediaType string `json:"media_type,omitempty"`
-				Data      string `json:"data,omitempty"`
-			}{Type: "base64",
+			Source: &models.ClaudeRequestImageInlineContentSource{Type: "base64",
 				MediaType: request.FileMediaType,
 				Data:      request.FileData},
 		})
-		contentWithImage = append(contentWithImage, models.ClaudeRequestImageContentMessage{
+		contentWithImage = append(contentWithImage, models.ClaudeRequestImageInlineContent{
 			Type: "text",
 			Text: request.Prompt,
 		})

@@ -17,19 +17,21 @@ type ClaudeRequestFileContent struct {
 type ClaudeFileUploadResponse struct {
 	Id string `json:"id"`
 }
-type ClaudeRequestImageContentMessage struct {
-	Type   string `json:"type"`
-	Source struct {
-		Type      string `json:"type,omitempty"`
-		MediaType string `json:"media_type,omitempty"`
-		Data      string `json:"data,omitempty"`
-	} `json:"source,omitempty"`
-	Text string `json:"text,omitempty"`
+
+type ClaudeRequestImageInlineContentSource struct {
+	Type      string `json:"type,omitempty"`
+	MediaType string `json:"media_type,omitempty"`
+	Data      string `json:"data,omitempty"`
+}
+type ClaudeRequestImageInlineContent struct {
+	Type   string                                 `json:"type"`
+	Source *ClaudeRequestImageInlineContentSource `json:"source,omitempty"`
+	Text   string                                 `json:"text,omitempty"`
 }
 type ClaudeRequestMessage struct {
 	Role             string `json:"role"`
 	Content          string
-	ContentWithImage []ClaudeRequestImageContentMessage
+	ContentWithImage []ClaudeRequestImageInlineContent
 	// ContentWithFile []ClaudeRequestFileContent `json:",omitempty"`
 }
 type ClaudeRequestTools struct {
