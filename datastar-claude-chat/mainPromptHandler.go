@@ -17,14 +17,14 @@ import (
 
 // ALGO
 // all validation/error messages stops the flow except for claude message error
-// Check for invalid/bad request : prompt empty , invalid session id, invalid image, invalid size & send bad request
+// Check for invalid/bad request : prompt empty , invalid session id, invalid image/pdf, invalid size & send bad request
 // If session id is 0 in incoming request , insert new chat session
-// generate fileData for images so that they can be stored in db , if not image , make this field empty
+// generate fileData for image/pdf so that they can be stored in db , if not image/pdf , make this field empty
 // Check if the session id is not part of user sessions, send unauthorized if so
-// if unable to generate claude request , send internal server error (prompt + uploaded image data + allowWebsearch)
+// if unable to generate claude request , send internal server error (prompt + uploaded image/pdf data + allowWebsearch)
 // append new chat session UI && window url replace using data star sse if insert new chat session was successful
 // send error message using data star sse if insert new chat session has failed
-// insert chat conversation from user and send error message via data star sse if failed
+// insert chat conversation from user after populating imgdata/pdfdata if needed and send error message via data star sse if failed
 // send message template for user to append to UI via data star sse
 // clear the prompt signal, file data signal, file data UI & scroll the user message into view using data star sse
 // if the request is first for the session call session title update via channel
