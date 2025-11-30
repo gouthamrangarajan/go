@@ -18,7 +18,7 @@ import (
 // ALGO
 // all validation/error messages stops the flow except for claude message error
 // Check for invalid/bad request : prompt empty , invalid session id, invalid image/pdf, invalid size & send bad request
-// If session id is 0 in incoming request , insert new chat session
+// If session id is 0 in incoming request , insert new chat session & call update title vector
 // generate fileData for image/pdf so that they can be stored in db , if not image/pdf , make this field empty
 // Check if the session id is not part of user sessions, send unauthorized if so
 // if unable to generate claude request , send internal server error (prompt + uploaded image/pdf data + allowWebsearch)
@@ -27,7 +27,7 @@ import (
 // insert chat conversation from user after populating imgdata/pdfdata if needed and send error message via data star sse if failed
 // send message template for user to append to UI via data star sse
 // clear the prompt signal, file data signal, file data UI & scroll the user message into view using data star sse
-// if the request is first for the session call session title update via channel
+// if the request is first for the session call session title update via channel & call update title vector
 // call session allow web search flag update via channel
 // insert chat conversation for assistant and send error message via data star sse if failed
 // call claude api with channel to get streaming string output
@@ -39,6 +39,7 @@ import (
 // if only one response from claude api call and thats error then delete the message
 // otherwise update the assistant message to db & wait
 // wait for allow web search flag update to complete
+// if title vector update called wait for it to complete
 
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
