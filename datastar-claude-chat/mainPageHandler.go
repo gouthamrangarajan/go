@@ -81,7 +81,7 @@ func fileuploadHandler(responseWriter http.ResponseWriter, request *http.Request
 	var clientSignal models.ClientSignals
 
 	_ = json.Unmarshal(requestBody, &clientSignal)
-
+	// fmt.Printf("Received file upload signal: %+v\n", clientSignal)
 	fileDataForUI := ""
 	fileName := ""
 	if len(clientSignal.FileData) > 0 {

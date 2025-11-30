@@ -350,8 +350,8 @@
   .w-full {
     width: 100%;
   }
-  .max-w-full {
-    max-width: 100%;
+  .max-w-11\/12 {
+    max-width: calc(11/12 * 100%);
   }
   .flex-1 {
     flex: 1;
@@ -743,6 +743,11 @@
   .md\:w-9\/12 {
     @media (width >= 48rem) {
       width: calc(9/12 * 100%);
+    }
+  }
+  .md\:max-w-full {
+    @media (width >= 48rem) {
+      max-width: 100%;
     }
   }
   .lg\:w-5\/12 {

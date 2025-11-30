@@ -42,6 +42,28 @@ templ promptField() {
 		id="prompt"
 		data-bind="prompt"
 		placeholder="Send a message"
+		data-on:paste={ `
+			const items = (evt.clipboardData || evt.originalEvent.clipboardData).items;
+			for (const item of items) {
+				if (item.kind === 'file') {
+					evt.preventDefault();
+					const file = item.getAsFile();									
+					const reader = new FileReader();
+					reader.addEventListener('load', function() {
+						if(reader.result.startsWith("data:image/") 
+                                    || reader.result.startsWith("data:application/pdf")) {
+							$fileData=[{
+								name: file.name,
+								mime: file.type,
+								contents: reader.result.replace(/^data:.+;base64,/, ''),
+							}];
+						}
+					});
+					reader.readAsDataURL(file);
+					break;
+				}
+			}
+		` }
 		data-on:keydown__window=" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
 	></textarea>
 }
