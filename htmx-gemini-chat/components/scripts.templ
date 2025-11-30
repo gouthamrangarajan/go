@@ -272,6 +272,7 @@ templ bodyScript() {
                         const items = (ev.clipboardData || ev.originalEvent.clipboardData).items;
                         for (const item of items) {
                             if (item.kind === 'file') {
+                                ev.preventDefault();
                                 const file = item.getAsFile();
                                 this.validateFileAndSetData(file);
                                 break;
