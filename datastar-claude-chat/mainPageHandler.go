@@ -71,8 +71,12 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		sse.PatchSignals([]byte("{showErrorMessage:false}"))
 		return
 	}
+	titleEmbeddingUpdateChannel := make(chan int)
+	defer close(titleEmbeddingUpdateChannel)
+	go services.CallEmbeddingAndUpdateSessionTitleVector(newSessionId, "New Chat", titleEmbeddingUpdateChannel)
 	sse.PatchSignals([]byte("{showMenu:false}"))
 	time.Sleep(200 * time.Millisecond)
+	<-titleEmbeddingUpdateChannel
 	sse.ExecuteScript("window.location.href=window.location.origin+'/'+" + strconv.Itoa(newSessionId))
 }
 

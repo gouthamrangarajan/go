@@ -77,6 +77,8 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	newSessionInserted := false
+	updateSessionTitleVectorCalled := false
+	titleEmbeddingUpdateChannel := make(chan int)
 	if prompt == "" || err != nil ||
 		fileDataDecodeErr != nil || len(decodedBytes) > 1024*1024 || len(clientSignal.FileData) > 1 ||
 		(len(clientSignal.FileData) == 1 && len(imgMatches) != 4 && len(pdfMatches) != 2) {
@@ -84,10 +86,12 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	} else if sessionId == 0 {
 		newSessionChannel := make(chan int)
-
+		defer close(newSessionChannel)
 		go services.InsertChatSession(userId, models.ChatSession{Title: prompt, AllowWebSearch: clientSignal.SearchWeb}, newSessionChannel)
 		sessionId = <-newSessionChannel
 		newSessionInserted = true
+		go services.CallEmbeddingAndUpdateSessionTitleVector(sessionId, prompt, titleEmbeddingUpdateChannel)
+		updateSessionTitleVectorCalled = true
 	}
 	if len(imgMatches) != 4 &&
 		len(pdfMatches) != 2 && fileData != "" {
@@ -168,6 +172,8 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	if len(claudeRequest.Messages) == 1 {
 		go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: sessionId, Title: prompt}, sessionTitleUpdateChannel)
 		isSessionTitleUpdate = true
+		go services.CallEmbeddingAndUpdateSessionTitleVector(sessionId, prompt, titleEmbeddingUpdateChannel)
+		updateSessionTitleVectorCalled = true
 	}
 
 	sessionSearchWebChannel := make(chan int)
@@ -218,6 +224,9 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	<-updateOrDeleteMessageChannel
 	<-sessionSearchWebChannel
+	if updateSessionTitleVectorCalled {
+		<-titleEmbeddingUpdateChannel
+	}
 }
 
 func getMockAPIResponse(channel chan string) {

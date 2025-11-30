@@ -84,7 +84,7 @@ func GetAllChatSessionsForJob(channel chan<- []models.ChatSession) {
 	defer db.Close()
 	rows, err := db.Query("SELECT session_id,title FROM chat_sessions")
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in GetAllChatSessionsForJob: %v\n", err.Error())
 		channel <- data
 		return
 	}
@@ -94,7 +94,7 @@ func GetAllChatSessionsForJob(channel chan<- []models.ChatSession) {
 		var item models.ChatSession
 
 		if err := rows.Scan(&item.Id, &item.Title); err != nil {
-			fmt.Printf("Error scanning row:%v\n", err.Error())
+			fmt.Printf("Error scanning row in GetAllChatSessionsForJob:%v\n", err.Error())
 		} else {
 			data = append(data, item)
 		}
@@ -116,7 +116,7 @@ func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 	defer db.Close()
 	rows, err := db.Query("SELECT session_id,title,allow_web_search FROM chat_sessions WHERE user_id = ? ORDER BY session_id", userId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in GetChatSessions: %v\n", err.Error())
 		channel <- data
 		return
 	}
@@ -126,14 +126,14 @@ func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 		var item models.ChatSession
 
 		if err := rows.Scan(&item.Id, &item.Title, &item.AllowWebSearch); err != nil {
-			fmt.Printf("Error scanning row:%v\n", err.Error())
+			fmt.Printf("Error scanning row in GetChatSessions:%v\n", err.Error())
 		} else {
 			data = append(data, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Printf("Error during rows iteration:%v\n", err.Error())
+		fmt.Printf("Error during rows iteration in GetChatSessions:%v\n", err.Error())
 	}
 	channel <- data
 }
@@ -152,14 +152,14 @@ func SearchChatSessions(userId string, searchVector []float32, channel chan<- []
 	defer db.Close()
 	vectorStrBytes, err := json.Marshal(searchVector)
 	if err != nil {
-		fmt.Printf("Error marshalling search title query vector: %v\n", err.Error())
+		fmt.Printf("Error marshalling search title query vector in SearchChatSessions: %v\n", err.Error())
 		channel <- data
 		return
 	}
 	vectorStr := string(vectorStrBytes)
 	rows, err := db.Query("SELECT session_id,title,allow_web_search FROM chat_sessions WHERE user_id = ? AND vector_distance_cos(title_vector, vector32(?)) < 0.5 ORDER BY vector_distance_cos(title_vector, vector32(?))", userId, vectorStr, vectorStr)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in SearchChatSessions: %v\n", err.Error())
 		channel <- data
 		return
 	}
@@ -169,14 +169,14 @@ func SearchChatSessions(userId string, searchVector []float32, channel chan<- []
 		var item models.ChatSession
 
 		if err := rows.Scan(&item.Id, &item.Title, &item.AllowWebSearch); err != nil {
-			fmt.Printf("Error scanning row:%v\n", err.Error())
+			fmt.Printf("Error scanning row in SearchChatSessions:%v\n", err.Error())
 		} else {
 			data = append(data, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Printf("Error during rows iteration:%v\n", err.Error())
+		fmt.Printf("Error during rows iteration in SearchChatSessions:%v\n", err.Error())
 	}
 	channel <- data
 }
@@ -189,13 +189,13 @@ func InsertChatSession(userId string, data models.ChatSession, channel chan<- in
 	defer db.Close()
 	result, err := db.Exec("INSERT INTO chat_sessions (user_id,title,allow_web_search, created_at) VALUES (?, ?,?,?)", userId, data.Title, data.AllowWebSearch, time.Now().Unix())
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in InsertChatSession: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	newId, errInsertId := result.LastInsertId()
 	if errInsertId != nil {
-		fmt.Printf("Error getting last inserted id: %v\n", errInsertId.Error())
+		fmt.Printf("Error getting last inserted id in InsertChatSession: %v\n", errInsertId.Error())
 		channel <- 0
 		return
 	}
@@ -210,13 +210,13 @@ func UpdateChatSessionAllowWebSearch(userId string, sessionId int, webSearch boo
 	defer db.Close()
 	result, err := db.Exec("UPDATE chat_sessions SET allow_web_search = ? WHERE session_id = ? AND  user_id = ?", webSearch, sessionId, userId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in UpdateChatSessionAllowWebSearch: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	rowsAffected, errUpdate := result.RowsAffected()
 	if errUpdate != nil {
-		fmt.Printf("Error updating allow_web_search : %v\n", errUpdate.Error())
+		fmt.Printf("Error updating allow_web_search in UpdateChatSessionAllowWebSearch: %v\n", errUpdate.Error())
 		channel <- 0
 		return
 	}
@@ -232,13 +232,13 @@ func UpdateChatSessionTitle(userId string, data models.ChatSession, channel chan
 	defer db.Close()
 	result, err := db.Exec("UPDATE chat_sessions SET title = ? WHERE session_id = ? AND  user_id = ?", data.Title, data.Id, userId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in UpdateChatSessionTitle: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	rowsAffected, errUpdate := result.RowsAffected()
 	if errUpdate != nil {
-		fmt.Printf("Error updating title : %v\n", errUpdate.Error())
+		fmt.Printf("Error updating title in UpdateChatSessionTitle: %v\n", errUpdate.Error())
 		channel <- 0
 		return
 	}
@@ -265,16 +265,17 @@ func UpdateChatSessionTitleVector(sessionId int, titleVector []float32, channel 
 	}
 	result, err := db.Exec("UPDATE chat_sessions SET title_vector = vector32(?) WHERE session_id = ?", string(vectorStrBytes), sessionId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in UpdateChatSessionTitleVector: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	rowsAffected, errUpdate := result.RowsAffected()
 	if errUpdate != nil {
-		fmt.Printf("Error updating title vector : %v\n", errUpdate.Error())
+		fmt.Printf("Error updating title vector in UpdateChatSessionTitleVector : %v\n", errUpdate.Error())
 		channel <- 0
 		return
 	}
+	// fmt.Printf("Updated title vector for session id: %d\n", sessionId)
 	channel <- int(rowsAffected)
 }
 
@@ -287,13 +288,13 @@ func DeleteChatSession(userId string, sessionId int, channel chan<- int) {
 	defer db.Close()
 	result, err := db.Exec("DELETE FROM chat_sessions WHERE session_id = ? AND  user_id = ?", sessionId, userId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in DeleteChatSession: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	rowsAffected, errUpdate := result.RowsAffected()
 	if errUpdate != nil {
-		fmt.Printf("Error deleting Chat Session : %v\n", errUpdate.Error())
+		fmt.Printf("Error deleting Chat Session in DeleteChatSession : %v\n", errUpdate.Error())
 		channel <- 0
 		return
 	}
@@ -310,7 +311,7 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 	defer db.Close()
 	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,img_data,pdf_data,file_id,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in GetChatConversations: %v\n", err.Error())
 		channel <- data
 		return
 	}
@@ -320,14 +321,14 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 		var item models.ChatConversation
 
 		if err := rows.Scan(&item.Id, &item.SessionId, &item.Message, &item.Sender, &item.ImgData, &item.PdfData, &item.FileId, &item.FileName); err != nil {
-			fmt.Printf("Error scanning row:%v\n", err.Error())
+			fmt.Printf("Error scanning row in GetChatConversations:%v\n", err.Error())
 		} else {
 			data = append(data, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Printf("Error during rows iteration:%v\n", err.Error())
+		fmt.Printf("Error during rows iteration in GetChatConversations:%v\n", err.Error())
 	}
 	channel <- data
 }
@@ -341,7 +342,7 @@ func GetChatConversation(userId string, conversationId int, session models.ChatS
 	defer db.Close()
 	rows, err := db.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,message,sender,img_data,pdf_data,file_id,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE conversation_id=? AND chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", conversationId, session.Id, userId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in GetChatConversation: %v\n", err.Error())
 		channel <- data
 		return
 	}
@@ -351,14 +352,14 @@ func GetChatConversation(userId string, conversationId int, session models.ChatS
 		var item models.ChatConversation
 
 		if err := rows.Scan(&item.Id, &item.SessionId, &item.Message, &item.Sender, &item.ImgData, &item.PdfData, &item.FileId, &item.FileName); err != nil {
-			fmt.Printf("Error scanning row:%v\n", err.Error())
+			fmt.Printf("Error scanning row in GetChatConversation:%v\n", err.Error())
 		} else {
 			data = item
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Printf("Error during rows iteration:%v\n", err.Error())
+		fmt.Printf("Error during rows iteration in GetChatConversation:%v\n", err.Error())
 	}
 	channel <- data
 }
@@ -372,13 +373,13 @@ func InsertChatConversation(data models.ChatConversation, channel chan<- int) {
 	defer db.Close()
 	result, err := db.Exec("INSERT INTO chat_conversations (session_id,message,sender,img_data,pdf_data,file_id,file_name, timestamp) VALUES (?, ?,?,?,?,?,?,?)", data.SessionId, data.Message, data.Sender, data.ImgData, data.PdfData, data.FileId, data.FileName, time.Now().Unix())
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in InsertChatConversation: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	newId, errInsertId := result.LastInsertId()
 	if errInsertId != nil {
-		fmt.Printf("Error getting last inserted id: %v\n", errInsertId.Error())
+		fmt.Printf("Error getting last inserted id in InsertChatConversation: %v\n", errInsertId.Error())
 		channel <- 0
 		return
 	}
@@ -393,13 +394,13 @@ func UpateMessageChatConversation(conversationId int, message string, channel ch
 	defer db.Close()
 	result, err := db.Exec("UPDATE chat_conversations SET message= ? WHERE  conversation_id=?", message, conversationId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in UpateMessageChatConversation: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		fmt.Printf("Error updating chat conversation: %v\n", err.Error())
+		fmt.Printf("Error updating chat conversation in UpateMessageChatConversation: %v\n", err.Error())
 		channel <- 0
 		return
 	}
@@ -415,13 +416,13 @@ func DeleteClaudeMessageChatConversation(conversationId int, channel chan<- int)
 	defer db.Close()
 	result, err := db.Exec("DELETE FROM chat_conversations WHERE  conversation_id=?", conversationId)
 	if err != nil {
-		fmt.Printf("Failed to execute query: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in DeleteClaudeMessageChatConversation: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		fmt.Printf("Error deleting chat conversation: %v\n", err.Error())
+		fmt.Printf("Error deleting chat conversation in DeleteClaudeMessageChatConversation: %v\n", err.Error())
 		channel <- 0
 		return
 	}

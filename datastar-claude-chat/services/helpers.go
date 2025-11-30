@@ -189,3 +189,23 @@ func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string
 	time.Sleep(3000 * time.Millisecond)
 	sse.PatchSignals([]byte("{showErrorMessage:false}"))
 }
+
+func CallEmbeddingAndUpdateSessionTitleVector(sessionId int, sessionTitle string, channel chan<- int) {
+	embeddingChannel := make(chan models.VoyageEmbeddingResponse)
+	if len(sessionTitle) > 500 {
+		sessionTitle = sessionTitle[:500]
+	}
+	go CallVoyageEmbedding(models.VoyageEmbeddingRequest{
+		Input: []string{sessionTitle},
+		Model: os.Getenv("VOYAGE_EMBEDDINGS_MODEL"),
+	}, embeddingChannel)
+	embeddingResponse := <-embeddingChannel
+	if len(embeddingResponse.Data) > 0 {
+		updateChannel := make(chan int)
+		defer close(updateChannel)
+		go UpdateChatSessionTitleVector(sessionId, embeddingResponse.Data[0].Embedding, updateChannel)
+		channel <- <-updateChannel
+		return
+	}
+	channel <- 0
+}
