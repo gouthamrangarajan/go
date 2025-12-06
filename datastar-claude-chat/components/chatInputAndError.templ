@@ -64,7 +64,13 @@ templ promptField() {
 				}
 			}
 		` }
-		data-on:keydown__window=" evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey && evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})) "
+		data-on:keydown={ `evt.key === 'Enter' && !evt.ctrlKey && !evt.altKey && !evt.metaKey &&!evt.shiftKey 
+							?
+						   setTimeout(()=>{
+							evt.preventDefault();
+							evt.target.dispatchEvent(new CustomEvent('call-api',{bubbles:true,isTrusted:true})); 
+						   },1)
+						   : null ` }
 	></textarea>
 }
 
