@@ -21,19 +21,21 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	allowWebSearch := false
 	sessionIdStr := chi.URLParam(request, "sessionId")
 	sessionId, err := strconv.Atoi(sessionIdStr)
-	if err != nil {
-		sessionId = 0
-	}
-	if sessionId == 0 {
-		components.Main(0, allowWebSearch, []models.ChatConversation{}).Render(request.Context(), responseWriter)
-		return
-	}
 	userId := request.Context().Value(services.UserIDKey).(string)
 
 	sessionsChannel := make(chan []models.ChatSession)
 	defer close(sessionsChannel)
 	go services.GetChatSessions(userId, sessionsChannel)
 	sessions := <-sessionsChannel
+
+	if err != nil {
+		sessionId = 0
+	}
+	if sessionId == 0 {
+		components.Main(0, allowWebSearch, []models.ChatConversation{}, sessions).Render(request.Context(), responseWriter)
+		return
+	}
+
 	sessionFound := false
 
 	for _, session := range sessions {
@@ -51,7 +53,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	defer close(conversationChannel)
 	go services.GetChatConversations(userId, sessionId, conversationChannel)
 	conversations := <-conversationChannel
-	components.Main(sessionId, allowWebSearch, conversations).Render(request.Context(), responseWriter)
+	components.Main(sessionId, allowWebSearch, conversations, sessions).Render(request.Context(), responseWriter)
 }
 
 func menuDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
