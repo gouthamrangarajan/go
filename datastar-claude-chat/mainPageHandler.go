@@ -7,7 +7,6 @@ import (
 	"datastar-claude-chat/services"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -24,10 +23,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	sessionId, err := strconv.Atoi(sessionIdStr)
 	userId := request.Context().Value(services.UserIDKey).(string)
 
-	sessionsChannel := make(chan []models.ChatSession)
-	defer close(sessionsChannel)
-	go services.GetChatSessions(userId, sessionsChannel)
-	sessions := <-sessionsChannel
+	sessions := services.GetChatSessionsViaChannel(userId)
 
 	if err != nil {
 		sessionId = 0
@@ -57,15 +53,28 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	components.Main(sessionId, allowWebSearch, conversations, sessions).Render(request.Context(), responseWriter)
 }
 
-func menuDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	requestBody, _ := io.ReadAll(request.Body)
+func menuSearchHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	uiData := request.URL.Query().Get("datastar")
 	var clientSignal models.ClientSignals
-	_ = json.Unmarshal(requestBody, &clientSignal)
-	if clientSignal.MenuSearchTerm != "" {
-		fmt.Printf("Menu Search Term: %s\n", clientSignal.MenuSearchTerm)
-
-	}
+	_ = json.Unmarshal([]byte(uiData), &clientSignal)
 	userId := request.Context().Value(services.UserIDKey).(string)
+	if clientSignal.MenuSearchTerm != "" {
+		// fmt.Printf("Menu Search Term: %s\n", clientSignal.MenuSearchTerm)
+		embeddingChannel := make(chan models.VoyageEmbeddingResponse)
+		defer close(embeddingChannel)
+		go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{clientSignal.MenuSearchTerm}}, embeddingChannel)
+		embeddingResponse := <-embeddingChannel
+		if len(embeddingResponse.Data) > 0 {
+			searchSessionsChannel := make(chan []models.ChatSession)
+			defer close(searchSessionsChannel)
+			go services.SearchChatSessions(userId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
+			ftedSessions := <-searchSessionsChannel
+			sse := datastar.NewSSE(responseWriter, request)
+			sse.PatchElementTempl(components.ChatSessionMenuItems(ftedSessions), datastar.WithModeInner(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
+			return
+		}
+	}
+
 	sessions := services.GetChatSessionsViaChannel(userId)
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchElementTempl(components.ChatSessionMenuItems(sessions), datastar.WithModeInner(), datastar.WithSelectorID("menuContainer"), datastar.WithUseViewTransitions(true))
