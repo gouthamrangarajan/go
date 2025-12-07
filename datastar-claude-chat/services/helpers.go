@@ -192,6 +192,7 @@ func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string
 
 func CallEmbeddingAndUpdateSessionTitleVector(sessionId int, sessionTitle string, channel chan<- int) {
 	embeddingChannel := make(chan models.VoyageEmbeddingResponse)
+	defer close(embeddingChannel)
 	if len(sessionTitle) > 500 {
 		sessionTitle = sessionTitle[:500]
 	}

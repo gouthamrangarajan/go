@@ -438,12 +438,26 @@
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
   }
+  .border-t-2 {
+    border-top-style: var(--tw-border-style);
+    border-top-width: 2px;
+  }
   .border-r {
     border-right-style: var(--tw-border-style);
     border-right-width: 1px;
   }
+  .border-b-2 {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 2px;
+  }
   .border-primary-background {
     border-color: var(--color-primary-background);
+  }
+  .border-primary\/50 {
+    border-color: color-mix(in srgb, oklch(70.4% 0.191 22.216) 50%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-primary) 50%, transparent);
+    }
   }
   .bg-background {
     background-color: var(--color-background);
@@ -619,6 +633,11 @@
   .placeholder\:text-slate-600 {
     &::placeholder {
       color: var(--color-slate-600);
+    }
+  }
+  .focus-within\:border-primary {
+    &:focus-within {
+      border-color: var(--color-primary);
     }
   }
   .focus-within\:inset-shadow-primary {

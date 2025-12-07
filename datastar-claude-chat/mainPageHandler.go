@@ -7,6 +7,7 @@ import (
 	"datastar-claude-chat/services"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -57,6 +58,13 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 }
 
 func menuDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	requestBody, _ := io.ReadAll(request.Body)
+	var clientSignal models.ClientSignals
+	_ = json.Unmarshal(requestBody, &clientSignal)
+	if clientSignal.MenuSearchTerm != "" {
+		fmt.Printf("Menu Search Term: %s\n", clientSignal.MenuSearchTerm)
+
+	}
 	userId := request.Context().Value(services.UserIDKey).(string)
 	sessions := services.GetChatSessionsViaChannel(userId)
 	sse := datastar.NewSSE(responseWriter, request)

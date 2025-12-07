@@ -49,10 +49,6 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	err = json.Unmarshal(requestBody, &clientSignal)
 	prompt := clientSignal.Prompt
 
-	// fmt.Println(clientSignal)
-	// http.Error(responseWriter, "Bad request", http.StatusBadRequest)
-	// return
-
 	fileData := ""
 	fileDataForDb := ""
 	fileMediaType := ""
@@ -80,6 +76,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	newSessionInserted := false
 	updateSessionTitleVectorCalled := false
 	titleEmbeddingUpdateChannel := make(chan int)
+	defer close(titleEmbeddingUpdateChannel)
 	if prompt == "" || err != nil ||
 		fileDataDecodeErr != nil || len(decodedBytes) > 1024*1024 || len(clientSignal.FileData) > 1 ||
 		(len(clientSignal.FileData) == 1 && len(imgMatches) != 4 && len(pdfMatches) != 2) {

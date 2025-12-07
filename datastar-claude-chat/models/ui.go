@@ -10,7 +10,8 @@ type ClientSignals struct {
 	} `json:"fileData"`
 	SearchWeb bool `json:"searchWeb"`
 	// FileId            string   `json:"fileId"`
-	SessionIdToDelete int `json:"sessionIdToDelete"`
+	SessionIdToDelete int    `json:"sessionIdToDelete"`
+	MenuSearchTerm    string `json:"menuSrchTxt"`
 }
 
 type FileDataDisplay struct {

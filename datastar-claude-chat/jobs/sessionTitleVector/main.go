@@ -18,10 +18,12 @@ func main() {
 	}
 	fmt.Println("Starting the session title vector job...")
 	getAllChatSessionsChannel := make(chan []models.ChatSession)
+	defer close(getAllChatSessionsChannel)
 	go services.GetAllChatSessionsForJob(getAllChatSessionsChannel)
 	allSessions := <-getAllChatSessionsChannel
 	fmt.Printf("Total sessions: %d\n", len(allSessions))
 	embeddingChannel := make(chan models.VoyageEmbeddingResponse)
+	defer close(embeddingChannel)
 	embeddingRequest := models.VoyageEmbeddingRequest{
 		Model: os.Getenv("VOYAGE_EMBEDDINGS_MODEL"),
 		Input: []string{},

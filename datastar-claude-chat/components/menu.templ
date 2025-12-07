@@ -37,22 +37,8 @@ templ menu(sessions []models.ChatSession) {
 			class="w-10/12 bg-white border-r border-primary-background h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary md:w-7/12 lg:w-5/12 xl:w-4/12"
 			data-on:click="evt.stopPropagation()"
 		>
-			<button
-				class="appearance-none outline-none cursor-pointer rounded-lg flex justify-center items-center mx-auto mt-5 w-11/12 h-10 transition duration-300 py-2 px-4 hover:opacity-90 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70 md:w-9/12"
-				data-on:click__viewtransition="@post('/new')"
-				data-indicator="newChatProcessing"
-				data-attr:disabled="$newChatProcessing"
-				data-class="{'bg-yellow-600 text-white':!$newChatProcessing,'bg-white text-yellow-600 ring-2 ring-yellow-500':$newChatProcessing}"
-			>
-				<span data-show="!$newChatProcessing">New Chat</span>
-				<div
-					data-show="$newChatProcessing"
-					class="flex items-center gap-1 flex-1 w-full justify-center"
-				>
-					@shared.Loader("animate-loader-1")
-					@shared.Loader("animate-loader-2")
-				</div>
-			</button>
+			@addNewChatButton()
+			// @searchChatSessions()
 			<ul class="flex flex-col mt-5 gap-1" id="menuContainer">
 				@ChatSessionMenuItems(sessions)
 			</ul>
@@ -71,6 +57,36 @@ templ menu(sessions []models.ChatSession) {
 				<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
 			</svg>
 		</button>
+	</div>
+}
+
+templ addNewChatButton() {
+	<button
+		class="appearance-none outline-none cursor-pointer rounded-lg flex justify-center items-center mx-auto mt-5 w-11/12 h-10 transition duration-300 py-2 px-4 hover:opacity-90 focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70 md:w-9/12"
+		data-on:click__viewtransition="@post('/new')"
+		data-indicator="newChatProcessing"
+		data-attr:disabled="$newChatProcessing"
+		data-class="{'bg-yellow-600 text-white':!$newChatProcessing,'bg-white text-yellow-600 ring-2 ring-yellow-500':$newChatProcessing}"
+	>
+		<span data-show="!$newChatProcessing">New Chat</span>
+		<div
+			data-show="$newChatProcessing"
+			class="flex items-center gap-1 flex-1 w-full justify-center"
+		>
+			@shared.Loader("animate-loader-1")
+			@shared.Loader("animate-loader-2")
+		</div>
+	</button>
+}
+
+templ searchChatSessions() {
+	<div class="mt-5 w-full flex items-center border-t-2 border-b-2 border-primary/50 py-2 px-4 transition-all duration-300  focus-within:border-primary ">
+		<input
+			type="text"
+			placeholder="Search chats..."
+			class="appearance-none outline-none flex-1 placeholder:text-slate/600"
+			data-bind:menu-srch-txt
+		/>
 	</div>
 }
 
