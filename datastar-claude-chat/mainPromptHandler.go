@@ -18,7 +18,7 @@ import (
 // ALGO
 // all validation/error messages stops the flow except for claude message error
 // Check for invalid/bad request : prompt empty , invalid session id, invalid image/pdf, invalid size & send bad request
-// If session id is 0 in incoming request , insert new chat session & call update title vector
+// If session id is 0 in incoming request , insert new chat session
 // generate fileData for image/pdf so that they can be stored in db , if not image/pdf , make this field empty
 // Check if the session id is not part of user sessions, send unauthorized if so
 // if unable to generate claude request , send internal server error (prompt + uploaded image/pdf data + allowWebsearch)
@@ -74,9 +74,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	newSessionInserted := false
-	updateSessionTitleVectorCalled := false
-	titleEmbeddingUpdateChannel := make(chan int)
-	defer close(titleEmbeddingUpdateChannel)
+
 	if prompt == "" || err != nil ||
 		fileDataDecodeErr != nil || len(decodedBytes) > 1024*1024 || len(clientSignal.FileData) > 1 ||
 		(len(clientSignal.FileData) == 1 && len(imgMatches) != 4 && len(pdfMatches) != 2) {
@@ -88,8 +86,6 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go services.InsertChatSession(userId, models.ChatSession{Title: prompt, AllowWebSearch: clientSignal.SearchWeb}, newSessionChannel)
 		sessionId = <-newSessionChannel
 		newSessionInserted = true
-		go services.CallEmbeddingAndUpdateSessionTitleVector(sessionId, prompt, titleEmbeddingUpdateChannel)
-		updateSessionTitleVectorCalled = true
 	}
 	if len(imgMatches) != 4 &&
 		len(pdfMatches) != 2 && fileData != "" {
@@ -165,8 +161,11 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse.ExecuteScript(`document.getElementById('messageContainer_`+strconv.Itoa(userChatConversationToInsert.Id)+`').scrollIntoView()`, datastar.WithExecuteScriptAutoRemove(true))
 
 	isSessionTitleUpdate := false
+	updateSessionTitleVectorCalled := false
 	sessionTitleUpdateChannel := make(chan int)
 	defer close(sessionTitleUpdateChannel)
+	titleEmbeddingUpdateChannel := make(chan int)
+	defer close(titleEmbeddingUpdateChannel)
 	if len(claudeRequest.Messages) == 1 {
 		go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: sessionId, Title: prompt}, sessionTitleUpdateChannel)
 		isSessionTitleUpdate = true
