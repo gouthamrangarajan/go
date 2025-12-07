@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -24,12 +25,26 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	userId := request.Context().Value(services.UserIDKey).(string)
 
 	sessions := services.GetChatSessionsViaChannel(userId)
+	ftedSessions := sessions
 
 	if err != nil {
 		sessionId = 0
 	}
+	srchMenuTxt := strings.Trim(request.URL.Query().Get("search_menu"), "")
+	if srchMenuTxt != "" {
+		embeddingChannel := make(chan models.VoyageEmbeddingResponse)
+		defer close(embeddingChannel)
+		go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{srchMenuTxt}}, embeddingChannel)
+		embeddingResponse := <-embeddingChannel
+		if len(embeddingResponse.Data) > 0 {
+			searchSessionsChannel := make(chan []models.ChatSession)
+			defer close(searchSessionsChannel)
+			go services.SearchChatSessions(userId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
+			ftedSessions = <-searchSessionsChannel
+		}
+	}
 	if sessionId == 0 {
-		components.Main(0, allowWebSearch, []models.ChatConversation{}, sessions).Render(request.Context(), responseWriter)
+		components.Main(0, allowWebSearch, srchMenuTxt, []models.ChatConversation{}, ftedSessions).Render(request.Context(), responseWriter)
 		return
 	}
 
@@ -50,7 +65,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	defer close(conversationChannel)
 	go services.GetChatConversations(userId, sessionId, conversationChannel)
 	conversations := <-conversationChannel
-	components.Main(sessionId, allowWebSearch, conversations, sessions).Render(request.Context(), responseWriter)
+	components.Main(sessionId, allowWebSearch, srchMenuTxt, conversations, ftedSessions).Render(request.Context(), responseWriter)
 }
 
 func menuSearchHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -58,6 +73,7 @@ func menuSearchHandler(responseWriter http.ResponseWriter, request *http.Request
 	var clientSignal models.ClientSignals
 	_ = json.Unmarshal([]byte(uiData), &clientSignal)
 	userId := request.Context().Value(services.UserIDKey).(string)
+	clientSignal.MenuSearchTerm = strings.Trim(clientSignal.MenuSearchTerm, " ")
 	if clientSignal.MenuSearchTerm != "" {
 		// fmt.Printf("Menu Search Term: %s\n", clientSignal.MenuSearchTerm)
 		embeddingChannel := make(chan models.VoyageEmbeddingResponse)

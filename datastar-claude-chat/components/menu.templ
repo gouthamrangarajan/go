@@ -90,7 +90,13 @@ templ searchChatSessions() {
 			class="appearance-none outline-none flex-1 placeholder:text-slate/600"
 			data-bind:menu-srch-txt
 			data-indicator="searchingMenu"
-			data-on:input__debounce.200ms={ `@get('/sessions/search',{
+			data-on:input__debounce.200ms={ ` if($sessionId==0){
+													window.history.replaceState({},document.title,window.location.origin+'/?search_menu='+$menuSrchTxt.trim());
+												}
+											   else{
+													window.history.replaceState({},document.title,window.location.origin+'/'+$sessionId+'?search_menu='+$menuSrchTxt.trim());
+											 	}
+												@get('/sessions/search',{
 															filterSignals:{
 																include:/menuSrchTxt/
 															},
@@ -115,7 +121,7 @@ templ ChatSessionMenuItems(items []models.ChatSession) {
 			<a
 				class="appearance-none outline-none cursor-pointer py-2 px-4 truncate flex-1 flex items-center gap-2 transition duration-300 hover:opacity-90 focus:underline focus:underline-offet-4"
 				href={ "/" + strconv.Itoa(item.Id) }
-				data-on:go-to-session__viewtransition={ "$showMenu=false;setTimeout(()=>{window.location.href=window.location.origin+'/'+" + strconv.Itoa(item.Id) + ";},300)" }
+				data-on:go-to-session__viewtransition={ `$showMenu=false;setTimeout(()=>{window.location.href=window.location.origin+'/` + strconv.Itoa(item.Id) + `?search_menu='+$menuSrchTxt.trim();},300)` }
 				data-on:click__stop__prevent="evt.srcElement.dispatchEvent(new CustomEvent('go-to-session',{isTrusted:true,bubbles:true}))"
 			>
 				<span class="text-primary pt-1">

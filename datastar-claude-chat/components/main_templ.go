@@ -12,7 +12,7 @@ import "datastar-claude-chat/models"
 import "strconv"
 import "datastar-claude-chat/components/shared"
 
-func Main(sessionId int, allowWebSearch bool, messages []models.ChatConversation, sessions []models.ChatSession) templ.Component {
+func Main(sessionId int, allowWebSearch bool, menuSrchTxt string, messages []models.ChatConversation, sessions []models.ChatSession) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -50,9 +50,9 @@ func Main(sessionId int, allowWebSearch bool, messages []models.ChatConversation
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("{showErrorMessage:false,errorMessage:'Error. Please try again later.',showMenu:false,sessionId:" + strconv.Itoa(sessionId) + ",showDeleteModal:false}")
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{showErrorMessage:false,errorMessage:'Error. Please try again later.',showMenu:false,sessionId:` + strconv.Itoa(sessionId) + `,showDeleteModal:false,menuSrchTxt:'` + menuSrchTxt + `'}`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 11, Col: 169}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 11, Col: 203}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {

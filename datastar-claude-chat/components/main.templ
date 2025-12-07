@@ -4,11 +4,11 @@ import "datastar-claude-chat/models"
 import "strconv"
 import "datastar-claude-chat/components/shared"
 
-templ Main(sessionId int, allowWebSearch bool, messages []models.ChatConversation, sessions []models.ChatSession) {
+templ Main(sessionId int, allowWebSearch bool, menuSrchTxt string, messages []models.ChatConversation, sessions []models.ChatSession) {
 	@layout() {
 		<main
 			class="w-full h-full  flex flex-col justify-start items-center pt-3 pb-48 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-white  scrollbar-thumb-primary"
-			data-signals={ "{showErrorMessage:false,errorMessage:'Error. Please try again later.',showMenu:false,sessionId:" + strconv.Itoa(sessionId) + ",showDeleteModal:false}" }
+			data-signals={ `{showErrorMessage:false,errorMessage:'Error. Please try again later.',showMenu:false,sessionId:` + strconv.Itoa(sessionId) + `,showDeleteModal:false,menuSrchTxt:'` + menuSrchTxt + `'}` }
 		>
 			@menu(sessions)
 			<h1 class="text-2xl font-semibold text-primary">Claude Chat</h1>
