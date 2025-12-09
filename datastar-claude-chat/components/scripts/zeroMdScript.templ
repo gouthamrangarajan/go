@@ -24,23 +24,29 @@ templ ZeroMdScript() {
                                             background-color:  transparent !important; 
                                             color:var(--color-slate-800) !important;
                                         }                                                                                   
-                                    @media(prefers-color-scheme: dark){
-                                        .markdown-body {
-                                            background-color:  transparent !important; 
-                                            color:var(--color-slate-800) !important;
-                                        }                                                 
-                                    }  	           
-                                    .zero-md-copy{position:relative;}
-                                    .zero-md-copy button{
-                                        position:absolute;
-                                        top:0.5rem;
-                                        right:0.75rem;
-                                        cursor:pointer;
-                                        opacity:0.9;
-                                        height:2rem;
-                                        width:2rem;
-                                        color:var(--color-yellow-600);
-                                    }                               
+                                        @media(prefers-color-scheme: dark){
+                                            .markdown-body {
+                                                background-color:  transparent !important; 
+                                                color:var(--color-slate-800) !important;
+                                            }                                                 
+                                        }  	  
+                                        .markdown-body table{                                              
+                                                color:var(--zero-md-theme-color) !important;
+                                         }       
+                                        .markdown-body table tr{
+                                            background-color:  var(--zero-md-theme-bg) !important; 
+                                        }            
+                                        .zero-md-copy{position:relative;}
+                                        .zero-md-copy button{
+                                            position:absolute;
+                                            top:0.5rem;
+                                            right:0.75rem;
+                                            cursor:pointer;
+                                            opacity:0.9;
+                                            height:2rem;
+                                            width:2rem;
+                                            color:var(--color-yellow-600);
+                                        }                               
                                     </style>                                      
                                     `;                                                                 
             } 
