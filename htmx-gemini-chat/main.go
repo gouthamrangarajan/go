@@ -50,6 +50,14 @@ func main() {
 		}
 		services.DeleteSessionHandler(response, request, sessionId)
 	})
+	compressedRouter.Delete("/chats/delete/{conversationId}", func(response http.ResponseWriter, request *http.Request) {
+		conversationIdStr := chi.URLParam(request, "conversationId")
+		conversationId, err := strconv.Atoi(conversationIdStr)
+		if err != nil {
+			conversationId = -1
+		}
+		services.DeleteChatConversationHandler(response, request, conversationId)
+	})
 	compressedRouter.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
 		fileServer.ServeHTTP(response, request)

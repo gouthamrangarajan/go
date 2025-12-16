@@ -228,6 +228,9 @@
   .right-0 {
     right: calc(var(--spacing) * 0);
   }
+  .right-2 {
+    right: calc(var(--spacing) * 2);
+  }
   .right-12 {
     right: calc(var(--spacing) * 12);
   }
@@ -953,6 +956,11 @@
   .dark\:text-lime-500 {
     &:where([data-theme=dark], [data-theme=dark] *) {
       color: var(--color-lime-500);
+    }
+  }
+  .dark\:text-red-300 {
+    &:where([data-theme=dark], [data-theme=dark] *) {
+      color: var(--color-red-300);
     }
   }
   .dark\:text-red-600 {

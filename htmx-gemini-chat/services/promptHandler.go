@@ -231,7 +231,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 			sendMessageAndFlush("event: ERROR\n\n", response)
 			deleteChatConversationChannel := make(chan int)
 			defer close(deleteChatConversationChannel)
-			go DeleteGeminiMessageChatConversation(convesationDataToInsertAndUpdate.Id, deleteChatConversationChannel)
+			go DeleteSingleChatConversation(convesationDataToInsertAndUpdate.Id, userId, deleteChatConversationChannel)
 			<-deleteChatConversationChannel
 			if embeddingCalled {
 				<-embeddingCallChannel

@@ -363,14 +363,16 @@ func UpateChatConversationMessageAndImgData(data models.ChatConversation, channe
 	channel <- int(rowsAffected)
 }
 
-func DeleteGeminiMessageChatConversation(conversationId int, channel chan<- int) {
+func DeleteSingleChatConversation(conversationId int, userId string, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
 		channel <- 0
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("DELETE FROM chat_conversations WHERE  conversation_id=?", conversationId)
+	result, err := db.Exec(`DELETE FROM chat_conversations WHERE conversation_id=?
+								AND EXISTS (SELECT 1 FROM chat_sessions WHERE chat_sessions.session_id=chat_conversations.session_id AND user_id=?)
+							`, conversationId, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err.Error())
 		channel <- 0

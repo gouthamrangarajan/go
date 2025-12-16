@@ -75,3 +75,28 @@ func DeleteSessionHandler(response http.ResponseWriter, request *http.Request,
 	}
 	response.WriteHeader(http.StatusOK)
 }
+
+func DeleteChatConversationHandler(response http.ResponseWriter, request *http.Request,
+	conversationIdToDelete int) {
+
+	userId, ok := request.Context().Value(UserIDKey).(string)
+	if !ok {
+		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	if conversationIdToDelete <= 0 { // RG url sends non integer value
+		http.Error(response, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	channel := make(chan int)
+	defer close(channel)
+	go DeleteSingleChatConversation(conversationIdToDelete, userId, channel)
+	rowsAffected := <-channel
+	if rowsAffected <= 0 {
+		http.Error(response, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	response.WriteHeader(http.StatusOK)
+}
