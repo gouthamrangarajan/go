@@ -461,7 +461,8 @@ templ bodyScript() {
                 if (strtIdx==-1){                   
                     return -1;
                 }
-                const messageId=messageUI.substring(strtIdx+"message_".length,messageUI.indexOf('"',strtIdx));                
+                const messageId=messageUI.substring(strtIdx+"message_".length,messageUI.indexOf('"',strtIdx));   
+                console.log(messageId);             
                 return messageId;
             }
             function prependFileDataToMessage(messageId,base64,fileName){

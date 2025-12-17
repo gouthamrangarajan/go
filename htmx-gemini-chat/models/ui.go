@@ -15,3 +15,8 @@ type PromptInput struct {
 	FileBase64     string
 	AllowWebSearch bool
 }
+
+type ChatTemplate struct {
+	SessionId      int
+	ConversationId int
+}

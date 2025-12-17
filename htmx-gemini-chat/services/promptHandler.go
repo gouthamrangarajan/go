@@ -137,7 +137,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	sendMessageAndFlush("event: HELPER_TEXT\ndata: "+eventDataBuffer.String()+"\n\n", response)
 
 	eventDataBuffer.Reset()
-	components.UserMessageTemplate(userMessageId).Render(context.Background(), eventDataBuffer)
+	components.UserMessageTemplate(models.ChatTemplate{ConversationId: userMessageId, SessionId: chatSessionId}).Render(context.Background(), eventDataBuffer)
 	sendMessageAndFlush("event: USER_MESSAGE_TEMPLATE\ndata: "+eventDataBuffer.String()+"\n\n", response)
 
 	if newChatSessionInserted {
@@ -178,10 +178,10 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	insertGeminiMessageChatConversationChannel := make(chan int)
 	defer close(insertGeminiMessageChatConversationChannel)
 
-	convesationDataToInsertAndUpdate := models.ChatConversation{SessionId: chatSessionId, Message: consolidateGeminiResponse, Sender: "model", FileData: "", FileName: ""}
-	go InsertChatConversation(convesationDataToInsertAndUpdate, insertGeminiMessageChatConversationChannel)
-	convesationDataToInsertAndUpdate.Id = <-insertGeminiMessageChatConversationChannel
-	if convesationDataToInsertAndUpdate.Id == 0 {
+	conversationDataToInsertAndUpdate := models.ChatConversation{SessionId: chatSessionId, Message: consolidateGeminiResponse, Sender: "model", FileData: "", FileName: ""}
+	go InsertChatConversation(conversationDataToInsertAndUpdate, insertGeminiMessageChatConversationChannel)
+	conversationDataToInsertAndUpdate.Id = <-insertGeminiMessageChatConversationChannel
+	if conversationDataToInsertAndUpdate.Id == 0 {
 		sendMessageAndFlush("event: ERROR\n\n", response)
 		if embeddingCalled {
 			<-embeddingCallChannel
@@ -190,7 +190,7 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 	}
 
 	eventDataBuffer.Reset()
-	components.GeminiMessageTemplate(convesationDataToInsertAndUpdate.Id).Render(context.Background(), eventDataBuffer)
+	components.GeminiMessageTemplate(models.ChatTemplate{ConversationId: conversationDataToInsertAndUpdate.Id, SessionId: chatSessionId}).Render(context.Background(), eventDataBuffer)
 	sendMessageAndFlush("event: GEMINI_MESSAGE_TEMPLATE\ndata: "+eventDataBuffer.String()+"\n\n", response)
 
 	for message := range geminiAPIChannel {
@@ -221,17 +221,17 @@ func PromptHandler(response http.ResponseWriter, request *http.Request) {
 		defer close(updateChatConversationChannel)
 
 		if !generateImg {
-			convesationDataToInsertAndUpdate.Message = consolidateGeminiResponse
+			conversationDataToInsertAndUpdate.Message = consolidateGeminiResponse
 		} else {
-			convesationDataToInsertAndUpdate.FileData = consolidateGeminiResponse
+			conversationDataToInsertAndUpdate.FileData = consolidateGeminiResponse
 		}
-		go UpateChatConversationMessageAndImgData(convesationDataToInsertAndUpdate, updateChatConversationChannel)
+		go UpateChatConversationMessageAndImgData(conversationDataToInsertAndUpdate, updateChatConversationChannel)
 		rowsAffectedUpdate := <-updateChatConversationChannel
 		if rowsAffectedUpdate == 0 {
 			sendMessageAndFlush("event: ERROR\n\n", response)
 			deleteChatConversationChannel := make(chan int)
 			defer close(deleteChatConversationChannel)
-			go DeleteSingleChatConversation(convesationDataToInsertAndUpdate.Id, userId, deleteChatConversationChannel)
+			go DeleteSingleChatConversation(conversationDataToInsertAndUpdate.Id, userId, deleteChatConversationChannel)
 			<-deleteChatConversationChannel
 			if embeddingCalled {
 				<-embeddingCallChannel
