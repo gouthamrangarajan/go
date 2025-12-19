@@ -693,11 +693,23 @@
       border-color: var(--color-cyan-700);
     }
   }
+  .focus-within\:bg-slate-200 {
+    &:focus-within {
+      background-color: var(--color-slate-200);
+    }
+  }
   .focus-within\:inset-shadow-cyan-700 {
     &:focus-within {
       --tw-inset-shadow-color: oklch(52% 0.105 223.128);
       @supports (color: color-mix(in lab, red, red)) {
         --tw-inset-shadow-color: color-mix(in oklab, var(--color-cyan-700) var(--tw-inset-shadow-alpha), transparent);
+      }
+    }
+  }
+  .hover\:bg-slate-200 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-slate-200);
       }
     }
   }
@@ -1021,12 +1033,28 @@
       }
     }
   }
+  .dark\:focus-within\:bg-slate-700 {
+    &:where([data-theme=dark], [data-theme=dark] *) {
+      &:focus-within {
+        background-color: var(--color-slate-700);
+      }
+    }
+  }
   .dark\:focus-within\:inset-shadow-cyan-400 {
     &:where([data-theme=dark], [data-theme=dark] *) {
       &:focus-within {
         --tw-inset-shadow-color: oklch(78.9% 0.154 211.53);
         @supports (color: color-mix(in lab, red, red)) {
           --tw-inset-shadow-color: color-mix(in oklab, var(--color-cyan-400) var(--tw-inset-shadow-alpha), transparent);
+        }
+      }
+    }
+  }
+  .dark\:hover\:bg-slate-700 {
+    &:where([data-theme=dark], [data-theme=dark] *) {
+      &:hover {
+        @media (hover: hover) {
+          background-color: var(--color-slate-700);
         }
       }
     }
