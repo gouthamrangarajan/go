@@ -1,0 +1,42 @@
+package components
+
+templ addItemForm(location string) {
+	<form
+		method="POST"
+		data-on:submit={ `evt.preventDefault();
+						  if($_newItem.trim() === "") {
+							  return;
+						  }
+						  @post('/add',{contentType: 'form'})` }
+		data-indicator="_newItemProcessing"
+		class="flex-1 flex items-center py-2 px-4 rounded border-2 border-slate-300 transition duration-300 focus-within:border-slate-600 "
+	>
+		if location == "NJ" {
+			<input
+				class="appearance-none outline-none flex-1 placeholder:text-slate-500"
+				placeholder="e.g. Costco Apples"
+				name="item"
+				data-bind="_newItem"
+			/>
+		} else {
+			<input
+				class="appearance-none outline-none flex-1 placeholder:text-slate-500"
+				placeholder="e.g. Apples"
+				name="item"
+				data-bind="_newItem"
+			/>
+		}
+		<button
+			class="appearance-none outline-none cursor-pointer rounded transition duration-300  text-green-600 hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600"
+			type="submit"
+			data-attr-disabled="$_newItemProcessing"
+		>
+			<span data-show="!$_newItemProcessing">
+				@submitIcon("view-transition-name:addFormSubmitIcon")
+			</span>
+			<span data-show="$_newItemProcessing">
+				@loader("border-green-700", "view-transition-name:addFormSubmitIcon")
+			</span>
+		</button>
+	</form>
+}
