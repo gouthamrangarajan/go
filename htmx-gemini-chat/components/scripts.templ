@@ -370,6 +370,7 @@ templ bodyScript() {
                                                 this.appendPromptAndImageToUserMessageTemplate()                                                                   
                                             }
                                             document.getElementsByTagName('main')[0].scrollTop=document.getElementsByTagName('main')[0].scrollHeight+100;                         
+                                            htmx.process(document.getElementById('btnDeleteMessage_'+this.currentMessageId));
                                         }
                                         else if(decodedItem.includes("MENU_ITEM")){ //streamed output is new menu item or existing menu title change 
                                             decodedItem=decodedItem.replace("MENU_ITEM\ndata: ","").trimEnd();
@@ -462,7 +463,6 @@ templ bodyScript() {
                     return -1;
                 }
                 const messageId=messageUI.substring(strtIdx+"message_".length,messageUI.indexOf('"',strtIdx));   
-                console.log(messageId);             
                 return messageId;
             }
             function prependFileDataToMessage(messageId,base64,fileName){
