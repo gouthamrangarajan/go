@@ -42,7 +42,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 	sse := datastar.NewSSE(w, r)
-	sort := r.URL.Query().Get("sort")
+	// sort := r.URL.Query().Get("sort")
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	databaseUrl := os.Getenv("TURSO_DATABASE_URL")
 	groceries := services.GetGroceryList(databaseUrl, authToken, sort)
