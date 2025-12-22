@@ -56,6 +56,7 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 	for {
 		select {
 		case <-r.Context().Done():
+			close(changeSignalAndSortValueChannels[key])
 			delete(changeSignalAndSortValueChannels, key)
 			return
 
