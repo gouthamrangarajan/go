@@ -92,7 +92,7 @@ func SectionEl(location string, sort string, suggestions string) templ.Component
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section style=\"view-transition-name:section\" class=\"bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12\" id=\"section\" data-init=\"@get('/items')\"><div class=\"flex flex-col gap-1 md:items-center md:flex-row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section style=\"view-transition-name:section\" class=\"bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12\" id=\"section\" data-init=\"@get('/items')\" data-signals=\"{'_loadingItems':true}\"><div class=\"flex flex-col gap-1 md:items-center md:flex-row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -112,11 +112,23 @@ func SectionEl(location string, sort string, suggestions string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span data-show=\"$_loadingItems\" class=\"w-full flex justify-center\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = loader("border-slate-600 w-8 h-8", "").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = ItemsUL([]Item{}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -157,7 +169,7 @@ func MainElForLogin(sort string, suggestions string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<main class=\"flex flex-col items-center w-dvw h-dvh  overflow-auto bg-gradient-to-br from-purple-300 to-fuchsia-300 via-fuchsia-200 py-5 lg:py-10 px-2 lg:px-6\"><h1 class=\"text-4xl text-green-700 font-semibold text-center\">Groceries</h1><section style=\"view-transition-name:section\" class=\"bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 mt-20 transition-all duration-300 flex flex-col gap-1 w-10/12 md:w-8/12 lg:w-5/12 xl:w-4/12\" id=\"section\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<main class=\"flex flex-col items-center w-dvw h-dvh  overflow-auto bg-gradient-to-br from-purple-300 to-fuchsia-300 via-fuchsia-200 py-5 lg:py-10 px-2 lg:px-6\"><h1 class=\"text-4xl text-green-700 font-semibold text-center\">Groceries</h1><section style=\"view-transition-name:section\" class=\"bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 mt-20 transition-all duration-300 flex flex-col gap-1 w-10/12 md:w-8/12 lg:w-5/12 xl:w-4/12\" id=\"section\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -165,7 +177,7 @@ func MainElForLogin(sort string, suggestions string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</section></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</section></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

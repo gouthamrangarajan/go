@@ -48,6 +48,7 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 	groceries := services.GetGroceryList(databaseUrl, authToken, sort)
 	items, _ := tranformGroceryList(groceries, false)
 	sse.PatchElementTempl(components.ItemsUL(items), datastar.WithUseViewTransitions(true))
+	sse.PatchSignals([]byte("{_loadingItems:false}"))
 	ipAddress := r.RemoteAddr
 	randomInt := rand.Intn(1000)
 	// fmt.Println("New SSE connection from ", ipAddress, " with key ", randomInt)
