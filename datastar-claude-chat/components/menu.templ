@@ -113,13 +113,14 @@ templ searchChatSessions() {
 templ ChatSessionMenuItems(items []models.ChatSession) {
 	for _,item := range items {
 		<li
-			class="w-full cursor-pointer flex items-center pr-2 relative"
+			class="w-full cursor-pointer flex items-center pr-2 relative hover:bg-gray-200/80 focus-within:bg-gray-200/80"
 			id={ "menu_" + strconv.Itoa(item.Id) }
 			data-signals={ "{_showDelete_" + strconv.Itoa(item.Id) + ":false}" }
 			style={ "view-transition-name:menu-" + strconv.Itoa(item.Id) }
 		>
 			<a
-				class="appearance-none outline-none cursor-pointer py-2 px-4 truncate flex-1 flex items-center gap-2 transition duration-300 hover:opacity-90 focus:underline focus:underline-offet-4"
+				class="appearance-none outline-none cursor-pointer py-2 px-4 truncate flex-1 flex items-center gap-2 transition duration-300 "
+				data-class={ "{'underline underline-offset-4':$sessionId==" + strconv.Itoa(item.Id) + "}" }
 				href={ "/" + strconv.Itoa(item.Id) }
 				data-on:go-to-session__viewtransition={ `$showMenu=false;setTimeout(()=>{window.location.href=window.location.origin+'/` + strconv.Itoa(item.Id) + `?search_menu='+$menuSrchTxt.trim();},300)` }
 				data-on:click__stop__prevent="evt.srcElement.dispatchEvent(new CustomEvent('go-to-session',{isTrusted:true,bubbles:true}))"

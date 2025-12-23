@@ -5,7 +5,7 @@ go 1.24.2
 toolchain go1.24.6
 
 require (
-	github.com/a-h/templ v0.3.943
+	github.com/a-h/templ v0.3.960
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/starfederation/datastar-go v1.0.3

@@ -17,6 +17,7 @@
     --color-slate-300: oklch(86.9% 0.022 252.894);
     --color-slate-600: oklch(44.6% 0.043 257.281);
     --color-slate-800: oklch(27.9% 0.041 260.031);
+    --color-gray-200: oklch(92.8% 0.006 264.531);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -300,6 +301,9 @@
   .inline {
     display: inline;
   }
+  .table {
+    display: table;
+  }
   .field-sizing-content {
     field-sizing: content;
   }
@@ -571,6 +575,12 @@
   .capitalize {
     text-transform: capitalize;
   }
+  .underline {
+    text-decoration-line: underline;
+  }
+  .underline-offset-4 {
+    text-underline-offset: 4px;
+  }
   .shadow {
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -640,11 +650,29 @@
       border-color: var(--color-primary);
     }
   }
+  .focus-within\:bg-gray-200\/80 {
+    &:focus-within {
+      background-color: color-mix(in srgb, oklch(92.8% 0.006 264.531) 80%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-gray-200) 80%, transparent);
+      }
+    }
+  }
   .focus-within\:inset-shadow-primary {
     &:focus-within {
       --tw-inset-shadow-color: oklch(70.4% 0.191 22.216);
       @supports (color: color-mix(in lab, red, red)) {
         --tw-inset-shadow-color: color-mix(in oklab, var(--color-primary) var(--tw-inset-shadow-alpha), transparent);
+      }
+    }
+  }
+  .hover\:bg-gray-200\/80 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in srgb, oklch(92.8% 0.006 264.531) 80%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-gray-200) 80%, transparent);
+        }
       }
     }
   }
@@ -674,11 +702,6 @@
       @media (hover: hover) {
         opacity: 90%;
       }
-    }
-  }
-  .focus\:underline {
-    &:focus {
-      text-decoration-line: underline;
     }
   }
   .focus\:ring-1 {
