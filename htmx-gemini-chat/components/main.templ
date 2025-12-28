@@ -64,7 +64,6 @@ templ section(conversations []models.ChatConversation, sectionModel models.Secti
 		<section
 			id="section"
 			class="w-11/12 shrink-0 mx-auto flex flex-col gap-2  mt-2 py-1 px-3 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 xl:w-9/12"
-			style="view-transition-name:section"
 			hx-swap-oob="true"
 		>
 			for _,conversation:= range conversations {
@@ -80,7 +79,6 @@ templ section(conversations []models.ChatConversation, sectionModel models.Secti
 		<section
 			id="section"
 			class="w-11/12 shrink-0 mx-auto flex flex-col gap-2  mt-2 py-1 px-3 rounded  focus:ring-1 focus:ring-slate-600 dark:focus:ring-slate-200 lg:w-10/12 lg:mt-10 lg:py-2 lg:px-4 xl:w-9/12"
-			style="view-transition-name:section"
 		>
 			for _,conversation:= range conversations {
 				if conversation.Sender == "user" {
