@@ -469,6 +469,11 @@
       opacity: 80%;
     }
   }
+  .md\:h-\[50vh\] {
+    @media (width >= 48rem) {
+      height: 50vh;
+    }
+  }
   .md\:max-w-full {
     @media (width >= 48rem) {
       max-width: 100%;
