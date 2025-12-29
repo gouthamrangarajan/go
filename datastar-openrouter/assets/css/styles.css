@@ -240,8 +240,8 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
-  .h-\[74vh\] {
-    height: 74vh;
+  .h-\[70vh\] {
+    height: 70vh;
   }
   .h-full {
     height: 100%;
