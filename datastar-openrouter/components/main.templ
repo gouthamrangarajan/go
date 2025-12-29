@@ -9,7 +9,7 @@ import (
 templ Main(messages []models.ChatConversation) {
 	@layout() {
 		<main
-			class="w-11/12 mx-auto pb-20 h-[70vh] overflow-x-hidden overflow-y-auto flex flex-col gap-5 scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 lg:h-[82vh] xl:w-10/12 "
+			class="w-11/12 mx-auto pb-20 h-[68vh] overflow-x-hidden overflow-y-auto flex flex-col gap-5 scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 lg:h-[82vh] xl:w-10/12 "
 			style="display:none;"
 			data-show="true"
 		>
@@ -65,7 +65,7 @@ templ ChatMessage(message models.ChatConversation) {
 
 templ chatInput() {
 	<div class="absolute -bottom-1 left-0 w-full">
-		<div class="w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto border border-black rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12">
+		<div class="w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark border border-black rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12">
 			<textarea
 				name="prompt"
 				data-bind="prompt"

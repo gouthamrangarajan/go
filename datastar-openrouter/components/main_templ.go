@@ -47,7 +47,7 @@ func Main(messages []models.ChatConversation) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-11/12 mx-auto pb-20 h-[70vh] overflow-x-hidden overflow-y-auto flex flex-col gap-5 scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 lg:h-[82vh] xl:w-10/12 \" style=\"display:none;\" data-show=\"true\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-11/12 mx-auto pb-20 h-[68vh] overflow-x-hidden overflow-y-auto flex flex-col gap-5 scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 lg:h-[82vh] xl:w-10/12 \" style=\"display:none;\" data-show=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -221,7 +221,7 @@ func chatInput() templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"absolute -bottom-1 left-0 w-full\"><div class=\"w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto border border-black rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12\"><textarea name=\"prompt\" data-bind=\"prompt\" data-on:keydown=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"absolute -bottom-1 left-0 w-full\"><div class=\"w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark border border-black rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12\"><textarea name=\"prompt\" data-bind=\"prompt\" data-on:keydown=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
