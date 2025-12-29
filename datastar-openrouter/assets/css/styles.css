@@ -240,11 +240,8 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
-  .h-\[50vh\] {
-    height: 50vh;
-  }
-  .h-\[76vh\] {
-    height: 76vh;
+  .h-\[74vh\] {
+    height: 74vh;
   }
   .h-full {
     height: 100%;
@@ -297,11 +294,11 @@
   .justify-center {
     justify-content: center;
   }
-  .gap-3 {
-    gap: calc(var(--spacing) * 3);
-  }
   .gap-4 {
     gap: calc(var(--spacing) * 4);
+  }
+  .gap-5 {
+    gap: calc(var(--spacing) * 5);
   }
   .overflow-x-hidden {
     overflow-x: hidden;
@@ -480,6 +477,11 @@
   .lg\:h-\[82vh\] {
     @media (width >= 64rem) {
       height: 82vh;
+    }
+  }
+  .lg\:gap-3 {
+    @media (width >= 64rem) {
+      gap: calc(var(--spacing) * 3);
     }
   }
   .xl\:w-10\/12 {
