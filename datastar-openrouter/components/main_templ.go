@@ -47,7 +47,7 @@ func Main(messages []models.ChatConversation) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-11/12 mx-auto pb-20 h-[66vh] overflow-x-hidden overflow-y-auto flex flex-col gap-5 scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 lg:h-[82vh] xl:w-10/12 \" style=\"display:none;\" data-show=\"true\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-11/12 mx-auto pb-32 h-[66vh] overflow-x-hidden overflow-y-auto flex flex-col gap-5 scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 lg:h-[82vh] xl:w-10/12 \" style=\"display:none;\" data-show=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -150,28 +150,28 @@ func ChatMessage(message models.ChatConversation) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<zero-md><script type=\"text/markdown\" data-text=\"")
+		if message.Content == "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span class=\"animate-pulse opacity-70 text-sm\" data-show=\"$_processingViaButton || $_processingViaInput\">thinking...</span> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<zero-md><script type=\"text/markdown\" data-text=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs("$_message_" + strconv.Itoa(message.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 52, Col: 83}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 55, Col: 83}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\">\t\t\t\t\t\n\t\t\t</script></zero-md> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\">\t\t\t\t\t\n\t\t\t</script></zero-md> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
-		}
-		if message.Content == "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"animate-pulse opacity-70 text-sm\" data-show=\"$_processingViaButton || $_processingViaInput\">thinking...</span> ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 		}
 		if message.ModelId != "" {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"absolute -bottom-6 right-4 text-xs italic p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark\">")
