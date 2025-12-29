@@ -1,0 +1,113 @@
+package components
+
+import (
+	"datastar-openrouter/models"
+	"strconv"
+	"strings"
+)
+
+templ Main(messages []models.ChatConversation) {
+	@layout() {
+		<main
+			class="w-11/12 mx-auto pb-20 h-[76vh] overflow-x-hidden overflow-y-auto flex flex-col gap-3 scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:h-[82vh] xl:w-10/12 "
+			style="display:none;"
+			data-show="true"
+		>
+			for _,message := range messages {
+				@ChatMessage(message)
+			}
+			if len(messages)==0 {
+				<div class="w-full h-full flex items-center justify-center" id="hint">
+					<p class="text-lg">
+						Unified chat with the world's smartest models.
+					</p>
+				</div>
+			}
+			@chatInput()
+		</main>
+	}
+}
+
+func formatMessageForDataStar(message string) string {
+	ret := strings.ReplaceAll(message, `\`, `\\`)
+	ret = strings.ReplaceAll(ret, "${", `\${`)
+	ret = strings.ReplaceAll(ret, "`", "\\`")
+	return ret
+}
+
+templ ChatMessage(message models.ChatConversation) {
+	<div
+		id={ "message-" + strconv.Itoa(message.Id) }
+		class="py-1 px-3 flex gap-4 items-start relative max-w-11/12 md:max-w-full"
+		data-signals={ "{_message_" + strconv.Itoa(message.Id) + ":`" + formatMessageForDataStar(message.Content) + "`}" }
+	>
+		if message.Role=="assistant" {
+			<svg width="100%" height="100%" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" class="size-6 shrink-0" fill="currentColor" stroke="currentColor" aria-label="Logo"><g clip-path="url(#clip0_205_3)"><path d="M3 248.945C18 248.945 76 236 106 219C136 202 136 202 198 158C276.497 102.293 332 120.945 423 120.945" stroke-width="90"></path><path d="M511 121.5L357.25 210.268L357.25 32.7324L511 121.5Z"></path><path d="M0 249C15 249 73 261.945 103 278.945C133 295.945 133 295.945 195 339.945C273.497 395.652 329 377 420 377" stroke-width="90"></path><path d="M508 376.445L354.25 287.678L354.25 465.213L508 376.445Z"></path></g><title style="display: none;">OpenRouter</title><defs><clipPath id="clip0_205_3"><rect width="512" height="512" fill="white"></rect></clipPath></defs></svg>
+		} else {
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 shrink-0">
+				<path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd"></path>
+			</svg>
+		}
+		<zero-md>
+			<script type="text/markdown" data-text={ "$_message_" + strconv.Itoa(message.Id) }>					
+			</script>
+		</zero-md>
+		if message.Content=="" {
+			<span class="animate-pulse opacity-70 text-sm" data-show="$_processingViaButton || $_processingViaInput">thinking...</span>
+		}
+		if message.ModelId!="" {
+			<span class="absolute -bottom-6 right-4 text-xs italic p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark">
+				{ message.ModelId }
+			</span>
+		}
+	</div>
+}
+
+templ chatInput() {
+	<div class="absolute -bottom-1 left-0 w-full">
+		<div class="w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto border border-black rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12">
+			<textarea
+				name="prompt"
+				data-bind="prompt"
+				data-on:keydown={ `
+                    if (!$_processingViaInput && !$_processingViaButton && evt.key === 'Enter' && 
+                        (evt.metaKey || evt.ctrlKey)) {
+                        evt.preventDefault();
+                        @post("/chat",{openWhenHidden: true});
+                    }
+                ` }
+				data-indicator="_processingViaInput"
+				type="text"
+				placeholder="Type your message..."
+				class="w-full flex-1 appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50"
+			></textarea>
+			<button
+				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				data-on:click={ `
+                    @post("/chat",{openWhenHidden: true});
+                ` }
+				data-indicator="_processingViaButton"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 20 20"
+					fill="currentColor"
+					class="size-5"
+					data-show="!$_processingViaButton && !$_processingViaInput"
+				>
+					<path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd"></path>
+				</svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 20 20"
+					fill="currentColor"
+					class="size-5"
+					data-show="$_processingViaButton || $_processingViaInput"
+				>
+					<path d="M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+}

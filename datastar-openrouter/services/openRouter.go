@@ -1,0 +1,86 @@
+package services
+
+import (
+	"bufio"
+	"bytes"
+	"datastar-openrouter/models"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strings"
+)
+
+func CallOpenRouterWithStreaming(aiRequest models.OpenRouterRequest, channel chan<- models.OpenRouterModelIdAndDeltaString) {
+	url := os.Getenv("OPEN_ROUTER_API_URL")
+	key := os.Getenv("OPEN_ROUTER_API_KEY")
+	defer close(channel)
+	defaultVal := models.OpenRouterModelIdAndDeltaString{DeltaContent: "Error"}
+	aiRequestBytes, err := json.Marshal(aiRequest)
+	if err != nil {
+		fmt.Printf("Error marshaling request: %v\n", err.Error())
+		channel <- defaultVal
+		return
+	}
+	client := &http.Client{}
+	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(aiRequestBytes))
+	if err != nil {
+		fmt.Printf("Error creating HTTP request: %v\n", err.Error())
+		channel <- defaultVal
+		return
+	}
+	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", key))
+	httpRequest.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		fmt.Printf("Error making HTTP request: %v\n", err.Error())
+		channel <- defaultVal
+		return
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		fmt.Printf("Error in making message api call: received status code %d\n", response.StatusCode)
+		respBody, err := io.ReadAll(response.Body)
+		if err == nil {
+			fmt.Printf("Error in making message api call %v\n", string(respBody))
+		}
+		channel <- defaultVal
+		return
+	}
+	scanner := bufio.NewScanner(response.Body)
+	line := ""
+
+	for scanner.Scan() {
+		if strings.TrimSpace(scanner.Text()) == ": OPENROUTER PROCESSING" {
+			continue
+		}
+		// fmt.Println("Received line:", scanner.Text())
+		line += scanner.Text()
+		line = strings.TrimSuffix(line, "\n")
+		line = strings.TrimSpace(line)
+
+		if strings.HasPrefix(line, "data: ") {
+			line = strings.TrimPrefix(line, "data: ")
+			if line == "[DONE]" {
+				break
+			}
+			var streamResponse models.OpenRouterStreamResponse
+			err = json.Unmarshal([]byte(line), &streamResponse)
+			if err != nil {
+				fmt.Printf("Error unmarshaling stream response: %v\n", err.Error())
+				// channel <- "Error"
+				// return
+			} else {
+				if len(streamResponse.Choices) > 0 {
+					content := streamResponse.Choices[0].Delta.Content
+					if content != "" {
+						// fmt.Println("Sending content to channel:", content)
+						channel <- models.OpenRouterModelIdAndDeltaString{DeltaContent: content, ModelId: streamResponse.Model}
+					}
+				}
+				line = ""
+			}
+		}
+	}
+}

@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@plugin 'tailwind-scrollbar';
+
+@theme {
+    --color-dark: #0d1117;
+}

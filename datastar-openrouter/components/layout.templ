@@ -1,0 +1,24 @@
+package components
+
+templ layout() {
+	<!DOCTYPE html>
+	<html class="w-full h-full">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>Openrouter AI Chat</title>
+			<meta name="description" content="Simple AI Chat App to talk to multiple models using Openrouter"/>
+			<link rel="icon" href="/assets/images/favicon.ico"/>
+			<link rel="stylesheet" href="/assets/css/styles.css"/>
+			<link rel="stylesheet" href="/assets/css/openprops.min.css"/>
+		</head>
+		<body
+			class="w-full h-full overflow-x-hidden overflow-y-hidden bg-background font-(family-name:--font-geometric-humanist) relative bg-white text-dark dark:bg-dark dark:text-white"
+		>
+			<header class="text-3xl text-center font-semibold py-2 px-4">Nexus AI</header>
+			{ children... }
+			<script src="/assets/js/datastar.min.js" type="module"></script>
+			<script src="https://cdn.jsdelivr.net/npm/zero-md@3?register" type="module"></script>
+		</body>
+	</html>
+}
