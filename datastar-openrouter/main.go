@@ -25,6 +25,7 @@ func main() {
 	router.Use(middlewares.Authorization)
 
 	router.Get("/", mainPageHandler)
+	router.Get("/{sessionId}", mainPageHandler)
 	router.Post("/chat", promptHandler)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {

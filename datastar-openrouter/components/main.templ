@@ -1,13 +1,17 @@
 package components
 
-import "datastar-openrouter/models"
+import (
+	"datastar-openrouter/models"
+	"strconv"
+)
 
-templ Main(messages []models.ChatConversation) {
+templ Main(messages []models.ChatConversation, sessionId int) {
 	@layout() {
 		<main
 			class="w-11/12 mx-auto pb-32 h-[66vh] overflow-x-hidden overflow-y-auto flex flex-col gap-5 scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 md:h-[50vh] lg:gap-3 lg:h-[82vh] xl:w-10/12 "
 			style="display:none;"
 			data-show="true"
+			data-signals={ "{sessionId:" + strconv.Itoa(sessionId) + "}" }
 		>
 			for _,message := range messages {
 				@ChatMessage(message)

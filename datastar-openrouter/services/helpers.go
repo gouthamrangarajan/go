@@ -89,6 +89,6 @@ func GenerateOpenRouterRequest(userId string, request models.ClientSignals) (mod
 		}
 	}
 
-	// fmt.Printf("Generated OpenRouter Request: %+v\n", openRouterRequest)
+	//fmt.Printf("Generated OpenRouter Request: %+v\n", openRouterRequest)
 	return openRouterRequest, errToRet
 }
