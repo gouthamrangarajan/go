@@ -39,15 +39,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 		http.Error(responseWriter, "UnAuthorized", http.StatusUnauthorized)
 		return
 	}
-	// sessionId := 0
-	// if len(sessions) == 0 {
-	// 	insertChatSessionChannel := make(chan int)
-	// 	defer close(insertChatSessionChannel)
-	// 	go services.InsertChatSession(userId, models.ChatSession{Title: "New Chat"}, insertChatSessionChannel)
-	// 	sessionId = <-insertChatSessionChannel
-	// } else {
-	// 	sessionId = sessions[0].Id
-	// }
+
 	chatConversationChannel := make(chan []models.ChatConversation)
 	defer close(chatConversationChannel)
 	go services.GetChatConversations(userId, sessionId, chatConversationChannel)
