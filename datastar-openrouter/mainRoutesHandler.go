@@ -121,7 +121,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		userMessageChat.Id = <-insertUserConversationChannel
 
 		sse.ExecuteScript(`document.getElementById('hint')?.remove();`, datastar.WithExecuteScriptAutoRemove(true))
-		sse.PatchElementTempl(components.ChatMessage(userMessageChat), datastar.WithModeAppend(), datastar.WithSelector("main"), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.ChatMessage(userMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
 		sse.PatchSignals([]byte(`{prompt:"",sessionId:` + strconv.Itoa(clientSignal.SessionId) + `}`))
 
 		insertModelConversationChannel := make(chan int)
@@ -129,8 +129,8 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		modelMessageChat := models.ChatConversation{Role: "assistant", Content: "", SessionId: clientSignal.SessionId}
 		go services.InsertChatConversation(modelMessageChat, insertModelConversationChannel)
 		modelMessageChat.Id = <-insertModelConversationChannel
-		sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("main"), datastar.WithUseViewTransitions(true))
-		sse.ExecuteScript(`document.querySelector("main").scrollTo(0, document.querySelector("main").scrollHeight);`, datastar.WithExecuteScriptAutoRemove(true))
+		sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
+		sse.ExecuteScript(`document.querySelector("section").scrollTo(0, document.querySelector("section").scrollHeight);`, datastar.WithExecuteScriptAutoRemove(true))
 		channel := make(chan models.OpenRouterModelIdAndDeltaString)
 		openRouterRequest, _ := services.GenerateOpenRouterRequest(userId, clientSignal)
 		go services.CallOpenRouterWithStreaming(openRouterRequest, channel)

@@ -46,7 +46,7 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, cur
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-11/12 mx-auto pb-64 h-full overflow-x-hidden overflow-y-auto flex flex-col gap-5  scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 xl:w-10/12 \" style=\"display:none;\" data-show=\"true\" data-signals=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-11/12 mx-auto h-full overflow-x-hidden overflow-y-hidden xl:w-10/12 \" style=\"display:none;\" data-show=\"true\" data-signals=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -67,6 +67,10 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, cur
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"w-full h-full pb-64 flex flex-col gap-5 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 \">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			for _, message := range messages {
 				templ_7745c5c3_Err = ChatMessage(message).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
@@ -74,16 +78,20 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, cur
 				}
 			}
 			if len(messages) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"w-full h-full flex items-center justify-center\" id=\"hint\"><p class=\"text-lg\">Unified chat with the world's smartest models.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"w-full h-full flex items-center justify-center\" id=\"hint\"><p class=\"text-lg\">Unified chat with the world's smartest models.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</section>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = chatInput().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -118,7 +126,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"absolute top-0 left-0 w-full h-full bg-dark/20 dark:bg-white/20 z-20\" data-show=\"$_showMenu\" data-signals=\"{_menuFocusAbortController:new AbortController()}\" data-on:click__viewtransition=\"$_showMenu=false\"><div class=\"flex gap-2 items-start h-full w-11/12 md:w-9/12 lg:w-5/12 xl:w-4/12\" id=\"menuContainer\" data-effect=\"$_showMenu?$_menuFocusAbortController=focusTrap('#menuContainer'):$_menuFocusAbortController.abort()\"><div class=\"flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300 h-full overflow-y-auto bg-white dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50\" data-on:click=\"evt.stopPropagation()\"><button class=\"appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-on:click__viewtransition=\"$_showMenu=false;@post('/new');\" data-indicator=\"_creatingNewSession\" data-attr:disabled=\"$_creatingNewSession\">New Chat</button><ul class=\"flex flex-col mt-5 w-full\" id=\"menu\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"absolute top-0 left-0 w-full h-full bg-dark/20 dark:bg-white/20 z-10\" data-show=\"$_showMenu\" data-signals=\"{_menuFocusAbortController:new AbortController()}\" data-on:click__viewtransition=\"$_showMenu=false\"><div class=\"flex gap-2 items-start h-full w-11/12 md:w-9/12 lg:w-5/12 xl:w-4/12\" id=\"menuContainer\" data-effect=\"$_showMenu?$_menuFocusAbortController=focusTrap('#menuContainer'):$_menuFocusAbortController.abort()\"><div class=\"flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300 h-full overflow-y-auto bg-white dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50\" data-on:click=\"evt.stopPropagation()\"><button class=\"appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-on:click__viewtransition=\"$_showMenu=false;@post('/new');\" data-indicator=\"_creatingNewSession\" data-attr:disabled=\"$_creatingNewSession\">New Chat</button><ul class=\"flex flex-col mt-5 w-full\" id=\"menu\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -128,7 +136,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</ul></div><button class=\"appearance-none outline-none cursor-pointer mt-2 transition duration-300 rounded py-1 px-2 hover:opacity-90 focus:ring-1 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:menu-button\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div></div><button class=\"appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded py-1 px-2 hover:opacity-90 focus:ring-1 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-on:click__viewtransition=\"$_showMenu=true\" style=\"view-transition-name:menu-button\" data-show=\"!$_showMenu\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</ul></div><button class=\"appearance-none outline-none cursor-pointer mt-2 transition duration-300 rounded py-1 px-2 hover:opacity-90 focus:ring-1 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:menu-button\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div></div><button class=\"appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded py-1 px-2 hover:opacity-90 focus:ring-1 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-on:click__viewtransition=\"$_showMenu=true\" style=\"view-transition-name:menu-button\" data-show=\"!$_showMenu\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -157,59 +165,59 @@ func MenuItem(session models.ChatSession) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<li class=\"py-2 px-4 w-full flex transition duration-300 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:bg-gray-200 dark:focus-within:bg-gray-700\" data-class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<li class=\"py-2 px-4 w-full flex transition duration-300 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:bg-gray-200 dark:focus-within:bg-gray-700\" data-class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs("{'underline underline-offset-6':$sessionId==" + strconv.Itoa(session.Id) + "}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 99, Col: 94}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 101, Col: 94}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("menuItem_" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 100, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 102, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 templ.SafeURL
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs("/" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 102, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 104, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"appearance-none outline-none truncate flex-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"appearance-none outline-none truncate flex-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 103, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 105, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</a></li>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</a></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

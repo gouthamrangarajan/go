@@ -8,22 +8,24 @@ import (
 templ Main(messages []models.ChatConversation, sessions []models.ChatSession, currSessionId int) {
 	@layout() {
 		<main
-			class="w-11/12 mx-auto pb-64 h-full overflow-x-hidden overflow-y-auto flex flex-col gap-5  scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 xl:w-10/12 "
+			class="w-11/12 mx-auto h-full overflow-x-hidden overflow-y-hidden xl:w-10/12 "
 			style="display:none;"
 			data-show="true"
 			data-signals={ "{sessionId:" + strconv.Itoa(currSessionId) + ",_showMenu:false}" }
 		>
 			@menu(sessions)
-			for _,message := range messages {
-				@ChatMessage(message)
-			}
-			if len(messages)==0 {
-				<div class="w-full h-full flex items-center justify-center" id="hint">
-					<p class="text-lg">
-						Unified chat with the world's smartest models.
-					</p>
-				</div>
-			}
+			<section class="w-full h-full pb-64 flex flex-col gap-5 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 ">
+				for _,message := range messages {
+					@ChatMessage(message)
+				}
+				if len(messages)==0 {
+					<div class="w-full h-full flex items-center justify-center" id="hint">
+						<p class="text-lg">
+							Unified chat with the world's smartest models.
+						</p>
+					</div>
+				}
+			</section>
 			@chatInput()
 		</main>
 	}
@@ -31,7 +33,7 @@ templ Main(messages []models.ChatConversation, sessions []models.ChatSession, cu
 
 templ menu(sessions []models.ChatSession) {
 	<div
-		class="absolute top-0 left-0 w-full h-full bg-dark/20 dark:bg-white/20 z-20"
+		class="absolute top-0 left-0 w-full h-full bg-dark/20 dark:bg-white/20 z-10"
 		data-show="$_showMenu"
 		data-signals="{_menuFocusAbortController:new AbortController()}"
 		data-on:click__viewtransition="$_showMenu=false"
