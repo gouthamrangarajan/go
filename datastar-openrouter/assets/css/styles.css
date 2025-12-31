@@ -280,6 +280,9 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
+  .h-\[50vh\] {
+    height: 50vh;
+  }
   .h-full {
     height: 100%;
   }
@@ -590,11 +593,6 @@
   .lg\:gap-3 {
     @media (width >= 64rem) {
       gap: calc(var(--spacing) * 3);
-    }
-  }
-  .lg\:overflow-y-hidden {
-    @media (width >= 64rem) {
-      overflow-y: hidden;
     }
   }
   .xl\:w-4\/12 {

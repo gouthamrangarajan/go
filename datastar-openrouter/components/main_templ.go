@@ -46,7 +46,7 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, cur
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-11/12 mx-auto h-full overflow-x-hidden overflow-y-hidden xl:w-10/12 \" style=\"display:none;\" data-show=\"true\" data-signals=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full mx-auto h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50\" style=\"display:none;\" data-show=\"true\" data-signals=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -67,7 +67,7 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, cur
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"w-full h-full pb-64 flex flex-col gap-5 overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 lg:gap-3 \">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"w-11/12 pb-64 mx-auto flex flex-col gap-5 lg:gap-3  xl:w-10/12 \">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -78,7 +78,7 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, cur
 				}
 			}
 			if len(messages) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"w-full h-full flex items-center justify-center\" id=\"hint\"><p class=\"text-lg\">Unified chat with the world's smartest models.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"w-full h-[50vh] flex items-center justify-center\" id=\"hint\"><p class=\"text-lg\">Unified chat with the world's smartest models.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
