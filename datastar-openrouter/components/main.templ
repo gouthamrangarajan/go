@@ -8,12 +8,13 @@ import (
 templ Main(messages []models.ChatConversation, sessions []models.ChatSession, currSessionId int) {
 	@layout() {
 		<main
-			class="w-full mx-auto h-full overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50"
+			class="w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 md:overflow-x-hidden"
 			style="display:none;"
 			data-show="true"
 			data-signals={ "{sessionId:" + strconv.Itoa(currSessionId) + ",_showMenu:false}" }
 		>
 			@menu(sessions)
+			<header class="text-3xl text-center font-semibold py-2 px-4">Nexus AI</header>
 			<section class="w-11/12 pb-64 mx-auto flex flex-col gap-5 lg:gap-3 lg:pt-4 xl:w-10/12">
 				for _,message := range messages {
 					@ChatMessage(message)

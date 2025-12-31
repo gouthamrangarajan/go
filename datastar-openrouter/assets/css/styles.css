@@ -505,11 +505,6 @@
       color: var(--color-slate-600);
     }
   }
-  .focus-within\:bg-gray-200 {
-    &:focus-within {
-      background-color: var(--color-gray-200);
-    }
-  }
   .focus-within\:inset-shadow-gray-600\/70 {
     &:focus-within {
       --tw-inset-shadow-color: color-mix(in srgb, oklch(44.6% 0.03 256.802) 70%, transparent);
@@ -530,6 +525,11 @@
       @media (hover: hover) {
         opacity: 90%;
       }
+    }
+  }
+  .focus\:bg-gray-200 {
+    &:focus {
+      background-color: var(--color-gray-200);
     }
   }
   .focus\:ring-1 {
@@ -583,6 +583,11 @@
   .md\:max-w-full {
     @media (width >= 48rem) {
       max-width: 100%;
+    }
+  }
+  .md\:overflow-x-hidden {
+    @media (width >= 48rem) {
+      overflow-x: hidden;
     }
   }
   .lg\:w-5\/12 {
@@ -668,13 +673,6 @@
       }
     }
   }
-  .dark\:focus-within\:bg-gray-700 {
-    @media (prefers-color-scheme: dark) {
-      &:focus-within {
-        background-color: var(--color-gray-700);
-      }
-    }
-  }
   .dark\:focus-within\:inset-shadow-gray-300 {
     @media (prefers-color-scheme: dark) {
       &:focus-within {
@@ -691,6 +689,13 @@
         @media (hover: hover) {
           background-color: var(--color-gray-700);
         }
+      }
+    }
+  }
+  .dark\:focus\:bg-gray-700 {
+    @media (prefers-color-scheme: dark) {
+      &:focus {
+        background-color: var(--color-gray-700);
       }
     }
   }
