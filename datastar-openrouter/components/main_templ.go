@@ -67,7 +67,7 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, cur
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"w-11/12 pb-64 mx-auto flex flex-col gap-5 lg:gap-3  xl:w-10/12 \">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"w-11/12 pb-64 mx-auto flex flex-col gap-5 lg:gap-3 lg:pt-4 xl:w-10/12\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

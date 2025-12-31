@@ -595,6 +595,11 @@
       gap: calc(var(--spacing) * 3);
     }
   }
+  .lg\:pt-4 {
+    @media (width >= 64rem) {
+      padding-top: calc(var(--spacing) * 4);
+    }
+  }
   .xl\:w-4\/12 {
     @media (width >= 80rem) {
       width: calc(4/12 * 100%);
