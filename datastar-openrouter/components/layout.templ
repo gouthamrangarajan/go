@@ -1,5 +1,7 @@
 package components
 
+import "datastar-openrouter/components/scripts"
+
 templ layout() {
 	<!DOCTYPE html>
 	<html class="w-full h-full">
@@ -19,6 +21,7 @@ templ layout() {
 			{ children... }
 			<script src="/assets/js/datastar.min.js" type="module"></script>
 			<script src="https://cdn.jsdelivr.net/npm/zero-md@3?register" type="module"></script>
+			@scripts.FocusTrap()
 		</body>
 	</html>
 }

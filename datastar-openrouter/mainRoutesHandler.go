@@ -44,8 +44,28 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	defer close(chatConversationChannel)
 	go services.GetChatConversations(userId, sessionId, chatConversationChannel)
 	chatConversations := <-chatConversationChannel
-	component := components.Main(chatConversations, sessionId)
+	component := components.Main(chatConversations, sessions, sessionId)
 	templ.Handler(component).ServeHTTP(responseWriter, request)
+}
+
+func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := services.GetUserIdFromRequest(request)
+	userExistsChannel := make(chan bool)
+	defer close(userExistsChannel)
+	go services.CheckUserExistsInTable(userId, userExistsChannel)
+	if !<-userExistsChannel {
+		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	insertChatSessionChannel := make(chan int)
+	defer close(insertChatSessionChannel)
+	newSession := models.ChatSession{Title: "New Chat"}
+	go services.InsertChatSession(userId, newSession, insertChatSessionChannel)
+	newSession.Id = <-insertChatSessionChannel
+	if newSession.Id != 0 {
+		sse := datastar.NewSSE(responseWriter, request)
+		sse.ExecuteScript(`window.location.href=window.location.origin+'/'+` + strconv.Itoa(newSession.Id))
+	}
 }
 
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -91,6 +111,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			newSession.Id = <-insertChatSessionChannel
 			clientSignal.SessionId = newSession.Id
 			sse.ExecuteScript(`window.history.replaceState({},'','/`+strconv.Itoa(clientSignal.SessionId)+`')`, datastar.WithExecuteScriptAutoRemove(true))
+			sse.PatchElementTempl(components.MenuItem(newSession), datastar.WithModeAppend(), datastar.WithSelector("#menu"))
 		}
 
 		insertUserConversationChannel := make(chan int)
@@ -114,6 +135,15 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		openRouterRequest, _ := services.GenerateOpenRouterRequest(userId, clientSignal)
 		go services.CallOpenRouterWithStreaming(openRouterRequest, channel)
 
+		updateTitleChannel := make(chan int)
+		defer close(updateTitleChannel)
+		updateTitleCalled := false
+
+		if len(openRouterRequest.Messages) == 1 {
+			go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: clientSignal.Prompt}, updateTitleChannel)
+			updateTitleCalled = true
+		}
+
 		for msg := range channel {
 			if msg.DeltaContent == "Error" {
 				fmt.Printf("Error in getting response from OpenRouter\n")
@@ -127,6 +157,15 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				continue
 			default:
 				sse.PatchElementTempl(components.ChatMessage(modelMessageChat))
+			}
+		}
+		if updateTitleCalled {
+			<-updateTitleChannel
+			select {
+			case <-request.Context().Done():
+				break
+			default:
+				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: clientSignal.Prompt}), datastar.WithUseViewTransitions(true))
 			}
 		}
 		updateModelConversationChannel := make(chan int)
