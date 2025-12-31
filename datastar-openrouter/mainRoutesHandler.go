@@ -165,7 +165,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			case <-request.Context().Done():
 				break
 			default:
-				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: clientSignal.Prompt}), datastar.WithUseViewTransitions(true))
+				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: clientSignal.Prompt}))
 			}
 		}
 		updateModelConversationChannel := make(chan int)
