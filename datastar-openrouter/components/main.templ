@@ -97,11 +97,11 @@ templ menu(sessions []models.ChatSession) {
 
 templ MenuItem(session models.ChatSession) {
 	<li
-		class="py-2 px-4 w-full flex transition duration-300 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:bg-gray-200 dark:focus-within:bg-gray-700"
+		class="w-full flex "
 		data-class={ "{'underline underline-offset-6':$sessionId==" + strconv.Itoa(session.Id) + "}" }
 		id={ "menuItem_" + strconv.Itoa(session.Id) }
 	>
-		<a href={ "/" + strconv.Itoa(session.Id) } class="appearance-none outline-none truncate flex-1">
+		<a href={ "/" + strconv.Itoa(session.Id) } class="appearance-none outline-none truncate flex-1 py-2 px-4 transition duration-300 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 focus:bg-gray-200 dark:focus:bg-gray-700">
 			{ session.Title }
 		</a>
 	</li>
