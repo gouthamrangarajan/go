@@ -64,7 +64,7 @@ templ menu(sessions []models.ChatSession) {
 				</ul>
 			</div>
 			<button
-				class="appearance-none outline-none cursor-pointer mt-2 transition duration-300 rounded py-1 px-2 hover:opacity-90 focus:ring-1 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer mt-2 transition duration-300 rounded p-1 hover:opacity-90 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
 				style="view-transition-name:menu-button"
 			>
 				<svg
@@ -80,7 +80,7 @@ templ menu(sessions []models.ChatSession) {
 		</div>
 	</div>
 	<button
-		class="appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded py-1 px-2 hover:opacity-90 focus:ring-1 focus:ring-offset-2 focus:ring-offset-transparent focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+		class="appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded p-1 hover:opacity-90 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
 		data-on:click__viewtransition="$_showMenu=true"
 		style="view-transition-name:menu-button"
 		data-show="!$_showMenu"
