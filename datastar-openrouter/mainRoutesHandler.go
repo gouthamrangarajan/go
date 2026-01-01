@@ -148,7 +148,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		modelMessageChat.Id = <-insertModelConversationChannel
 		sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
 		if modelMessageChat.Id == 0 {
-			services.SendErrorMessageToUI(sse, "Error storing chat conversation")
+			services.SendErrorMessageToUI(sse, "Error storing chat conversation.")
 		}
 
 		sse.ExecuteScript(`document.querySelector("main").scrollTo(0, document.querySelector("main").scrollHeight);`, datastar.WithExecuteScriptAutoRemove(true))
@@ -169,7 +169,6 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			if msg.DeltaContent == "Error" {
 				fmt.Printf("Error in getting response from OpenRouter\n")
 				// handle error
-				services.SendErrorMessageToUI(sse, "Error in getting response from AI. Please try again later or try different model.")
 				continue
 			}
 			modelMessageChat.Content += msg.DeltaContent
@@ -180,6 +179,9 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			default:
 				sse.PatchElementTempl(components.ChatMessage(modelMessageChat))
 			}
+		}
+		if modelMessageChat.Content == "" {
+			services.SendErrorMessageToUI(sse, "Error in getting response from AI. Please try again later or try different model.")
 		}
 		if updateTitleCalled {
 			<-updateTitleChannel
@@ -200,7 +202,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}, updateModelConversationChannel)
 			rowsAffected := <-updateModelConversationChannel
 			if rowsAffected == 0 {
-				services.SendErrorMessageToUI(sse, "Error updating chat conversation")
+				services.SendErrorMessageToUI(sse, "Error storing chat conversation. Please try again later.")
 			}
 		}
 	}
