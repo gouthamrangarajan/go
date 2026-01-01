@@ -69,7 +69,7 @@ templ chatInput(aiModels []models.AIModel) {
 						name="modelId"
 					>
 						for _,model := range aiModels {
-							<option value={ model.ModelId }>{ model.DisplayName }</option>
+							<option class="bg-white dark:bg-dark " value={ model.ModelId }>{ model.DisplayName }</option>
 						}
 					</select>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 mr-1">
