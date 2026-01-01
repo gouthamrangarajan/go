@@ -72,7 +72,7 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	if newSession.Id != 0 {
 		sse.ExecuteScript(`window.location.href=window.location.origin+'/'+` + strconv.Itoa(newSession.Id))
 	} else {
-		services.SendErrorMessageToUI(sse, "Error creating new chat session. Please try again later.")
+		services.SendErrorMessageToUI(sse, "Failed to create new chat session. Please try again later.")
 	}
 }
 
@@ -119,7 +119,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			newSession.Id = <-insertChatSessionChannel
 			clientSignal.SessionId = newSession.Id
 			if clientSignal.SessionId == 0 {
-				services.SendErrorMessageToUI(sse, "Error creating new chat session. Please try again later.")
+				services.SendErrorMessageToUI(sse, "Failed to create new chat session. Please try again later.")
 				return
 			}
 			sse.ExecuteScript(`window.history.replaceState({},'','/`+strconv.Itoa(clientSignal.SessionId)+`')`, datastar.WithExecuteScriptAutoRemove(true))
@@ -133,7 +133,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		userMessageChat.Id = <-insertUserConversationChannel
 
 		if userMessageChat.Id == 0 {
-			services.SendErrorMessageToUI(sse, "Error storing chat conversation. Please try again later.")
+			services.SendErrorMessageToUI(sse, "Failed to save chat conversation. Please try again later.")
 			return
 		}
 
@@ -181,7 +181,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 		}
 		if modelMessageChat.Content == "" {
-			services.SendErrorMessageToUI(sse, "Error in getting response from AI. Please try again later or try different model.")
+			services.SendErrorMessageToUI(sse, "Unable to get response from AI. Please try again, or switch to a different model.")
 		}
 		if updateTitleCalled {
 			<-updateTitleChannel
@@ -202,7 +202,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}, updateModelConversationChannel)
 			rowsAffected := <-updateModelConversationChannel
 			if rowsAffected == 0 {
-				services.SendErrorMessageToUI(sse, "Error storing chat conversation. Please try again later.")
+				services.SendErrorMessageToUI(sse, "Failed to update chat conversation. Please try again later.")
 			}
 		}
 	}
