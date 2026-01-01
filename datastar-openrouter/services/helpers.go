@@ -8,6 +8,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/starfederation/datastar-go/datastar"
 )
 
 type contextKey string
@@ -96,4 +99,9 @@ func GenerateOpenRouterRequest(userId string, request models.ClientSignals) (mod
 
 	//fmt.Printf("Generated OpenRouter Request: %+v\n", openRouterRequest)
 	return openRouterRequest, errToRet
+}
+func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string) {
+	sse.PatchSignals([]byte(`{showErrorMessage:true,errorMessage:'` + message + `'}`))
+	time.Sleep(3000 * time.Millisecond)
+	sse.PatchSignals([]byte("{showErrorMessage:false}"))
 }

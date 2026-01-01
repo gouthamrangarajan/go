@@ -41,7 +41,7 @@ templ ChatMessage(message models.ChatConversation) {
 	</div>
 }
 
-templ chatInput(aiModels []models.AIModel) {
+templ chatInputAndError(aiModels []models.AIModel) {
 	<div class="absolute bottom-0 left-0 w-full">
 		<div class="w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12">
 			<div class="flex flex-col w-full items-start">
@@ -79,7 +79,7 @@ templ chatInput(aiModels []models.AIModel) {
 			</div>
 			<button
 				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
-				data-class="{' animate-border-width-pulse':$_processingViaButton || $_processingViaInput}"
+				data-class="{' animate-border':$_processingViaButton || $_processingViaInput}"
 				data-on:click={ `
                     @post("/chat",{openWhenHidden: true});
                 ` }
@@ -106,5 +106,11 @@ templ chatInput(aiModels []models.AIModel) {
 				</svg>
 			</button>
 		</div>
+		<p
+			class="absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark dark:bg-white py-2 px-4 text-red-300 dark:text-red-600 font-semibold"
+			data-show="$showErrorMessage"
+			data-text="$errorMessage"
+			style="display:none"
+		></p>
 	</div>
 }

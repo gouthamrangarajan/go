@@ -9,11 +9,27 @@
     navigation: auto;
 }
 
-.animate-border-width-pulse {
-    animation: border-width-pulse 3s var(--ease-in-3) infinite;
+.animate-error-message {
+    animation: error-message 2s var(--ease-spring-3);
 }
 
-@keyframes border-width-pulse {
+@keyframes error-message {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-border {
+    animation: border-width 3s var(--ease-in-3) infinite;
+}
+
+@keyframes border-width {
     0% {
         border-top-style: var(--tw-border-style);
         border-top-width: 0;

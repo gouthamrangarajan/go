@@ -68,9 +68,11 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	newSession := models.ChatSession{Title: "New Chat"}
 	go services.InsertChatSession(userId, newSession, insertChatSessionChannel)
 	newSession.Id = <-insertChatSessionChannel
+	sse := datastar.NewSSE(responseWriter, request)
 	if newSession.Id != 0 {
-		sse := datastar.NewSSE(responseWriter, request)
 		sse.ExecuteScript(`window.location.href=window.location.origin+'/'+` + strconv.Itoa(newSession.Id))
+	} else {
+		services.SendErrorMessageToUI(sse, "Error creating new chat session. Please try again later.")
 	}
 }
 
@@ -116,6 +118,10 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			go services.InsertChatSession(userId, newSession, insertChatSessionChannel)
 			newSession.Id = <-insertChatSessionChannel
 			clientSignal.SessionId = newSession.Id
+			if clientSignal.SessionId == 0 {
+				services.SendErrorMessageToUI(sse, "Error creating new chat session. Please try again later.")
+				return
+			}
 			sse.ExecuteScript(`window.history.replaceState({},'','/`+strconv.Itoa(clientSignal.SessionId)+`')`, datastar.WithExecuteScriptAutoRemove(true))
 			sse.PatchElementTempl(components.MenuItem(newSession), datastar.WithModeAppend(), datastar.WithSelector("#menu"))
 		}
@@ -125,6 +131,11 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		userMessageChat := models.ChatConversation{Role: "user", Content: clientSignal.Prompt, SessionId: clientSignal.SessionId}
 		go services.InsertChatConversation(userMessageChat, insertUserConversationChannel)
 		userMessageChat.Id = <-insertUserConversationChannel
+
+		if userMessageChat.Id == 0 {
+			services.SendErrorMessageToUI(sse, "Error storing chat conversation. Please try again later.")
+			return
+		}
 
 		sse.ExecuteScript(`document.getElementById('hint')?.remove();`, datastar.WithExecuteScriptAutoRemove(true))
 		sse.PatchElementTempl(components.ChatMessage(userMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
@@ -136,6 +147,10 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go services.InsertChatConversation(modelMessageChat, insertModelConversationChannel)
 		modelMessageChat.Id = <-insertModelConversationChannel
 		sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
+		if modelMessageChat.Id == 0 {
+			services.SendErrorMessageToUI(sse, "Error storing chat conversation")
+		}
+
 		sse.ExecuteScript(`document.querySelector("main").scrollTo(0, document.querySelector("main").scrollHeight);`, datastar.WithExecuteScriptAutoRemove(true))
 		openRouterChannel := make(chan models.OpenRouterModelIdAndDeltaString)
 		openRouterRequest, _ := services.GenerateOpenRouterRequest(userId, clientSignal)
@@ -154,6 +169,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			if msg.DeltaContent == "Error" {
 				fmt.Printf("Error in getting response from OpenRouter\n")
 				// handle error
+				services.SendErrorMessageToUI(sse, "Error in getting response from AI. Please try again later or try different model.")
 				continue
 			}
 			modelMessageChat.Content += msg.DeltaContent
@@ -174,13 +190,18 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: clientSignal.Prompt}))
 			}
 		}
-		updateModelConversationChannel := make(chan int)
-		defer close(updateModelConversationChannel)
-		go services.UpateMessageChatConversation(models.UpdateChatConversation{
-			Id:      modelMessageChat.Id,
-			Content: modelMessageChat.Content,
-			ModelId: modelMessageChat.ModelId,
-		}, updateModelConversationChannel)
-		<-updateModelConversationChannel
+		if modelMessageChat.Content != "" && modelMessageChat.Id != 0 {
+			updateModelConversationChannel := make(chan int)
+			defer close(updateModelConversationChannel)
+			go services.UpateMessageChatConversation(models.UpdateChatConversation{
+				Id:      modelMessageChat.Id,
+				Content: modelMessageChat.Content,
+				ModelId: modelMessageChat.ModelId,
+			}, updateModelConversationChannel)
+			rowsAffected := <-updateModelConversationChannel
+			if rowsAffected == 0 {
+				services.SendErrorMessageToUI(sse, "Error updating chat conversation")
+			}
+		}
 	}
 }

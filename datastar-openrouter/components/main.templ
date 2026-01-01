@@ -11,7 +11,7 @@ templ Main(messages []models.ChatConversation, sessions []models.ChatSession, ai
 			class="w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 md:overflow-x-hidden"
 			style="display:none;"
 			data-show="true"
-			data-signals={ "{sessionId:" + strconv.Itoa(currSessionId) + ",_showMenu:false}" }
+			data-signals={ "{sessionId:" + strconv.Itoa(currSessionId) + ",_showMenu:false,showErrorMessage:false,errorMessage:'Error.Please try again later'}" }
 		>
 			@menu(sessions)
 			<header class="text-3xl text-center font-semibold py-2 px-4">Nexus AI</header>
@@ -27,7 +27,7 @@ templ Main(messages []models.ChatConversation, sessions []models.ChatSession, ai
 					</div>
 				}
 			</section>
-			@chatInput(aiModels)
+			@chatInputAndError(aiModels)
 		</main>
 	}
 }
@@ -50,7 +50,8 @@ templ menu(sessions []models.ChatSession) {
 			>
 				<button
 					class="appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80"
-					data-on:click__viewtransition="$_showMenu=false;@post('/new');"
+					data-class="{'animate-pulse':$_creatingNewSession}"
+					data-on:click__viewtransition="@post('/new');"
 					data-indicator="_creatingNewSession"
 					data-attr:disabled="$_creatingNewSession"
 				>

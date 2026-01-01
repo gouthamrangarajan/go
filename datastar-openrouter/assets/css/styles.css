@@ -7,6 +7,8 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-300: oklch(80.8% 0.114 19.571);
+    --color-red-600: oklch(57.7% 0.245 27.325);
     --color-slate-300: oklch(86.9% 0.022 252.894);
     --color-slate-600: oklch(44.6% 0.043 257.281);
     --color-gray-200: oklch(92.8% 0.006 264.531);
@@ -194,6 +196,9 @@
   .top-3 {
     top: calc(var(--spacing) * 3);
   }
+  .right-1 {
+    right: calc(var(--spacing) * 1);
+  }
   .right-4 {
     right: calc(var(--spacing) * 4);
   }
@@ -203,6 +208,9 @@
   .bottom-0 {
     bottom: calc(var(--spacing) * 0);
   }
+  .bottom-4 {
+    bottom: calc(var(--spacing) * 4);
+  }
   .left-0 {
     left: calc(var(--spacing) * 0);
   }
@@ -211,6 +219,9 @@
   }
   .z-10 {
     z-index: 10;
+  }
+  .z-20 {
+    z-index: 20;
   }
   .container {
     width: 100%;
@@ -463,8 +474,14 @@
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
   }
+  .wrap-break-word {
+    overflow-wrap: break-word;
+  }
   .text-dark {
     color: var(--color-dark);
+  }
+  .text-red-300 {
+    color: var(--color-red-300);
   }
   .text-white {
     color: var(--color-white);
@@ -480,6 +497,10 @@
   }
   .opacity-70 {
     opacity: 70%;
+  }
+  .shadow-2xl {
+    --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, rgb(0 0 0 / 0.25));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .inset-shadow-sm {
     --tw-inset-shadow: inset 0 2px 4px var(--tw-inset-shadow-color, rgb(0 0 0 / 0.05));
@@ -686,6 +707,11 @@
       color: var(--color-dark);
     }
   }
+  .dark\:text-red-600 {
+    @media (prefers-color-scheme: dark) {
+      color: var(--color-red-600);
+    }
+  }
   .dark\:text-white {
     @media (prefers-color-scheme: dark) {
       color: var(--color-white);
@@ -774,10 +800,23 @@
 @view-transition {
   navigation: auto;
 }
-.animate-border-width-pulse {
-  animation: border-width-pulse 3s var(--ease-in-3) infinite;
+.animate-error-message {
+  animation: error-message 2s var(--ease-spring-3);
 }
-@keyframes border-width-pulse {
+@keyframes error-message {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-border {
+  animation: border-width 3s var(--ease-in-3) infinite;
+}
+@keyframes border-width {
   0% {
     border-top-style: var(--tw-border-style);
     border-top-width: 0;
