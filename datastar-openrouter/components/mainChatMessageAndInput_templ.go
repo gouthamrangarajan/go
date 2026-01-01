@@ -133,7 +133,7 @@ func ChatMessage(message models.ChatConversation) templ.Component {
 	})
 }
 
-func chatInput() templ.Component {
+func chatInput(aiModels []models.AIModel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -154,7 +154,7 @@ func chatInput() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"absolute bottom-0 left-0 w-full\"><div class=\"w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12\"><textarea name=\"prompt\" data-bind=\"prompt\" data-on:keydown=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"absolute bottom-0 left-0 w-full\"><div class=\"w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12\"><div class=\"flex flex-col w-full items-start\"><textarea name=\"prompt\" data-bind=\"prompt\" data-on:keydown=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -167,28 +167,64 @@ func chatInput() templ.Component {
                     }
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainChatMessageAndInput.templ`, Line: 56, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainChatMessageAndInput.templ`, Line: 57, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" data-indicator=\"_processingViaInput\" type=\"text\" placeholder=\"Type your message...\" class=\"w-full flex-1 appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white\"></textarea> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" data-indicator=\"_processingViaInput\" type=\"text\" placeholder=\"Type your message...\" class=\"w-full appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white\"></textarea><div class=\"ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark \"><select class=\"appearance-none outline-none flex-1 cursor-pointer py-1 px-3\" data-bind=\"modelId\" name=\"modelId\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(`
+		for _, model := range aiModels {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<option value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(model.ModelId)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainChatMessageAndInput.templ`, Line: 72, Col: 36}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(model.DisplayName)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainChatMessageAndInput.templ`, Line: 72, Col: 58}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</option>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5 mr-1\"><path fill-rule=\"evenodd\" d=\"M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z\" clip-rule=\"evenodd\"></path></svg></div></div><button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{' animate-border-width-pulse':$_processingViaButton || $_processingViaInput}\" data-on:click=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var10 string
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(`
                     @post("/chat",{openWhenHidden: true});
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainChatMessageAndInput.templ`, Line: 66, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainChatMessageAndInput.templ`, Line: 85, Col: 17}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" data-indicator=\"_processingViaButton\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" data-show=\"!$_processingViaButton && !$_processingViaInput\"><path fill-rule=\"evenodd\" d=\"M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z\" clip-rule=\"evenodd\"></path></svg> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" data-show=\"$_processingViaButton || $_processingViaInput\"><path d=\"M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z\"></path></svg></button></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" data-indicator=\"_processingViaButton\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" data-show=\"!$_processingViaButton && !$_processingViaInput\"><path d=\"M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z\"></path></svg> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" data-show=\"$_processingViaButton || $_processingViaInput\"><path d=\"M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z\"></path></svg></button></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -105,7 +105,37 @@ func GetAllChatSessionsForJob(channel chan<- []models.ChatSession) {
 	}
 	channel <- data
 }
+func GetAiModels(channel chan<- []models.AIModel) {
+	var data []models.AIModel = []models.AIModel{}
+	db, err := createDb()
+	if err != nil {
+		channel <- data
+		return
+	}
+	defer db.Close()
+	rows, err := db.Query("SELECT model_id,model_display_name FROM models WHERE is_active=1 ORDER BY sort_order")
+	if err != nil {
+		fmt.Printf("Failed to execute query in GetAllModels: %v\n", err.Error())
+		channel <- data
+		return
+	}
+	defer rows.Close()
 
+	for rows.Next() {
+		var item models.AIModel
+
+		if err := rows.Scan(&item.ModelId, &item.DisplayName); err != nil {
+			fmt.Printf("Error scanning row in GetAllModels:%v\n", err.Error())
+		} else {
+			data = append(data, item)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Printf("Error during rows iteration in GetAllModels:%v\n", err.Error())
+	}
+	channel <- data
+}
 func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 	var data []models.ChatSession = []models.ChatSession{}
 	db, err := createDb()

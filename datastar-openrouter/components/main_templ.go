@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-func Main(messages []models.ChatConversation, sessions []models.ChatSession, currSessionId int) templ.Component {
+func Main(messages []models.ChatConversation, sessions []models.ChatSession, aiModels []models.AIModel, currSessionId int) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -87,7 +87,7 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, cur
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = chatInput().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = chatInput(aiModels).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -126,7 +126,7 @@ func menu(sessions []models.ChatSession) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"absolute top-0 left-0 w-full h-full bg-dark/20 dark:bg-white/20 z-10\" data-show=\"$_showMenu\" data-signals=\"{_menuFocusAbortController:new AbortController()}\" data-on:click__viewtransition=\"$_showMenu=false\"><div class=\"flex gap-2 items-start h-full w-11/12 md:w-9/12 lg:w-5/12 xl:w-4/12\" id=\"menuContainer\" data-effect=\"$_showMenu?$_menuFocusAbortController=focusTrap('#menuContainer'):$_menuFocusAbortController.abort()\"><div class=\"flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300 h-full overflow-y-auto bg-white dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50\" data-on:click=\"evt.stopPropagation()\"><button class=\"appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-on:click__viewtransition=\"$_showMenu=false;@post('/new');\" data-indicator=\"_creatingNewSession\" data-attr:disabled=\"$_creatingNewSession\">New Chat</button><ul class=\"flex flex-col mt-5 w-full\" id=\"menu\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"absolute top-0 left-0 w-full h-full bg-white/50 dark:bg-dark/50 z-10\" data-show=\"$_showMenu\" data-signals=\"{_menuFocusAbortController:new AbortController()}\" data-on:click__viewtransition=\"$_showMenu=false\"><div class=\"flex gap-2 items-start h-full w-11/12 md:w-9/12 lg:w-5/12 xl:w-4/12\" id=\"menuContainer\" data-effect=\"$_showMenu?$_menuFocusAbortController=focusTrap('#menuContainer'):$_menuFocusAbortController.abort()\"><div class=\"flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300 h-full overflow-y-auto bg-white dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50\" data-on:click=\"evt.stopPropagation()\"><button class=\"appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-on:click__viewtransition=\"$_showMenu=false;@post('/new');\" data-indicator=\"_creatingNewSession\" data-attr:disabled=\"$_creatingNewSession\">New Chat</button><ul class=\"flex flex-col mt-5 w-full\" id=\"menu\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

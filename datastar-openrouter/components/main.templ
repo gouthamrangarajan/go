@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-templ Main(messages []models.ChatConversation, sessions []models.ChatSession, currSessionId int) {
+templ Main(messages []models.ChatConversation, sessions []models.ChatSession, aiModels []models.AIModel, currSessionId int) {
 	@layout() {
 		<main
 			class="w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 md:overflow-x-hidden"
@@ -27,14 +27,14 @@ templ Main(messages []models.ChatConversation, sessions []models.ChatSession, cu
 					</div>
 				}
 			</section>
-			@chatInput()
+			@chatInput(aiModels)
 		</main>
 	}
 }
 
 templ menu(sessions []models.ChatSession) {
 	<div
-		class="absolute top-0 left-0 w-full h-full bg-dark/20 dark:bg-white/20 z-10"
+		class="absolute top-0 left-0 w-full h-full bg-white/50 dark:bg-dark/50 z-10"
 		data-show="$_showMenu"
 		data-signals="{_menuFocusAbortController:new AbortController()}"
 		data-on:click__viewtransition="$_showMenu=false"

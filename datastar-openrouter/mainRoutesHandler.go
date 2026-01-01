@@ -43,8 +43,14 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	chatConversationChannel := make(chan []models.ChatConversation)
 	defer close(chatConversationChannel)
 	go services.GetChatConversations(userId, sessionId, chatConversationChannel)
+
+	aiModelsChannel := make(chan []models.AIModel)
+	defer close(aiModelsChannel)
+	go services.GetAiModels(aiModelsChannel)
+
 	chatConversations := <-chatConversationChannel
-	component := components.Main(chatConversations, sessions, sessionId)
+	aiModels := <-aiModelsChannel
+	component := components.Main(chatConversations, sessions, aiModels, sessionId)
 	templ.Handler(component).ServeHTTP(responseWriter, request)
 }
 
@@ -131,9 +137,9 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		modelMessageChat.Id = <-insertModelConversationChannel
 		sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
 		sse.ExecuteScript(`document.querySelector("main").scrollTo(0, document.querySelector("main").scrollHeight);`, datastar.WithExecuteScriptAutoRemove(true))
-		channel := make(chan models.OpenRouterModelIdAndDeltaString)
+		openRouterChannel := make(chan models.OpenRouterModelIdAndDeltaString)
 		openRouterRequest, _ := services.GenerateOpenRouterRequest(userId, clientSignal)
-		go services.CallOpenRouterWithStreaming(openRouterRequest, channel)
+		go services.CallOpenRouterWithStreaming(openRouterRequest, openRouterChannel)
 
 		updateTitleChannel := make(chan int)
 		defer close(updateTitleChannel)
@@ -144,7 +150,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			updateTitleCalled = true
 		}
 
-		for msg := range channel {
+		for msg := range openRouterChannel {
 			if msg.DeltaContent == "Error" {
 				fmt.Printf("Error in getting response from OpenRouter\n")
 				// handle error

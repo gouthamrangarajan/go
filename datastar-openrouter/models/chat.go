@@ -19,3 +19,8 @@ type UpdateChatConversation struct {
 	Content string
 	ModelId string
 }
+
+type AIModel struct {
+	ModelId     string
+	DisplayName string
+}

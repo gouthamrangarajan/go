@@ -73,10 +73,15 @@ func GenerateOpenRouterRequest(userId string, request models.ClientSignals) (mod
 	defer close(conversationsChannel)
 	go GetChatConversations(userId, request.SessionId, conversationsChannel)
 	conversations := <-conversationsChannel
+	if strings.TrimSpace(request.ModelId) == "" {
+		request.ModelId = os.Getenv("DEFAULT_MODEL_ID")
+	} else {
+		request.ModelId += ":nitro"
+	}
 
 	openRouterRequest := models.OpenRouterRequest{
 		Stream: true,
-		Model:  "openrouter/auto:nitro",
+		Model:  request.ModelId,
 	}
 	openRouterRequest.Messages = make([]models.OpenRouterRequestMessage, 0, len(conversations)+1)
 	for _, conversation := range conversations {

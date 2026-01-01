@@ -41,26 +41,45 @@ templ ChatMessage(message models.ChatConversation) {
 	</div>
 }
 
-templ chatInput() {
+templ chatInput(aiModels []models.AIModel) {
 	<div class="absolute bottom-0 left-0 w-full">
 		<div class="w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12">
-			<textarea
-				name="prompt"
-				data-bind="prompt"
-				data-on:keydown={ `
+			<div class="flex flex-col w-full items-start">
+				<textarea
+					name="prompt"
+					data-bind="prompt"
+					data-on:keydown={ `
                     if (!$_processingViaInput && !$_processingViaButton && evt.key === 'Enter' && 
                         (evt.metaKey || evt.ctrlKey)) {
                         evt.preventDefault();
                         @post("/chat",{openWhenHidden: true});
                     }
                 ` }
-				data-indicator="_processingViaInput"
-				type="text"
-				placeholder="Type your message..."
-				class="w-full flex-1 appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white"
-			></textarea>
+					data-indicator="_processingViaInput"
+					type="text"
+					placeholder="Type your message..."
+					class="w-full appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white"
+				></textarea>
+				<div
+					class="ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark "
+				>
+					<select
+						class="appearance-none outline-none flex-1 cursor-pointer py-1 px-3"
+						data-bind="modelId"
+						name="modelId"
+					>
+						for _,model := range aiModels {
+							<option value={ model.ModelId }>{ model.DisplayName }</option>
+						}
+					</select>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 mr-1">
+						<path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"></path>
+					</svg>
+				</div>
+			</div>
 			<button
-				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				data-class="{' animate-border-width-pulse':$_processingViaButton || $_processingViaInput}"
 				data-on:click={ `
                     @post("/chat",{openWhenHidden: true});
                 ` }
@@ -74,7 +93,7 @@ templ chatInput() {
 					class="size-5"
 					data-show="!$_processingViaButton && !$_processingViaInput"
 				>
-					<path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd"></path>
+					<path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z"></path>
 				</svg>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
