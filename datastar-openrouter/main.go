@@ -26,6 +26,7 @@ func main() {
 
 	router.Get("/", mainPageHandler)
 	router.Get("/{sessionId}", mainPageHandler)
+	router.Post("/session/delete", deleteSessionHandler)
 	router.Post("/chat", promptHandler)
 	router.Post("/new", newChatHandler)
 

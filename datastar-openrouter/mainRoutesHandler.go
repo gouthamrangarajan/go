@@ -75,7 +75,46 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		services.SendErrorMessageToUI(sse, "Failed to create new chat session. Please try again later.")
 	}
 }
-
+func deleteSessionHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := services.GetUserIdFromRequest(request)
+	requestBody, _ := io.ReadAll(request.Body)
+	var clientSignal models.ClientSignals
+	json.Unmarshal(requestBody, &clientSignal)
+	if clientSignal.SessionIdToDelete == 0 {
+		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	sessionsChannel := make(chan []models.ChatSession)
+	defer close(sessionsChannel)
+	go services.GetChatSessions(userId, sessionsChannel)
+	sessions := <-sessionsChannel
+	var selectedSession models.ChatSession
+	for _, session := range sessions {
+		if session.Id == clientSignal.SessionIdToDelete {
+			selectedSession = session
+			break
+		}
+	}
+	if selectedSession.Id == 0 {
+		http.Error(responseWriter, "UnAuthorized", http.StatusUnauthorized)
+		return
+	}
+	deleteSessionChannel := make(chan int)
+	defer close(deleteSessionChannel)
+	go services.DeleteChatSession(userId, clientSignal.SessionIdToDelete, deleteSessionChannel)
+	sse := datastar.NewSSE(responseWriter, request)
+	if <-deleteSessionChannel == 0 {
+		services.SendErrorMessageToUI(sse, "Failed to delete chat session. Please try again later.")
+		return
+	}
+	if clientSignal.SessionIdToDelete == clientSignal.SessionId {
+		sse.PatchElementTempl(components.Section([]models.ChatConversation{}), datastar.WithSelector("section"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
+		sse.PatchSignals([]byte(`{sessionId:0}`))
+		sse.ExecuteScript(`window.history.replaceState({},'','/')`, datastar.WithExecuteScriptAutoRemove(true))
+	}
+	sse.RemoveElement("#menuItem_"+strconv.Itoa(clientSignal.SessionIdToDelete), datastar.WithUseViewTransitions(true))
+	sse.PatchSignals([]byte(`{showDeleteModal:false}`))
+}
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := services.GetUserIdFromRequest(request)
 	requestBody, _ := io.ReadAll(request.Body)
