@@ -255,7 +255,7 @@ func inputsAndError(aiModels []models.AIModel) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = inputsAndSubmitButton(aiModels).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = toolsAndSubmitButton(aiModels).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -267,7 +267,7 @@ func inputsAndError(aiModels []models.AIModel) templ.Component {
 	})
 }
 
-func inputsAndSubmitButton(aiModels []models.AIModel) templ.Component {
+func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -288,7 +288,7 @@ func inputsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"flex justify-between items-center w-full gap-1\"><div class=\"ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark \"><select class=\"appearance-none outline-none flex-1 cursor-pointer py-1 px-3\" data-bind=\"modelId\" name=\"modelId\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"flex flex-col  items-start w-full gap-1 lg:flex-row lg:justify-between lg:items-center\"><div class=\"ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark \"><select class=\"appearance-none outline-none flex-1 cursor-pointer py-1 px-3\" data-bind=\"modelId\" name=\"modelId\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -324,7 +324,7 @@ func inputsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5 mr-1\"><path fill-rule=\"evenodd\" d=\"M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z\" clip-rule=\"evenodd\"></path></svg></div><div class=\"flex flex-col gap-1 items-end lg:items-center lg:flex-row lg:gap-2 \">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5 mr-1\"><path fill-rule=\"evenodd\" d=\"M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z\" clip-rule=\"evenodd\"></path></svg></div><div class=\"flex items-center justify-end gap-2 w-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -332,7 +332,7 @@ func inputsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<input type=\"file\" data-bind=\"fileData\" name=\"file\" class=\"hidden\" data-ref=\"fileInputRef\" accept=\"image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf\" data-effect=\"$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden:true});\"> <button class=\"appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput\" data-on:click=\"$fileInputRef.click()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{' animate-border':$_processingViaButton || $_processingViaInput}\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<input type=\"file\" data-bind=\"fileData\" name=\"file\" class=\"hidden\" data-ref=\"fileInputRef\" accept=\"image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf\" data-effect=\"$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden:true});\"> <button class=\"appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput\" data-on:click=\"$fileInputRef.click()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button><button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{' animate-border':$_processingViaButton || $_processingViaInput}\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -341,7 +341,7 @@ func inputsAndSubmitButton(aiModels []models.AIModel) templ.Component {
                     @post("/chat",{openWhenHidden: true});
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 153, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 161, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -378,17 +378,17 @@ func FileAttachmentDisplay(fileName string) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		if fileName != "" {
 			fileNameToDisplay := fileName
-			if len(fileName) > 9 {
-				fileNameToDisplay = fileName[0:9] + "..." + fileName[len(fileName)-5:]
+			if len(fileName) > 15 {
+				fileNameToDisplay = fileName[0:15] + "..." + fileName[len(fileName)-5:]
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div id=\"fileName\" class=\"text-sm flex items-center gap-1 p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark\"><span class=\"truncate\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div id=\"fileName\" class=\"text-xs flex items-center gap-1 p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark md:text-sm\"><span class=\"truncate\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fileNameToDisplay)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 189, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 197, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {

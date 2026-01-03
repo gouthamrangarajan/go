@@ -360,14 +360,8 @@
   .items-center {
     align-items: center;
   }
-  .items-end {
-    align-items: flex-end;
-  }
   .items-start {
     align-items: flex-start;
-  }
-  .justify-between {
-    justify-content: space-between;
   }
   .justify-center {
     justify-content: center;
@@ -709,6 +703,12 @@
       overflow-x: hidden;
     }
   }
+  .md\:text-sm {
+    @media (width >= 48rem) {
+      font-size: var(--text-sm);
+      line-height: var(--tw-leading, var(--text-sm--line-height));
+    }
+  }
   .lg\:w-5\/12 {
     @media (width >= 64rem) {
       width: calc(5/12 * 100%);
@@ -724,9 +724,9 @@
       align-items: center;
     }
   }
-  .lg\:gap-2 {
+  .lg\:justify-between {
     @media (width >= 64rem) {
-      gap: calc(var(--spacing) * 2);
+      justify-content: space-between;
     }
   }
   .lg\:gap-3 {
