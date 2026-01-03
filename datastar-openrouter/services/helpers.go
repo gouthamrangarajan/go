@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -16,6 +17,9 @@ import (
 type contextKey string
 
 const UserIDKey contextKey = "userId"
+
+var ImgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp|gif));base64,([A-Za-z0-9+/=]+)$`)
+var PdfRegex = regexp.MustCompile(`^data:application/pdf;base64,([A-Za-z0-9+/=]+)$`)
 
 func GenerateSignedStrForCookie(model models.UICookie) string {
 	cookieSecret := os.Getenv("COOKIE_SECRET")
@@ -70,25 +74,56 @@ func InsertChatSessionViaChannel(userId string, data models.ChatSession) int {
 	return sessionId
 }
 
-func GenerateOpenRouterRequest(userId string, request models.ClientSignals) (models.OpenRouterRequest, string) {
+func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals) (models.OpenRouterRequest, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
-	go GetChatConversations(userId, request.SessionId, conversationsChannel)
+	go GetChatConversations(userId, clientSignal.SessionId, conversationsChannel)
 	conversations := <-conversationsChannel
-	if strings.TrimSpace(request.ModelId) == "" {
-		request.ModelId = os.Getenv("DEFAULT_MODEL_ID")
+	if strings.TrimSpace(clientSignal.ModelId) == "" {
+		clientSignal.ModelId = os.Getenv("DEFAULT_MODEL_ID")
 	} else {
-		request.ModelId += ":nitro"
+		clientSignal.ModelId += ":nitro"
 	}
 
 	openRouterRequest := models.OpenRouterRequest{
 		Stream: true,
-		Model:  request.ModelId,
+		Model:  clientSignal.ModelId,
 	}
 	openRouterRequest.Messages = make([]models.OpenRouterRequestMessage, 0, len(conversations)+1)
 	for _, conversation := range conversations {
-		if strings.TrimSpace(conversation.Content) != "" {
+		if strings.TrimSpace(conversation.FileData) != "" {
+			messageToAppend := models.OpenRouterRequestMessage{
+				Role: conversation.Role,
+			}
+			messageToAppend.ContentWithFileData = append(messageToAppend.ContentWithFileData,
+				models.OpenRouterRequestMessageContentWithFileData{
+					Type: "text",
+					Text: conversation.Content,
+				})
+			var contentWithFileData models.OpenRouterRequestMessageContentWithFileData
+			if ImgRegex.MatchString(conversation.FileData) {
+				contentWithFileData = models.OpenRouterRequestMessageContentWithFileData{
+					Type: "image_url",
+					ImageUrl: struct {
+						Url string `json:"url,omitempty"`
+					}{Url: conversation.FileData},
+				}
+			} else if PdfRegex.MatchString(conversation.FileData) {
+				contentWithFileData = models.OpenRouterRequestMessageContentWithFileData{
+					Type: "file",
+					File: struct {
+						Name string `json:"filename,omitempty"`
+						Data string `json:"file_data,omitempty"`
+					}{
+						Name: conversation.FileName,
+						Data: conversation.FileData,
+					},
+				}
+			}
+			messageToAppend.ContentWithFileData = append(messageToAppend.ContentWithFileData, contentWithFileData)
+			openRouterRequest.Messages = append(openRouterRequest.Messages, messageToAppend)
+		} else if strings.TrimSpace(conversation.Content) != "" {
 			openRouterRequest.Messages = append(openRouterRequest.Messages, models.OpenRouterRequestMessage{
 				Role:    conversation.Role,
 				Content: conversation.Content,
@@ -97,7 +132,7 @@ func GenerateOpenRouterRequest(userId string, request models.ClientSignals) (mod
 		}
 	}
 
-	//fmt.Printf("Generated OpenRouter Request: %+v\n", openRouterRequest)
+	// fmt.Printf("Generated OpenRouter Request: %+v\n", openRouterRequest)
 	return openRouterRequest, errToRet
 }
 func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string) {

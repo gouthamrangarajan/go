@@ -12,6 +12,8 @@ type ChatConversation struct {
 	Content   string
 	Role      string
 	ModelId   string
+	FileName  string
+	FileData  string
 }
 
 type UpdateChatConversation struct {

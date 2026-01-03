@@ -19,7 +19,7 @@ templ Main(messages []models.ChatConversation, sessions []models.ChatSession, ai
 			@deleteModal()
 			<header class="text-3xl text-center font-semibold py-2 px-4">Nexus AI</header>
 			@Section(messages)
-			@chatInputAndError(aiModels)
+			@inputsAndError(aiModels)
 		</main>
 	}
 }
@@ -58,7 +58,7 @@ templ menu(sessions []models.ChatSession) {
 				<button
 					class="appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80"
 					data-class="{'animate-pulse':$_creatingNewSession}"
-					data-on:click__viewtransition="@post('/new');"
+					data-on:click__viewtransition="@post('/new',{openWhenHidden:true});"
 					data-indicator="_creatingNewSession"
 					data-attr:disabled="$_creatingNewSession"
 				>

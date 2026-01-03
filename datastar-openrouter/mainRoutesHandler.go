@@ -4,6 +4,7 @@ import (
 	"datastar-openrouter/components"
 	"datastar-openrouter/models"
 	"datastar-openrouter/services"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -115,6 +116,39 @@ func deleteSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	sse.RemoveElement("#menuItem_"+strconv.Itoa(clientSignal.SessionIdToDelete), datastar.WithUseViewTransitions(true))
 	sse.PatchSignals([]byte(`{showDeleteModal:false}`))
 }
+func fileUploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	requestBody, _ := io.ReadAll(request.Body)
+	var clientSignal models.ClientSignals
+	json.Unmarshal(requestBody, &clientSignal)
+	if len(clientSignal.FileData) != 1 {
+		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	fileDataForRegex := "data:" + clientSignal.FileData[0].Mime + ";base64," + clientSignal.FileData[0].Contents
+	fileName := clientSignal.FileData[0].Name
+	imgMatches := services.ImgRegex.FindStringSubmatch(fileDataForRegex)
+	pdfMatches := services.PdfRegex.FindStringSubmatch(fileDataForRegex)
+	sse := datastar.NewSSE(responseWriter, request)
+
+	if (clientSignal.FileData[0].Mime == "application/pdf" && len(pdfMatches) != 2) ||
+		(clientSignal.FileData[0].Mime != "application/pdf" && len(imgMatches) != 4) {
+		sse.PatchSignals([]byte("{fileData:''}"))
+		fileName = ""
+		services.SendErrorMessageToUI(sse, "Invalid file type. Please upload an file with type (JPG, PNG, WEBP, GIF, PDF)")
+	}
+	decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0].Contents)
+	if err != nil || len(decodedBytes) > 1024*1024 {
+		sse.PatchSignals([]byte("{fileData:''}"))
+		services.SendErrorMessageToUI(sse, "File too large. Please upload a file smaller than 1 MB.")
+		fileName = ""
+	}
+	sse.PatchElementTempl(components.FileAttachmentDisplay(fileName), datastar.WithUseViewTransitions(true))
+}
+func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	sse := datastar.NewSSE(responseWriter, request)
+	sse.PatchElementTempl(components.FileAttachmentDisplay(""), datastar.WithUseViewTransitions(true))
+	sse.PatchSignals([]byte("{fileData:''}"))
+}
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := services.GetUserIdFromRequest(request)
 	requestBody, _ := io.ReadAll(request.Body)
@@ -148,6 +182,29 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	if len(clientSignal.FileData) > 1 {
+		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	fileData := ""
+	fileName := ""
+	if len(clientSignal.FileData) == 1 {
+		fileData = "data:" + clientSignal.FileData[0].Mime + ";base64," + clientSignal.FileData[0].Contents
+		fileName = clientSignal.FileData[0].Name
+		imgMatches := services.ImgRegex.FindStringSubmatch(fileData)
+		pdfMatches := services.PdfRegex.FindStringSubmatch(fileData)
+		if (clientSignal.FileData[0].Mime == "application/pdf" && len(pdfMatches) != 2) ||
+			(clientSignal.FileData[0].Mime != "application/pdf" && len(imgMatches) != 4) {
+			http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+			return
+		}
+		decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0].Contents)
+		if err != nil || len(decodedBytes) > 1024*1024 {
+			http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+			return
+		}
+	}
+
 	if clientSignal.Prompt != "" {
 		sse := datastar.NewSSE(responseWriter, request)
 		if clientSignal.SessionId == 0 {
@@ -167,7 +224,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 		insertUserConversationChannel := make(chan int)
 		defer close(insertUserConversationChannel)
-		userMessageChat := models.ChatConversation{Role: "user", Content: clientSignal.Prompt, SessionId: clientSignal.SessionId}
+		userMessageChat := models.ChatConversation{Role: "user", Content: clientSignal.Prompt, SessionId: clientSignal.SessionId, FileName: fileName, FileData: fileData}
 		go services.InsertChatConversation(userMessageChat, insertUserConversationChannel)
 		userMessageChat.Id = <-insertUserConversationChannel
 
@@ -178,7 +235,8 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 		sse.ExecuteScript(`document.getElementById('hint')?.remove();`, datastar.WithExecuteScriptAutoRemove(true))
 		sse.PatchElementTempl(components.ChatMessage(userMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
-		sse.PatchSignals([]byte(`{prompt:"",sessionId:` + strconv.Itoa(clientSignal.SessionId) + `}`))
+		sse.PatchSignals([]byte(`{prompt:"",sessionId:` + strconv.Itoa(clientSignal.SessionId) + `,fileData:''}`))
+		sse.PatchElementTempl(components.FileAttachmentDisplay(""), datastar.WithUseViewTransitions(true))
 
 		insertModelConversationChannel := make(chan int)
 		defer close(insertModelConversationChannel)

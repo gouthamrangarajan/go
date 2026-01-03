@@ -2,6 +2,7 @@ package components
 
 import (
 	"datastar-openrouter/models"
+	"datastar-openrouter/services"
 	"strconv"
 	"strings"
 )
@@ -26,13 +27,27 @@ templ ChatMessage(message models.ChatConversation) {
 				<path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd"></path>
 			</svg>
 		}
-		if message.Content=="" {
-			<span class="animate-pulse opacity-70 text-sm" data-show="$_processingViaButton || $_processingViaInput">thinking...</span>
-		}
-		<zero-md>
-			<script type="text/markdown" data-text={ "$_message_" + strconv.Itoa(message.Id) }>					
+		<div class="flex w-full flex-col">
+			if message.FileData!="" {
+				if services.ImgRegex.MatchString(message.FileData) {
+					<img src={ message.FileData } alt="uploaded image" class="w-full h-full"/>
+				} else if services.PdfRegex.MatchString(message.FileData) {
+					<p class="font-semibold flex gap-1">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+							<path fill-rule="evenodd" d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z" clip-rule="evenodd"></path>
+						</svg>
+						<span>{ message.FileName }</span>
+					</p>
+				}
+			}
+			if message.Role=="assistant" && message.Content=="" {
+				<span class="animate-pulse opacity-70 text-sm" data-show="$_processingViaButton || $_processingViaInput">thinking...</span>
+			}
+			<zero-md>
+				<script type="text/markdown" data-text={ "$_message_" + strconv.Itoa(message.Id) }>					
 			</script>
-		</zero-md>
+			</zero-md>
+		</div>
 		if message.ModelId!="" {
 			<span class="absolute -bottom-6 right-4 text-xs italic p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark">
 				{ message.ModelId }
@@ -41,42 +56,95 @@ templ ChatMessage(message models.ChatConversation) {
 	</div>
 }
 
-templ chatInputAndError(aiModels []models.AIModel) {
+templ inputsAndError(aiModels []models.AIModel) {
 	<div class="absolute bottom-0 left-0 w-full">
-		<div class="w-11/12 flex items-end pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12">
-			<div class="flex flex-col w-full items-start">
-				<textarea
-					name="prompt"
-					data-bind="prompt"
-					data-on:keydown={ `
+		<div class="w-11/12 flex flex-col items-start pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12">
+			<textarea
+				name="prompt"
+				data-bind="prompt"
+				data-on:paste={ `
+							const items = (evt.clipboardData || evt.originalEvent.clipboardData).items;
+							for (const item of items) {
+								if (item.kind === 'file') {
+									evt.preventDefault();
+									const file = item.getAsFile();									
+									const reader = new FileReader();
+									reader.addEventListener('load', function() {
+										if(reader.result.startsWith("data:image/") 
+													|| reader.result.startsWith("data:application/pdf")) {
+											$fileData=[{
+												name: file.name,
+												mime: file.type,
+												contents: reader.result.replace(/^data:.+;base64,/, ''),
+											}];
+										}
+									});
+									reader.readAsDataURL(file);
+									break;
+								}
+							}
+						` }
+				data-on:keydown={ `
                     if (!$_processingViaInput && !$_processingViaButton && evt.key === 'Enter' && 
                         (evt.metaKey || evt.ctrlKey)) {
                         evt.preventDefault();
                         @post("/chat",{openWhenHidden: true});
                     }
                 ` }
-					data-indicator="_processingViaInput"
-					type="text"
-					placeholder="Type your message..."
-					class="w-full appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white"
-				></textarea>
-				<div
-					class="ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark "
-				>
-					<select
-						class="appearance-none outline-none flex-1 cursor-pointer py-1 px-3"
-						data-bind="modelId"
-						name="modelId"
-					>
-						for _,model := range aiModels {
-							<option class="bg-white dark:bg-dark " value={ model.ModelId }>{ model.DisplayName }</option>
-						}
-					</select>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 mr-1">
-						<path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"></path>
-					</svg>
-				</div>
-			</div>
+				data-indicator="_processingViaInput"
+				type="text"
+				placeholder="Type your message..."
+				class="w-full appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white"
+			></textarea>
+			@inputsAndSubmitButton(aiModels)
+		</div>
+		<p
+			class="absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark dark:bg-white py-2 px-4 text-red-300 dark:text-red-600 font-semibold"
+			data-show="$showErrorMessage"
+			data-text="$errorMessage"
+			style="display:none"
+		></p>
+	</div>
+}
+
+templ inputsAndSubmitButton(aiModels []models.AIModel) {
+	<div class="flex justify-between items-center w-full">
+		<div
+			class="ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark "
+		>
+			<select
+				class="appearance-none outline-none flex-1 cursor-pointer py-1 px-3"
+				data-bind="modelId"
+				name="modelId"
+			>
+				for _,model := range aiModels {
+					<option class="bg-white dark:bg-dark " value={ model.ModelId }>{ model.DisplayName }</option>
+				}
+			</select>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 mr-1">
+				<path fill-rule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clip-rule="evenodd"></path>
+			</svg>
+		</div>
+		<div class="flex gap-2 items-center">
+			@FileAttachmentDisplay("")
+			<input
+				type="file"
+				data-bind="fileData"
+				name="file"
+				class="hidden"
+				data-ref="fileInputRef"
+				accept="image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf"
+				data-effect="$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden:true});"
+			/>
+			<button
+				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput"
+				data-on:click="$fileInputRef.click()"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+					<path fill-rule="evenodd" d="M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z" clip-rule="evenodd"></path>
+				</svg>
+			</button>
 			<button
 				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
 				data-class="{' animate-border':$_processingViaButton || $_processingViaInput}"
@@ -106,11 +174,23 @@ templ chatInputAndError(aiModels []models.AIModel) {
 				</svg>
 			</button>
 		</div>
-		<p
-			class="absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark dark:bg-white py-2 px-4 text-red-300 dark:text-red-600 font-semibold"
-			data-show="$showErrorMessage"
-			data-text="$errorMessage"
-			style="display:none"
-		></p>
 	</div>
+}
+
+templ FileAttachmentDisplay(fileName string) {
+	if fileName!="" {
+		<div id="fileName" class="text-sm flex items-center gap-1 p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark">
+			<span class="truncate">{ fileName }</span>
+			<button
+				class="appearance-none outline-none cursor-pointer text-red-300 dark:text-red-600 transition duration-300 p-1 rounded-full focus:ring-1 focus:ring-red-300 dark:focus-ring-600"
+				data-on:click="@post('/fileupload/remove',{openWhenHidden:true})"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+					<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"></path>
+				</svg>
+			</button>
+		</div>
+	} else {
+		<span id="fileName"></span>
+	}
 }
