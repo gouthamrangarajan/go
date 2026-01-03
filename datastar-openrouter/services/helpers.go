@@ -82,13 +82,20 @@ func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals)
 	conversations := <-conversationsChannel
 	if strings.TrimSpace(clientSignal.ModelId) == "" {
 		clientSignal.ModelId = os.Getenv("DEFAULT_MODEL_ID")
-	} else {
-		clientSignal.ModelId += ":nitro"
 	}
+
+	clientSignal.ModelId += ":nitro"
 
 	openRouterRequest := models.OpenRouterRequest{
 		Stream: true,
 		Model:  clientSignal.ModelId,
+	}
+	if clientSignal.WebSearch {
+		openRouterRequest.Plugins = []map[string]string{
+			{
+				"id": "web",
+			},
+		}
 	}
 	openRouterRequest.Messages = make([]models.OpenRouterRequestMessage, 0, len(conversations)+1)
 	for _, conversation := range conversations {

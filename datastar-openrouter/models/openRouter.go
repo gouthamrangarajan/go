@@ -22,6 +22,7 @@ type OpenRouterRequest struct {
 	Model    string                     `json:"model"`
 	Messages []OpenRouterRequestMessage `json:"messages"`
 	Stream   bool                       `json:"stream"`
+	Plugins  []map[string]string        `json:"plugins,omitempty"`
 }
 type OpenRouterRequestMessageContentWithFileData struct {
 	Type     string `json:"type"`

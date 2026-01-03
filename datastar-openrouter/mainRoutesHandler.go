@@ -51,7 +51,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 
 	chatConversations := <-chatConversationChannel
 	aiModels := <-aiModelsChannel
-	component := components.Main(chatConversations, sessions, aiModels, sessionId)
+	component := components.Main(chatConversations, sessions, aiModels, selectedSession.AllowWebSearch, sessionId)
 	templ.Handler(component).ServeHTTP(responseWriter, request)
 }
 
@@ -110,7 +110,7 @@ func deleteSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	}
 	if clientSignal.SessionIdToDelete == clientSignal.SessionId {
 		sse.PatchElementTempl(components.Section([]models.ChatConversation{}), datastar.WithSelector("section"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
-		sse.PatchSignals([]byte(`{sessionId:0}`))
+		sse.PatchSignals([]byte(`{sessionId:0,webSearch:false}`))
 		sse.ExecuteScript(`window.history.replaceState({},'','/')`, datastar.WithExecuteScriptAutoRemove(true))
 	}
 	sse.RemoveElement("#menuItem_"+strconv.Itoa(clientSignal.SessionIdToDelete), datastar.WithUseViewTransitions(true))
@@ -149,6 +149,20 @@ func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http
 	sse.PatchElementTempl(components.FileAttachmentDisplay(""), datastar.WithUseViewTransitions(true))
 	sse.PatchSignals([]byte("{fileData:''}"))
 }
+
+// ALGO
+// Handle unauthorized user - user does not exist in table or session id coming from client is not valid
+// Handle bad request - more than 1 file uploaded, invalid file(non pdf and non image), file size > 1 MB
+// Handle new session creation if session id from client is 0, failure return to UI with error message
+// Insert user message chat conversation, failure return to UI with error message
+// Insert model message chat conversation with empty content
+// Call OpenRouter with streaming in a goroutine
+// Update chat session title if it's the first message in the session
+// Update chat session allow web search if applicable
+// Stream response from OpenRouter to UI
+// Wait for title update if called, wait for allow web search update if called
+// Update model message chat conversation with full content after streaming is done if message is not empty
+// If message is empty, return error message to UI and delete the model message chat conversation
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := services.GetUserIdFromRequest(request)
 	requestBody, _ := io.ReadAll(request.Body)
@@ -262,6 +276,15 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			updateTitleCalled = true
 		}
 
+		updateWebSearchChannel := make(chan int)
+		defer close(updateWebSearchChannel)
+		updateWebSearchCalled := false
+
+		if selectedSession.AllowWebSearch != clientSignal.WebSearch {
+			go services.UpdateChatSessionAllowWebSearch(userId, clientSignal.SessionId, clientSignal.WebSearch, updateWebSearchChannel)
+			updateWebSearchCalled = true
+		}
+
 		for msg := range openRouterChannel {
 			if msg.DeltaContent == "Error" {
 				fmt.Printf("Error in getting response from OpenRouter\n")
@@ -277,17 +300,17 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				sse.PatchElementTempl(components.ChatMessage(modelMessageChat))
 			}
 		}
-		if modelMessageChat.Content == "" {
-			services.SendErrorMessageToUI(sse, "Unable to get response from AI. Please try again, or switch to a different model.")
-		}
-		if updateTitleCalled {
-			<-updateTitleChannel
+
+		if updateTitleCalled && <-updateTitleChannel != 0 {
 			select {
 			case <-request.Context().Done():
 				break
 			default:
 				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: clientSignal.Prompt}))
 			}
+		}
+		if updateWebSearchCalled {
+			<-updateWebSearchChannel
 		}
 		if modelMessageChat.Content != "" && modelMessageChat.Id != 0 {
 			updateModelConversationChannel := make(chan int)
@@ -301,6 +324,14 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			if rowsAffected == 0 {
 				services.SendErrorMessageToUI(sse, "Failed to update chat conversation. Please try again later.")
 			}
+		} else if modelMessageChat.Content == "" {
+			deleteModelConversationChannel := make(chan int)
+			defer close(deleteModelConversationChannel)
+			go services.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
+			if <-deleteModelConversationChannel != 0 {
+				sse.RemoveElement("#message-"+strconv.Itoa(modelMessageChat.Id), datastar.WithUseViewTransitions(true))
+			}
+			services.SendErrorMessageToUI(sse, "Unable to get response from AI. Please try again, or switch to a different model.")
 		}
 	}
 }

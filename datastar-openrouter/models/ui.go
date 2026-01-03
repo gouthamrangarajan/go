@@ -10,6 +10,7 @@ type ClientSignals struct {
 		Contents string `json:"contents"`
 		Mime     string `json:"mime"`
 	} `json:"fileData"`
+	WebSearch bool `json:"webSearch"`
 }
 type FileDataDisplay struct {
 	FileName string

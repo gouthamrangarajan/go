@@ -18,6 +18,7 @@ func CallOpenRouterWithStreaming(aiRequest models.OpenRouterRequest, channel cha
 	defer close(channel)
 	defaultVal := models.OpenRouterModelIdAndDeltaString{DeltaContent: "Error"}
 	aiRequestBytes, err := json.Marshal(aiRequest)
+	// fmt.Printf("OpenRouter Request:%v\n", string(aiRequestBytes))
 	if err != nil {
 		fmt.Printf("Error marshaling request: %v\n", err.Error())
 		channel <- defaultVal
@@ -55,7 +56,7 @@ func CallOpenRouterWithStreaming(aiRequest models.OpenRouterRequest, channel cha
 		if strings.TrimSpace(scanner.Text()) == ": OPENROUTER PROCESSING" {
 			continue
 		}
-		// fmt.Println("Received line:", scanner.Text())
+		// fmt.Printf("Received line:%v\n", scanner.Text())
 		line += scanner.Text()
 		line = strings.TrimSuffix(line, "\n")
 		line = strings.TrimSpace(line)

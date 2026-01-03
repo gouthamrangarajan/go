@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-templ Main(messages []models.ChatConversation, sessions []models.ChatSession, aiModels []models.AIModel, currSessionId int) {
+templ Main(messages []models.ChatConversation, sessions []models.ChatSession, aiModels []models.AIModel, allowWebSearch bool, currSessionId int) {
 	@layout() {
 		<main
 			class="w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 md:overflow-x-hidden"
@@ -13,7 +13,8 @@ templ Main(messages []models.ChatConversation, sessions []models.ChatSession, ai
 			data-show="true"
 			data-signals={ `{sessionId:` + strconv.Itoa(currSessionId) + `,_showMenu:false,
                             showErrorMessage:false,errorMessage:'Error.Please try again later',
-                            showDeleteModal:false,sessionIdToDelete:0,webSearch:false}` }
+                            showDeleteModal:false,sessionIdToDelete:0,
+                            webSearch:`+strconv.FormatBool(allowWebSearch)+`}` }
 		>
 			@menu(sessions)
 			@deleteModal()
