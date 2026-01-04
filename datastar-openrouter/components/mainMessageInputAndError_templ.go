@@ -128,7 +128,7 @@ func ChatMessage(message models.ChatConversation) templ.Component {
 			}
 		}
 		if message.Role == "assistant" && message.Content == "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"animate-pulse opacity-70 text-sm\" data-show=\"$_processingViaButton || $_processingViaInput\">thinking...</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"animate-pulse opacity-70 text-sm\" data-show=\"$_processingViaButton || $_processingViaInput || $_retrying\">thinking...</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -164,12 +164,31 @@ func ChatMessage(message models.ChatConversation) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div>")
+		if message.Role == "user" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<button aria-label=\"retry\" class=\"appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-on:click=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(`$messageIdToRetry=` + strconv.Itoa(message.Id) + `; @post("/retry",{openWhenHidden: true});`)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 60, Col: 113}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" data-indicator=\"_retrying\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput || $_retrying\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"size-5\"><path d=\"M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8\"></path><path d=\"M21 3v5h-5\"></path></svg></button>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -193,17 +212,17 @@ func inputsAndError(aiModels []models.AIModel) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"absolute bottom-0 left-0 w-full\"><div class=\"w-11/12 flex flex-col items-start pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12\"><textarea name=\"prompt\" data-bind=\"prompt\" data-on:paste=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"absolute bottom-0 left-0 w-full\"><div class=\"w-11/12 flex flex-col items-start pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12\"><textarea name=\"prompt\" data-bind=\"prompt\" data-on:paste=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(`
+		var templ_7745c5c3_Var10 string
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(`
 							const items = (evt.clipboardData || evt.originalEvent.clipboardData).items;
 							for (const item of items) {
 								if (item.kind === 'file') {
@@ -226,32 +245,33 @@ func inputsAndError(aiModels []models.AIModel) templ.Component {
 							}
 						`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 107, Col: 7}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 110, Col: 7}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" data-on:keydown=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" data-on:keydown=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(`
-                    if (!$_processingViaInput && !$_processingViaButton && evt.key === 'Enter' && 
+		var templ_7745c5c3_Var11 string
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(`
+                    if (!$_processingViaInput && !$_processingViaButton && 
+						!$_retrying && evt.key === 'Enter' && 
                         (evt.metaKey || evt.ctrlKey)) {
                         evt.preventDefault();
                         @post("/chat",{openWhenHidden: true});
                     }
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 114, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 118, Col: 17}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" data-indicator=\"_processingViaInput\" type=\"text\" placeholder=\"Type your message...\" class=\"w-full appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white\"></textarea>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" data-indicator=\"_processingViaInput\" type=\"text\" placeholder=\"Type your message...\" class=\"w-full appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white\"></textarea>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -259,7 +279,7 @@ func inputsAndError(aiModels []models.AIModel) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div><p class=\"absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark dark:bg-white py-2 px-4 text-red-300 dark:text-red-600 font-semibold\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><p class=\"absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark dark:bg-white py-2 px-4 text-red-300 dark:text-red-600 font-semibold\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -283,48 +303,48 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var11 == nil {
-			templ_7745c5c3_Var11 = templ.NopComponent
+		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var12 == nil {
+			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"flex flex-col  items-start w-full gap-1 lg:flex-row lg:justify-between lg:items-center\"><div class=\"ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark \"><select class=\"appearance-none outline-none flex-1 cursor-pointer py-1 px-3\" data-bind=\"modelId\" name=\"modelId\" aria-label=\"Select AI Model\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"flex flex-col  items-start w-full gap-1 lg:flex-row lg:justify-between lg:items-center\"><div class=\"ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark \"><select class=\"appearance-none outline-none flex-1 cursor-pointer py-1 px-3\" data-bind=\"modelId\" name=\"modelId\" aria-label=\"Select AI Model\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, model := range aiModels {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<option class=\"bg-white dark:bg-dark \" value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(model.ModelId)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 143, Col: 65}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<option class=\"bg-white dark:bg-dark \" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 string
-			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(model.DisplayName)
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(model.ModelId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 143, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 147, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</option>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var14 string
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(model.DisplayName)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 147, Col: 87}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</option>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5 mr-1\"><path fill-rule=\"evenodd\" d=\"M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z\" clip-rule=\"evenodd\"></path></svg></div><div class=\"flex items-center justify-end gap-2 w-full\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5 mr-1\"><path fill-rule=\"evenodd\" d=\"M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z\" clip-rule=\"evenodd\"></path></svg></div><div class=\"flex items-center justify-end gap-2 w-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -332,22 +352,22 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<input type=\"file\" data-bind=\"fileData\" name=\"file\" class=\"hidden\" data-ref=\"fileInputRef\" accept=\"image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf\" data-effect=\"$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden:true});\"> <button class=\"appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput\" aria-label=\"Attach Image or PDF\" data-on:click=\"$fileInputRef.click()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button> <button class=\"appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{'text-blue-600 dark:text-blue-300':$webSearch}\" data-on:click__viewtransition=\"$webSearch=!$webSearch\" data-attr:aria-label=\"$webSearch?'Switch off Web Search:':'Switch on Web Search'\"><svg style=\"view-transition-name:'web-search-icon'\" data-show=\"!$webSearch\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418\"></path></svg> <svg style=\"view-transition-name:'web-search-icon'\" data-show=\"$webSearch\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path d=\"M21.721 12.752a9.711 9.711 0 0 0-.945-5.003 12.754 12.754 0 0 1-4.339 2.708 18.991 18.991 0 0 1-.214 4.772 17.165 17.165 0 0 0 5.498-2.477ZM14.634 15.55a17.324 17.324 0 0 0 .332-4.647c-.952.227-1.945.347-2.966.347-1.021 0-2.014-.12-2.966-.347a17.515 17.515 0 0 0 .332 4.647 17.385 17.385 0 0 0 5.268 0ZM9.772 17.119a18.963 18.963 0 0 0 4.456 0A17.182 17.182 0 0 1 12 21.724a17.18 17.18 0 0 1-2.228-4.605ZM7.777 15.23a18.87 18.87 0 0 1-.214-4.774 12.753 12.753 0 0 1-4.34-2.708 9.711 9.711 0 0 0-.944 5.004 17.165 17.165 0 0 0 5.498 2.477ZM21.356 14.752a9.765 9.765 0 0 1-7.478 6.817 18.64 18.64 0 0 0 1.988-4.718 18.627 18.627 0 0 0 5.49-2.098ZM2.644 14.752c1.682.971 3.53 1.688 5.49 2.099a18.64 18.64 0 0 0 1.988 4.718 9.765 9.765 0 0 1-7.478-6.816ZM13.878 2.43a9.755 9.755 0 0 1 6.116 3.986 11.267 11.267 0 0 1-3.746 2.504 18.63 18.63 0 0 0-2.37-6.49ZM12 2.276a17.152 17.152 0 0 1 2.805 7.121c-.897.23-1.837.353-2.805.353-.968 0-1.908-.122-2.805-.353A17.151 17.151 0 0 1 12 2.276ZM10.122 2.43a18.629 18.629 0 0 0-2.37 6.49 11.266 11.266 0 0 1-3.746-2.504 9.754 9.754 0 0 1 6.116-3.985Z\"></path></svg></button> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{' animate-border':$_processingViaButton || $_processingViaInput}\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<input type=\"file\" data-bind=\"fileData\" name=\"file\" class=\"hidden\" data-ref=\"fileInputRef\" accept=\"image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf\" data-effect=\"$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden:true});\"> <button class=\"appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput\" aria-label=\"Attach Image or PDF\" data-on:click=\"$fileInputRef.click()\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z\" clip-rule=\"evenodd\"></path></svg></button> <button class=\"appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{'text-blue-600 dark:text-blue-300':$webSearch}\" data-on:click__viewtransition=\"$webSearch=!$webSearch\" data-attr:aria-label=\"$webSearch?'Switch off Web Search:':'Switch on Web Search'\"><svg style=\"view-transition-name:'web-search-icon'\" data-show=\"!$webSearch\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418\"></path></svg> <svg style=\"view-transition-name:'web-search-icon'\" data-show=\"$webSearch\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path d=\"M21.721 12.752a9.711 9.711 0 0 0-.945-5.003 12.754 12.754 0 0 1-4.339 2.708 18.991 18.991 0 0 1-.214 4.772 17.165 17.165 0 0 0 5.498-2.477ZM14.634 15.55a17.324 17.324 0 0 0 .332-4.647c-.952.227-1.945.347-2.966.347-1.021 0-2.014-.12-2.966-.347a17.515 17.515 0 0 0 .332 4.647 17.385 17.385 0 0 0 5.268 0ZM9.772 17.119a18.963 18.963 0 0 0 4.456 0A17.182 17.182 0 0 1 12 21.724a17.18 17.18 0 0 1-2.228-4.605ZM7.777 15.23a18.87 18.87 0 0 1-.214-4.774 12.753 12.753 0 0 1-4.34-2.708 9.711 9.711 0 0 0-.944 5.004 17.165 17.165 0 0 0 5.498 2.477ZM21.356 14.752a9.765 9.765 0 0 1-7.478 6.817 18.64 18.64 0 0 0 1.988-4.718 18.627 18.627 0 0 0 5.49-2.098ZM2.644 14.752c1.682.971 3.53 1.688 5.49 2.099a18.64 18.64 0 0 0 1.988 4.718 9.765 9.765 0 0 1-7.478-6.816ZM13.878 2.43a9.755 9.755 0 0 1 6.116 3.986 11.267 11.267 0 0 1-3.746 2.504 18.63 18.63 0 0 0-2.37-6.49ZM12 2.276a17.152 17.152 0 0 1 2.805 7.121c-.897.23-1.837.353-2.805.353-.968 0-1.908-.122-2.805-.353A17.151 17.151 0 0 1 12 2.276ZM10.122 2.43a18.629 18.629 0 0 0-2.37 6.49 11.266 11.266 0 0 1-3.746-2.504 9.754 9.754 0 0 1 6.116-3.985Z\"></path></svg></button> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{' animate-border':$_processingViaButton || $_processingViaInput || $_retrying}\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var14 string
-		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(`
+		var templ_7745c5c3_Var15 string
+		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(`
                     @post("/chat",{openWhenHidden: true});
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 205, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 209, Col: 17}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" data-indicator=\"_processingViaButton\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput\" aria-label=\"Send Message\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" data-show=\"!$_processingViaButton && !$_processingViaInput\"><path d=\"M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z\"></path></svg> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" data-show=\"$_processingViaButton || $_processingViaInput\"><path d=\"M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z\"></path></svg></button></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" data-indicator=\"_processingViaButton\" data-attr:disabled=\"$_processingViaButton || $_processingViaInput || $_retrying\" aria-label=\"Send Message\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" data-show=\"!$_processingViaButton && !$_processingViaInput && !$_retrying\"><path d=\"M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z\"></path></svg> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\" data-show=\"$_processingViaButton || $_processingViaInput || $_retrying\"><path d=\"M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z\"></path></svg></button></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -371,9 +391,9 @@ func FileAttachmentDisplay(fileName string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var15 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var15 == nil {
-			templ_7745c5c3_Var15 = templ.NopComponent
+		templ_7745c5c3_Var16 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var16 == nil {
+			templ_7745c5c3_Var16 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if fileName != "" {
@@ -381,25 +401,25 @@ func FileAttachmentDisplay(fileName string) templ.Component {
 			if len(fileName) > 15 {
 				fileNameToDisplay = fileName[0:15] + "..." + fileName[len(fileName)-5:]
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div id=\"fileName\" class=\"text-xs flex items-center gap-1 p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark md:text-sm\"><span class=\"truncate\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div id=\"fileName\" class=\"text-xs flex items-center gap-1 p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark md:text-sm\"><span class=\"truncate\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var16 string
-			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fileNameToDisplay)
+			var templ_7745c5c3_Var17 string
+			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fileNameToDisplay)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 242, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessageInputAndError.templ`, Line: 246, Col: 45}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</span> <button class=\"appearance-none outline-none cursor-pointer text-red-300 dark:text-red-600 transition duration-300 p-1 rounded-full focus:ring-1 focus:ring-red-300 dark:focus-ring-600\" data-on:click=\"@post('/fileupload/remove',{openWhenHidden:true})\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path d=\"M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z\"></path></svg></button></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</span> <button class=\"appearance-none outline-none cursor-pointer text-red-300 dark:text-red-600 transition duration-300 p-1 rounded-full focus:ring-1 focus:ring-red-300 dark:focus-ring-600\" data-on:click=\"@post('/fileupload/remove',{openWhenHidden:true})\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path d=\"M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z\"></path></svg></button></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span id=\"fileName\"></span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<span id=\"fileName\"></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

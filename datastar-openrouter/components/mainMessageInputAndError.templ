@@ -41,7 +41,7 @@ templ ChatMessage(message models.ChatConversation) {
 				}
 			}
 			if message.Role=="assistant" && message.Content=="" {
-				<span class="animate-pulse opacity-70 text-sm" data-show="$_processingViaButton || $_processingViaInput">thinking...</span>
+				<span class="animate-pulse opacity-70 text-sm" data-show="$_processingViaButton || $_processingViaInput || $_retrying">thinking...</span>
 			}
 			<zero-md>
 				<script type="text/markdown" data-text={ "$_message_" + strconv.Itoa(message.Id) }>					
@@ -53,27 +53,30 @@ templ ChatMessage(message models.ChatConversation) {
 				{ message.ModelId }
 			</span>
 		}
-		// if message.Role == "user" {
-		// 	<button
-		// 		aria-label="retry"
-		// 		class="appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 focus:ring-1 focus:ring-dark dark:focus:ring-white"
-		// 	>
-		// 		<svg
-		// 			xmlns="http://www.w3.org/2000/svg"
-		// 			width="24"
-		// 			height="24"
-		// 			viewBox="0 0 24 24"
-		// 			fill="none"
-		// 			stroke="currentColor"
-		// 			stroke-width="2"
-		// 			stroke-linecap="round"
-		// 			stroke-linejoin="round"
-		// 			class="size-5"
-		// 		>
-		// 			<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path>
-		// 		</svg>
-		// 	</button>
-		// }
+		if message.Role == "user" {
+			<button
+				aria-label="retry"
+				class="appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				data-on:click={ `$messageIdToRetry=` + strconv.Itoa(message.Id) + `; @post("/retry",{openWhenHidden: true});` }
+				data-indicator="_retrying"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="size-5"
+				>
+					<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path>
+				</svg>
+			</button>
+		}
 	</div>
 }
 
@@ -106,7 +109,8 @@ templ inputsAndError(aiModels []models.AIModel) {
 							}
 						` }
 				data-on:keydown={ `
-                    if (!$_processingViaInput && !$_processingViaButton && evt.key === 'Enter' && 
+                    if (!$_processingViaInput && !$_processingViaButton && 
+						!$_retrying && evt.key === 'Enter' && 
                         (evt.metaKey || evt.ctrlKey)) {
                         evt.preventDefault();
                         @post("/chat",{openWhenHidden: true});
@@ -199,12 +203,12 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 			</button>
 			<button
 				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
-				data-class="{' animate-border':$_processingViaButton || $_processingViaInput}"
+				data-class="{' animate-border':$_processingViaButton || $_processingViaInput || $_retrying}"
 				data-on:click={ `
                     @post("/chat",{openWhenHidden: true});
                 ` }
 				data-indicator="_processingViaButton"
-				data-attr:disabled="$_processingViaButton || $_processingViaInput"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
 				aria-label="Send Message"
 			>
 				<svg
@@ -212,7 +216,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 					viewBox="0 0 20 20"
 					fill="currentColor"
 					class="size-5"
-					data-show="!$_processingViaButton && !$_processingViaInput"
+					data-show="!$_processingViaButton && !$_processingViaInput && !$_retrying"
 				>
 					<path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z"></path>
 				</svg>
@@ -221,7 +225,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 					viewBox="0 0 20 20"
 					fill="currentColor"
 					class="size-5"
-					data-show="$_processingViaButton || $_processingViaInput"
+					data-show="$_processingViaButton || $_processingViaInput || $_retrying"
 				>
 					<path d="M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z"></path>
 				</svg>

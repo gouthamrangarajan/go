@@ -31,6 +31,7 @@ func main() {
 	router.Post("/session/delete", deleteSessionHandler)
 	router.Post("/fileupload", fileUploadHandler)
 	router.Post("/fileupload/remove", removeUploadedFileHandler)
+	router.Post("/retry", retryHandler)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)

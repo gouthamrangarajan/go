@@ -252,85 +252,154 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		sse.PatchSignals([]byte(`{prompt:"",sessionId:` + strconv.Itoa(clientSignal.SessionId) + `,fileData:''}`))
 		sse.PatchElementTempl(components.FileAttachmentDisplay(""), datastar.WithUseViewTransitions(true))
 
-		insertModelConversationChannel := make(chan int)
-		defer close(insertModelConversationChannel)
-		modelMessageChat := models.ChatConversation{Role: "assistant", Content: "", SessionId: clientSignal.SessionId}
-		go services.InsertChatConversation(modelMessageChat, insertModelConversationChannel)
-		modelMessageChat.Id = <-insertModelConversationChannel
-		sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
-		if modelMessageChat.Id == 0 {
-			services.SendErrorMessageToUI(sse, "Error storing chat conversation.")
+		createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDataToUI(sse, clientSignal, userId, selectedSession, request)
+
+	}
+}
+
+func retryHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := services.GetUserIdFromRequest(request)
+	requestBody, _ := io.ReadAll(request.Body)
+	var clientSignal models.ClientSignals
+	json.Unmarshal(requestBody, &clientSignal)
+
+	sessionsChannel := make(chan []models.ChatSession)
+	defer close(sessionsChannel)
+	go services.GetChatSessions(userId, sessionsChannel)
+	sessions := <-sessionsChannel
+	var selectedSession models.ChatSession
+	for _, session := range sessions {
+		if session.Id == clientSignal.SessionId {
+			selectedSession = session
+			break
 		}
+	}
+	if selectedSession.Id == 0 {
+		http.Error(responseWriter, "UnAuthorized", http.StatusUnauthorized)
+		return
+	}
+	if clientSignal.MessageIdToRetry == 0 {
+		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	sse := datastar.NewSSE(responseWriter, request)
+	deleteChannel := make(chan []int)
+	defer close(deleteChannel)
+	go services.DeleteMessageChatConversationForRetry(models.DeleteChatConversationsAfterAId{
+		UserId:                         userId,
+		SessionId:                      clientSignal.SessionId,
+		ConversationIdAfterWhichDelete: clientSignal.MessageIdToRetry,
+	}, deleteChannel)
+	deletedIds := <-deleteChannel
+	// if len(deletedIds) == 0 {
+	// 	services.SendErrorMessageToUI(sse, "Failed to retry chat. Please try again later.")
+	// 	return
+	// }
+	for _, id := range deletedIds {
+		sse.RemoveElement("#message-"+strconv.Itoa(id), datastar.WithUseViewTransitions(true))
+	}
+	createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDataToUI(sse, clientSignal, userId, selectedSession, request)
+}
 
-		sse.ExecuteScript(`document.querySelector("main").scrollTo(0, document.querySelector("main").scrollHeight);`, datastar.WithExecuteScriptAutoRemove(true))
-		openRouterChannel := make(chan models.OpenRouterModelIdAndDeltaString)
-		openRouterRequest, _ := services.GenerateOpenRouterRequest(userId, clientSignal)
-		go services.CallOpenRouterWithStreaming(openRouterRequest, openRouterChannel)
+func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDataToUI(sse *datastar.ServerSentEventGenerator, clientSignal models.ClientSignals, userId string, selectedSession models.ChatSession, request *http.Request) {
+	insertModelConversationChannel := make(chan int)
+	defer close(insertModelConversationChannel)
+	modelMessageChat := models.ChatConversation{Role: "assistant", Content: "", SessionId: clientSignal.SessionId}
+	go services.InsertChatConversation(modelMessageChat, insertModelConversationChannel)
+	modelMessageChat.Id = <-insertModelConversationChannel
+	sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
+	if modelMessageChat.Id == 0 {
+		services.SendErrorMessageToUI(sse, "Error storing chat conversation.")
+	}
+	sse.ExecuteScript(`document.querySelector("main").scrollTo(0, document.querySelector("main").scrollHeight);`, datastar.WithExecuteScriptAutoRemove(true))
+	openRouterChannel := make(chan models.OpenRouterModelIdAndDeltaString)
+	openRouterRequest, _ := services.GenerateOpenRouterRequest(userId, clientSignal)
 
-		updateTitleChannel := make(chan int)
-		defer close(updateTitleChannel)
-		updateTitleCalled := false
+	go services.CallOpenRouterWithStreaming(openRouterRequest, openRouterChannel)
 
-		if len(openRouterRequest.Messages) == 1 {
-			go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: clientSignal.Prompt}, updateTitleChannel)
-			updateTitleCalled = true
+	updateTitleChannel := make(chan int)
+	defer close(updateTitleChannel)
+	updateTitleCalled := false
+	titleToUpdate := clientSignal.Prompt
+
+	if len(openRouterRequest.Messages) == 1 {
+		if strings.TrimSpace(selectedSession.Title) != "New Chat" && strings.TrimSpace(selectedSession.Title) != "" {
+			titleToUpdate = selectedSession.Title
 		}
+		go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, updateTitleChannel)
+		updateTitleCalled = true
+	}
 
-		updateWebSearchChannel := make(chan int)
-		defer close(updateWebSearchChannel)
-		updateWebSearchCalled := false
+	updateWebSearchChannel := make(chan int)
+	defer close(updateWebSearchChannel)
+	updateWebSearchCalled := false
 
-		if selectedSession.AllowWebSearch != clientSignal.WebSearch {
-			go services.UpdateChatSessionAllowWebSearch(userId, clientSignal.SessionId, clientSignal.WebSearch, updateWebSearchChannel)
-			updateWebSearchCalled = true
+	if selectedSession.AllowWebSearch != clientSignal.WebSearch {
+		go services.UpdateChatSessionAllowWebSearch(userId, clientSignal.SessionId, clientSignal.WebSearch, updateWebSearchChannel)
+		updateWebSearchCalled = true
+	}
+
+	for msg := range openRouterChannel {
+		if msg.DeltaContent == "Error" {
+			fmt.Printf("Error in getting response from OpenRouter\n")
+			// handle error
+			continue
 		}
-
-		for msg := range openRouterChannel {
-			if msg.DeltaContent == "Error" {
-				fmt.Printf("Error in getting response from OpenRouter\n")
-				// handle error
-				continue
-			}
-			modelMessageChat.Content += msg.DeltaContent
-			modelMessageChat.ModelId = msg.ModelId
-			select {
-			case <-request.Context().Done():
-				continue
-			default:
-				sse.PatchElementTempl(components.ChatMessage(modelMessageChat))
-			}
+		modelMessageChat.Content += msg.DeltaContent
+		modelMessageChat.ModelId = msg.ModelId
+		select {
+		case <-request.Context().Done():
+			continue
+		default:
+			sse.PatchElementTempl(components.ChatMessage(modelMessageChat))
 		}
+	}
 
-		if updateTitleCalled && <-updateTitleChannel != 0 {
+	if updateTitleCalled && <-updateTitleChannel != 0 {
+		select {
+		case <-request.Context().Done():
+			break
+		default:
+			sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}))
+		}
+	}
+
+	if updateWebSearchCalled {
+		<-updateWebSearchChannel
+	}
+	if modelMessageChat.Content != "" && modelMessageChat.Id != 0 {
+		updateModelConversationChannel := make(chan int)
+		defer close(updateModelConversationChannel)
+		go services.UpateMessageChatConversation(models.UpdateChatConversation{
+			Id:      modelMessageChat.Id,
+			Content: modelMessageChat.Content,
+			ModelId: modelMessageChat.ModelId,
+		}, updateModelConversationChannel)
+		rowsAffected := <-updateModelConversationChannel
+		if rowsAffected == 0 {
 			select {
 			case <-request.Context().Done():
 				break
 			default:
-				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: clientSignal.Prompt}))
-			}
-		}
-		if updateWebSearchCalled {
-			<-updateWebSearchChannel
-		}
-		if modelMessageChat.Content != "" && modelMessageChat.Id != 0 {
-			updateModelConversationChannel := make(chan int)
-			defer close(updateModelConversationChannel)
-			go services.UpateMessageChatConversation(models.UpdateChatConversation{
-				Id:      modelMessageChat.Id,
-				Content: modelMessageChat.Content,
-				ModelId: modelMessageChat.ModelId,
-			}, updateModelConversationChannel)
-			rowsAffected := <-updateModelConversationChannel
-			if rowsAffected == 0 {
 				services.SendErrorMessageToUI(sse, "Failed to update chat conversation. Please try again later.")
 			}
-		} else if modelMessageChat.Content == "" {
-			deleteModelConversationChannel := make(chan int)
-			defer close(deleteModelConversationChannel)
-			go services.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
-			if <-deleteModelConversationChannel != 0 {
+		}
+	} else if modelMessageChat.Content == "" {
+		deleteModelConversationChannel := make(chan int)
+		defer close(deleteModelConversationChannel)
+		go services.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
+		if <-deleteModelConversationChannel != 0 {
+			select {
+			case <-request.Context().Done():
+				break
+			default:
 				sse.RemoveElement("#message-"+strconv.Itoa(modelMessageChat.Id), datastar.WithUseViewTransitions(true))
 			}
+		}
+		select {
+		case <-request.Context().Done():
+			break
+		default:
 			services.SendErrorMessageToUI(sse, "Unable to get response from AI. Please try again, or switch to a different model.")
 		}
 	}
