@@ -427,3 +427,40 @@ func DeleteMessageChatConversation(conversationId int, channel chan<- int) {
 	}
 	channel <- int(rowsAffected)
 }
+func DeleteMessageChatConversationForRetry(data models.DeleteChatConversationsAfterAId, channel chan<- []int) {
+	db, err := createDb()
+	returnIds := []int{}
+	if err != nil {
+		channel <- returnIds
+		return
+	}
+	defer db.Close()
+	rows, err := db.Query("SELECT conversation_id FROM chat_conversations WHERE session_id=? AND conversation_id>? ORDER BY conversation_id", data.SessionId, data.ConversationIdAfterWhichDelete)
+	if err != nil {
+		fmt.Printf("Failed to execute query in DeleteMessageChatConversationForRetry: %v\n", err.Error())
+		channel <- returnIds
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var conversationId int
+		if err := rows.Scan(&conversationId); err != nil {
+			fmt.Printf("Error scanning row in DeleteMessageChatConversationForRetry:%v\n", err.Error())
+		} else {
+			returnIds = append(returnIds, conversationId)
+		}
+	}
+	result, err := db.Exec("DELETE FROM chat_conversations  WHERE session_id=? AND conversation_id>? ", data.SessionId, data.ConversationIdAfterWhichDelete)
+	if err != nil {
+		fmt.Printf("Failed to execute query in DeleteMessageChatConversationForRetry: %v\n", err.Error())
+		channel <- []int{}
+		return
+	}
+	_, err = result.RowsAffected()
+	if err != nil {
+		fmt.Printf("Error deleting chat conversations in DeleteMessageChatConversationForRetry: %v\n", err.Error())
+		channel <- []int{}
+		return
+	}
+	channel <- returnIds
+}

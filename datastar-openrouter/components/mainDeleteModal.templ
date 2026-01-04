@@ -26,7 +26,7 @@ templ deleteModal() {
 					data-attr:disabled="$_deletingSession"
 				>Delete</button>
 				<button
-					class="appearance-none outline-none cursor-pointer py-2 px-4 rounded transition duration-300 bg-white/90 dark:bg-dark/90 text-dark dark:text-white hover:opacity-90 focus:ring-2 focus:ring-offset-2 focus:ring-white dark:focus:ring-dark focus:ring-offset-dark dark:focus:ring-offset-white"
+					class="appearance-none outline-none cursor-pointer py-2 px-4 rounded transition duration-300 bg-gray-700 dark:bg-gray-200 text-white dark:text-dark hover:opacity-90 focus:ring-2 focus:ring-offset-2 focus:ring-white dark:focus:ring-dark focus:ring-offset-dark dark:focus:ring-offset-white"
 					data-on:click__viewtransition="if($_deletingSession) return;$sessionIdToDelete=0; $showDeleteModal=false;"
 				>Cancel</button>
 			</div>

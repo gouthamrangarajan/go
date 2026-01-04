@@ -26,3 +26,9 @@ type AIModel struct {
 	ModelId     string
 	DisplayName string
 }
+
+type DeleteChatConversationsAfterAId struct {
+	SessionId                      int
+	ConversationIdAfterWhichDelete int
+	UserId                         string
+}
