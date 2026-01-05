@@ -13,7 +13,7 @@ templ Main(messages []models.ChatConversation, sessions []models.ChatSession, ai
 			data-show="true"
 			data-signals={ `{sessionId:` + strconv.Itoa(currSessionId) + `,_showMenu:false,
                             showErrorMessage:false,errorMessage:'Error.Please try again later',
-                            showDeleteModal:false,sessionIdToDelete:0,
+                            showDeleteModal:false,sessionIdToDelete:0,_retrying:false,
                             webSearch:`+strconv.FormatBool(allowWebSearch)+`}` }
 		>
 			@menu(sessions)
