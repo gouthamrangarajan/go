@@ -13,6 +13,14 @@ type OpenRouterStreamResponse struct {
 		} `json:"delta"`
 	} `json:"choices"`
 }
+type OpenRouterResponse struct {
+	Model   string `json:"model"`
+	Choices []struct {
+		Message struct {
+			Content string `json:"content"`
+		} `json:"message"`
+	} `json:"choices"`
+}
 type OpenRouterModelIdAndDeltaString struct {
 	DeltaContent string
 	ModelId      string

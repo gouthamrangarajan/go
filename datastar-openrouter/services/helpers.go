@@ -96,6 +96,7 @@ func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals)
 				"id": "web",
 			},
 		}
+		openRouterRequest.Stream = false
 	}
 	openRouterRequest.Messages = make([]models.OpenRouterRequestMessage, 0, len(conversations)+1)
 	for _, conversation := range conversations {

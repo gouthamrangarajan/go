@@ -315,7 +315,7 @@ func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDa
 	openRouterChannel := make(chan models.OpenRouterModelIdAndDeltaString)
 	openRouterRequest, _ := services.GenerateOpenRouterRequest(userId, clientSignal)
 
-	go services.CallOpenRouterWithStreaming(openRouterRequest, openRouterChannel)
+	go services.CallOpenRouter(openRouterRequest, openRouterChannel)
 
 	updateTitleChannel := make(chan int)
 	defer close(updateTitleChannel)

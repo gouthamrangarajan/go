@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func CallOpenRouterWithStreaming(aiRequest models.OpenRouterRequest, channel chan<- models.OpenRouterModelIdAndDeltaString) {
+func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.OpenRouterModelIdAndDeltaString) {
 	url := os.Getenv("OPEN_ROUTER_API_URL")
 	key := os.Getenv("OPEN_ROUTER_API_KEY")
 	defer close(channel)
@@ -41,13 +41,38 @@ func CallOpenRouterWithStreaming(aiRequest models.OpenRouterRequest, channel cha
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		fmt.Printf("Error in making message api call: received status code %d\n", response.StatusCode)
+		fmt.Printf("Error in making openrouter message api call: received status code %d\n", response.StatusCode)
 		respBody, err := io.ReadAll(response.Body)
 		if err == nil {
-			fmt.Printf("Error in making message api call %v\n", string(respBody))
+			fmt.Printf("Error in making openrouter message api call %v\n", string(respBody))
 		}
 		channel <- defaultVal
 		return
+	}
+	if aiRequest.Stream == false {
+		respBody, err := io.ReadAll(response.Body)
+		// fmt.Printf("Non-streaming response body OpenRouter API call: %s\n", string(respBody))
+		if err != nil {
+			fmt.Printf("Error reading non-streaming response body OpenRouter API call: %v\n", err.Error())
+			channel <- defaultVal
+			return
+		}
+		var nonStreamResponse models.OpenRouterResponse
+		err = json.Unmarshal(respBody, &nonStreamResponse)
+		if err != nil {
+			fmt.Printf("Error unmarshaling non-streaming response OpenRouter API call: %v\n", err.Error())
+			channel <- defaultVal
+			return
+		}
+		if len(nonStreamResponse.Choices) > 0 {
+			content := nonStreamResponse.Choices[0].Message.Content
+			channel <- models.OpenRouterModelIdAndDeltaString{DeltaContent: content, ModelId: nonStreamResponse.Model}
+			return
+		} else {
+			fmt.Printf("No choices in non-streaming response OpenRouter API call\n")
+			channel <- defaultVal
+			return
+		}
 	}
 	scanner := bufio.NewScanner(response.Body)
 	line := ""
