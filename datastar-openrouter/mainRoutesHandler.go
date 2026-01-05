@@ -161,8 +161,9 @@ func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http
 // Update chat session allow web search if applicable
 // Stream response from OpenRouter to UI
 // Wait for title update if called, wait for allow web search update if called
+// If message is empty/error, return error message to UI and delete the model message chat conversation, return
 // Update model message chat conversation with full content after streaming is done if message is not empty
-// If message is empty, return error message to UI and delete the model message chat conversation
+
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := services.GetUserIdFromRequest(request)
 	requestBody, _ := io.ReadAll(request.Body)
@@ -257,6 +258,18 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 }
 
+// ALGO
+// Handle unauthorized user - user does not exist in table or session id coming from client is not valid
+// Handle bad request - message id to retry is 0
+// Delete all chat conversations after the message id to retry, remove html elements from UI
+// Insert model message chat conversation with empty content
+// Call OpenRouter with streaming in a goroutine
+// Update chat session title if it's the first message in the session
+// Update chat session allow web search if applicable
+// Stream response from OpenRouter to UI
+// Wait for title update if called, wait for allow web search update if called
+// If message is empty/error, return error message to UI and delete the model message chat conversation, return
+// Update model message chat conversation with full content after streaming is done if message is not empty
 func retryHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := services.GetUserIdFromRequest(request)
 	requestBody, _ := io.ReadAll(request.Body)
@@ -367,24 +380,7 @@ func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDa
 	if updateWebSearchCalled {
 		<-updateWebSearchChannel
 	}
-	if modelMessageChat.Content != "" && modelMessageChat.Id != 0 {
-		updateModelConversationChannel := make(chan int)
-		defer close(updateModelConversationChannel)
-		go services.UpateMessageChatConversation(models.UpdateChatConversation{
-			Id:      modelMessageChat.Id,
-			Content: modelMessageChat.Content,
-			ModelId: modelMessageChat.ModelId,
-		}, updateModelConversationChannel)
-		rowsAffected := <-updateModelConversationChannel
-		if rowsAffected == 0 {
-			select {
-			case <-request.Context().Done():
-				break
-			default:
-				services.SendErrorMessageToUI(sse, "Failed to update chat conversation. Please try again later.")
-			}
-		}
-	} else if modelMessageChat.Content == "" {
+	if modelMessageChat.Content == "" || strings.TrimSpace(modelMessageChat.Content) == "Error" {
 		deleteModelConversationChannel := make(chan int)
 		defer close(deleteModelConversationChannel)
 		go services.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
@@ -401,6 +397,24 @@ func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDa
 			break
 		default:
 			services.SendErrorMessageToUI(sse, "Unable to get response from AI. Please try again, or switch to a different model.")
+		}
+		return
+	}
+
+	updateModelConversationChannel := make(chan int)
+	defer close(updateModelConversationChannel)
+	go services.UpateMessageChatConversation(models.UpdateChatConversation{
+		Id:      modelMessageChat.Id,
+		Content: modelMessageChat.Content,
+		ModelId: modelMessageChat.ModelId,
+	}, updateModelConversationChannel)
+	rowsAffected := <-updateModelConversationChannel
+	if rowsAffected == 0 {
+		select {
+		case <-request.Context().Done():
+			break
+		default:
+			services.SendErrorMessageToUI(sse, "Failed to update chat conversation. Please try again later.")
 		}
 	}
 }
