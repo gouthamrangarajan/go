@@ -10,6 +10,12 @@ type OpenRouterStreamResponse struct {
 	Choices []struct {
 		Delta struct {
 			Content string `json:"content"`
+			Images  []struct {
+				Type     string `json:"type,omitempty"`
+				ImageUrl struct {
+					Url string `json:"url,omitempty"`
+				} `json:"image_url,omitempty"`
+			} `json:"images,omitempty"`
 		} `json:"delta"`
 	} `json:"choices"`
 }
@@ -18,19 +24,27 @@ type OpenRouterResponse struct {
 	Choices []struct {
 		Message struct {
 			Content string `json:"content"`
+			Images  []struct {
+				Type     string `json:"type,omitempty"`
+				ImageUrl struct {
+					Url string `json:"url,omitempty"`
+				} `json:"image_url,omitempty"`
+			} `json:"images,omitempty"`
 		} `json:"message"`
 	} `json:"choices"`
 }
 type OpenRouterModelIdAndDeltaString struct {
 	DeltaContent string
 	ModelId      string
+	DeltaImage   string
 }
 
 type OpenRouterRequest struct {
-	Model    string                     `json:"model"`
-	Messages []OpenRouterRequestMessage `json:"messages"`
-	Stream   bool                       `json:"stream"`
-	Plugins  []map[string]string        `json:"plugins,omitempty"`
+	Model      string                     `json:"model"`
+	Messages   []OpenRouterRequestMessage `json:"messages"`
+	Stream     bool                       `json:"stream"`
+	Plugins    []map[string]string        `json:"plugins,omitempty"`
+	Modalities []string                   `json:"modalities,omitempty"`
 }
 type OpenRouterRequestMessageContentWithFileData struct {
 	Type     string `json:"type"`

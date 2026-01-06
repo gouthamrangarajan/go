@@ -11,6 +11,7 @@ type ClientSignals struct {
 		Mime     string `json:"mime"`
 	} `json:"fileData"`
 	WebSearch        bool `json:"webSearch"`
+	ImageGeneration  bool `json:"imageGeneration"`
 	MessageIdToRetry int  `json:"messageIdToRetry"`
 }
 type FileDataDisplay struct {
@@ -21,4 +22,13 @@ type FileDataDisplay struct {
 type UICookie struct {
 	Name  string
 	Value string
+}
+
+type UIMainModel struct {
+	Messages         []ChatConversation
+	Sessions         []ChatSession
+	AIModels         []AIModel
+	AllowWebSearch   bool
+	ImageGeneration  bool
+	CurrentSessionId int
 }

@@ -144,7 +144,7 @@ func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT session_id,title,allow_web_search FROM chat_sessions WHERE user_id = ? ORDER BY session_id", userId)
+	rows, err := db.Query("SELECT session_id,title,allow_web_search,img_generation FROM chat_sessions WHERE user_id = ? ORDER BY session_id", userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in GetChatSessions: %v\n", err.Error())
 		channel <- data
@@ -155,7 +155,7 @@ func GetChatSessions(userId string, channel chan<- []models.ChatSession) {
 	for rows.Next() {
 		var item models.ChatSession
 
-		if err := rows.Scan(&item.Id, &item.Title, &item.AllowWebSearch); err != nil {
+		if err := rows.Scan(&item.Id, &item.Title, &item.AllowWebSearch, &item.ImageGeneration); err != nil {
 			fmt.Printf("Error scanning row in GetChatSessions:%v\n", err.Error())
 		} else {
 			data = append(data, item)
@@ -217,7 +217,7 @@ func InsertChatSession(userId string, data models.ChatSession, channel chan<- in
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("INSERT INTO chat_sessions (user_id,title,allow_web_search, created_at) VALUES (?, ?,?,?)", userId, data.Title, data.AllowWebSearch, time.Now().Unix())
+	result, err := db.Exec("INSERT INTO chat_sessions (user_id,title,allow_web_search,img_generation,created_at) VALUES (?, ?,?,?,?)", userId, data.Title, data.AllowWebSearch, data.ImageGeneration, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("Failed to execute query in InsertChatSession: %v\n", err.Error())
 		channel <- 0
@@ -230,27 +230,6 @@ func InsertChatSession(userId string, data models.ChatSession, channel chan<- in
 		return
 	}
 	channel <- int(newId)
-}
-func UpdateChatSessionAllowWebSearch(userId string, sessionId int, webSearch bool, channel chan<- int) {
-	db, err := createDb()
-	if err != nil {
-		channel <- 0
-		return
-	}
-	defer db.Close()
-	result, err := db.Exec("UPDATE chat_sessions SET allow_web_search = ? WHERE session_id = ? AND  user_id = ?", webSearch, sessionId, userId)
-	if err != nil {
-		fmt.Printf("Failed to execute query in UpdateChatSessionAllowWebSearch: %v\n", err.Error())
-		channel <- 0
-		return
-	}
-	rowsAffected, errUpdate := result.RowsAffected()
-	if errUpdate != nil {
-		fmt.Printf("Error updating allow_web_search in UpdateChatSessionAllowWebSearch: %v\n", errUpdate.Error())
-		channel <- 0
-		return
-	}
-	channel <- int(rowsAffected)
 }
 
 func UpdateChatSessionTitle(userId string, data models.ChatSession, channel chan<- int) {
@@ -308,7 +287,48 @@ func UpdateChatSessionTitleVector(sessionId int, titleVector []float32, channel 
 	// fmt.Printf("Updated title vector for session id: %d\n", sessionId)
 	channel <- int(rowsAffected)
 }
-
+func UpdateChatSessionAllowWebSearch(userId string, sessionId int, webSearch bool, channel chan<- int) {
+	db, err := createDb()
+	if err != nil {
+		channel <- 0
+		return
+	}
+	defer db.Close()
+	result, err := db.Exec("UPDATE chat_sessions SET allow_web_search = ? WHERE session_id = ? AND  user_id = ?", webSearch, sessionId, userId)
+	if err != nil {
+		fmt.Printf("Failed to execute query in UpdateChatSessionAllowWebSearch: %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	rowsAffected, errUpdate := result.RowsAffected()
+	if errUpdate != nil {
+		fmt.Printf("Error updating allow_web_search in UpdateChatSessionAllowWebSearch: %v\n", errUpdate.Error())
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
+func UpdateChatSessionImageGeneration(userId string, sessionId int, imageGeneration bool, channel chan<- int) {
+	db, err := createDb()
+	if err != nil {
+		channel <- 0
+		return
+	}
+	defer db.Close()
+	result, err := db.Exec("UPDATE chat_sessions SET img_generation = ? WHERE session_id = ? AND  user_id = ?", imageGeneration, sessionId, userId)
+	if err != nil {
+		fmt.Printf("Failed to execute query in UpdateChatSessionImageGeneration: %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	rowsAffected, errUpdate := result.RowsAffected()
+	if errUpdate != nil {
+		fmt.Printf("Error updating allow_web_search in UpdateChatSessionImageGeneration: %v\n", errUpdate.Error())
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
 func DeleteChatSession(userId string, sessionId int, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
@@ -391,7 +411,7 @@ func UpateMessageChatConversation(data models.UpdateChatConversation, channel ch
 		return
 	}
 	defer db.Close()
-	result, err := db.Exec("UPDATE chat_conversations SET content= ?,model_id=? WHERE  conversation_id=?", data.Content, data.ModelId, data.Id)
+	result, err := db.Exec("UPDATE chat_conversations SET content= ?,model_id=?,file_data=? WHERE  conversation_id=?", data.Content, data.ModelId, data.FileData, data.Id)
 	if err != nil {
 		fmt.Printf("Failed to execute query in UpateMessageChatConversation: %v\n", err.Error())
 		channel <- 0

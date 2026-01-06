@@ -90,6 +90,11 @@ func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals)
 		Stream: true,
 		Model:  clientSignal.ModelId,
 	}
+	openRouterRequest.Modalities = []string{"text"}
+	if clientSignal.ImageGeneration {
+		openRouterRequest.Modalities = []string{"text", "image"}
+		openRouterRequest.Stream = false
+	}
 	if clientSignal.WebSearch {
 		openRouterRequest.Plugins = []map[string]string{
 			{

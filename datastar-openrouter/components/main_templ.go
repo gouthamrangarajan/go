@@ -13,7 +13,7 @@ import (
 	"strconv"
 )
 
-func Main(messages []models.ChatConversation, sessions []models.ChatSession, aiModels []models.AIModel, allowWebSearch bool, currSessionId int) templ.Component {
+func Main(model models.UIMainModel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -51,12 +51,13 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, aiM
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{sessionId:` + strconv.Itoa(currSessionId) + `,_showMenu:false,
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{sessionId:` + strconv.Itoa(model.CurrentSessionId) + `,_showMenu:false,
                             showErrorMessage:false,errorMessage:'Error.Please try again later',
                             showDeleteModal:false,sessionIdToDelete:0,_retrying:false,
-                            webSearch:` + strconv.FormatBool(allowWebSearch) + `}`)
+                            webSearch:` + strconv.FormatBool(model.AllowWebSearch) + `,
+                            imageGeneration:` + strconv.FormatBool(model.ImageGeneration) + `}`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 17, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 18, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -66,7 +67,7 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, aiM
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = menu(sessions).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = menu(model.Sessions).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -78,11 +79,11 @@ func Main(messages []models.ChatConversation, sessions []models.ChatSession, aiM
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = Section(messages).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = Section(model.Messages).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = inputsAndError(aiModels).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = inputsAndError(model.AIModels).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -212,7 +213,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("{'underline underline-offset-6':$sessionId==" + strconv.Itoa(session.Id) + "}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 113, Col: 94}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 114, Col: 94}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -225,7 +226,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("menuItem_" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 114, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 115, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -238,7 +239,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:menu-item-" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 115, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 116, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -251,7 +252,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var10 templ.SafeURL
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs("/" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 117, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 118, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -264,7 +265,7 @@ func MenuItem(session models.ChatSession) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 118, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 119, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -281,7 +282,7 @@ func MenuItem(session models.ChatSession) templ.Component {
                 $showDeleteModal=true;
             `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 126, Col: 13}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 127, Col: 13}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {

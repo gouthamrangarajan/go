@@ -51,7 +51,15 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 
 	chatConversations := <-chatConversationChannel
 	aiModels := <-aiModelsChannel
-	component := components.Main(chatConversations, sessions, aiModels, selectedSession.AllowWebSearch, sessionId)
+	component := components.Main(
+		models.UIMainModel{
+			Messages:         chatConversations,
+			Sessions:         sessions,
+			AIModels:         aiModels,
+			AllowWebSearch:   selectedSession.AllowWebSearch,
+			ImageGeneration:  selectedSession.ImageGeneration,
+			CurrentSessionId: sessionId,
+		})
 	templ.Handler(component).ServeHTTP(responseWriter, request)
 }
 
@@ -158,7 +166,7 @@ func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http
 // Insert model message chat conversation with empty content
 // Call OpenRouter with streaming in a goroutine
 // Update chat session title if it's the first message in the session
-// Update chat session allow web search if applicable
+// Update chat session allow web search & image generation if applicable
 // Stream response from OpenRouter to UI
 // Wait for title update if called, wait for allow web search update if called
 // If message is empty/error, return error message to UI and delete the model message chat conversation, return
@@ -253,7 +261,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		sse.PatchSignals([]byte(`{prompt:"",sessionId:` + strconv.Itoa(clientSignal.SessionId) + `,fileData:''}`))
 		sse.PatchElementTempl(components.FileAttachmentDisplay(""), datastar.WithUseViewTransitions(true))
 
-		createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDataToUI(sse, clientSignal, userId, selectedSession, request)
+		createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse, clientSignal, userId, selectedSession, request)
 
 	}
 }
@@ -265,7 +273,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 // Insert model message chat conversation with empty content
 // Call OpenRouter with streaming in a goroutine
 // Update chat session title if it's the first message in the session
-// Update chat session allow web search if applicable
+// Update chat session allow web search & image generation if applicable
 // Stream response from OpenRouter to UI
 // Wait for title update if called, wait for allow web search update if called
 // If message is empty/error, return error message to UI and delete the model message chat conversation, return
@@ -311,13 +319,13 @@ func retryHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	for _, id := range deletedIds {
 		sse.RemoveElement("#message-"+strconv.Itoa(id), datastar.WithUseViewTransitions(true))
 	}
-	createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDataToUI(sse, clientSignal, userId, selectedSession, request)
+	createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse, clientSignal, userId, selectedSession, request)
 }
 
-func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDataToUI(sse *datastar.ServerSentEventGenerator, clientSignal models.ClientSignals, userId string, selectedSession models.ChatSession, request *http.Request) {
+func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *datastar.ServerSentEventGenerator, clientSignal models.ClientSignals, userId string, selectedSession models.ChatSession, request *http.Request) {
 	insertModelConversationChannel := make(chan int)
 	defer close(insertModelConversationChannel)
-	modelMessageChat := models.ChatConversation{Role: "assistant", Content: "", SessionId: clientSignal.SessionId}
+	modelMessageChat := models.ChatConversation{Role: "assistant", Content: "", SessionId: clientSignal.SessionId, FileData: ""}
 	go services.InsertChatConversation(modelMessageChat, insertModelConversationChannel)
 	modelMessageChat.Id = <-insertModelConversationChannel
 	sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
@@ -347,9 +355,17 @@ func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDa
 	defer close(updateWebSearchChannel)
 	updateWebSearchCalled := false
 
+	updateImageGenerationChannel := make(chan int)
+	defer close(updateImageGenerationChannel)
+	updateImageGeneratioCalled := false
+
 	if selectedSession.AllowWebSearch != clientSignal.WebSearch {
 		go services.UpdateChatSessionAllowWebSearch(userId, clientSignal.SessionId, clientSignal.WebSearch, updateWebSearchChannel)
 		updateWebSearchCalled = true
+	}
+	if selectedSession.ImageGeneration != clientSignal.ImageGeneration {
+		go services.UpdateChatSessionImageGeneration(userId, clientSignal.SessionId, clientSignal.ImageGeneration, updateImageGenerationChannel)
+		updateImageGeneratioCalled = true
 	}
 
 	for msg := range openRouterChannel {
@@ -359,6 +375,7 @@ func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDa
 			continue
 		}
 		modelMessageChat.Content += msg.DeltaContent
+		modelMessageChat.FileData += msg.DeltaImage
 		modelMessageChat.ModelId = msg.ModelId
 		select {
 		case <-request.Context().Done():
@@ -380,7 +397,11 @@ func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDa
 	if updateWebSearchCalled {
 		<-updateWebSearchChannel
 	}
-	if modelMessageChat.Content == "" || strings.TrimSpace(modelMessageChat.Content) == "Error" {
+	if updateImageGeneratioCalled {
+		<-updateImageGenerationChannel
+	}
+	if (modelMessageChat.Content == "" || strings.TrimSpace(modelMessageChat.Content) == "Error") &&
+		modelMessageChat.FileData == "" {
 		deleteModelConversationChannel := make(chan int)
 		defer close(deleteModelConversationChannel)
 		go services.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
@@ -404,9 +425,10 @@ func createModelMessageChatCallOpenRouterUpdateTitleUpdateWebSearchFlagAndSendDa
 	updateModelConversationChannel := make(chan int)
 	defer close(updateModelConversationChannel)
 	go services.UpateMessageChatConversation(models.UpdateChatConversation{
-		Id:      modelMessageChat.Id,
-		Content: modelMessageChat.Content,
-		ModelId: modelMessageChat.ModelId,
+		Id:       modelMessageChat.Id,
+		Content:  modelMessageChat.Content,
+		ModelId:  modelMessageChat.ModelId,
+		FileData: modelMessageChat.FileData,
 	}, updateModelConversationChannel)
 	rowsAffected := <-updateModelConversationChannel
 	if rowsAffected == 0 {

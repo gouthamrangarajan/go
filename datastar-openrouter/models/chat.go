@@ -1,10 +1,11 @@
 package models
 
 type ChatSession struct {
-	Id             int
-	Title          string
-	TitleVector    []float32
-	AllowWebSearch bool
+	Id              int
+	Title           string
+	TitleVector     []float32
+	AllowWebSearch  bool
+	ImageGeneration bool
 }
 type ChatConversation struct {
 	Id        int
@@ -17,9 +18,10 @@ type ChatConversation struct {
 }
 
 type UpdateChatConversation struct {
-	Id      int
-	Content string
-	ModelId string
+	Id       int
+	Content  string
+	ModelId  string
+	FileData string
 }
 
 type AIModel struct {

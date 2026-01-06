@@ -66,7 +66,12 @@ func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.Op
 		}
 		if len(nonStreamResponse.Choices) > 0 {
 			content := nonStreamResponse.Choices[0].Message.Content
-			channel <- models.OpenRouterModelIdAndDeltaString{DeltaContent: content, ModelId: nonStreamResponse.Model}
+			imgData := ""
+			if len(nonStreamResponse.Choices[0].Message.Images) > 0 &&
+				nonStreamResponse.Choices[0].Message.Images[0].ImageUrl.Url != "" {
+				imgData = nonStreamResponse.Choices[0].Message.Images[0].ImageUrl.Url
+			}
+			channel <- models.OpenRouterModelIdAndDeltaString{DeltaContent: content, ModelId: nonStreamResponse.Model, DeltaImage: imgData}
 			return
 		} else {
 			fmt.Printf("No choices in non-streaming response OpenRouter API call\n")
@@ -81,8 +86,13 @@ func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.Op
 		if strings.TrimSpace(scanner.Text()) == ": OPENROUTER PROCESSING" {
 			continue
 		}
-		// fmt.Printf("Received line:%v\n", scanner.Text())
+
 		line += scanner.Text()
+		// if len(line) > 500 {
+		// 	fmt.Printf("read line substring %v\n", line[500:])
+		// } else {
+		// 	fmt.Printf("read line %v\n", line)
+		// }
 		line = strings.TrimSuffix(line, "\n")
 		line = strings.TrimSpace(line)
 
@@ -100,9 +110,14 @@ func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.Op
 			} else {
 				if len(streamResponse.Choices) > 0 {
 					content := streamResponse.Choices[0].Delta.Content
-					if content != "" {
+					imgData := ""
+					if len(streamResponse.Choices[0].Delta.Images) > 0 &&
+						streamResponse.Choices[0].Delta.Images[0].ImageUrl.Url != "" {
+						imgData = streamResponse.Choices[0].Delta.Images[0].ImageUrl.Url
+					}
+					if content != "" || imgData != "" {
 						// fmt.Println("Sending content to channel:", content)
-						channel <- models.OpenRouterModelIdAndDeltaString{DeltaContent: content, ModelId: streamResponse.Model}
+						channel <- models.OpenRouterModelIdAndDeltaString{DeltaContent: content, ModelId: streamResponse.Model, DeltaImage: imgData}
 					}
 				}
 				line = ""

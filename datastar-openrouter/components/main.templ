@@ -5,22 +5,23 @@ import (
 	"strconv"
 )
 
-templ Main(messages []models.ChatConversation, sessions []models.ChatSession, aiModels []models.AIModel, allowWebSearch bool, currSessionId int) {
+templ Main(model models.UIMainModel) {
 	@layout() {
 		<main
 			class="w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 md:overflow-x-hidden"
 			style="display:none;"
 			data-show="true"
-			data-signals={ `{sessionId:` + strconv.Itoa(currSessionId) + `,_showMenu:false,
+			data-signals={ `{sessionId:` + strconv.Itoa(model.CurrentSessionId) + `,_showMenu:false,
                             showErrorMessage:false,errorMessage:'Error.Please try again later',
                             showDeleteModal:false,sessionIdToDelete:0,_retrying:false,
-                            webSearch:`+strconv.FormatBool(allowWebSearch)+`}` }
+                            webSearch:`+strconv.FormatBool(model.AllowWebSearch)+`,
+                            imageGeneration:`+strconv.FormatBool(model.ImageGeneration)+`}` }
 		>
-			@menu(sessions)
+			@menu(model.Sessions)
 			@deleteModal()
 			<header class="text-3xl text-center font-semibold py-2 px-4">Nexus AI</header>
-			@Section(messages)
-			@inputsAndError(aiModels)
+			@Section(model.Messages)
+			@inputsAndError(model.AIModels)
 		</main>
 	}
 }
