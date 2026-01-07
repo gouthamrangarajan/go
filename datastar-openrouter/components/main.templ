@@ -13,7 +13,7 @@ templ Main(model models.UIMainModel) {
 			data-show="true"
 			data-signals={ `{sessionId:` + strconv.Itoa(model.CurrentSessionId) + `,_showMenu:false,
                             showErrorMessage:false,errorMessage:'Error.Please try again later',
-                            showDeleteModal:false,sessionIdToDelete:0,_retrying:false,
+                            showDeleteModal:false,sessionIdToDelete:0,
                             webSearch:`+strconv.FormatBool(model.AllowWebSearch)+`,
                             imageGeneration:`+strconv.FormatBool(model.ImageGeneration)+`}` }
 		>
@@ -32,7 +32,11 @@ templ Section(messages []models.ChatConversation) {
 			@ChatMessage(message)
 		}
 		if len(messages)==0 {
-			<div class="w-full h-[50vh] flex items-center justify-center" id="hint">
+			<div
+				class="w-full h-[50vh] flex items-center justify-center"
+				id="hint"
+				data-signals="{_retrying:false}"
+			>
 				<p class="text-lg">
 					Unified chat with the world's smartest models.
 				</p>
