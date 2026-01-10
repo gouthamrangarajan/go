@@ -162,7 +162,8 @@ func searchSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	json.Unmarshal(requestBody, &clientSignal)
 	sse := datastar.NewSSE(responseWriter, request)
 	sessions := []models.ChatSession{}
-	if strings.TrimSpace(clientSignal.SearchMenu) == "" {
+	clientSignal.SearchMenu = strings.TrimSpace(clientSignal.SearchMenu)
+	if clientSignal.SearchMenu == "" {
 		sessionsChannel := make(chan []models.ChatSession)
 		defer close(sessionsChannel)
 		go services.GetChatSessions(userId, sessionsChannel)
@@ -172,7 +173,7 @@ func searchSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 			UserId:     userId,
 			SearchTerm: clientSignal.SearchMenu})
 	}
-	sse.PatchElementTempl(components.MenuUl(sessions), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.MenuUl(sessions, clientSignal.SearchMenu), datastar.WithUseViewTransitions(true))
 	scriptToExecute := "window.history.replaceState({},'','/"
 	if clientSignal.SessionId != 0 {
 		scriptToExecute += strconv.Itoa(clientSignal.SessionId)
@@ -238,6 +239,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var clientSignal models.ClientSignals
 	json.Unmarshal(requestBody, &clientSignal)
 	clientSignal.Prompt = strings.TrimSpace(clientSignal.Prompt)
+	clientSignal.SearchMenu = strings.TrimSpace(clientSignal.SearchMenu)
 
 	userExistsChannel := make(chan bool)
 	defer close(userExistsChannel)
@@ -302,7 +304,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				return
 			}
 			sse.ExecuteScript(`window.history.replaceState({},'','/`+strconv.Itoa(clientSignal.SessionId)+`')`, datastar.WithExecuteScriptAutoRemove(true))
-			sse.PatchElementTempl(components.MenuItem(newSession), datastar.WithModeAppend(), datastar.WithSelector("#menu"))
+			sse.PatchElementTempl(components.MenuItem(newSession, clientSignal.SearchMenu), datastar.WithModeAppend(), datastar.WithSelector("#menu"))
 		}
 
 		insertUserConversationChannel := make(chan int)
@@ -344,6 +346,7 @@ func retryHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	requestBody, _ := io.ReadAll(request.Body)
 	var clientSignal models.ClientSignals
 	json.Unmarshal(requestBody, &clientSignal)
+	clientSignal.SearchMenu = strings.TrimSpace(clientSignal.SearchMenu)
 
 	sessionsChannel := make(chan []models.ChatSession)
 	defer close(sessionsChannel)
@@ -460,7 +463,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 			case <-request.Context().Done():
 				break
 			default:
-				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}))
+				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, clientSignal.SearchMenu))
 			}
 		}
 		embeddingResponse := <-embeddingChannel

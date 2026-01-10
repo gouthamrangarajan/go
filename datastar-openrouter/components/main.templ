@@ -18,7 +18,7 @@ templ Main(model models.UIMainModel) {
                             webSearch:`+strconv.FormatBool(model.AllowWebSearch)+`,
                             imageGeneration:`+strconv.FormatBool(model.ImageGeneration)+`}` }
 		>
-			@menu(model.Sessions)
+			@menu(model.Sessions, model.MenuSearchTerm)
 			@deleteModal()
 			<header class="text-3xl text-center font-semibold py-2 px-4">Nexus AI</header>
 			@Section(model.Messages)
@@ -46,7 +46,7 @@ templ Section(messages []models.ChatConversation) {
 	</section>
 }
 
-templ menu(sessions []models.ChatSession) {
+templ menu(sessions []models.ChatSession, searchTerm string) {
 	<div
 		class="absolute top-0 left-0 w-full h-full bg-white/50 dark:bg-dark/50 z-10"
 		data-show="$_showMenu"
@@ -98,7 +98,7 @@ templ menu(sessions []models.ChatSession) {
 						</svg>
 					</div>
 				</div>
-				@MenuUl(sessions)
+				@MenuUl(sessions, searchTerm)
 			</div>
 			<button
 				class="appearance-none outline-none cursor-pointer mt-2 transition duration-300 rounded p-1 hover:opacity-90 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
@@ -136,22 +136,28 @@ templ menu(sessions []models.ChatSession) {
 	</button>
 }
 
-templ MenuUl(sessions []models.ChatSession) {
+templ MenuUl(sessions []models.ChatSession, searchTerm string) {
 	<ul class="flex flex-col mt-5 w-full" id="menu">
 		for _,session := range sessions {
-			@MenuItem(session)
+			@MenuItem(session, searchTerm)
 		}
 	</ul>
 }
 
-templ MenuItem(session models.ChatSession) {
+templ MenuItem(session models.ChatSession, searchTerm string) {
+	{{ href := "/" + strconv.Itoa(session.Id) }}
+	{{
+		if searchTerm != "" {
+			href += "?search_menu=" + searchTerm
+		}
+	}}
 	<li
 		class="w-full flex gap-1 items-center pr-1 hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:bg-gray-200 dark:focus-within:bg-gray-700"
 		data-class={ "{'underline underline-offset-6':$sessionId==" + strconv.Itoa(session.Id) + "}" }
 		id={ "menuItem_" + strconv.Itoa(session.Id) }
 		style={ "view-transition-name:menu-item-" + strconv.Itoa(session.Id) }
 	>
-		<a href={ "/" + strconv.Itoa(session.Id) } class="appearance-none outline-none truncate flex-1 py-2 px-4 transition duration-300 cursor-pointer">
+		<a href={ href } class="appearance-none outline-none truncate flex-1 py-2 px-4 transition duration-300 cursor-pointer">
 			{ session.Title }
 		</a>
 		<button
