@@ -125,3 +125,50 @@ func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.Op
 		}
 	}
 }
+
+func CallOpenRouterEmbedding(embeddingRequest models.OpenRouterEmbeddingRequest, channel chan<- models.OpenRouterEmbeddingResponse) {
+	url := os.Getenv("OPEN_ROUTER_EMBEDDING_URL")
+	key := os.Getenv("OPEN_ROUTER_API_KEY")
+	returnVal := models.OpenRouterEmbeddingResponse{}
+
+	requestBytes, err := json.Marshal(embeddingRequest)
+	if err != nil {
+		fmt.Printf("Error marshaling embedding request: %v\n", err.Error())
+		channel <- returnVal
+		return
+	}
+	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBytes))
+	if err != nil {
+		fmt.Printf("Error creating HTTP request for embedding: %v\n", err.Error())
+		channel <- returnVal
+		return
+	}
+	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", key))
+	httpRequest.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		fmt.Printf("Error making HTTP request for embedding: %v\n", err.Error())
+		channel <- returnVal
+		return
+	}
+	defer response.Body.Close()
+	respBody, err := io.ReadAll(response.Body)
+	if response.StatusCode != http.StatusOK {
+		fmt.Printf("Error in making openrouter embedding api call: received status code %d\n", response.StatusCode)
+		if err == nil {
+			fmt.Printf("Error in making openrouter embedding api call %v\n", string(respBody))
+		}
+		channel <- returnVal
+		return
+	}
+	// fmt.Printf("Embedding response body: %s\n", string(respBody)[0:500])
+	err = json.Unmarshal(respBody, &returnVal)
+	if err != nil {
+		fmt.Printf("Error unmarshaling embedding response: %v\n", err.Error())
+		channel <- returnVal
+		return
+	}
+	channel <- returnVal
+
+}

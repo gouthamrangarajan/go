@@ -95,3 +95,15 @@ func (requestMessage OpenRouterRequestMessage) MarshalJSON() ([]byte, error) {
 	outputBytes, outErr = json.Marshal(output)
 	return outputBytes, outErr
 }
+
+type OpenRouterEmbeddingRequest struct {
+	Model string   `json:"model"`
+	Input []string `json:"input"`
+}
+
+type OpenRouterEmbeddingResponse struct {
+	Data []struct {
+		Embedding []float32 `json:"embedding"`
+		Index     int       `json:"index"`
+	} `json:"data"`
+}

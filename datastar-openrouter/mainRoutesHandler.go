@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -80,6 +81,20 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	if newSession.Id != 0 {
 		sse.ExecuteScript(`window.location.href=window.location.origin+'/'+` + strconv.Itoa(newSession.Id))
+		embeddingChannel := make(chan models.OpenRouterEmbeddingResponse)
+		defer close(embeddingChannel)
+		embeddingRequest := models.OpenRouterEmbeddingRequest{
+			Model: os.Getenv("OPEN_ROUTER_EMBEDDING_MODEL"),
+			Input: []string{newSession.Title},
+		}
+		go services.CallOpenRouterEmbedding(embeddingRequest, embeddingChannel)
+		embeddingResponse := <-embeddingChannel
+		if len(embeddingResponse.Data) > 0 {
+			updateTitleVectorChannel := make(chan int)
+			defer close(updateTitleVectorChannel)
+			go services.UpdateChatSessionTitleVector(newSession.Id, embeddingResponse.Data[0].Embedding, updateTitleVectorChannel)
+			<-updateTitleVectorChannel
+		}
 	} else {
 		services.SendErrorMessageToUI(sse, "Failed to create new chat session. Please try again later.")
 	}
@@ -168,7 +183,8 @@ func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http
 // Update chat session title if it's the first message in the session
 // Update chat session allow web search & image generation if applicable
 // Stream response from OpenRouter to UI
-// Wait for title update if called, wait for allow web search update if called
+// Wait for title update if called, call embedding and update title vector,
+// wait for allow web search update if called
 // If message is empty/error, return error message to UI and delete the model message chat conversation, return
 // Update model message chat conversation with full content after streaming is done if message is not empty
 
@@ -275,7 +291,8 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 // Update chat session title if it's the first message in the session
 // Update chat session allow web search & image generation if applicable
 // Stream response from OpenRouter to UI
-// Wait for title update if called, wait for allow web search update if called
+// Wait for title update if called, call embedding and update title vector,
+// wait for allow web search update if called
 // If message is empty/error, return error message to UI and delete the model message chat conversation, return
 // Update model message chat conversation with full content after streaming is done if message is not empty
 func retryHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -340,6 +357,8 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 
 	updateTitleChannel := make(chan int)
 	defer close(updateTitleChannel)
+	embeddingChannel := make(chan models.OpenRouterEmbeddingResponse)
+	defer close(embeddingChannel)
 	updateTitleCalled := false
 	titleToUpdate := clientSignal.Prompt
 
@@ -349,6 +368,12 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 		}
 		go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, updateTitleChannel)
 		updateTitleCalled = true
+
+		embeddingRequest := models.OpenRouterEmbeddingRequest{
+			Model: os.Getenv("OPEN_ROUTER_EMBEDDING_MODEL"),
+			Input: []string{titleToUpdate},
+		}
+		go services.CallOpenRouterEmbedding(embeddingRequest, embeddingChannel)
 	}
 
 	updateWebSearchChannel := make(chan int)
@@ -385,12 +410,21 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 		}
 	}
 
-	if updateTitleCalled && <-updateTitleChannel != 0 {
-		select {
-		case <-request.Context().Done():
-			break
-		default:
-			sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}))
+	if updateTitleCalled {
+		if <-updateTitleChannel != 0 {
+			select {
+			case <-request.Context().Done():
+				break
+			default:
+				sse.PatchElementTempl(components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}))
+			}
+		}
+		embeddingResponse := <-embeddingChannel
+		if len(embeddingResponse.Data) > 0 {
+			updateTitleVectorChannel := make(chan int)
+			defer close(updateTitleVectorChannel)
+			go services.UpdateChatSessionTitleVector(clientSignal.SessionId, embeddingResponse.Data[0].Embedding, updateTitleVectorChannel)
+			<-updateTitleVectorChannel
 		}
 	}
 
