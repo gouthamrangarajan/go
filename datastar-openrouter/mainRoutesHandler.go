@@ -413,12 +413,16 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 		if strings.TrimSpace(selectedSession.Title) != "New Chat" && strings.TrimSpace(selectedSession.Title) != "" {
 			titleToUpdate = selectedSession.Title
 		}
+		titleToVectorize := titleToUpdate
+		if len(titleToVectorize) > 500 {
+			titleToVectorize = titleToUpdate[:500]
+		}
 		go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, updateTitleChannel)
 		updateTitleCalled = true
 
 		embeddingRequest := models.OpenRouterEmbeddingRequest{
 			Model: os.Getenv("OPEN_ROUTER_EMBEDDING_MODEL"),
-			Input: []string{titleToUpdate},
+			Input: []string{titleToVectorize},
 		}
 		go services.CallOpenRouterEmbedding(embeddingRequest, embeddingChannel)
 	}
