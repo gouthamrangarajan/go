@@ -214,7 +214,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				</svg>
 			</button>
 			<button
-				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1  border-dark dark:border-white hover:opacity-90 focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
 				data-class="{' animate-border':$_processingViaButton || $_processingViaInput || $_retrying}"
 				data-on:click={ `
                     @post("/chat",{openWhenHidden: true});

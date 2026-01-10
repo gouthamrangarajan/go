@@ -22,6 +22,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	userId := request.Context().Value(services.UserIDKey).(string)
 	sessionId := 0
 	sessionIdStr := chi.URLParam(request, "sessionId")
+	searchMenuTxt := strings.TrimSpace(request.URL.Query().Get("search_menu"))
 	sessionId, err := strconv.Atoi(sessionIdStr)
 	if err != nil {
 		sessionId = 0
@@ -50,6 +51,13 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	defer close(aiModelsChannel)
 	go services.GetAiModels(aiModelsChannel)
 
+	if searchMenuTxt != "" {
+		sessions = SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
+			UserId:     userId,
+			SearchTerm: searchMenuTxt,
+		})
+	}
+
 	chatConversations := <-chatConversationChannel
 	aiModels := <-aiModelsChannel
 	component := components.Main(
@@ -60,6 +68,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 			AllowWebSearch:   selectedSession.AllowWebSearch,
 			ImageGeneration:  selectedSession.ImageGeneration,
 			CurrentSessionId: sessionId,
+			MenuSearchTerm:   searchMenuTxt,
 		})
 	templ.Handler(component).ServeHTTP(responseWriter, request)
 }
@@ -138,6 +147,41 @@ func deleteSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	}
 	sse.RemoveElement("#menuItem_"+strconv.Itoa(clientSignal.SessionIdToDelete), datastar.WithUseViewTransitions(true))
 	sse.PatchSignals([]byte(`{showDeleteModal:false}`))
+}
+func searchSessionHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := services.GetUserIdFromRequest(request)
+	userExistsChannel := make(chan bool)
+	defer close(userExistsChannel)
+	go services.CheckUserExistsInTable(userId, userExistsChannel)
+	if !<-userExistsChannel {
+		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	requestBody, _ := io.ReadAll(request.Body)
+	var clientSignal models.ClientSignals
+	json.Unmarshal(requestBody, &clientSignal)
+	sse := datastar.NewSSE(responseWriter, request)
+	sessions := []models.ChatSession{}
+	if strings.TrimSpace(clientSignal.SearchMenu) == "" {
+		sessionsChannel := make(chan []models.ChatSession)
+		defer close(sessionsChannel)
+		go services.GetChatSessions(userId, sessionsChannel)
+		sessions = <-sessionsChannel
+	} else {
+		sessions = SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
+			UserId:     userId,
+			SearchTerm: clientSignal.SearchMenu})
+	}
+	sse.PatchElementTempl(components.MenuUl(sessions), datastar.WithUseViewTransitions(true))
+	scriptToExecute := "window.history.replaceState({},'','/"
+	if clientSignal.SessionId != 0 {
+		scriptToExecute += strconv.Itoa(clientSignal.SessionId)
+	}
+	if strings.TrimSpace(clientSignal.SearchMenu) != "" {
+		scriptToExecute += "?search_menu=" + clientSignal.SearchMenu
+	}
+	scriptToExecute += "')"
+	sse.ExecuteScript(scriptToExecute, datastar.WithExecuteScriptAutoRemove(true))
 }
 func fileUploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	requestBody, _ := io.ReadAll(request.Body)
@@ -473,4 +517,24 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 			services.SendErrorMessageToUI(sse, "Failed to update chat conversation. Please try again later.")
 		}
 	}
+}
+
+func SearchSessionsViaChannel(data models.SearchSessionViaChannelRequest) []models.ChatSession {
+	retVal := []models.ChatSession{}
+	searchSessionsChannel := make(chan []models.ChatSession)
+	defer close(searchSessionsChannel)
+	embeddingsChannel := make(chan models.OpenRouterEmbeddingResponse)
+	defer close(embeddingsChannel)
+
+	embeddingRequest := models.OpenRouterEmbeddingRequest{
+		Model: os.Getenv("OPEN_ROUTER_EMBEDDING_MODEL"),
+		Input: []string{data.SearchTerm},
+	}
+	go services.CallOpenRouterEmbedding(embeddingRequest, embeddingsChannel)
+	embeddingResponse := <-embeddingsChannel
+	if len(embeddingResponse.Data) > 0 {
+		go services.SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
+		retVal = <-searchSessionsChannel
+	}
+	return retVal
 }

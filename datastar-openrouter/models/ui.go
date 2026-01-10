@@ -10,9 +10,10 @@ type ClientSignals struct {
 		Contents string `json:"contents"`
 		Mime     string `json:"mime"`
 	} `json:"fileData"`
-	WebSearch        bool `json:"webSearch"`
-	ImageGeneration  bool `json:"imageGeneration"`
-	MessageIdToRetry int  `json:"messageIdToRetry"`
+	WebSearch        bool   `json:"webSearch"`
+	ImageGeneration  bool   `json:"imageGeneration"`
+	MessageIdToRetry int    `json:"messageIdToRetry"`
+	SearchMenu       string `json:"searchMenu"`
 }
 type FileDataDisplay struct {
 	FileName string
@@ -31,4 +32,5 @@ type UIMainModel struct {
 	AllowWebSearch   bool
 	ImageGeneration  bool
 	CurrentSessionId int
+	MenuSearchTerm   string
 }

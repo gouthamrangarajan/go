@@ -29,6 +29,7 @@ func main() {
 	router.Post("/new", newChatHandler)
 	router.Post("/chat", promptHandler)
 	router.Post("/session/delete", deleteSessionHandler)
+	router.Post("/sessions/search", searchSessionHandler)
 	router.Post("/fileupload", fileUploadHandler)
 	router.Post("/fileupload/remove", removeUploadedFileHandler)
 	router.Post("/retry", retryHandler)
