@@ -81,12 +81,24 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 						data-bind="searchMenu"
 						placeholder="Search Chats..."
 						data-indicator="_searching"
-						data-on:keyup__debounce.500ms="@post('/sessions/search',{openWhenHidden:true})"
+						data-on:keyup__debounce.500ms__viewtransition="@post('/sessions/search',{openWhenHidden:true})"
 					/>
+					<button
+						class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 dark:text-red-300 focus:ring-1 focus:ring-red-600 dark:focus:ring-red-300 hover:opacity-90"
+						aria-label="Clear Search"
+						style="view-transition-name:search-action-icon"
+						data-show="!$_searching && $searchMenu!=''"
+						data-on:click__viewtransition="$searchMenu='';@post('/sessions/search',{openWhenHidden:true})"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+							<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"></path>
+						</svg>
+					</button>
 					<div
 						data-show="$_searching"
 						class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 border-dark dark:border-white "
 						data-class="{' animate-border':$_searching}"
+						style="view-transition-name:search-action-icon"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
