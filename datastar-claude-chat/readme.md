@@ -60,7 +60,7 @@ To get started with the Claude Chat application, follow these steps:
 
 To run the application, use the following command:
 
-Open your browser and navigate to `http://http://127.0.0.1:7331/` to start chatting!
+Open your browser and navigate to `http://127.0.0.1:7331/` to start chatting!
 
 ### Deployed version
 
