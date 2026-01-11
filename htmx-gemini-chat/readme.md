@@ -12,7 +12,7 @@ Welcome to the Gemini Chat project! This application allows users to talk to Goo
 
 ### Model/Library/Frameworks used
 
-- Gemini (works for Flash-2.0, Flash-2.5 & Flash-2.5-lite)
+- Gemini (works for Flash-3.0-Preview, Flash-2.5, Flash-2.5-lite & Flash-2.0)
 - Golang , templ , chi
 - Htmx, Alpine
 - Zero md

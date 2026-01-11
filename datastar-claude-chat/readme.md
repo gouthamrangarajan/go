@@ -11,7 +11,7 @@ Welcome to the Claude Chat project! This application allows users to talk to Cla
 
 ### Model/Library/Frameworks used
 
-- Claude (works for Claude 3.5 Haiku, Sonnet models)
+- Claude (works for Claude 4.5 Haiku, Claude 3.5 Haiku, Sonnet models)
 - Golang , templ , chi
 - Datastar
 - Zero md
