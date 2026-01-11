@@ -1,6 +1,6 @@
-## Claude Chat
+## Nexus Chat
 
-Welcome to the Claude Chat project! This application allows users to talk to Claude Model's
+Welcome to the Nexus Chat project! This application allows users to talk to many ai models using OpenRouter
 
 ### Features
 
@@ -8,10 +8,12 @@ Welcome to the Claude Chat project! This application allows users to talk to Cla
 - Responsive Design
 - Integrated Web Search Tool
 - Image & PDF Summarization
+- Image Generation
+- Ability to retry an answer from ai model with a different ai model
 
 ### Model/Library/Frameworks used
 
-- Claude (works for Claude 3.5 Haiku, Sonnet models)
+- OpenRouter (connect to many models/ let openrouter auto mode to auto select a model)
 - Golang , templ , chi
 - Datastar
 - Zero md
@@ -20,7 +22,7 @@ Welcome to the Claude Chat project! This application allows users to talk to Cla
 
 ### Installation
 
-To get started with the Claude Chat application, follow these steps:
+To get started with the Nexus Chat application, follow these steps:
 
 1. Clone the repository:
    ```bash
@@ -28,23 +30,17 @@ To get started with the Claude Chat application, follow these steps:
    ```
 2. Navigate to the project directory:
    ```bash
-   cd datastar-claude-chat
+   cd datastar-openrouter
    ```
 3. Create a .env file with following values
 
-   - CLAUDE_API_HEADER_VERSION
-   - CALUDE_API_HEADER_FILE_UPLOAD
-   - CLAUDE_API_KEY
-   - CLAUDE_API_URL
-   - CLAUDE_FILE_UPLOAD_API_URL
-   - CLAUDE_MAX_TOKEN
-   - CLAUDE_MODEL
-   - CLAUDE_TEMPERATURE
-   - CLAUDE_WEB_TOOL_TYPE
-   - CLAUDE_WEB_TOOL_NAME
-   - CALUDE_WEB_TOOL_MAX_USES
    - COOKIE_SECRET
-   - ENVIRONMENT
+   - DEFAULT_MODEL_ID
+   - ENV
+   - OPEN_ROUTER_API_KEY
+   - OPEN_ROUTER_API_URL
+   - OPEN_ROUTER_EMBEDDING_URL
+   - OPEN_ROUTER_EMBEDDING_MODEL
    - TURSO_AUTH_TOKEN
    - TURSO_DATABASE_URL
 
@@ -65,6 +61,6 @@ Open your browser and navigate to `http://127.0.0.1:7331/` to start chatting!
 
 ### Deployed version
 
-[rg-claude-chat](https://rg-claude-chat.up.railway.app/)
+[rg-nexus-chat](https://rg-nexus-chat.up.railway.app/)
 
-![screenshot](Claude_Chat.png)
+![screenshot](screenshot.png)
