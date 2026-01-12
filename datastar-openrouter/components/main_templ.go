@@ -46,7 +46,7 @@ func Main(model models.UIMainModel) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50 md:overflow-x-hidden\" style=\"display:none;\" data-show=\"true\" data-signals=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark/50 scrollbar-track-dark dark:scrollbar-thumb-white/50 dark:scrollbar-track-white md:overflow-x-hidden\" style=\"display:none;\" data-show=\"true\" data-signals=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
