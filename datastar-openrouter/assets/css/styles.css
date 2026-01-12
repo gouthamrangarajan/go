@@ -595,9 +595,6 @@
   .scrollbar-track-dark {
     --scrollbar-track: #0d1117;
   }
-  .scrollbar-track-dark\/50 {
-    --scrollbar-track: color-mix(in oklab, #0d1117 50%, transparent);
-  }
   .scrollbar-track-transparent {
     --scrollbar-track: transparent;
   }
@@ -876,11 +873,6 @@
   .dark\:scrollbar-track-white {
     @media (prefers-color-scheme: dark) {
       --scrollbar-track: #fff;
-    }
-  }
-  .dark\:scrollbar-track-white\/50 {
-    @media (prefers-color-scheme: dark) {
-      --scrollbar-track: color-mix(in oklab, #fff 50%, transparent);
     }
   }
   .dark\:placeholder\:text-gray-300 {

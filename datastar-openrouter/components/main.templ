@@ -59,7 +59,7 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 			data-effect="$showDeleteModal?$_menuFocusAbortController.abort():$_showMenu?setTimeout(()=>$_menuFocusAbortController=focusTrap('#menuContainer')):$_menuFocusAbortController.abort()"
 		>
 			<div
-				class="flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300 h-full overflow-y-auto bg-white dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-dark/50 dark:scrollbar-thumb-white dark:scrollbar-track-white/50"
+				class="flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300 h-full overflow-y-auto bg-white dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-white scrollbar-track-dark dark:scrollbar-thumb-dark dark:scrollbar-track-white"
 				data-on:click="evt.stopPropagation()"
 			>
 				<button
