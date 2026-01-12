@@ -200,22 +200,23 @@ func fileUploadHandler(responseWriter http.ResponseWriter, request *http.Request
 
 	if (clientSignal.FileData[0].Mime == "application/pdf" && len(pdfMatches) != 2) ||
 		(clientSignal.FileData[0].Mime != "application/pdf" && len(imgMatches) != 4) {
-		sse.PatchSignals([]byte("{fileData:''}"))
+		sse.PatchSignals([]byte("{fileData:'',fileUploading:false}"))
 		fileName = ""
 		services.SendErrorMessageToUI(sse, "Invalid file type. Please upload an file with type (JPG, PNG, WEBP, GIF, PDF)")
 	}
 	decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0].Contents)
 	if err != nil || len(decodedBytes) > 1024*1024 {
-		sse.PatchSignals([]byte("{fileData:''}"))
+		sse.PatchSignals([]byte("{fileData:'',fileUploading:false}"))
 		services.SendErrorMessageToUI(sse, "File too large. Please upload a file smaller than 1 MB.")
 		fileName = ""
 	}
 	sse.PatchElementTempl(components.FileAttachmentDisplay(fileName), datastar.WithUseViewTransitions(true))
+	sse.PatchSignals([]byte("{fileUploading:false}"))
 }
 func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	sse.PatchElementTempl(components.FileAttachmentDisplay(""), datastar.WithUseViewTransitions(true))
-	sse.PatchSignals([]byte("{fileData:''}"))
+	sse.PatchSignals([]byte("{fileData:'',fileUploading:false}"))
 }
 
 // ALGO

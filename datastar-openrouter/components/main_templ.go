@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"datastar-openrouter/components/shared"
 	"datastar-openrouter/models"
 	"strconv"
 )
@@ -56,9 +57,10 @@ func Main(model models.UIMainModel) templ.Component {
                             searchMenu:'` + model.MenuSearchTerm + `',
                             showDeleteModal:false,sessionIdToDelete:0,
                             webSearch:` + strconv.FormatBool(model.AllowWebSearch) + `,
-                            imageGeneration:` + strconv.FormatBool(model.ImageGeneration) + `}`)
+                            imageGeneration:` + strconv.FormatBool(model.ImageGeneration) + `,
+							fileUploading:false}`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 19, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 21, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -168,7 +170,15 @@ func menu(sessions []models.ChatSession, searchTerm string) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"absolute top-0 left-0 w-full h-full bg-white/50 dark:bg-dark/50 z-10\" data-show=\"$_showMenu\" data-signals=\"{_menuFocusAbortController:new AbortController()}\" data-on:click__viewtransition=\"$_showMenu=false\"><div class=\"flex gap-2 items-start h-full w-11/12 md:w-9/12 lg:w-5/12 xl:w-4/12\" id=\"menuContainer\" data-effect=\"$showDeleteModal?$_menuFocusAbortController.abort():$_showMenu?setTimeout(()=>$_menuFocusAbortController=focusTrap('#menuContainer')):$_menuFocusAbortController.abort()\"><div class=\"flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300 h-full overflow-y-auto bg-white dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-white scrollbar-track-dark dark:scrollbar-thumb-dark dark:scrollbar-track-white\" data-on:click=\"evt.stopPropagation()\"><button class=\"appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{'animate-pulse':$_creatingNewSession}\" data-on:click__viewtransition=\"@post('/new',{openWhenHidden:true});\" data-indicator=\"_creatingNewSession\" data-attr:disabled=\"$_creatingNewSession\">New Chat</button><div class=\"mt-5 w-full py-2 px-4 flex items-center gap-1 transition duration-300 border-t border-b border-dark/50 dark:border-white/50 focus-within:border-dark dark:focus-within:border-white\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" class=\"appearance-none outline-none flex-1 placeholder:text-gray-600 dark:placeholder:text-gray-300\" data-bind=\"searchMenu\" placeholder=\"Search Chats...\" data-indicator=\"_searching\" data-on:keyup__debounce.500ms__viewtransition=\"@post('/sessions/search',{openWhenHidden:true})\"> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 dark:text-red-300 focus:ring-1 focus:ring-red-600 dark:focus:ring-red-300 hover:opacity-90\" aria-label=\"Clear Search\" style=\"view-transition-name:search-action-icon\" data-show=\"!$_searching && $searchMenu!=''\" data-on:click__viewtransition=\"$searchMenu='';@post('/sessions/search',{openWhenHidden:true})\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path d=\"M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z\"></path></svg></button><div data-show=\"$_searching\" class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 border-dark dark:border-white \" data-class=\"{' animate-border':$_searching}\" style=\"view-transition-name:search-action-icon\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path d=\"M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z\"></path></svg></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"absolute top-0 left-0 w-full h-full bg-white/50 dark:bg-dark/50 z-10\" data-show=\"$_showMenu\" data-signals=\"{_menuFocusAbortController:new AbortController()}\" data-on:click__viewtransition=\"$_showMenu=false\"><div class=\"flex gap-2 items-start h-full w-11/12 md:w-9/12 lg:w-5/12 xl:w-4/12\" id=\"menuContainer\" data-effect=\"$showDeleteModal?$_menuFocusAbortController.abort():$_showMenu?setTimeout(()=>$_menuFocusAbortController=focusTrap('#menuContainer')):$_menuFocusAbortController.abort()\"><div class=\"flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300 h-full overflow-y-auto bg-white dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-white scrollbar-track-dark dark:scrollbar-thumb-dark dark:scrollbar-track-white\" data-on:click=\"evt.stopPropagation()\"><button class=\"appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-class=\"{'animate-pulse':$_creatingNewSession}\" data-on:click__viewtransition=\"@post('/new',{openWhenHidden:true});\" data-indicator=\"_creatingNewSession\" data-attr:disabled=\"$_creatingNewSession\">New Chat</button><div class=\"mt-5 w-full py-2 px-4 flex items-center gap-1 transition duration-300 border-t border-b border-dark/50 dark:border-white/50 focus-within:border-dark dark:focus-within:border-white\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" class=\"appearance-none outline-none flex-1 placeholder:text-gray-600 dark:placeholder:text-gray-300\" data-bind=\"searchMenu\" placeholder=\"Search Chats...\" data-indicator=\"_searching\" data-on:keyup__debounce.500ms__viewtransition=\"@post('/sessions/search',{openWhenHidden:true})\"> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 dark:text-red-300 focus:ring-1 focus:ring-red-600 dark:focus:ring-red-300 hover:opacity-90\" aria-label=\"Clear Search\" style=\"view-transition-name:search-action-icon\" data-show=\"!$_searching && $searchMenu!=''\" data-on:click__viewtransition=\"$searchMenu='';@post('/sessions/search',{openWhenHidden:true})\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path d=\"M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z\"></path></svg></button><div data-show=\"$_searching\" class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 border-dark dark:border-white \" data-class=\"{' animate-border':$_searching}\" style=\"view-transition-name:search-action-icon\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = shared.Loader("").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -176,7 +186,7 @@ func menu(sessions []models.ChatSession, searchTerm string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><button class=\"appearance-none outline-none cursor-pointer mt-2 transition duration-300 rounded p-1 hover:opacity-90 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:menu-button\" aria-label=\"Close Menu\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div></div><button class=\"appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded p-1 hover:opacity-90 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80\" data-on:click__viewtransition=\"$_showMenu=true\" style=\"view-transition-name:menu-button\" data-show=\"!$_showMenu\" aria-label=\"Open Menu\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><button class=\"appearance-none outline-none cursor-pointer mt-2 transition duration-300 rounded p-1 hover:opacity-90 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80\" style=\"view-transition-name:menu-button\" aria-label=\"Close Menu\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div></div><button class=\"appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded p-1 hover:opacity-90 bg-dark dark:bg-white text-white dark:text-dark focus:ring-2 focus:ring-dark dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80\" data-on:click__viewtransition=\"$_showMenu=true\" style=\"view-transition-name:menu-button\" data-show=\"!$_showMenu\" aria-label=\"Open Menu\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\" style=\"view-transition-name:menu-button-icon\"><path fill-rule=\"evenodd\" d=\"M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z\" clip-rule=\"evenodd\"></path></svg></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -205,7 +215,7 @@ func MenuUl(sessions []models.ChatSession, searchTerm string) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<ul class=\"flex flex-col mt-5 w-full\" id=\"menu\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<ul class=\"flex flex-col mt-5 w-full\" id=\"menu\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -215,7 +225,7 @@ func MenuUl(sessions []models.ChatSession, searchTerm string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</ul>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -248,72 +258,72 @@ func MenuItem(session models.ChatSession, searchTerm string) templ.Component {
 		if searchTerm != "" {
 			href += "?search_menu=" + searchTerm
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<li class=\"w-full flex gap-1 items-center pr-1 hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:bg-gray-200 dark:focus-within:bg-gray-700\" data-class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<li class=\"w-full flex gap-1 items-center pr-1 hover:bg-gray-200 dark:hover:bg-gray-700 focus-within:bg-gray-200 dark:focus-within:bg-gray-700\" data-class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("{'underline underline-offset-6':$sessionId==" + strconv.Itoa(session.Id) + "}")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 168, Col: 94}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 163, Col: 94}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("menuItem_" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 169, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 164, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:menu-item-" + strconv.Itoa(session.Id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 170, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 165, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var11 templ.SafeURL
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(href)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 172, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 167, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" class=\"appearance-none outline-none truncate flex-1 py-2 px-4 transition duration-300 cursor-pointer\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"appearance-none outline-none truncate flex-1 py-2 px-4 transition duration-300 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 173, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 168, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</a> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 dark:text-red-300 focus:ring-2 focus:ring-red-600 dark:focus:ring-red-300 hover:opacity-90\" data-on:click__viewtransition=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</a> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 dark:text-red-300 focus:ring-2 focus:ring-red-600 dark:focus:ring-red-300 hover:opacity-90\" data-on:click__viewtransition=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -324,13 +334,13 @@ func MenuItem(session models.ChatSession, searchTerm string) templ.Component {
                 $showDeleteModal=true;
             `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 181, Col: 13}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 176, Col: 13}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" aria-label=\"Delete Chat Session\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z\" clip-rule=\"evenodd\"></path></svg></button></li>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" aria-label=\"Delete Chat Session\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z\" clip-rule=\"evenodd\"></path></svg></button></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,6 +1,7 @@
 package components
 
 import (
+	"datastar-openrouter/components/shared"
 	"datastar-openrouter/models"
 	"datastar-openrouter/services"
 	"strconv"
@@ -110,7 +111,8 @@ templ inputsAndError(aiModels []models.AIModel) {
 						` }
 				data-on:keydown={ `
                     if (!$_processingViaInput && !$_processingViaButton && 
-						!$_retrying && evt.key === 'Enter' && 
+						!$_retrying && !$fileUploading && 
+						evt.key === 'Enter' && 
                         (evt.metaKey || evt.ctrlKey)) {
                         evt.preventDefault();
                         @post("/chat",{openWhenHidden: true});
@@ -160,21 +162,29 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				class="hidden"
 				data-ref="fileInputRef"
 				accept="image/jpeg, image/png, image/webp, image/jpg, image/gif, application/pdf"
-				data-effect="$fileData && $fileData.length && $fileData.length>0 && @post('/fileupload',{openWhenHidden:true});"
+				data-effect="$fileData && $fileData.length && $fileData.length>0 && setTimeout(()=>{$fileUploading=true;@post('/fileupload',{openWhenHidden:true});})"
 			/>
 			<button
 				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
-				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
+				data-class="{'border-dark dark:border-white animate-border':$fileUploading}"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
 				aria-label="Attach Image or PDF"
 				data-on:click="$fileInputRef.click()"
 			>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					class="size-6"
+					data-show="!$fileUploading"
+				>
 					<path fill-rule="evenodd" d="M18.97 3.659a2.25 2.25 0 0 0-3.182 0l-10.94 10.94a3.75 3.75 0 1 0 5.304 5.303l7.693-7.693a.75.75 0 0 1 1.06 1.06l-7.693 7.693a5.25 5.25 0 1 1-7.424-7.424l10.939-10.94a3.75 3.75 0 1 1 5.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 0 1 5.91 15.66l7.81-7.81a.75.75 0 0 1 1.061 1.06l-7.81 7.81a.75.75 0 0 0 1.054 1.068L18.97 6.84a2.25 2.25 0 0 0 0-3.182Z" clip-rule="evenodd"></path>
 				</svg>
+				@shared.Loader("$fileUploading")
 			</button>
 			<button
 				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
-				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
 				data-class="{'text-blue-600 dark:text-blue-300':$webSearch}"
 				data-on:click__viewtransition="$webSearch=!$webSearch"
 				data-attr:aria-label="$webSearch?'Switch off Web Search:':'Switch on Web Search'"
@@ -204,7 +214,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 			</button>
 			<button
 				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
-				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
 				data-class="{'text-blue-600 dark:text-blue-300':$imageGeneration}"
 				data-on:click__viewtransition="$imageGeneration=!$imageGeneration"
 				data-attr:aria-label="$imageGeneration?'Switch off Image Generation:':'Switch on Image Generation'"
@@ -220,7 +230,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
                     @post("/chat",{openWhenHidden: true});
                 ` }
 				data-indicator="_processingViaButton"
-				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
 				aria-label="Send Message"
 			>
 				<svg
@@ -232,15 +242,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				>
 					<path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z"></path>
 				</svg>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 20 20"
-					fill="currentColor"
-					class="size-5"
-					data-show="$_processingViaButton || $_processingViaInput || $_retrying"
-				>
-					<path d="M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z"></path>
-				</svg>
+				@shared.Loader("$_processingViaButton || $_processingViaInput || $_retrying")
 			</button>
 		</div>
 	</div>
@@ -254,11 +256,18 @@ templ FileAttachmentDisplay(fileName string) {
 				fileNameToDisplay = fileName[0:15] + "..." + fileName[len(fileName)-5:]
 			}
 		}}
-		<div id="fileName" class="text-xs flex items-center gap-1 p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark md:text-sm">
+		<div
+			id="fileName"
+			class="text-xs flex items-center gap-1 p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark md:text-sm"
+			data-class="{'animate-pulse':$_fileRemoving}"
+		>
 			<span class="truncate">{ fileNameToDisplay }</span>
 			<button
-				class="appearance-none outline-none cursor-pointer text-red-300 dark:text-red-600 transition duration-300 p-1 rounded-full focus:ring-1 focus:ring-red-300 dark:focus-ring-600"
+				class="appearance-none outline-none cursor-pointer text-red-300 dark:text-red-600 transition duration-300 p-1 rounded-full focus:ring-1 focus:ring-red-300 dark:focus-ring-600 disabled:cursor-not-allowed disabled:opacity-80"
 				data-on:click="@post('/fileupload/remove',{openWhenHidden:true})"
+				data-indicator="_fileRemoving"
+				aria-label="Remove attached file"
+				data-attr:disabled="$_fileRemoving"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
 					<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"></path>
