@@ -589,8 +589,8 @@
   .scrollbar-thumb-dark {
     --scrollbar-thumb: #0d1117;
   }
-  .scrollbar-thumb-dark\/50 {
-    --scrollbar-thumb: color-mix(in oklab, #0d1117 50%, transparent);
+  .scrollbar-thumb-white {
+    --scrollbar-thumb: #fff;
   }
   .scrollbar-track-dark {
     --scrollbar-track: #0d1117;
@@ -863,14 +863,14 @@
       }
     }
   }
+  .dark\:scrollbar-thumb-dark {
+    @media (prefers-color-scheme: dark) {
+      --scrollbar-thumb: #0d1117;
+    }
+  }
   .dark\:scrollbar-thumb-white {
     @media (prefers-color-scheme: dark) {
       --scrollbar-thumb: #fff;
-    }
-  }
-  .dark\:scrollbar-thumb-white\/50 {
-    @media (prefers-color-scheme: dark) {
-      --scrollbar-thumb: color-mix(in oklab, #fff 50%, transparent);
     }
   }
   .dark\:scrollbar-track-white {
