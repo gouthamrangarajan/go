@@ -157,7 +157,7 @@ func SearchChatSessions(userId string, searchVector []float32, channel chan<- []
 		return
 	}
 	vectorStr := string(vectorStrBytes)
-	rows, err := db.Query("SELECT session_id,title,allow_web_search FROM chat_sessions WHERE user_id = ? AND vector_distance_cos(title_vector, vector32(?)) < 0.5 ORDER BY vector_distance_cos(title_vector, vector32(?))", userId, vectorStr, vectorStr)
+	rows, err := db.Query("SELECT session_id,title,allow_web_search FROM chat_sessions WHERE user_id = ? AND vector_distance_cos(title_vector, vector32(?)) < 0.8 ORDER BY vector_distance_cos(title_vector, vector32(?))", userId, vectorStr, vectorStr)
 	if err != nil {
 		fmt.Printf("Failed to execute query in SearchChatSessions: %v\n", err.Error())
 		channel <- data
