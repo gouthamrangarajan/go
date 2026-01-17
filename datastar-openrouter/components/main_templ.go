@@ -323,7 +323,7 @@ func MenuItem(session models.ChatSession, searchTerm string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</a> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 dark:text-red-300 focus:ring-2 focus:ring-red-600 dark:focus:ring-red-300 hover:opacity-90\" data-on:click__viewtransition=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</a> <button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold  focus:ring-2 focus:ring-red-600 dark:focus:ring-red-300 focus:text-red-600 dark:focus:text-red-300 hover:text-red-600 dark:hover:text-red-300\" data-on:click__viewtransition=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

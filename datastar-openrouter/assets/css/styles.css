@@ -655,11 +655,23 @@
       }
     }
   }
+  .hover\:text-red-600 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-red-600);
+      }
+    }
+  }
   .hover\:opacity-90 {
     &:hover {
       @media (hover: hover) {
         opacity: 90%;
       }
+    }
+  }
+  .focus\:text-red-600 {
+    &:focus {
+      color: var(--color-red-600);
     }
   }
   .focus\:ring-1 {
@@ -933,6 +945,22 @@
         @media (hover: hover) {
           background-color: var(--color-gray-700);
         }
+      }
+    }
+  }
+  .dark\:hover\:text-red-300 {
+    @media (prefers-color-scheme: dark) {
+      &:hover {
+        @media (hover: hover) {
+          color: var(--color-red-300);
+        }
+      }
+    }
+  }
+  .dark\:focus\:text-red-300 {
+    @media (prefers-color-scheme: dark) {
+      &:focus {
+        color: var(--color-red-300);
       }
     }
   }

@@ -168,7 +168,7 @@ templ MenuItem(session models.ChatSession, searchTerm string) {
 			{ session.Title }
 		</a>
 		<button
-			class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 dark:text-red-300 focus:ring-2 focus:ring-red-600 dark:focus:ring-red-300 hover:opacity-90"
+			class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold  focus:ring-2 focus:ring-red-600 dark:focus:ring-red-300 focus:text-red-600 dark:focus:text-red-300 hover:text-red-600 dark:hover:text-red-300"
 			data-on:click__viewtransition={ `
                 evt.stopPropagation();
                 $sessionIdToDelete=` + strconv.Itoa(session.Id) + `;                
