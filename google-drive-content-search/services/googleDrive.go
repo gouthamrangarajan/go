@@ -18,32 +18,8 @@ import (
 
 func GetFilesFromDrive(channel chan<- []models.FileData) {
 	filesToReturn := []models.FileData{}
-	clientSecret, err := os.ReadFile(CLIENT_SECRET_FILE)
+	driverService, err := createDriverService(false)
 	if err != nil {
-		fmt.Println("Error reading client secret file:", err)
-		channel <- filesToReturn
-		return
-	}
-	oauthConfig, err := google.ConfigFromJSON(clientSecret, drive.DriveScope)
-	if err != nil {
-		fmt.Println("Error creating OAuth2 config:", err)
-		channel <- filesToReturn
-		return
-	}
-	oauthClient := getClient(oauthConfig)
-	if oauthClient == nil {
-		fmt.Println("Error obtaining OAuth2 client")
-		generateTokenFromConfig(oauthConfig)
-		oauthClient = getClient(oauthConfig)
-	}
-	if oauthClient == nil {
-		fmt.Println("Error obtaining OAuth2 client after token generation")
-		channel <- filesToReturn
-		return
-	}
-	driverService, err := drive.NewService(context.Background(), option.WithHTTPClient(oauthClient))
-	if err != nil {
-		fmt.Println("Error creating Drive service:", err)
 		channel <- filesToReturn
 		return
 	}
@@ -51,7 +27,20 @@ func GetFilesFromDrive(channel chan<- []models.FileData) {
 
 	var allFiles []*drive.File
 
-	allFiles = recursiveGetFilesData(driverService, folderId, allFiles)
+	allFiles, err = recursiveGetFilesData(driverService, folderId, allFiles)
+	if err != nil && strings.Contains(err.Error(), "Token has been expired or revoked") {
+		fmt.Printf("OAuth2 token expired, generating new token...\n")
+		driverService, err = createDriverService(true)
+		if err != nil {
+			channel <- filesToReturn
+			return
+		}
+		allFiles, err = recursiveGetFilesData(driverService, folderId, allFiles)
+		if err != nil {
+			channel <- filesToReturn
+			return
+		}
+	}
 	if len(allFiles) == 0 {
 		channel <- filesToReturn
 		return
@@ -140,19 +129,47 @@ func getClient(oauthConfig *oauth2.Config) *http.Client {
 	}
 	return oauthConfig.Client(context.Background(), token)
 }
-
-func recursiveGetFilesData(driverService *drive.Service, folderId string, allFiles []*drive.File) []*drive.File {
+func createDriverService(tokenExpired bool) (*drive.Service, error) {
+	clientSecret, err := os.ReadFile(CLIENT_SECRET_FILE)
+	if err != nil {
+		fmt.Println("Error reading client secret file:", err)
+		return nil, err
+	}
+	oauthConfig, err := google.ConfigFromJSON(clientSecret, drive.DriveScope)
+	if err != nil {
+		fmt.Println("Error creating OAuth2 config:", err)
+		return nil, err
+	}
+	oauthClient := getClient(oauthConfig)
+	if oauthClient == nil || tokenExpired {
+		fmt.Println("Error obtaining OAuth2 client")
+		generateTokenFromConfig(oauthConfig)
+		oauthClient = getClient(oauthConfig)
+	}
+	if oauthClient == nil {
+		fmt.Println("Error obtaining OAuth2 client after token generation")
+		return nil, err
+	}
+	driverService, err := drive.NewService(context.Background(), option.WithHTTPClient(oauthClient))
+	if err != nil {
+		fmt.Println("Error creating Drive service:", err)
+		return nil, err
+	}
+	return driverService, nil
+}
+func recursiveGetFilesData(driverService *drive.Service, folderId string, allFiles []*drive.File) ([]*drive.File, error) {
 	filesData, err := driverService.Files.List().Q(fmt.Sprintf("'%s' in parents", folderId)).Do()
 	if err != nil {
 		fmt.Println("Error retrieving files:", err)
+		return allFiles, err
 	}
 	allFiles = append(allFiles, filesData.Files...)
 	for _, file := range filesData.Files {
 		if file.MimeType == "application/vnd.google-apps.folder" {
-			allFiles = recursiveGetFilesData(driverService, file.Id, allFiles)
+			allFiles, err = recursiveGetFilesData(driverService, file.Id, allFiles)
 		}
 	}
-	return allFiles
+	return allFiles, err
 }
 
 func extractSpreedSheetData(driverService *drive.Service, file *drive.File) (models.FileData, error) {

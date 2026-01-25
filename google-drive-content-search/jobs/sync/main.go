@@ -12,14 +12,18 @@ import (
 func main() {
 	services.LoadEnv()
 	fmt.Printf("Sync Process Started... %v\n", time.Now())
+
 	filesDataChannel := make(chan []models.FileData)
-	defer close(filesDataChannel)
 	go services.GetFilesFromDrive(filesDataChannel)
 	filesData := <-filesDataChannel
+	close(filesDataChannel)
 	fmt.Printf("Total Files Fetched from Drive & markdown generated: %v\n", len(filesData))
 
 	dbDataToInsert := services.ConvertFileDataCollectionToDocumentChunkCollection(filesData)
 	fmt.Printf("Total Document Chunks to be inserted: %v\n", len(dbDataToInsert))
+
+	deleteAllDataChannel := make(chan int)
+	go services.DeleteAllData(deleteAllDataChannel)
 
 	voyageRequestLimit, _ := strconv.Atoi(os.Getenv("VOYAGE_REQUEST_LIMIT"))
 	if voyageRequestLimit == 0 {
@@ -42,6 +46,11 @@ func main() {
 		voyageRequestChannels[idx] = voyageRequestChannel
 		go services.CallVoyageEmbedding(requestToVoyage, voyageRequestChannel)
 	}
+
+	totalRecordsDeleted := <-deleteAllDataChannel
+	close(deleteAllDataChannel)
+	fmt.Printf("Cleanup: Total Records Deleted from DB: %v\n", totalRecordsDeleted)
+
 	totalInserted := 0
 	fileNameSet := make(map[string]bool)
 	for idx := 0; idx < noOfRequest; idx++ {

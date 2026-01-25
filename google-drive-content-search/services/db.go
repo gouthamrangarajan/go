@@ -22,6 +22,27 @@ func createDb() (*sql.DB, error) {
 	}
 	return db, err
 }
+func DeleteAllData(channel chan<- int) {
+	db, err := createDb()
+	if err != nil {
+		channel <- 0
+		return
+	}
+	defer db.Close()
+	result, err := db.Exec("DELETE FROM document_chunks")
+	if err != nil {
+		fmt.Printf("Failed to execute query in DeleteAllData: %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		fmt.Printf("Failed to get rows affected in DeleteAllData: %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
 func DeleteData(fileName string, channel chan<- int) {
 	db, err := createDb()
 	if err != nil {
