@@ -1,0 +1,258 @@
+package components
+
+import (
+	"google-drive-content-search/models"
+	"strings"
+)
+
+func formatMessageForDataStar(message string) string {
+	ret := strings.ReplaceAll(message, `\`, `\\`)
+	ret = strings.ReplaceAll(ret, "${", `\${`)
+	ret = strings.ReplaceAll(ret, "`", "\\`")
+	return ret
+}
+
+templ Main() {
+	@layout() {
+		<main
+			class="w-full h-full flex flex-col item-center py-4 px-6 pt-10 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-track-white scrollbar-thumb-black"
+			style="view-transition-name:main"
+		>
+			<div class="flex items-center justify-center">
+				<div class="py-2 px-4 rounded-lg bg-gray-200">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="size-7"
+					>
+						<line x1="22" x2="2" y1="12" y2="12"></line>
+						<path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+						<line x1="6" x2="6.01" y1="16" y2="16"></line>
+						<line x1="10" x2="10.01" y1="16" y2="16"></line>
+					</svg>
+				</div>
+			</div>
+			<h1 class="text-3xl font-semibold w-full text-center mt-2">
+				Drive File Search
+			</h1>
+			<h2 class="text-lg text-slate-600 text-center mt-3">
+				Search through your Google Drive files using semantic search powered by vector embeddings
+			</h2>
+			@searchInput()
+			@hintSectionReplacedBySearchResults()
+		</main>
+	}
+}
+
+templ searchInput() {
+	<div class="flex gap-3 items-center w-full justify-center max-w-4xl mx-auto mt-5">
+		<div
+			class="flex items-center gap-1 flex-1 border-2 border-gray-300 py-2 px-4 rounded-lg 
+                            transition duration-300 shadow  focus-within:inset-ring-2 focus-within:inset-ring-gray-400"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+				<path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd"></path>
+			</svg>
+			<input
+				name="query"
+				type="text"
+				class="appearance-none outline-none flex-1 placeholder:text-slate-400 disabled:cursor-not-allowed disabled:opacity-80"
+				data-bind="query"
+				placeholder="Search file contents..."
+				data-on:keyup="evt.key === 'Enter' && $query.trim()!='' && !$_searchingViaTextInput && !$_searchingViaButton && @post('/search',{openWhenHidden:true})"
+				data-indicator="_searchingViaTextInput"
+			/>
+			@loader("$_searchingViaTextInput || $_searchingViaButton")
+		</div>
+		<button
+			type="submit"
+			class="apperance-none outline-none cursor-pointer rounded-lg bg-black text-white py-2.5 px-6 transition duration-300 focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-gray-200 disabled:cursor-not-allowed disabled:opacity-80"
+			data-on:click="@post('/search',{openWhenHidden:true})"
+			data-indicator="_searchingViaButton"
+			data-attr:disabled="$_searchingViaTextInput || $_searchingViaButton || $query.trim() == ''"
+		>
+			Search
+		</button>
+	</div>
+}
+
+templ hintSectionReplacedBySearchResults() {
+	<section
+		class="mt-20 w-full flex flex-col gap-3 items-center justify-center max-w-4xl mx-auto"
+		id="searchResults"
+	>
+		<div class="p-4 rounded-full bg-gray-200">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="size-7"
+			><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path><path d="M15 3v5a1 1 0 0 0 1 1h5"></path></svg>
+		</div>
+		<p class="text-lg text-center">
+			Search your files
+		</p>
+		<p class="text-slate-600">
+			Enter a search query to find relevant content from your Google Drive files
+		</p>
+	</section>
+}
+
+templ SearchResults(data []models.SearchResult) {
+	<section
+		class="mt-10 w-full flex flex-col gap-4 items-center justify-center max-w-4xl mx-auto"
+		id="searchResults"
+	>
+		if len(data)>0 {
+			for idx,dt := range data {
+				@searchResultItem(dt, idx)
+			}
+		} else {
+			<p class="text-lg text-center text-red-600">
+				No results found. Please try a different query.
+			</p>
+		}
+	</section>
+}
+
+templ searchResultItem(item models.SearchResult, index int) {
+	<article
+		class="shadow py-2 px-4 rounded-lg bg-white flex items-start w-full relative"
+	>
+		<div
+			class="flex flex-col w-full flex-1"
+		>
+			<div class="flex gap-3 items-center">
+				<div class="py-2 px-4 rounded-lg bg-gray-200">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="size-5"
+					><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path><path d="M15 3v5a1 1 0 0 0 1 1h5"></path></svg>
+				</div>
+				<p class="text-lg font-semibold break-all">{ item.FileName }</p>
+				<a
+					target="_blank"
+					href={ "https://drive.google.com/file/d/" + item.Id + "/view" }
+					aria-label="Open File in Google Drive"
+					class="appearance-none outline-none text-indigo-600 rounded-full transition duration-300 p-1 focus:ring-2 focus:ring-indigo-500 "
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="size-5"
+					>
+						<path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"></path>
+						<path d="m21 3-9 9"></path><path d="M15 3h6v6"></path>
+					</svg>
+				</a>
+			</div>
+			<div class="h-80 bg-gray-50 mt-2 py-2 px-4 rounded overflow-auto scrollbar-thin scrollbar-track-gray-200 scrollbar-thumb-black prose">
+				<div id={ "markdown_" + item.Id }></div>
+			</div>
+		</div>
+		if index==0 {
+			<span class="text-xs py-1 px-3 bg-black text-white rounded-full w-23 absolute right-1 -top-1">
+				{ item.MatchPercent }% Match
+			</span>
+		} else {
+			<span class="text-xs py-1 px-3 bg-gray-300 rounded-full w-23 absolute right-1 -top-2">
+				{ item.MatchPercent }% Match
+			</span>
+		}
+	</article>
+}
+
+templ searchResultItemForZeroMd(item models.SearchResult, index int) {
+	{{ idForSignal := "_markdown_" + strings.ReplaceAll(item.Id, "-", "") }}
+	<article
+		class="shadow py-2 px-4 rounded-lg bg-white flex items-start w-full relative"
+	>
+		<div
+			class="flex flex-col w-full flex-1"
+			data-signals={ "{" + idForSignal + ":`" + formatMessageForDataStar(item.FileContentMarkdown) + "`}" }
+		>
+			<div class="flex gap-3 items-center">
+				<div class="py-2 px-4 rounded-lg bg-gray-200">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="size-5"
+					><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path><path d="M15 3v5a1 1 0 0 0 1 1h5"></path></svg>
+				</div>
+				<p class="text-lg font-semibold break-all">{ item.FileName }</p>
+				<a
+					target="_blank"
+					href={ "https://drive.google.com/file/d/" + item.Id + "/view" }
+					aria-label="Open File in Google Drive"
+					class="appearance-none outline-none text-indigo-600 rounded-full transition duration-300 p-1 focus:ring-2 focus:ring-indigo-500 "
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="size-5"
+					>
+						<path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"></path>
+						<path d="m21 3-9 9"></path><path d="M15 3h6v6"></path>
+					</svg>
+				</a>
+			</div>
+			<div class="h-72  mt-2 py-2 px-4 rounded bg-white dark:bg-[#0d1117] overflow-auto scrollbar-thin scrollbar-track-gray-200 scrollbar-thumb-black">
+				<zero-md>
+					<script type="text/markdown" data-text={ "$" + idForSignal }>					
+				</script>
+				</zero-md>
+			</div>
+		</div>
+		if index==0 {
+			<span class="text-xs py-1 px-3 bg-black text-white rounded-full w-23 absolute right-1 -top-1">
+				{ item.MatchPercent }% Match
+			</span>
+		} else {
+			<span class="text-xs py-1 px-3 bg-gray-300 rounded-full w-23 absolute right-1 -top-2">
+				{ item.MatchPercent }% Match
+			</span>
+		}
+	</article>
+}

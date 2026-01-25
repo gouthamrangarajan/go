@@ -1,0 +1,97 @@
+package services
+
+import (
+	"encoding/base64"
+	"fmt"
+	"google-drive-content-search/components"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/gorilla/securecookie"
+)
+
+func GenerateUserIdCookie() (http.Cookie, error) {
+	secure := true
+	if os.Getenv("ENV") == "Development" {
+		secure = false
+	}
+
+	cookieName := "drive"
+	value := map[string]string{
+		"user_id": os.Getenv("USER_ID"),
+	}
+
+	hashKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_HASH_KEY"))
+	if err != nil {
+		fmt.Printf("Error decoding COOKIE_HASH_KEY: %v\n", err)
+		return http.Cookie{}, err
+	}
+	blockKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_BLOCK_KEY"))
+	if err != nil {
+		fmt.Printf("Error decoding COOKIE_BLOCK_KEY: %v\n", err)
+		return http.Cookie{}, err
+	}
+
+	newSecureCookie := securecookie.New(hashKey, blockKey)
+	cookieValue, err := newSecureCookie.Encode(cookieName, value)
+	if err != nil {
+		fmt.Printf("Error encoding cookie: %v\n", err)
+		return http.Cookie{}, err
+	}
+
+	cookie := http.Cookie{
+		Name:     cookieName,
+		Value:    cookieValue,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   secure,
+		Expires:  time.Now().Add(365 * 24 * time.Hour),
+		SameSite: http.SameSiteLaxMode,
+	}
+	return cookie, nil
+}
+func ValidateUserIdInCookie(r *http.Request) bool {
+	hashKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_HASH_KEY"))
+	if err != nil {
+		fmt.Printf("Error decoding COOKIE_HASH_KEY: %v\n", err)
+		return false
+	}
+	blockKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_BLOCK_KEY"))
+	if err != nil {
+		fmt.Printf("Error decoding COOKIE_BLOCK_KEY: %v\n", err)
+		return false
+	}
+
+	newSecureCookie := securecookie.New(hashKey, blockKey)
+
+	if cookie, err := r.Cookie("drive"); err == nil {
+		value := make(map[string]string)
+		// This  checks for tampering and expiration automatically
+		if err = newSecureCookie.Decode("drive", cookie.Value, &value); err == nil {
+			return value["user_id"] == os.Getenv("USER_ID")
+		}
+	}
+	return false
+}
+
+func ChiMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
+		if strings.HasPrefix(request.URL.Path, "/assets") ||
+			(request.URL.Path == "/login" && request.Method == "POST") {
+			next.ServeHTTP(responseWriter, request)
+			return
+		}
+		if ValidateUserIdInCookie(request) {
+			next.ServeHTTP(responseWriter, request)
+			return
+		}
+
+		if request.Method == "GET" && request.URL.Path == "/" {
+			components.Login().Render(request.Context(), responseWriter)
+			return
+		}
+		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+	})
+}

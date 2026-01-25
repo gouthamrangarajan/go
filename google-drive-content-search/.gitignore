@@ -1,0 +1,6 @@
+service-account.json
+google-drive-content-search
+*secret*
+*token*
+.env
+node_modules
