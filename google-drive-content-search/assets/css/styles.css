@@ -201,6 +201,9 @@
   .-top-2 {
     top: calc(var(--spacing) * -2);
   }
+  .-top-3 {
+    top: calc(var(--spacing) * -3);
+  }
   .right-1 {
     right: calc(var(--spacing) * 1);
   }
@@ -736,8 +739,8 @@
   .gap-3 {
     gap: calc(var(--spacing) * 3);
   }
-  .gap-4 {
-    gap: calc(var(--spacing) * 4);
+  .gap-5 {
+    gap: calc(var(--spacing) * 5);
   }
   .overflow-auto {
     overflow: auto;

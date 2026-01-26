@@ -166,7 +166,7 @@ func SearchResults(data []models.SearchResult) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<section class=\"mt-10 w-full flex flex-col gap-4 items-center justify-center max-w-4xl mx-auto\" id=\"searchResults\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<section class=\"mt-10 w-full flex flex-col gap-5 items-center justify-center max-w-4xl mx-auto\" id=\"searchResults\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -256,7 +256,7 @@ func searchResultItem(item models.SearchResult, index int) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if index == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"text-xs py-1 px-3 bg-black text-white rounded-full w-23 absolute right-1 -top-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"text-xs py-1 px-3 bg-black text-white rounded-full w-23 absolute right-1 -top-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -274,7 +274,7 @@ func searchResultItem(item models.SearchResult, index int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"text-xs py-1 px-3 bg-gray-300 rounded-full w-23 absolute right-1 -top-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"text-xs py-1 px-3 bg-gray-300 rounded-full w-23 absolute right-1 -top-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -114,7 +114,7 @@ templ hintSectionReplacedBySearchResults() {
 
 templ SearchResults(data []models.SearchResult) {
 	<section
-		class="mt-10 w-full flex flex-col gap-4 items-center justify-center max-w-4xl mx-auto"
+		class="mt-10 w-full flex flex-col gap-5 items-center justify-center max-w-4xl mx-auto"
 		id="searchResults"
 	>
 		if len(data)>0 {
@@ -180,11 +180,11 @@ templ searchResultItem(item models.SearchResult, index int) {
 			</div>
 		</div>
 		if index==0 {
-			<span class="text-xs py-1 px-3 bg-black text-white rounded-full w-23 absolute right-1 -top-1">
+			<span class="text-xs py-1 px-3 bg-black text-white rounded-full w-23 absolute right-1 -top-3">
 				{ item.MatchPercent }% Match
 			</span>
 		} else {
-			<span class="text-xs py-1 px-3 bg-gray-300 rounded-full w-23 absolute right-1 -top-2">
+			<span class="text-xs py-1 px-3 bg-gray-300 rounded-full w-23 absolute right-1 -top-3">
 				{ item.MatchPercent }% Match
 			</span>
 		}
