@@ -40,14 +40,15 @@ func GenerateUserIdCookie() (http.Cookie, error) {
 		fmt.Printf("Error encoding cookie: %v\n", err)
 		return http.Cookie{}, err
 	}
-
+	// Define the duration 30 days
+	const sessionDuration = 30 * 24 * time.Hour
 	cookie := http.Cookie{
 		Name:     cookieName,
 		Value:    cookieValue,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   secure,
-		Expires:  time.Now().Add(365 * 24 * time.Hour),
+		MaxAge:   int(sessionDuration.Seconds()),
 		SameSite: http.SameSiteLaxMode,
 	}
 	return cookie, nil
