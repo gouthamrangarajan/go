@@ -41,7 +41,7 @@ func GenerateUserIdCookie() (http.Cookie, error) {
 		return http.Cookie{}, err
 	}
 	// Define the duration 30 days
-	const sessionDuration = 30 * 24 * time.Hour
+	sessionDuration := 30 * 24 * time.Hour
 	cookie := http.Cookie{
 		Name:     cookieName,
 		Value:    cookieValue,
