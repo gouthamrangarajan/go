@@ -18,6 +18,7 @@ import (
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
+	"go.abhg.dev/goldmark/mermaid"
 )
 
 type contextKey string
@@ -174,7 +175,7 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 	for _, conversation := range conversations {
 		var buf bytes.Buffer
 		md := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.DefinitionList,
-			extension.Footnote, extension.Typographer, extension.CJK,
+			extension.Footnote, extension.Typographer, extension.CJK, &mermaid.Extender{},
 			highlighting.NewHighlighting(highlighting.WithStyle("dracula"))))
 		if err := md.Convert([]byte(conversation.Content), &buf); err != nil {
 			fmt.Printf("Error converting markdown: %v\n", err)
@@ -187,7 +188,7 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 		preEndRegex := regexp.MustCompile(`</pre>`)
 		mkdwn = preEndRegex.ReplaceAllString(mkdwn, `<button class="appearance-none outline-none absolute top-2 right-2 text-white p-1 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer hover:ring-1 hover:ring-white focus:ring-1 focus:ring-white"
 														alt="Copy to Clipboard"
-														data-on:click="window.navigator.clipboard.writeText(evt.srcElement.previousElementSibling.innerText.replaceAll('\n\n','\n')).then(()=>{evt.srcElement.innerHTML=document.getElementById('copiedSvg').innerHTML; setTimeout(()=>{evt.srcElement.innerHTML=document.getElementById('copySvg').innerHTML},2000)})">
+														data-on:click__viewtransition="window.navigator.clipboard.writeText(evt.srcElement.previousElementSibling.innerText.replaceAll('\n\n','\n')).then(()=>{evt.srcElement.innerHTML=document.getElementById('copiedSvg').innerHTML; setTimeout(()=>{evt.srcElement.innerHTML=document.getElementById('copySvg').innerHTML},2000)})">
 													`+copySvg+`
 													</button>
 													</pre>`)

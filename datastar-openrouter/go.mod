@@ -22,5 +22,6 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/yuin/goldmark v1.7.16 // indirect
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc // indirect
+	go.abhg.dev/goldmark/mermaid v0.6.0 // indirect
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8 // indirect
 )
