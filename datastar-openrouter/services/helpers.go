@@ -18,7 +18,6 @@ import (
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
-	"go.abhg.dev/goldmark/mermaid"
 )
 
 type contextKey string
@@ -175,7 +174,7 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 	for _, conversation := range conversations {
 		var buf bytes.Buffer
 		md := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.DefinitionList,
-			extension.Footnote, extension.Typographer, extension.CJK, &mermaid.Extender{},
+			extension.Footnote, extension.Typographer, extension.CJK,
 			highlighting.NewHighlighting(highlighting.WithStyle("dracula"))))
 		if err := md.Convert([]byte(conversation.Content), &buf); err != nil {
 			fmt.Printf("Error converting markdown: %v\n", err)
