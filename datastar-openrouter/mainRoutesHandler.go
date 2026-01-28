@@ -13,12 +13,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
 	"github.com/starfederation/datastar-go/datastar"
 )
 
 func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	// style := styles.Get("github") // Use the same style as in goldmark
+	// formatter := html.New(html.WithClasses(true))
+	// buf := bytes.Buffer{}
+	// formatter.WriteCSS(&buf, style)
+	// fmt.Println(buf.String())
 	userId := request.Context().Value(services.UserIDKey).(string)
 	sessionId := 0
 	sessionIdStr := chi.URLParam(request, "sessionId")
@@ -45,7 +49,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 
 	chatConversationChannel := make(chan []models.ChatConversation)
 	defer close(chatConversationChannel)
-	go services.GetChatConversations(userId, sessionId, chatConversationChannel)
+	go services.GetChatConversationsWithoutMessageAndFileData(userId, sessionId, chatConversationChannel)
 
 	aiModelsChannel := make(chan []models.AIModel)
 	defer close(aiModelsChannel)
@@ -60,7 +64,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 
 	chatConversations := <-chatConversationChannel
 	aiModels := <-aiModelsChannel
-	component := components.Main(
+	components.Main(
 		models.UIMainModel{
 			Messages:         chatConversations,
 			Sessions:         sessions,
@@ -69,10 +73,47 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 			ImageGeneration:  selectedSession.ImageGeneration,
 			CurrentSessionId: sessionId,
 			MenuSearchTerm:   searchMenuTxt,
-		})
-	templ.Handler(component).ServeHTTP(responseWriter, request)
+		}).Render(request.Context(), responseWriter)
 }
+func convertConversationsMarkdownHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := services.GetUserIdFromRequest(request)
+	userExistsChannel := make(chan bool)
+	defer close(userExistsChannel)
+	go services.CheckUserExistsInTable(userId, userExistsChannel)
+	if !<-userExistsChannel {
+		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	requestBody, _ := io.ReadAll(request.Body)
+	var clientSignal models.ClientSignals
+	json.Unmarshal(requestBody, &clientSignal)
 
+	if clientSignal.SessionId == 0 {
+		return
+	}
+
+	conversationsChannel := make(chan []models.ChatConversation)
+	defer close(conversationsChannel)
+	go services.GetChatConversations(userId, clientSignal.SessionId, conversationsChannel)
+	conversations := <-conversationsChannel
+	if len(conversations) == 0 {
+		return
+	}
+	markdownToHtmlChannel := make(chan string)
+
+	sse := datastar.NewSSE(responseWriter, request)
+	go services.ConvertConversationMarkdownsToHtml(conversations, markdownToHtmlChannel)
+	for _, conversation := range conversations {
+		if conversation.FileData != "" {
+			sse.PatchElementTempl(components.ChatMessageFileData(conversation), datastar.WithUseViewTransitions(false))
+		}
+		sse.PatchElementTempl(components.ChatMessageModelIdDisplay(conversation), datastar.WithUseViewTransitions(false))
+	}
+
+	for element := range markdownToHtmlChannel {
+		sse.PatchElements(element, datastar.WithUseViewTransitions(false))
+	}
+}
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := services.GetUserIdFromRequest(request)
 	userExistsChannel := make(chan bool)
@@ -320,12 +361,18 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 
 		sse.ExecuteScript(`document.getElementById('hint')?.remove();`, datastar.WithExecuteScriptAutoRemove(true))
-		sse.PatchElementTempl(components.ChatMessage(userMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
+		sse.PatchElementTempl(components.ChatMessage(userMessageChat, true), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
 		sse.PatchSignals([]byte(`{prompt:"",sessionId:` + strconv.Itoa(clientSignal.SessionId) + `,fileData:''}`))
 		sse.PatchElementTempl(components.FileAttachmentDisplay(""), datastar.WithUseViewTransitions(true))
 
-		createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse, clientSignal, userId, selectedSession, request)
+		markdownToHtmlChannel := make(chan string)
+		go services.ConvertConversationMarkdownsToHtml([]models.ChatConversation{userMessageChat}, markdownToHtmlChannel)
 
+		if userMessageChat.FileData != "" {
+			sse.PatchElementTempl(components.ChatMessageFileData(userMessageChat), datastar.WithUseViewTransitions(true))
+		}
+		sse.PatchElements(<-markdownToHtmlChannel, datastar.WithUseViewTransitions(true))
+		createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse, clientSignal, userId, selectedSession, request)
 	}
 }
 
@@ -391,9 +438,12 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 	insertModelConversationChannel := make(chan int)
 	defer close(insertModelConversationChannel)
 	modelMessageChat := models.ChatConversation{Role: "assistant", Content: "", SessionId: clientSignal.SessionId, FileData: ""}
+	if clientSignal.ImageGeneration {
+		modelMessageChat.FileName = "generating_image.png"
+	}
 	go services.InsertChatConversation(modelMessageChat, insertModelConversationChannel)
 	modelMessageChat.Id = <-insertModelConversationChannel
-	sse.PatchElementTempl(components.ChatMessage(modelMessageChat), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.ChatMessage(modelMessageChat, true), datastar.WithModeAppend(), datastar.WithSelector("section"), datastar.WithUseViewTransitions(true))
 	if modelMessageChat.Id == 0 {
 		services.SendErrorMessageToUI(sse, "Error storing chat conversation.")
 	}
@@ -458,9 +508,20 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 		case <-request.Context().Done():
 			continue
 		default:
-			sse.PatchElementTempl(components.ChatMessage(modelMessageChat))
+			// sse.PatchElementTempl(components.ChatMessage(modelMessageChat, true))
+			markdownToHtmlChannel := make(chan string)
+			go services.ConvertConversationMarkdownsToHtml([]models.ChatConversation{modelMessageChat}, markdownToHtmlChannel)
+			if modelMessageChat.FileData != "" {
+				modelMessageChat.FileName = "generated_image.png"
+				sse.PatchElementTempl(components.ChatMessageFileData(modelMessageChat), datastar.WithUseViewTransitions(true))
+			} else {
+				modelMessageChat.FileName = ""
+			}
+			sse.PatchElements(<-markdownToHtmlChannel, datastar.WithUseViewTransitions(false))
 		}
 	}
+	sse.RemoveElement("#thinkingMesssage", datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.ChatMessageModelIdDisplay(modelMessageChat), datastar.WithUseViewTransitions(true))
 
 	if updateTitleCalled {
 		if <-updateTitleChannel != 0 {
@@ -515,6 +576,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 		Content:  modelMessageChat.Content,
 		ModelId:  modelMessageChat.ModelId,
 		FileData: modelMessageChat.FileData,
+		FileName: modelMessageChat.FileName,
 	}, updateModelConversationChannel)
 	rowsAffected := <-updateModelConversationChannel
 	if rowsAffected == 0 {

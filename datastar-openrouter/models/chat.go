@@ -22,6 +22,7 @@ type UpdateChatConversation struct {
 	Content  string
 	ModelId  string
 	FileData string
+	FileName string
 }
 
 type AIModel struct {

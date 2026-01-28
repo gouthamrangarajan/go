@@ -1,8 +1,13 @@
 @import "tailwindcss";
 @plugin 'tailwind-scrollbar';
+@plugin "@tailwindcss/typography";
+
+.prose {
+    max-width: 100%;
+}
 
 @theme {
-    --color-dark: #0d1117;
+    --color-dark: #000;
 }
 
 @view-transition {

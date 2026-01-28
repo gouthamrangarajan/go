@@ -3,87 +3,11 @@ package components
 import (
 	"datastar-openrouter/components/shared"
 	"datastar-openrouter/models"
-	"datastar-openrouter/services"
-	"strconv"
-	"strings"
 )
-
-func formatMessageForDataStar(message string) string {
-	ret := strings.ReplaceAll(message, `\`, `\\`)
-	ret = strings.ReplaceAll(ret, "${", `\${`)
-	ret = strings.ReplaceAll(ret, "`", "\\`")
-	return ret
-}
-
-templ ChatMessage(message models.ChatConversation) {
-	<div
-		id={ "message-" + strconv.Itoa(message.Id) }
-		class="py-1 px-3 flex gap-4 items-start relative max-w-11/12 md:max-w-full"
-		data-signals={ "{_message_" + strconv.Itoa(message.Id) + ":`" + formatMessageForDataStar(message.Content) + "`}" }
-	>
-		if message.Role=="assistant" {
-			<svg width="100%" height="100%" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" class="size-6 shrink-0" fill="currentColor" stroke="currentColor" aria-label="Logo"><g clip-path="url(#clip0_205_3)"><path d="M3 248.945C18 248.945 76 236 106 219C136 202 136 202 198 158C276.497 102.293 332 120.945 423 120.945" stroke-width="90"></path><path d="M511 121.5L357.25 210.268L357.25 32.7324L511 121.5Z"></path><path d="M0 249C15 249 73 261.945 103 278.945C133 295.945 133 295.945 195 339.945C273.497 395.652 329 377 420 377" stroke-width="90"></path><path d="M508 376.445L354.25 287.678L354.25 465.213L508 376.445Z"></path></g><title style="display: none;">OpenRouter</title><defs><clipPath id="clip0_205_3"><rect width="512" height="512" fill="white"></rect></clipPath></defs></svg>
-		} else {
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 shrink-0">
-				<path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd"></path>
-			</svg>
-		}
-		<div class="flex w-full flex-col">
-			if message.Role=="assistant" && message.Content=="" {
-				<span class="animate-pulse opacity-70 text-sm" data-show="$_processingViaButton || $_processingViaInput || $_retrying">thinking...</span>
-			}
-			<zero-md>
-				<script type="text/markdown" data-text={ "$_message_" + strconv.Itoa(message.Id) }>					
-			</script>
-			</zero-md>
-			if message.FileData!="" {
-				if services.ImgRegex.MatchString(message.FileData) {
-					<img src={ message.FileData } alt="uploaded image" class="w-full h-full"/>
-				} else if services.PdfRegex.MatchString(message.FileData) {
-					<p class="font-semibold flex gap-1">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-							<path fill-rule="evenodd" d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z" clip-rule="evenodd"></path>
-						</svg>
-						<span>{ message.FileName }</span>
-					</p>
-				}
-			}
-		</div>
-		if message.ModelId!="" {
-			<span class="absolute -bottom-4 right-4 text-xs italic p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark">
-				{ message.ModelId }
-			</span>
-		}
-		if message.Role == "user" {
-			<button
-				aria-label="retry"
-				class="appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
-				data-on:click={ `$messageIdToRetry=` + strconv.Itoa(message.Id) + `; @post("/retry",{openWhenHidden: true});` }
-				data-indicator="_retrying"
-				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
-			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					class="size-5"
-				>
-					<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path>
-				</svg>
-			</button>
-		}
-	</div>
-}
 
 templ inputsAndError(aiModels []models.AIModel) {
 	<div class="absolute bottom-0 left-0 w-full">
-		<div class="w-11/12 flex flex-col items-start pr-2 pb-2 transition duration-300 mx-auto bg-white dark:bg-dark  rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-gray-300 dark:inset-shadow-gray-600/70 focus-within:inset-shadow-gray-600/70 dark:focus-within:inset-shadow-gray-300 xl:w-10/12">
+		<div class="w-11/12 flex flex-col items-start pr-2 pb-2 transition duration-300 mx-auto bg-white rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-slate-600/70 focus-within:inset-shadow-slate-600 xl:w-10/12">
 			<textarea
 				name="prompt"
 				data-bind="prompt"
@@ -121,12 +45,12 @@ templ inputsAndError(aiModels []models.AIModel) {
 				data-indicator="_processingViaInput"
 				type="text"
 				placeholder="Type your message..."
-				class="w-full appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600 dark:placeholder:text-slate-300 overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent dark:scrollbar-thumb-white"
+				class="w-full appearance-none outline-none py-2 px-4 resize-none min-h-[4lh] field-sizing-content max-h-[12lh] placeholder:text-slate-600  overflow-y-auto scrollbar-thin scrollbar-thumb-dark scrollbar-track-transparent"
 			></textarea>
 			@toolsAndSubmitButton(aiModels)
 		</div>
 		<p
-			class="absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark dark:bg-white py-2 px-4 text-red-300 dark:text-red-600 font-semibold"
+			class="absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark py-2 px-4 text-red-300  font-semibold"
 			data-show="$showErrorMessage"
 			data-text="$errorMessage"
 			style="display:none"
@@ -137,7 +61,7 @@ templ inputsAndError(aiModels []models.AIModel) {
 templ toolsAndSubmitButton(aiModels []models.AIModel) {
 	<div class="flex flex-col  items-start w-full gap-1 lg:flex-row lg:justify-between lg:items-center">
 		<div
-			class="ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg  border border-dark dark:border-white bg-white dark:bg-dark focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-white dark:focus-within:ring-offset-dark "
+			class="ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg bg-gray-100 hover:bg-gray-200 focus-within:bg-gray-200 focus-within:ring-1 focus-within:ring-dark"
 		>
 			<select
 				class="appearance-none outline-none flex-1 cursor-pointer py-1 px-3"
@@ -146,7 +70,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				aria-label="Select AI Model"
 			>
 				for _,model := range aiModels {
-					<option class="bg-white dark:bg-dark " value={ model.ModelId }>{ model.DisplayName }</option>
+					<option class="bg-white " value={ model.ModelId }>{ model.DisplayName }</option>
 				}
 			</select>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 mr-1">
@@ -165,8 +89,8 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				data-effect="$fileData && $fileData.length && $fileData.length>0 && setTimeout(()=>{$fileUploading=true;@post('/fileupload',{openWhenHidden:true});})"
 			/>
 			<button
-				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
-				data-class="{'border-dark dark:border-white animate-border':$fileUploading}"
+				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:bg-gray-200 focus:bg-gray-200 focus:ring-1 focus:ring-dark disabled:cursor-not-allowed disabled:opacity-80"
+				data-class="{'border-dark animate-border':$fileUploading}"
 				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
 				aria-label="Attach Image or PDF"
 				data-on:click="$fileInputRef.click()"
@@ -183,9 +107,9 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				@shared.Loader("$fileUploading")
 			</button>
 			<button
-				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:bg-gray-200 focus:bg-gray-200  focus:ring-1 focus:ring-dark  disabled:cursor-not-allowed disabled:opacity-80"
 				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
-				data-class="{'text-blue-600 dark:text-blue-300':$webSearch}"
+				data-class="{'text-blue-600 ':$webSearch}"
 				data-on:click__viewtransition="$webSearch=!$webSearch"
 				data-attr:aria-label="$webSearch?'Switch off Web Search:':'Switch on Web Search'"
 			>
@@ -213,9 +137,9 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				</svg>
 			</button>
 			<button
-				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:opacity-90 border-dark dark:border-white focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:bg-gray-200 focus:bg-gray-200 focus:ring-1 focus:ring-dark disabled:cursor-not-allowed disabled:opacity-80"
 				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
-				data-class="{'text-blue-600 dark:text-blue-300':$imageGeneration}"
+				data-class="{'text-blue-600 ':$imageGeneration}"
 				data-on:click__viewtransition="$imageGeneration=!$imageGeneration"
 				data-attr:aria-label="$imageGeneration?'Switch off Image Generation:':'Switch on Image Generation'"
 			>
@@ -224,7 +148,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				</svg>
 			</button>
 			<button
-				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1  border-dark dark:border-white hover:opacity-90 focus:ring-1 focus:ring-dark dark:focus:ring-white disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:bg-gray-200 focus:bg-gray-200 focus:ring-1 focus:ring-dark  disabled:cursor-not-allowed disabled:opacity-80"
 				data-class="{' animate-border':$_processingViaButton || $_processingViaInput || $_retrying}"
 				data-on:click={ `
                     @post("/chat",{openWhenHidden: true});
@@ -258,12 +182,12 @@ templ FileAttachmentDisplay(fileName string) {
 		}}
 		<div
 			id="fileName"
-			class="text-xs flex items-center gap-1 p-1 rounded-full bg-dark dark:bg-white text-white dark:text-dark md:text-sm"
+			class="text-xs flex items-center gap-1 p-1 rounded-full bg-dark text-white  md:text-sm"
 			data-class="{'animate-pulse':$_fileRemoving}"
 		>
 			<span class="truncate">{ fileNameToDisplay }</span>
 			<button
-				class="appearance-none outline-none cursor-pointer text-red-300 dark:text-red-600 transition duration-300 p-1 rounded-full focus:ring-1 focus:ring-red-300 dark:focus-ring-600 disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none cursor-pointer text-red-300 transition duration-300 p-1 rounded-full focus:ring-1 focus:ring-red-300 disabled:cursor-not-allowed disabled:opacity-80"
 				data-on:click="@post('/fileupload/remove',{openWhenHidden:true})"
 				data-indicator="_fileRemoving"
 				aria-label="Remove attached file"

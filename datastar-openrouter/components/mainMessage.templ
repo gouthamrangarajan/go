@@ -1,0 +1,129 @@
+package components
+
+import (
+	"datastar-openrouter/models"
+	"strconv"
+	"strings"
+)
+
+templ ChatMessage(message models.ChatConversation, stream bool) {
+	<div
+		id={ "message-" + strconv.Itoa(message.Id) }
+		class="py-1 px-3 flex gap-4 items-start relative max-w-11/12 md:max-w-full"
+	>
+		@ChatMessageRoleLogo(message.Id, message.Role)
+		<div class="flex w-full flex-col">
+			if message.Role=="assistant" && stream {
+				<span
+					class="animate-pulse opacity-80 text-sm"
+					id="thinkingMesssage"
+				>thinking...</span>
+			}
+			if !stream {
+				<div
+					id={ "markdown_" + strconv.Itoa(message.Id) }
+					class="min-h-screen"
+				></div>
+			} else {
+				<div
+					id={ "markdown_" + strconv.Itoa(message.Id) }
+				></div>
+			}
+			@ChatMessageFileData(message)
+		</div>
+		@ChatMessageModelIdDisplay(message)
+		if message.Role == "user" {
+			<button
+				aria-label="retry"
+				class="appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 focus:ring-1 focus:ring-dark  disabled:cursor-not-allowed disabled:opacity-80"
+				data-on:click={ `$messageIdToRetry=` + strconv.Itoa(message.Id) + `; @post("/retry",{openWhenHidden: true});` }
+				data-indicator="_retrying"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="size-5"
+				>
+					<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path>
+				</svg>
+			</button>
+		}
+	</div>
+}
+
+templ ChatMessageRoleLogo(id int, role string) {
+	if role=="assistant" {
+		<svg
+			width="100%"
+			height="100%"
+			viewBox="0 0 512 512"
+			xmlns="http://www.w3.org/2000/svg"
+			id={ "logoSvg_" + strconv.Itoa(id) }
+			class="size-6 shrink-0"
+			fill="currentColor"
+			stroke="currentColor"
+			aria-label="Logo"
+		><g clip-path="url(#clip0_205_3)"><path d="M3 248.945C18 248.945 76 236 106 219C136 202 136 202 198 158C276.497 102.293 332 120.945 423 120.945" stroke-width="90"></path><path d="M511 121.5L357.25 210.268L357.25 32.7324L511 121.5Z"></path><path d="M0 249C15 249 73 261.945 103 278.945C133 295.945 133 295.945 195 339.945C273.497 395.652 329 377 420 377" stroke-width="90"></path><path d="M508 376.445L354.25 287.678L354.25 465.213L508 376.445Z"></path></g><title style="display: none;">OpenRouter</title><defs><clipPath id="clip0_205_3"><rect width="512" height="512" fill="white"></rect></clipPath></defs></svg>
+	} else {
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			fill="currentColor"
+			id={ "logoSvg_" + strconv.Itoa(id) }
+			class="size-6 shrink-0"
+		>
+			<path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd"></path>
+		</svg>
+	}
+}
+
+templ ChatMessageFileData(message models.ChatConversation) {
+	if message.FileName!="" {
+		if strings.HasSuffix(strings.ToLower(message.FileName),".pdf") {
+			<p class="font-semibold flex gap-1">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+					<path fill-rule="evenodd" d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z" clip-rule="evenodd"></path>
+				</svg>
+				<span>{ message.FileName }</span>
+			</p>
+		} else if message.FileData!="" {
+			<img
+				src={ message.FileData }
+				id={ "image_" + strconv.Itoa(message.Id) }
+				alt="uploaded image"
+				class="w-full h-full"
+			/>
+		} else {
+			<img
+				style="display:none"
+				id={ "image_" + strconv.Itoa(message.Id) }
+				alt="uploaded image"
+				class="w-full h-full"
+			/>
+		}
+	}
+}
+
+templ ChatMessageModelIdDisplay(message models.ChatConversation) {
+	if message.ModelId!="" {
+		<span
+			class="absolute -bottom-4 right-4 text-xs italic p-1 rounded-full bg-dark  text-white"
+			id={ "model_" + strconv.Itoa(message.Id) }
+		>
+			{ message.ModelId }
+		</span>
+	} else {
+		<span
+			class="absolute -bottom-4 right-4"
+			id={ "model_" + strconv.Itoa(message.Id) }
+		></span>
+	}
+}
