@@ -184,14 +184,14 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 		}
 		mkdwn := buf.String()
 		preRegex := regexp.MustCompile(`<pre`)
-		mkdwn = preRegex.ReplaceAllString(mkdwn, `<pre class="relative"`)
+		mkdwn = preRegex.ReplaceAllString(mkdwn, `<div class="relative"><pre`)
 		preEndRegex := regexp.MustCompile(`</pre>`)
 		mkdwn = preEndRegex.ReplaceAllString(mkdwn, `<button class="appearance-none outline-none absolute top-2 right-2 text-white p-1 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer hover:ring-1 hover:ring-white focus:ring-1 focus:ring-white"
 														alt="Copy to Clipboard"
 														data-on:click__viewtransition="window.navigator.clipboard.writeText((evt.srcElement.previousElementSibling || evt.srcElement.parentElement).innerText.replaceAll('\n\n','\n')).then(()=>{evt.srcElement.innerHTML=document.getElementById('copiedSvg').innerHTML; setTimeout(()=>{evt.srcElement.innerHTML=document.getElementById('copySvg').innerHTML},2000)})">
 													`+copySvg+`
 													</button>
-													</pre>`)
+													</pre></div>`)
 		channel <- "<div id='markdown_" + strconv.Itoa(conversation.Id) + "' class='prose'>" + mkdwn + "</div>"
 	}
 }

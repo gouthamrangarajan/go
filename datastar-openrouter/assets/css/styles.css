@@ -719,6 +719,9 @@
   .ml-3 {
     margin-left: calc(var(--spacing) * 3);
   }
+  .ml-6 {
+    margin-left: calc(var(--spacing) * 6);
+  }
   .scrollbar-thin {
     &::-webkit-scrollbar-track {
       background-color: var(--scrollbar-track);
@@ -1307,6 +1310,11 @@
     @media (width >= 48rem) {
       font-size: var(--text-sm);
       line-height: var(--tw-leading, var(--text-sm--line-height));
+    }
+  }
+  .lg\:mx-auto {
+    @media (width >= 64rem) {
+      margin-inline: auto;
     }
   }
   .lg\:w-5\/12 {

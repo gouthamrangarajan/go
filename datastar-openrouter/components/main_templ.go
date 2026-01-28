@@ -124,7 +124,7 @@ func Section(messages []models.ChatConversation) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section class=\"w-10/12 pb-64 mx-auto flex flex-col gap-5 lg:gap-3 lg:pt-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section class=\"w-11/12 ml-6 pb-64  flex flex-col gap-5  lg:gap-3 lg:pt-4 lg:mx-auto xl:w-10/12\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
