@@ -116,7 +116,7 @@ func ChatMessage(message models.ChatConversation, stream bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if message.Role == "user" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button aria-label=\"retry\" class=\"appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 focus:ring-1 focus:ring-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button aria-label=\"retry\" class=\"appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 bg-gray-100 hover:bg-gray-200 focus:bg-gray-200 focus:ring-1 focus:ring-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-on:click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

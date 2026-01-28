@@ -35,7 +35,7 @@ templ ChatMessage(message models.ChatConversation, stream bool) {
 		if message.Role == "user" {
 			<button
 				aria-label="retry"
-				class="appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 focus:ring-1 focus:ring-dark  disabled:cursor-not-allowed disabled:opacity-80"
+				class="appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 bg-gray-100 hover:bg-gray-200 focus:bg-gray-200 focus:ring-1 focus:ring-dark  disabled:cursor-not-allowed disabled:opacity-80"
 				data-on:click={ `$messageIdToRetry=` + strconv.Itoa(message.Id) + `; @post("/retry",{openWhenHidden: true});` }
 				data-indicator="_retrying"
 				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying"
