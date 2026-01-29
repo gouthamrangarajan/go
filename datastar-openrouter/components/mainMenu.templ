@@ -118,7 +118,7 @@ templ MenuItem(session models.ChatSession, searchTerm string) {
 		}
 	}}
 	<li
-		class="w-full flex gap-1 items-center pr-1 hover:bg-gray-200 focus-within:bg-gray-200"
+		class="w-full flex gap-1 items-center pr-3 hover:bg-gray-200 focus-within:bg-gray-200"
 		data-class={ "{'underline underline-offset-6':$sessionId==" + strconv.Itoa(session.Id) + "}" }
 		id={ "menuItem_" + strconv.Itoa(session.Id) }
 		style={ "view-transition-name:menu-item-" + strconv.Itoa(session.Id) }
