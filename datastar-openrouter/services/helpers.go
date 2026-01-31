@@ -132,9 +132,52 @@ func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string
 func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation, channel chan<- string) {
 	defer close(channel)
 	for _, conversation := range conversations {
+		// 	if conversation.Role == "assistant" {
+		// 		conversation.Content = "```" + `mermaid
+		// 	graph TD
+		// subgraph Client_Side [User Access]
+		//     User((User))
+		// end
+
+		// subgraph Edge_Location [Content Delivery]
+		//     CF[AWS CloudFront]
+		//     S3[(AWS S3 Assets)]
+		// end
+
+		// subgraph Public_Subnet [Entry Point]
+		//     AGW[AWS API Gateway]
+		// end
+
+		// subgraph Private_Subnet [Compute & Data]
+		//     ALB[AWS Application Load Balancer]
+		//     Lambda[AWS Lambda]
+		//     DocDB[(AWS DocumentDB)]
+		// end
+
+		// %% Flow Connections
+		// User -->|Requests Content/API| CF
+		// CF -->|Fetch Static Assets| S3
+		// CF -->|Forward API Calls| AGW
+		// AGW --> ALB
+		// ALB --> Lambda
+		// Lambda -->|Query/Write| DocDB
+
+		// %% Styling
+		// style CF fill:#FF9900,stroke:#232F3E,color:white
+		// style S3 fill:#3F8624,stroke:#232F3E,color:white
+		// style AGW fill:#8C3123,stroke:#232F3E,color:white
+		// style ALB fill:#8C3123,stroke:#232F3E,color:white
+		// style Lambda fill:#FF9900,stroke:#232F3E,color:white
+		// style DocDB fill:#3156CF,stroke:#232F3E,color:white
+		// 	` + "\n```"
+		// 	}
 		var buf bytes.Buffer
 		md := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.DefinitionList,
-			extension.Footnote, extension.Typographer, extension.CJK, &mermaid.Extender{},
+			extension.Footnote, extension.Typographer, extension.CJK, &mermaid.Extender{
+				RenderMode:   mermaid.RenderModeClient,
+				ContainerTag: "div",
+				NoScript:     true,
+			},
 			highlighting.NewHighlighting(highlighting.WithStyle("dracula"))))
 		if err := md.Convert([]byte(conversation.Content), &buf); err != nil {
 			fmt.Printf("Error converting markdown: %v\n", err)
@@ -142,6 +185,7 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 			return
 		}
 		mkdwn := buf.String()
+		// fmt.Printf("mkdwn,%v\n", mkdwn)
 		preRegex := regexp.MustCompile(`<pre`)
 		mkdwn = preRegex.ReplaceAllString(mkdwn, `<div class="relative"><pre`)
 		preEndRegex := regexp.MustCompile(`</pre>`)

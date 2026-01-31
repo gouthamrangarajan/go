@@ -105,6 +105,7 @@ func convertConversationsMarkdownHandler(responseWriter http.ResponseWriter, req
 
 	for element := range markdownToHtmlChannel {
 		sse.PatchElements(element, datastar.WithUseViewTransitions(false))
+		sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
 	}
 }
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -358,6 +359,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			sse.PatchElementTempl(components.ChatMessageFileData(userMessageChat), datastar.WithUseViewTransitions(true))
 		}
 		sse.PatchElements(<-markdownToHtmlChannel, datastar.WithUseViewTransitions(true))
+		sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
 		createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse, clientSignal, userId, selectedSession, request)
 	}
 }
@@ -504,6 +506,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 				modelMessageChat.FileName = ""
 			}
 			sse.PatchElements(<-markdownToHtmlChannel, datastar.WithUseViewTransitions(false))
+			sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
 		}
 	}
 	sse.RemoveElement("#thinkingMesssage", datastar.WithUseViewTransitions(true))
