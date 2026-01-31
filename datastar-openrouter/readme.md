@@ -16,7 +16,7 @@ Welcome to the Nexus Chat project! This application allows users to talk to many
 - OpenRouter (connect to many models/ let openrouter auto mode to auto select a model)
 - Golang , templ , chi
 - Datastar
-- Zero md
+- Goldmark Markdown
 - Tailwind, Open Props
 - Turso
 
