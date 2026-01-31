@@ -28,7 +28,7 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Use(middleware.Compress(5))
-	router.Use(services.ChiMiddleware)
+	router.Use(services.AuthorizationMiddleware)
 
 	router.Get("/", func(responseWriter http.ResponseWriter, request *http.Request) {
 		components.Main().Render(request.Context(), responseWriter)

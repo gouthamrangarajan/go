@@ -83,7 +83,7 @@ func ValidateUserIdInCookie(r *http.Request) bool {
 	return false
 }
 
-func ChiMiddleware(next http.Handler) http.Handler {
+func AuthorizationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
 		if strings.HasPrefix(request.URL.Path, "/assets") ||
 			(request.URL.Path == "/login" && request.Method == "POST") {
