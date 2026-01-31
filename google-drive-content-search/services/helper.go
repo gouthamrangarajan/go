@@ -11,7 +11,9 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/yuin/goldmark"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
+	"go.abhg.dev/goldmark/mermaid"
 )
 
 var TOKEN_FILE = ""
@@ -122,7 +124,8 @@ func ConvertDocumentChunkCollectionToSearchResultCollection(documentChunkCollect
 func ConvertMarkdownToHtml(id string, source []byte, channel chan<- string) {
 	var buf bytes.Buffer
 	md := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.DefinitionList,
-		extension.Footnote, extension.Typographer, extension.CJK))
+		extension.Footnote, extension.Typographer, extension.CJK, &mermaid.Extender{},
+		highlighting.NewHighlighting(highlighting.WithStyle("dracula"))))
 	if err := md.Convert(source, &buf); err != nil {
 		fmt.Printf("Error converting markdown: %v\n", err)
 		channel <- ""
