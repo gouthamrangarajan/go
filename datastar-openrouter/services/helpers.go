@@ -2,12 +2,8 @@ package services
 
 import (
 	"bytes"
-	"crypto/hmac"
-	"crypto/sha256"
 	"datastar-openrouter/models"
-	"encoding/base64"
 	"fmt"
-	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -37,43 +33,6 @@ const copySvg = `<svg
 					<path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z"></path>
 					<path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z"></path>
 				</svg>`
-
-func GenerateSignedStrForCookie(model models.UICookie) string {
-	cookieSecret := os.Getenv("COOKIE_SECRET")
-	mac := hmac.New(sha256.New, []byte(cookieSecret))
-	mac.Write([]byte(model.Name))
-	mac.Write([]byte(model.Value))
-	signature := mac.Sum(nil)
-	cookieValueSignedBytes := append(signature, []byte(model.Value)...)
-	cookieValueSignedStr := base64.URLEncoding.EncodeToString(cookieValueSignedBytes)
-	return cookieValueSignedStr
-}
-func GetUserIdFromRequest(request *http.Request) string {
-	cookieName := "id"
-	cookie, err := request.Cookie("id")
-	if err != nil {
-		return ""
-	}
-	cookieVal := cookie.Value
-	cookieSecret := os.Getenv("COOKIE_SECRET")
-	cookieValueDecoded, err := base64.URLEncoding.DecodeString(cookieVal)
-	if err != nil {
-		return ""
-	}
-	if len(cookieValueDecoded) <= sha256.Size {
-		return ""
-	}
-	signatureFromCookie := cookieValueDecoded[:sha256.Size]
-	userIdFromCookie := cookieValueDecoded[sha256.Size:]
-	mac := hmac.New(sha256.New, []byte(cookieSecret))
-	mac.Write([]byte(cookieName))
-	mac.Write([]byte(userIdFromCookie))
-	signature := mac.Sum(nil)
-	if !hmac.Equal(signature, signatureFromCookie) {
-		return ""
-	}
-	return string(userIdFromCookie)
-}
 
 func GetChatSessionsViaChannel(userId string) []models.ChatSession {
 	sessionChannel := make(chan []models.ChatSession)

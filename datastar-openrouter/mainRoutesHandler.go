@@ -76,14 +76,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 		}).Render(request.Context(), responseWriter)
 }
 func convertConversationsMarkdownHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := services.GetUserIdFromRequest(request)
-	userExistsChannel := make(chan bool)
-	defer close(userExistsChannel)
-	go services.CheckUserExistsInTable(userId, userExistsChannel)
-	if !<-userExistsChannel {
-		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+	userId := request.Context().Value(services.UserIDKey).(string)
 	requestBody, _ := io.ReadAll(request.Body)
 	var clientSignal models.ClientSignals
 	json.Unmarshal(requestBody, &clientSignal)
@@ -115,14 +108,7 @@ func convertConversationsMarkdownHandler(responseWriter http.ResponseWriter, req
 	}
 }
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := services.GetUserIdFromRequest(request)
-	userExistsChannel := make(chan bool)
-	defer close(userExistsChannel)
-	go services.CheckUserExistsInTable(userId, userExistsChannel)
-	if !<-userExistsChannel {
-		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
+	userId := request.Context().Value(services.UserIDKey).(string)
 	insertChatSessionChannel := make(chan int)
 	defer close(insertChatSessionChannel)
 	newSession := models.ChatSession{Title: "New Chat"}
@@ -150,7 +136,7 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 }
 func deleteSessionHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := services.GetUserIdFromRequest(request)
+	userId := request.Context().Value(services.UserIDKey).(string)
 	requestBody, _ := io.ReadAll(request.Body)
 	var clientSignal models.ClientSignals
 	json.Unmarshal(requestBody, &clientSignal)
@@ -190,7 +176,7 @@ func deleteSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	sse.PatchSignals([]byte(`{showDeleteModal:false}`))
 }
 func searchSessionHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := services.GetUserIdFromRequest(request)
+	userId := request.Context().Value(services.UserIDKey).(string)
 	userExistsChannel := make(chan bool)
 	defer close(userExistsChannel)
 	go services.CheckUserExistsInTable(userId, userExistsChannel)
@@ -276,7 +262,7 @@ func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http
 // Update model message chat conversation with full content after streaming is done if message is not empty
 
 func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := services.GetUserIdFromRequest(request)
+	userId := request.Context().Value(services.UserIDKey).(string)
 	requestBody, _ := io.ReadAll(request.Body)
 	var clientSignal models.ClientSignals
 	json.Unmarshal(requestBody, &clientSignal)
@@ -390,7 +376,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 // If message is empty/error, return error message to UI and delete the model message chat conversation, return
 // Update model message chat conversation with full content after streaming is done if message is not empty
 func retryHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := services.GetUserIdFromRequest(request)
+	userId := request.Context().Value(services.UserIDKey).(string)
 	requestBody, _ := io.ReadAll(request.Body)
 	var clientSignal models.ClientSignals
 	json.Unmarshal(requestBody, &clientSignal)

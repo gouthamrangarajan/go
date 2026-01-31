@@ -18,6 +18,7 @@ require (
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 	github.com/coder/websocket v1.8.12 // indirect
 	github.com/dlclark/regexp2 v1.11.5 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/yuin/goldmark v1.7.16 // indirect

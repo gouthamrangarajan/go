@@ -1,10 +1,9 @@
 package main
 
 import (
+	"datastar-openrouter/services"
 	"fmt"
 	"net/http"
-
-	"datastar-openrouter/services/middlewares"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -22,7 +21,7 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Compress(5))
-	router.Use(middlewares.Authorization)
+	router.Use(services.AuthorizationMiddleware)
 
 	router.Get("/", mainPageHandler)
 	router.Get("/{sessionId}", mainPageHandler)
