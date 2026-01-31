@@ -12,6 +12,9 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
+// Define the duration 30 days
+const sessionDuration = 30 * 24 * time.Hour
+
 func GenerateUserIdCookie() (http.Cookie, error) {
 	secure := true
 	if os.Getenv("ENV") == "Development" {
@@ -19,8 +22,9 @@ func GenerateUserIdCookie() (http.Cookie, error) {
 	}
 
 	cookieName := "drive"
-	value := map[string]string{
+	value := map[string]interface{}{
 		"user_id": os.Getenv("USER_ID"),
+		"created": time.Now().Unix(),
 	}
 
 	hashKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_HASH_KEY"))
@@ -40,8 +44,7 @@ func GenerateUserIdCookie() (http.Cookie, error) {
 		fmt.Printf("Error encoding cookie: %v\n", err)
 		return http.Cookie{}, err
 	}
-	// Define the duration 30 days
-	sessionDuration := 30 * 24 * time.Hour
+
 	cookie := http.Cookie{
 		Name:     cookieName,
 		Value:    cookieValue,
@@ -68,10 +71,13 @@ func ValidateUserIdInCookie(r *http.Request) bool {
 	newSecureCookie := securecookie.New(hashKey, blockKey)
 
 	if cookie, err := r.Cookie("drive"); err == nil {
-		value := make(map[string]string)
+		value := make(map[string]interface{})
 		// This  checks for tampering and expiration automatically
 		if err = newSecureCookie.Decode("drive", cookie.Value, &value); err == nil {
-			return value["user_id"] == os.Getenv("USER_ID")
+			if value["user_id"] == os.Getenv("USER_ID") &&
+				time.Now().Unix()-value["created"].(int64) < int64(sessionDuration.Seconds()) {
+				return true
+			}
 		}
 	}
 	return false
