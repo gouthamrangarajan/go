@@ -9,3 +9,8 @@ type FileData struct {
 	OCRText               string
 	ExtractedTextMarkdown string
 }
+
+type DrivePaginationRequest struct {
+	FolderId  string
+	PageToken string
+}

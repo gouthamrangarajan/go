@@ -48,7 +48,6 @@ func GetFilesFromDrive(channel chan<- []models.FileData) {
 	// if len(allFiles) != 0 {
 	// 	fmt.Printf("Total files found in Drive folder and subfolders: %v\n", len(allFiles))
 	// }
-
 	// Limiting to first n files for demo purposes
 	// filesData.Files = filesData.Files[0:2]
 	extractDataChannel := make(chan models.FileData, len(allFiles))
@@ -164,12 +163,30 @@ func recursiveGetFilesData(driverService *drive.Service, folderId string, allFil
 		return allFiles, err
 	}
 	allFiles = append(allFiles, filesData.Files...)
+	if strings.TrimSpace(filesData.NextPageToken) != "" {
+		allFiles = recursiveGetPaginationData(driverService, allFiles, models.DrivePaginationRequest{
+			PageToken: filesData.NextPageToken,
+			FolderId:  folderId,
+		})
+	}
 	for _, file := range filesData.Files {
 		if file.MimeType == "application/vnd.google-apps.folder" {
 			allFiles, err = recursiveGetFilesData(driverService, file.Id, allFiles)
 		}
 	}
 	return allFiles, err
+}
+func recursiveGetPaginationData(driverService *drive.Service, allFiles []*drive.File, paginationRequest models.DrivePaginationRequest) []*drive.File {
+	filesData, _ := driverService.Files.List().Q(fmt.Sprintf("'%s' in parents", paginationRequest.FolderId)).PageToken(paginationRequest.PageToken).Do()
+	if filesData != nil && filesData.Files != nil {
+		allFiles = append(allFiles, filesData.Files...)
+		if strings.TrimSpace(filesData.NextPageToken) != "" {
+			allFiles = recursiveGetPaginationData(driverService, allFiles,
+				models.DrivePaginationRequest{PageToken: filesData.NextPageToken,
+					FolderId: paginationRequest.FolderId})
+		}
+	}
+	return allFiles
 }
 
 func extractSpreedSheetData(driverService *drive.Service, file *drive.File) (models.FileData, error) {
