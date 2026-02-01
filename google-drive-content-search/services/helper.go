@@ -124,7 +124,11 @@ func ConvertDocumentChunkCollectionToSearchResultCollection(documentChunkCollect
 func ConvertMarkdownToHtml(id string, source []byte, channel chan<- string) {
 	var buf bytes.Buffer
 	md := goldmark.New(goldmark.WithExtensions(extension.GFM, extension.DefinitionList,
-		extension.Footnote, extension.Typographer, extension.CJK, &mermaid.Extender{},
+		extension.Footnote, extension.Typographer, extension.CJK, &mermaid.Extender{
+			RenderMode:   mermaid.RenderModeClient,
+			ContainerTag: "div",
+			NoScript:     true,
+		},
 		highlighting.NewHighlighting(highlighting.WithStyle("dracula"))))
 	if err := md.Convert(source, &buf); err != nil {
 		fmt.Printf("Error converting markdown: %v\n", err)

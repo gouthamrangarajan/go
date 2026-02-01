@@ -95,6 +95,7 @@ func main() {
 							continue
 						default:
 							sse.PatchElements(markdownToHtmlData, datastar.WithUseViewTransitions(true))
+							sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
 						}
 					}
 				}
