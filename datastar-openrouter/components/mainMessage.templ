@@ -23,13 +23,13 @@ templ ChatMessage(message models.ChatConversation, stream bool) {
 					id={ "markdown_" + strconv.Itoa(message.Id) }
 				></div>
 			}
+			@ChatMessageFileData(message)
 			if message.Role=="assistant" && stream {
 				<span
 					class="animate-pulse opacity-80 text-sm"
 					id="thinkingMesssage"
 				>thinking...</span>
 			}
-			@ChatMessageFileData(message)
 		</div>
 		@ChatMessageModelIdDisplay(message)
 		if message.Role == "user" {
