@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
@@ -118,13 +117,12 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	sse := datastar.NewSSE(responseWriter, request)
 	if newSession.Id != 0 {
 		sse.ExecuteScript(`window.location.href=window.location.origin+'/'+` + strconv.Itoa(newSession.Id))
-		embeddingChannel := make(chan models.OpenRouterEmbeddingResponse)
+		embeddingChannel := make(chan models.VoyageEmbeddingResponse)
 		defer close(embeddingChannel)
-		embeddingRequest := models.OpenRouterEmbeddingRequest{
-			Model: os.Getenv("OPEN_ROUTER_EMBEDDING_MODEL"),
+		embeddingRequest := models.VoyageEmbeddingRequest{
 			Input: []string{newSession.Title},
 		}
-		go services.CallOpenRouterEmbedding(embeddingRequest, embeddingChannel)
+		go services.CallVoyageEmbedding(embeddingRequest, embeddingChannel)
 		embeddingResponse := <-embeddingChannel
 		if len(embeddingResponse.Data) > 0 {
 			updateTitleVectorChannel := make(chan int)
@@ -443,7 +441,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 
 	updateTitleChannel := make(chan int)
 	defer close(updateTitleChannel)
-	embeddingChannel := make(chan models.OpenRouterEmbeddingResponse)
+	embeddingChannel := make(chan models.VoyageEmbeddingResponse)
 	defer close(embeddingChannel)
 	updateTitleCalled := false
 	titleToUpdate := clientSignal.Prompt
@@ -459,11 +457,10 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(sse *
 		go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, updateTitleChannel)
 		updateTitleCalled = true
 
-		embeddingRequest := models.OpenRouterEmbeddingRequest{
-			Model: os.Getenv("OPEN_ROUTER_EMBEDDING_MODEL"),
+		embeddingRequest := models.VoyageEmbeddingRequest{
 			Input: []string{titleToVectorize},
 		}
-		go services.CallOpenRouterEmbedding(embeddingRequest, embeddingChannel)
+		go services.CallVoyageEmbedding(embeddingRequest, embeddingChannel)
 	}
 
 	updateWebSearchChannel := make(chan int)
@@ -582,14 +579,13 @@ func SearchSessionsViaChannel(data models.SearchSessionViaChannelRequest) []mode
 	retVal := []models.ChatSession{}
 	searchSessionsChannel := make(chan []models.ChatSession)
 	defer close(searchSessionsChannel)
-	embeddingsChannel := make(chan models.OpenRouterEmbeddingResponse)
+	embeddingsChannel := make(chan models.VoyageEmbeddingResponse)
 	defer close(embeddingsChannel)
 
-	embeddingRequest := models.OpenRouterEmbeddingRequest{
-		Model: os.Getenv("OPEN_ROUTER_EMBEDDING_MODEL"),
+	embeddingRequest := models.VoyageEmbeddingRequest{
 		Input: []string{data.SearchTerm},
 	}
-	go services.CallOpenRouterEmbedding(embeddingRequest, embeddingsChannel)
+	go services.CallVoyageEmbedding(embeddingRequest, embeddingsChannel)
 	embeddingResponse := <-embeddingsChannel
 	if len(embeddingResponse.Data) > 0 {
 		go services.SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)

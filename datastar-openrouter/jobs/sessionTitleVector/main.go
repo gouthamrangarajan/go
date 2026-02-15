@@ -5,6 +5,9 @@ import (
 	"datastar-openrouter/services"
 	"fmt"
 	"os"
+	"strconv"
+	"sync"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -16,48 +19,68 @@ func main() {
 	} else {
 		fmt.Println("Success loaded .env file")
 	}
-	fmt.Println("Starting the session title vector job...")
+	fmt.Printf("Starting the session title vector job %v\n...", time.Now())
 	getAllChatSessionsChannel := make(chan []models.ChatSession)
 	defer close(getAllChatSessionsChannel)
 	go services.GetAllChatSessionsForJob(getAllChatSessionsChannel)
 	allSessions := <-getAllChatSessionsChannel
 	fmt.Printf("Total sessions: %d\n", len(allSessions))
-	embeddingChannel := make(chan models.OpenRouterEmbeddingResponse)
-	defer close(embeddingChannel)
-	embeddingRequest := models.OpenRouterEmbeddingRequest{
-		Model: os.Getenv("OPEN_ROUTER_EMBEDDING_MODEL"),
+
+	voyageAPIRequestLimitStr := os.Getenv("VOYAGE_REQUEST_LIMIT")
+	voyageAPIRequestLimit, _ := strconv.Atoi(voyageAPIRequestLimitStr)
+	if voyageAPIRequestLimit == 0 {
+		voyageAPIRequestLimit = 10
+	}
+
+	noOfVoyageAPICalls := (len(allSessions) + voyageAPIRequestLimit - 1) / voyageAPIRequestLimit
+	fmt.Printf("Total Voyage API calls to be made: %d\n", noOfVoyageAPICalls)
+
+	waitGroup := sync.WaitGroup{}
+	waitGroup.Add(noOfVoyageAPICalls)
+	for idx := 0; idx < noOfVoyageAPICalls; idx++ {
+		startIdx := idx * voyageAPIRequestLimit
+		endIdx := (idx + 1) * voyageAPIRequestLimit
+		if endIdx > len(allSessions) {
+			endIdx = len(allSessions)
+		}
+		sessionsToUpdateTitleVector := allSessions[startIdx:endIdx]
+		go workerCallVoyageAPIAndUpdateDb(sessionsToUpdateTitleVector, &waitGroup)
+	}
+	waitGroup.Wait()
+	fmt.Printf("Completed the session title vector job %v\n...", time.Now())
+}
+
+func workerCallVoyageAPIAndUpdateDb(dbData []models.ChatSession, wg *sync.WaitGroup) {
+	defer wg.Done()
+	voyageRequestChannel := make(chan models.VoyageEmbeddingResponse)
+	defer close(voyageRequestChannel)
+	voyageAPIRequest := models.VoyageEmbeddingRequest{
 		Input: []string{},
 	}
-	dbUpdateChannels := make([]chan int, len(allSessions))
-	indexKeyToIdValMapping := make(map[int]int, len(allSessions))
-	requestoVectors := make([]string, len(allSessions))
-
-	for idx, session := range allSessions {
+	for _, session := range dbData {
 		titleToVectorize := session.Title
 		if len(titleToVectorize) > 500 {
 			titleToVectorize = session.Title[:500]
 		}
-		requestoVectors[idx] = titleToVectorize
-		indexKeyToIdValMapping[idx] = session.Id
-		embeddingRequest.Input = append(embeddingRequest.Input, titleToVectorize)
+		voyageAPIRequest.Input = append(voyageAPIRequest.Input, titleToVectorize)
 	}
-	go services.CallOpenRouterEmbedding(embeddingRequest, embeddingChannel)
-	embeddingResponse := <-embeddingChannel
-
-	dbUpdateCalled := false
-	if len(embeddingResponse.Data) > 0 {
-		dbUpdateCalled = true
-		for idx, embeddingItem := range embeddingResponse.Data {
-			dbUpdateChannels[idx] = make(chan int)
-			defer close(dbUpdateChannels[idx])
-			sessionIdToUpdate := indexKeyToIdValMapping[embeddingItem.Index]
-			go services.UpdateChatSessionTitleVector(sessionIdToUpdate, embeddingItem.Embedding, dbUpdateChannels[idx])
+	go services.CallVoyageEmbedding(voyageAPIRequest, voyageRequestChannel)
+	voyageAPIResponse := <-voyageRequestChannel
+	if len(voyageAPIResponse.Data) > 0 {
+		dbUpdateChannels := make([]chan int, len(voyageAPIResponse.Data))
+		for _, embeddingItem := range voyageAPIResponse.Data {
+			sessionIdToUpdate := dbData[embeddingItem.Index].Id
+			// fmt.Printf("Received embedding for session id %v\n", sessionIdToUpdate)
+			dbUpdateChannels[embeddingItem.Index] = make(chan int)
+			go services.UpdateChatSessionTitleVector(sessionIdToUpdate, embeddingItem.Embedding, dbUpdateChannels[embeddingItem.Index])
 		}
-	}
-	if dbUpdateCalled {
 		for _, dbUpdateChannel := range dbUpdateChannels {
-			fmt.Println("DB update result:", <-dbUpdateChannel)
+			result := <-dbUpdateChannel
+			if result == 1 {
+				fmt.Printf("Successfully updated session title vector for session id %v\n", dbData[result].Id)
+			}
+			close(dbUpdateChannel)
 		}
 	}
-	fmt.Println("Completed the session title vector job...")
+
 }

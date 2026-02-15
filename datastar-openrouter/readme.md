@@ -34,7 +34,8 @@ To get started with the Nexus Chat application, follow these steps:
    ```
 3. Create a .env file with following values
 
-   - COOKIE_SECRET
+   - COOKIE_BLOCK_KEY
+   - COOKIE_HASH_KEY
    - DEFAULT_MODEL_ID
    - ENV
    - OPEN_ROUTER_API_KEY
@@ -43,6 +44,9 @@ To get started with the Nexus Chat application, follow these steps:
    - OPEN_ROUTER_EMBEDDING_MODEL
    - TURSO_AUTH_TOKEN
    - TURSO_DATABASE_URL
+   - VOYAGE_API_KEY
+   - VOYAGE_EMBEDDINGS_URL
+   - VOYAGE_EMBEDDINGS_MODEL
 
 4. Use Go & Templ (Terminal 1)
    ```bash
