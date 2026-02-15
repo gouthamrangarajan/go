@@ -1,0 +1,22 @@
+function notInViewportObserver(querySelector) {
+  const element = document.querySelector(querySelector);
+  if (!element) {
+    console.log(`Element not found for selector: ${querySelector}`);
+    return null;
+  }
+  let observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) {
+        element.dispatchEvent(new CustomEvent("not-in-viewport"));
+      }
+    });
+  });
+  observer.observe(element);
+  return () => {
+    if (observer) {
+      // console.log('enter disconnect')
+      observer.disconnect();
+      observer = null;
+    }
+  };
+}

@@ -62,6 +62,9 @@ Technology video collection with advanced search. Features: Go-powered backend, 
    - PINECONE_TOPK
    - RATE_LIMIT_REQUESTS
    - RATE_LIMIT_SECONDS
+   - VOYAGE_API_KEY
+   - VOYAGE_EMBEDDINGS_URL
+   - VOYAGE_EMBEDDINGS_MODEL
    - YT_API_KEY
    - YT_API_URL
 
@@ -78,7 +81,7 @@ Technology video collection with advanced search. Features: Go-powered backend, 
 
 To run the application, use the following command:
 
-Open your browser and navigate to `http://127.0.0.1:7331/` to start chatting!
+Open your browser and navigate to `http://127.0.0.1:7331/` to start checking!
 
 ### Deployed version
 

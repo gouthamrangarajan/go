@@ -24,11 +24,8 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 		sse.PatchElementTempl(components.AddVideoButton(), datastar.WithUseViewTransitions(true))
 		return
 	}
-	authConfig := models.FirebaseAuthConfig{
-		ApiKey: os.Getenv("FIREBASE_API_KEY"),
-		Domain: os.Getenv("FIREBASE_AUTH_DOMAIN"),
-	}
-	components.Landing(authConfig).Render(request.Context(), responseWriter)
+
+	components.Landing().Render(request.Context(), responseWriter)
 }
 
 func landingPageDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -63,11 +60,11 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		removeLoaderMore(sse)
 		return
 	}
-	openAIVectorChannel := make(chan []float32)
-	defer close(openAIVectorChannel)
-	go services.GetOpenAIEmbeddings(openAIResponse, openAIVectorChannel)
-	vector := <-openAIVectorChannel
-	if vector == nil {
+	vectorChannel := make(chan models.VoyageEmbeddingResponse)
+	defer close(vectorChannel)
+	go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{openAIResponse}}, vectorChannel)
+	vectorResponse := <-vectorChannel
+	if len(vectorResponse.Data) == 0 || len(vectorResponse.Data[0].Embedding) == 0 {
 		fmt.Printf("No embedding vector received from OpenAI for %v\n", query)
 		sse.PatchElementTempl(components.NoDataFound("No technology videos found matching your search."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 		removeLoaderMore(sse)
@@ -75,7 +72,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	pineconeChannel := make(chan []string)
 	defer close(pineconeChannel)
-	go services.QueryPineconeDb(vector, pineconeChannel)
+	go services.QueryPineconeDb(vectorResponse.Data[0].Embedding, pineconeChannel)
 	videoIds := <-pineconeChannel
 	if len(videoIds) == 0 {
 		sse.PatchElementTempl(components.NoDataFound("No technology videos found matching your search."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
@@ -228,17 +225,22 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					defer close(deleteDocIdAndVideoIdNotMatchChannel)
 					go services.CheckAndDeleteIfDocIdAndVideoIdAreNotSame(uiSignals.VideoId, deleteDocIdAndVideoIdNotMatchChannel)
 
-					textToVectorize := uiSignals.Title + " " + uiSignals.Subtitle + " " + strings.Join(trimmedTags, " ") + " " + ytResponse.Items[0].Snippet.Description
-					openAIVectorChannel := make(chan []float32)
-					defer close(openAIVectorChannel)
-					go services.GetOpenAIEmbeddings(textToVectorize, openAIVectorChannel)
-					vector := <-openAIVectorChannel
-					if vector != nil {
+					dataToVectorize := models.VideoResponse{
+						Title:    uiSignals.Title,
+						Subtitle: uiSignals.Subtitle,
+						Tags:     trimmedTags,
+					}
+					dataToVectorize = services.ConstructTextToVectorize(dataToVectorize, ytResponse.Items[0].Snippet.Description)
+					vectorChannel := make(chan models.VoyageEmbeddingResponse)
+					defer close(vectorChannel)
+					go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{dataToVectorize.TextToVectorize}}, vectorChannel)
+					vectorData := <-vectorChannel
+					if len(vectorData.Data) != 0 && len(vectorData.Data[0].Embedding) != 0 {
 						upsertPineconeChannel := make(chan int)
 						defer close(upsertPineconeChannel)
-						go services.UpsertPineconeDb(uiSignals.VideoId, vector, upsertPineconeChannel)
+						go services.UpsertPineconeDb(uiSignals.VideoId, vectorData.Data[0].Embedding, upsertPineconeChannel)
 						<-upsertPineconeChannel
-						// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", textToVectorize)
+						// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", dataToVectorize.TextToVectorize)
 					}
 					<-deleteDocIdAndVideoIdNotMatchChannel
 				} else {
@@ -275,7 +277,7 @@ func deleteVideoHandler(responseWriter http.ResponseWriter, request *http.Reques
 					sse.PatchElementTempl(components.EmptyDeleteVideoResult(), datastar.WithUseViewTransitions(true))
 					sse.PatchSignals([]byte(`{videoToDelete:'',showDeleteConfirm:false}`))
 					time.Sleep(200 * time.Millisecond) //wait for UI animation
-					sse.RemoveElement("#playerContainer_"+uiSignals.VideoToDelete, datastar.WithUseViewTransitions(true))
+					sse.RemoveElement("#playerContainer_"+uiSignals.VideoToDelete+"_"+uiSignals.SearchTxt, datastar.WithUseViewTransitions(true))
 					deletePineconeRecordChannel := make(chan bool)
 					defer close(deletePineconeRecordChannel)
 					go services.DeleteRecordPineconeDb(uiSignals.VideoToDelete, deletePineconeRecordChannel)

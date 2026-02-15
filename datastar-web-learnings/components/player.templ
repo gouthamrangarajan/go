@@ -16,30 +16,30 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 	{{ videoIdReplaced := replaceSpecialCharsVideoId(video.VideoId) }}
 	{{ containerId := "playerContainer_" + video.VideoId + "_" + strings.ReplaceAll(searchQuery, " ", "_") }}
 	{{
-	switch idx {
-	case 0:
-		animationDelayStyle = "0"
-	case 1:
-		animationDelayStyle = "100ms"
-	case 2:
-		animationDelayStyle = "200ms"
-	case 3:
-		animationDelayStyle = "300ms"
-	case 4:
-		animationDelayStyle = "400ms"
-	case 5:
-		animationDelayStyle = "500ms"
-	case 6:
-		animationDelayStyle = "600ms"
-	case 7:
-		animationDelayStyle = "700ms"
-	case 8:
-		animationDelayStyle = "800ms"
-	case 9:
-		animationDelayStyle = "900ms"
-	default:
-		animationDelayStyle = "1000ms"
-	}
+		switch idx {
+		case 0:
+			animationDelayStyle = "0"
+		case 1:
+			animationDelayStyle = "100ms"
+		case 2:
+			animationDelayStyle = "200ms"
+		case 3:
+			animationDelayStyle = "300ms"
+		case 4:
+			animationDelayStyle = "400ms"
+		case 5:
+			animationDelayStyle = "500ms"
+		case 6:
+			animationDelayStyle = "600ms"
+		case 7:
+			animationDelayStyle = "700ms"
+		case 8:
+			animationDelayStyle = "800ms"
+		case 9:
+			animationDelayStyle = "900ms"
+		default:
+			animationDelayStyle = "1000ms"
+		}
 	}}
 	<div
 		id={ containerId }
@@ -95,7 +95,7 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 			</button>
 			<button
 				class="appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
-				data-on-click__viewTransition={ `$videoToDelete='" + video.VideoId + "';$showDeleteConfirm=true;` }
+				data-on-click__viewTransition={ `$videoToDelete='` + video.VideoId + `';$showDeleteConfirm=true;` }
 				data-show={ "!$_video_" + videoIdReplaced + "_showTags && !$_showLoginButton" }
 				aria-label="Delete Video"
 			>

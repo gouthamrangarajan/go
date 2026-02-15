@@ -1,7 +1,6 @@
 package components
 
 import (
-	"datastar-web-learnings/models"
 	"strconv"
 	"strings"
 )
@@ -10,8 +9,8 @@ func replaceSpecialCharsVideoId(videoId string) string {
 	return strings.ReplaceAll(videoId, "-", "")
 }
 
-templ Landing(authConfig models.FirebaseAuthConfig) {
-	@layout(authConfig) {
+templ Landing() {
+	@layout() {
 		@header()
 		@LandingMain()
 	}
@@ -109,18 +108,18 @@ templ searchInput() {
 	<form
 		class="flex items-stretch w-full md:w-7/12 lg:w-6/12 xl:w-5/12"
 		data-indicator="_searching"
-		dats-signals="{_search:'',_showClearButton:false}"
+		dats-signals="{searchTxt:'',_showClearButton:false}"
 		data-on-submit={ `evt.preventDefault();
 						const urlParams=new URLSearchParams(window.location.search).get('search');
 						if(!$_searching && ( 
-								(urlParams!=null && urlParams!=$_search.trim())
-								|| (urlParams==null && $_search.trim()!='')
+								(urlParams!=null && urlParams!=$searchTxt.trim())
+								|| (urlParams==null && $searchTxt.trim()!='')
 											)
 						  ){							
 							$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
 							$_allNotInViewportObservers=[];
-							window.history.replaceState({},document.title,window.location.origin+'/?search='+$_search.trim());							
-							@get('/search/'+$_search.trim(),{openWhenHidden: true});
+							window.history.replaceState({},document.title,window.location.origin+'/?search='+$searchTxt.trim());							
+							@get('/search/'+$searchTxt.trim(),{openWhenHidden: true});
 						}` }
 	>
 		<div class="flex gap-2 transition duration-300 rounded-l-full items-center border border-primary/50 py-2 px-4 flex-1 focus-within:border-primary ">
@@ -129,8 +128,8 @@ templ searchInput() {
 				name="search"
 				class="appearance-none outline-none flex-1 placeholder:text-secondary/70"
 				placeholder="Search..."
-				data-bind="_search"
-				data-on-load="new URLSearchParams(window.location.search).get('search')?$_search=new URLSearchParams(window.location.search).get('search'):$_search=''"
+				data-bind="searchTxt"
+				data-on-load="new URLSearchParams(window.location.search).get('search')?$searchTxt=new URLSearchParams(window.location.search).get('search'):$searchTxt=''"
 			/>
 			@loader("$_searching || $_firstLoad")
 			<button
@@ -139,7 +138,7 @@ templ searchInput() {
 				aria-label="clear search"
 				data-on-click={ `
 					evt.preventDefault();					
-					$_search='';
+					$searchTxt='';
 					if (new URLSearchParams(window.location.search).get('search')){
 						$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
 						$_allNotInViewportObservers=[];
@@ -149,7 +148,7 @@ templ searchInput() {
 				` }
 				data-show="$_showClearButton"
 				data-attr-disabled="$_searching"
-				data-effect__viewTransition={ "$_showClearButton=$_search.trim()!=''" }
+				data-effect__viewTransition={ "$_showClearButton=$searchTxt.trim()!=''" }
 				style="view-transition-name:clear-search-button"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">

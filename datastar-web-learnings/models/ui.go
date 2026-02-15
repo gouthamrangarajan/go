@@ -9,4 +9,5 @@ type UISignals struct {
 	Rank          int      `json:"rank"`
 	Transcript    string   `json:"transcript"`
 	VideoToDelete string   `json:"videoToDelete"`
+	SearchTxt     string   `json:"searchTxt"`
 }

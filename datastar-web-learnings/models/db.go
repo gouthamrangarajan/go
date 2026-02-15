@@ -25,10 +25,12 @@ type GetVideosRequest struct {
 }
 
 type VideoResponse struct {
-	Rank     int       `json:"rank"`
-	Title    string    `json:"title"`
-	VideoId  string    `json:"videoId"`
-	Subtitle string    `json:"subtitle,omitempty"`
-	Tags     []string  `json:"tags"`
-	Created  time.Time `json:"createdAt"`
+	Rank                 int       `json:"rank"`
+	Title                string    `json:"title"`
+	VideoId              string    `json:"videoId"`
+	Subtitle             string    `json:"subtitle,omitempty"`
+	Tags                 []string  `json:"tags"`
+	Created              time.Time `json:"createdAt"`
+	DescriptionFromYTAPI string
+	TextToVectorize      string
 }

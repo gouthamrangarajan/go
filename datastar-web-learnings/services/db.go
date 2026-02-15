@@ -31,6 +31,46 @@ func getFirebaseConfigJson() ([]byte, error) {
 	return firebaseConfigJson, firebaseConfigErr
 }
 
+func GetAllVideos(ctx context.Context, channel chan<- []models.VideoResponse) {
+	var videos []models.VideoResponse
+	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+		channel <- videos
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Printf("Error initializing Firebase app:%v\n", appErr)
+		channel <- videos
+		return
+	}
+
+	fireStore, err := app.Firestore(ctx)
+
+	if err != nil {
+		fmt.Printf("Error getting Firestore client:%v\n", err)
+		channel <- videos
+		return
+	}
+	defer fireStore.Close()
+	docSnaps, err := fireStore.Collection("data").Where("videoId", "!=", "").OrderBy("createdAt", firestore.Desc).Documents(ctx).GetAll()
+	if err != nil {
+		fmt.Printf("Error getting documents%v\n:", err)
+		channel <- videos
+		return
+	}
+	for _, docSnap := range docSnaps {
+		video := models.VideoResponse{}
+		docSnap.DataTo(&video)
+		videos = append(videos, video)
+	}
+	channel <- videos
+}
+
 func GetVideos(ctx context.Context, request models.GetVideosRequest, channel chan<- []models.VideoResponse) {
 	var videos []models.VideoResponse
 	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()

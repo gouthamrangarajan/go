@@ -1,11 +1,6 @@
 package components
 
-import (
-	"datastar-web-learnings/components/scripts"
-	"datastar-web-learnings/models"
-)
-
-templ layout(authConfig models.FirebaseAuthConfig) {
+templ layout() {
 	<!DOCTYPE html>
 	<html lang="en" class="w-full h-full">
 		<head>
@@ -30,23 +25,10 @@ templ layout(authConfig models.FirebaseAuthConfig) {
 		>
 			{ children... }
 			<script type="module" src="/assets/scripts/data-star.min.js"></script>
-			@scripts.FocusTrap()
-			@scripts.AddYTPlayer()
-			@scripts.YTPlayer()
-			@scripts.NotInViewportObserver()
-			<script type="module">
-			    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js'
-				import { getAuth,signInWithEmailAndPassword,onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js'
-				
-				const firebaseApp=initializeApp({apiKey: {{ authConfig.ApiKey }}, 
-									authDomain: {{ authConfig.Domain }}, 
-									});
-  				window.AUTH=getAuth(firebaseApp);
-				window.LOGIN=signInWithEmailAndPassword;
-				onAuthStateChanged(window.AUTH,(user)=>{
-					window.dispatchEvent(new Event('firebase-loaded'));
-				});
-			</script>
+			<script type="text/javascript" src="/assets/scripts/ytPlayer.js"></script>
+			<script type="text/javascript" src="/assets/scripts/focusTrap.js"></script>
+			<script type="text/javascript" src="/assets/scripts/viewportObserver.js"></script>
+			<script type="module" src="/assets/scripts/firebase.js"></script>
 		</body>
 	</html>
 }

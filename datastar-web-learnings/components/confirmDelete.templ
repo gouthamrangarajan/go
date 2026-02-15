@@ -43,7 +43,7 @@ templ confirmDelete() {
 					data-attr-disabled="$_deletingVideo"
 					data-on-click={ `
 							AUTH.currentUser.getIdToken().then(result=>{
-								$idToken=result;
+								$idToken=result;								
 								@post('/delete');
 							})
 					` }
