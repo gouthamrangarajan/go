@@ -45,6 +45,7 @@ func main() {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
 	})
 	router.Get("/", landingPageHandler)
+	router.Get("/config", configHandler)
 	router.Get("/add", addPageHandler)
 	router.Post("/add", addVideoHandler)
 	router.Post("/tags/ui", tagsUIHandler)
