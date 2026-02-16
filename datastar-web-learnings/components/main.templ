@@ -1,6 +1,7 @@
 package components
 
 import (
+	"datastar-web-learnings/models"
 	"strconv"
 	"strings"
 )
@@ -9,8 +10,8 @@ func replaceSpecialCharsVideoId(videoId string) string {
 	return strings.ReplaceAll(videoId, "-", "")
 }
 
-templ Landing() {
-	@layout() {
+templ Landing(config models.FirebaseAuthConfig) {
+	@layout(config) {
 		@header()
 		@LandingMain()
 	}

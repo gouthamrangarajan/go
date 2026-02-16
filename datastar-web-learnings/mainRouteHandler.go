@@ -18,6 +18,10 @@ import (
 )
 
 func landingPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	firebaseConfig := models.FirebaseAuthConfig{
+		ApiKey: os.Getenv("FIREBASE_API_KEY"),
+		Domain: os.Getenv("FIREBASE_AUTH_DOMAIN"),
+	}
 	if request.Header.Get("Datastar-Request") == "true" {
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchElementTempl(components.LandingMain(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
@@ -25,20 +29,9 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 		return
 	}
 
-	components.Landing().Render(request.Context(), responseWriter)
+	components.Landing(firebaseConfig).Render(request.Context(), responseWriter)
 }
-func configHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	firebaseAPIKey := os.Getenv("FIREBASE_API_KEY")
-	firebaseAuthDomain := os.Getenv("FIREBASE_AUTH_DOMAIN")
-	config := map[string]string{
-		"firebaseApiKey":     firebaseAPIKey,
-		"firebaseAuthDomain": firebaseAuthDomain,
-	}
-	configBytes, _ := json.Marshal(config)
 
-	responseWriter.Header().Set("Content-Type", "application/json")
-	responseWriter.Write(configBytes)
-}
 func landingPageDataHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	offsetStr := chi.URLParam(request, "offset")
 	offset, err := strconv.Atoi(offsetStr)

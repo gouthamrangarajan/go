@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"datastar-web-learnings/models"
 	"strconv"
 	"strings"
 )
@@ -17,7 +18,7 @@ func replaceSpecialCharsVideoId(videoId string) string {
 	return strings.ReplaceAll(videoId, "-", "")
 }
 
-func Landing() templ.Component {
+func Landing(config models.FirebaseAuthConfig) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -64,7 +65,7 @@ func Landing() templ.Component {
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layout().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layout(config).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -147,7 +148,7 @@ func loginButton() templ.Component {
 													},1) : 
 													$_showLoginButton = true`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 48, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 49, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -197,7 +198,7 @@ func AddVideoButton() templ.Component {
 							AUTH.currentUser.getIdToken().then(result=>{$idToken=result;@get('/add');});
 						},1)`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 71, Col: 11}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 72, Col: 11}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -244,7 +245,7 @@ func LandingMain() templ.Component {
 						}
 					 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 91, Col: 7}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 92, Col: 7}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -329,7 +330,7 @@ func searchInput() templ.Component {
 							@get('/search/'+$searchTxt.trim(),{openWhenHidden: true});
 						}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 123, Col: 8}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 124, Col: 8}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -359,7 +360,7 @@ func searchInput() templ.Component {
 					}
 				`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 148, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 149, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -372,7 +373,7 @@ func searchInput() templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("$_showClearButton=$searchTxt.trim()!=''")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 151, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 152, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -414,7 +415,7 @@ func LoadMore(offset int) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs("@get('/data/" + strconv.Itoa(offset) + "')")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 176, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 177, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -456,7 +457,7 @@ func loader(dataShowSignal string) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(dataShowSignal)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 181, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 182, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -498,7 +499,7 @@ func NoDataFound(message string) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 202, Col: 11}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 203, Col: 11}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {

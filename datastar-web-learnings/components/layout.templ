@@ -1,6 +1,8 @@
 package components
 
-templ layout() {
+import "datastar-web-learnings/models"
+
+templ layout(config models.FirebaseAuthConfig) {
 	<!DOCTYPE html>
 	<html lang="en" class="w-full h-full">
 		<head>
@@ -14,21 +16,23 @@ templ layout() {
 			<link rel="icon" type="image/svg" href="/assets/images/favicon.svg"/>
 			<link href="/assets/css/styles.css" rel="stylesheet"/>
 			<link href="/assets/css/open-props.min.css" rel="stylesheet"/>
+			<script type="module" src="/assets/scripts/firebase.js"></script>
 		</head>
 		<body
 			class="w-full h-full font-roboto bg-background text-primary relative overflow-hidden"
 			data-signals={ `
 					{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
 					  idToken:'',_allNotInViewportObservers:[],
+					  _firebaseApiKey:'`+config.ApiKey+`',_firebaseAuthDomain:'`+config.Domain+`',
 					}
 				` }
+			data-on-load={ `window.initializeFirebaseApp?window.initializeFirebaseApp({apiKey:$_firebaseApiKey,authDomain:$_firebaseAuthDomain}):null` }
 		>
 			{ children... }
 			<script type="module" src="/assets/scripts/data-star.min.js"></script>
 			<script type="text/javascript" src="/assets/scripts/ytPlayer.js"></script>
 			<script type="text/javascript" src="/assets/scripts/focusTrap.js"></script>
 			<script type="text/javascript" src="/assets/scripts/viewportObserver.js"></script>
-			<script type="module" src="/assets/scripts/firebase.js"></script>
 		</body>
 	</html>
 }

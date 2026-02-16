@@ -8,7 +8,9 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func layout() templ.Component {
+import "datastar-web-learnings/models"
+
+func layout(config models.FirebaseAuthConfig) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +31,7 @@ func layout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Collection of You Tube videos regarding front end frameworks\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/svg\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-hidden\" data-signals=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Collection of You Tube videos regarding front end frameworks\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/svg\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"><script type=\"module\" src=\"/assets/scripts/firebase.js\"></script></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-hidden\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -37,16 +39,30 @@ func layout() templ.Component {
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(`
 					{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
 					  idToken:'',_allNotInViewportObservers:[],
+					  _firebaseApiKey:'` + config.ApiKey + `',_firebaseAuthDomain:'` + config.Domain + `',
 					}
 				`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 24, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 28, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" data-on-load=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`window.initializeFirebaseApp?window.initializeFirebaseApp({apiKey:$_firebaseApiKey,authDomain:$_firebaseAuthDomain}):null`)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 29, Col: 141}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -54,7 +70,7 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"module\" src=\"/assets/scripts/data-star.min.js\"></script><script type=\"text/javascript\" src=\"/assets/scripts/ytPlayer.js\"></script><script type=\"text/javascript\" src=\"/assets/scripts/focusTrap.js\"></script><script type=\"text/javascript\" src=\"/assets/scripts/viewportObserver.js\"></script><script type=\"module\" src=\"/assets/scripts/firebase.js\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script type=\"module\" src=\"/assets/scripts/data-star.min.js\"></script><script type=\"text/javascript\" src=\"/assets/scripts/ytPlayer.js\"></script><script type=\"text/javascript\" src=\"/assets/scripts/focusTrap.js\"></script><script type=\"text/javascript\" src=\"/assets/scripts/viewportObserver.js\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
