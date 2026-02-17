@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -16,7 +17,75 @@ import (
 	"google.golang.org/api/option"
 )
 
-func GetFilesFromDrive(channel chan<- []models.FileData) {
+func GetFilesFromDriveV2(channel chan<- models.FileData) {
+	defer close(channel)
+	driverService, err := createDriverService(false)
+	if err != nil {
+		return
+	}
+	folderId := os.Getenv("DRIVE_FOLDER_ID")
+
+	var allFiles []*drive.File
+
+	allFiles, err = recursiveGetFilesData(driverService, folderId, allFiles)
+	if err != nil && (strings.Contains(err.Error(), "Token has been expired or revoked") ||
+		strings.Contains(err.Error(), "invalid_grant")) {
+		fmt.Printf("OAuth2 token expired, generating new token...\n")
+		driverService, err = createDriverService(true)
+		if err != nil {
+			return
+		}
+		allFiles, err = recursiveGetFilesData(driverService, folderId, allFiles)
+		if err != nil {
+			return
+		}
+	}
+	if len(allFiles) == 0 {
+		return
+	}
+	if len(allFiles) != 0 {
+		fmt.Printf("Total files found in Drive folder and subfolders: %v\n", len(allFiles))
+	}
+	waitGroup := sync.WaitGroup{}
+	waitGroup.Add(len(allFiles))
+
+	for _, file := range allFiles {
+		// fmt.Printf("Found file: %s (ID: %s, MimeType: %s)\n", file.Name, file.Id, file.MimeType)
+		switch file.MimeType {
+		case "application/vnd.google-apps.spreadsheet",
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+			{
+				go func() {
+					fileDataToAppend, _ := extractSpreedSheetData(driverService, file)
+					if strings.TrimSpace(fileDataToAppend.ExtractedText) != "" {
+						channel <- fileDataToAppend
+					}
+					defer waitGroup.Done()
+				}()
+			}
+		case "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			"application/msword", "application/pdf",
+			"image/png", "image/jpeg", "image/jpg":
+			{
+				go func() {
+					fileDataToAppend, _ := extractWordOrPDFData(folderId, driverService, file)
+					if strings.TrimSpace(fileDataToAppend.ExtractedText) != "" {
+						channel <- fileDataToAppend
+					}
+					defer waitGroup.Done()
+				}()
+			}
+		default:
+			{
+				fmt.Printf("Skipping unsupported file type: %s (MimeType: %s)\n", file.Name, file.MimeType)
+				// channel <- models.FileData{}
+				waitGroup.Done()
+			}
+		}
+	}
+	waitGroup.Wait()
+}
+func GetFilesFromDriveV1(channel chan<- []models.FileData) {
 	filesToReturn := []models.FileData{}
 	driverService, err := createDriverService(false)
 	if err != nil {
@@ -28,7 +97,8 @@ func GetFilesFromDrive(channel chan<- []models.FileData) {
 	var allFiles []*drive.File
 
 	allFiles, err = recursiveGetFilesData(driverService, folderId, allFiles)
-	if err != nil && strings.Contains(err.Error(), "Token has been expired or revoked") {
+	if err != nil && (strings.Contains(err.Error(), "Token has been expired or revoked") ||
+		strings.Contains(err.Error(), "invalid_grant")) {
 		fmt.Printf("OAuth2 token expired, generating new token...\n")
 		driverService, err = createDriverService(true)
 		if err != nil {

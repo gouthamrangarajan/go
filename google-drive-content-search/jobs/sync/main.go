@@ -13,8 +13,54 @@ func main() {
 	services.LoadEnv()
 	fmt.Printf("Sync Process Started... %v\n", time.Now())
 
+	deleteAllDataChannel := make(chan int)
+	go services.DeleteAllData(deleteAllDataChannel)
+	totalRecordsDeleted := <-deleteAllDataChannel
+	close(deleteAllDataChannel)
+	fmt.Printf("Cleanup: Total Records Deleted from DB: %v\n", totalRecordsDeleted)
+
+	filesDataChannel := make(chan models.FileData)
+	go services.GetFilesFromDriveV2(filesDataChannel)
+
+	totalFilesReceived := 0
+	totalRecordsInsertedToDb := 0
+
+	for fileData := range filesDataChannel {
+		totalFilesReceived++
+		chunksToInsertToDb := services.ConvertFileDataCollectionToDocumentChunkCollection([]models.FileData{fileData})
+		voyageRequest := models.VoyageEmbeddingRequest{}
+		for _, data := range chunksToInsertToDb {
+			cleanedText := services.CleanTextForVoyage(data.ChunkContent)
+			voyageRequest.Input = append(voyageRequest.Input, cleanedText)
+		}
+		voyageResponseChannel := make(chan models.VoyageEmbeddingResponse)
+		go services.CallVoyageEmbedding(voyageRequest, voyageResponseChannel)
+		voyageEmbeddingResponse := <-voyageResponseChannel
+		close(voyageResponseChannel)
+		for _, embeddingsObj := range voyageEmbeddingResponse.Data {
+			chunksToInsertToDb[embeddingsObj.Index].ChunkEmbedding = embeddingsObj.Embedding
+		}
+		for _, dataInCurrentLoop := range chunksToInsertToDb {
+			insertChannel := make(chan int)
+			go services.InsertData(dataInCurrentLoop, insertChannel)
+			totalRecordsInsertedToDb += <-insertChannel
+			close(insertChannel)
+		}
+
+	}
+
+	fmt.Printf("Total Files Fetched from Drive %v\n", totalFilesReceived)
+	fmt.Printf("Total Records Inserted: %v\n", totalRecordsInsertedToDb)
+	fmt.Printf("Sync Process Completed. %v\n", time.Now())
+
+}
+
+func mainV1() {
+	services.LoadEnv()
+	fmt.Printf("Sync Process Started... %v\n", time.Now())
+
 	filesDataChannel := make(chan []models.FileData)
-	go services.GetFilesFromDrive(filesDataChannel)
+	go services.GetFilesFromDriveV1(filesDataChannel)
 	filesData := <-filesDataChannel
 	close(filesDataChannel)
 	fmt.Printf("Total Files Fetched from Drive & markdown generated: %v\n", len(filesData))
