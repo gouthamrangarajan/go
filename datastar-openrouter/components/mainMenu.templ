@@ -9,7 +9,7 @@ import (
 
 templ menu(sessions []models.ChatSession, searchTerm string) {
 	<div
-		class="absolute top-0 left-0 w-full h-full bg-white/50  z-10"
+		class="absolute top-0 left-0 w-full h-full bg-white/40 z-10"
 		data-show="$_showMenu"
 		data-signals="{_menuFocusAbortController:new AbortController()}"
 		data-on:click__viewtransition="$_showMenu=false"
@@ -20,11 +20,11 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 			data-effect="$showDeleteModal?$_menuFocusAbortController.abort():$_showMenu?setTimeout(()=>$_menuFocusAbortController=focusTrap('#menuContainer')):$_menuFocusAbortController.abort()"
 		>
 			<div
-				class="flex flex-col items-center flex-1 border-r border-gray-300  h-full overflow-y-auto bg-white scroll-smooth scrollbar-thin scrollbar-thumb-dark scrollbar-track-gray-300 "
+				class="flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300  h-full overflow-y-auto bg-light dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-dark dark:scrollbar-thumb-light scrollbar-track-gray-300 dark:scrollbar-track-slate-800"
 				data-on:click="evt.stopPropagation()"
 			>
 				<button
-					class="appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark  text-white  focus:ring-2 focus:ring-dark  focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-80"
+					class="appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
 					data-class="{'animate-pulse':$_creatingNewSession}"
 					data-on:click__viewtransition="@post('/new',{openWhenHidden:true});"
 					data-indicator="_creatingNewSession"
@@ -32,20 +32,20 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 				>
 					New Chat
 				</button>
-				<div class="mt-5 w-full py-2 px-4 flex items-center gap-1 transition duration-300 border-t border-b border-dark/50  focus-within:border-dark ">
+				<div class="mt-5 w-full py-2 px-4 flex items-center gap-1 transition duration-300 border-t border-b border-dark/50 dark:border-light/50  focus-within:border-dark dark:focus-within:border-light ">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 						<path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd"></path>
 					</svg>
 					<input
 						type="text"
-						class="appearance-none outline-none flex-1 placeholder:text-gray-600 "
+						class="appearance-none outline-none flex-1 placeholder:text-slate-600 dark:placeholder:text-slate-400 "
 						data-bind="searchMenu"
 						placeholder="Search Chats..."
 						data-indicator="_searching"
 						data-on:keyup__debounce.500ms__viewtransition="@post('/sessions/search',{openWhenHidden:true})"
 					/>
 					<button
-						class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 focus:ring-1 focus:ring-red-600 hover:opacity-90"
+						class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-red-600 dark:text-red-300 focus:ring-1 focus:ring-red-600 dark:focus:ring-red-300 hover:opacity-90"
 						aria-label="Clear Search"
 						style="view-transition-name:search-action-icon"
 						data-show="!$_searching && $searchMenu!=''"
@@ -57,7 +57,7 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 					</button>
 					<div
 						data-show="$_searching"
-						class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 border-dark "
+						class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 border-dark dark:border-light"
 						data-class="{' animate-border':$_searching}"
 						style="view-transition-name:search-action-icon"
 					>
@@ -84,7 +84,7 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 		</div>
 	</div>
 	<button
-		class="appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded p-1 hover:opacity-90 bg-dark  text-white  focus:ring-2 focus:ring-dark  focus:ring-offset-2 focus:ring-offset-white  disabled:cursor-not-allowed disabled:opacity-80"
+		class="appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded p-1 hover:opacity-80 bg-dark dark:bg-light  text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80"
 		data-on:click__viewtransition="$_showMenu=true"
 		style="view-transition-name:menu-button"
 		data-show="!$_showMenu"
@@ -118,7 +118,7 @@ templ MenuItem(session models.ChatSession, searchTerm string) {
 		}
 	}}
 	<li
-		class="w-full flex gap-1 items-center pr-3 hover:bg-gray-200 focus-within:bg-gray-200"
+		class="w-full flex gap-1 items-center pr-3 hover:bg-gray-200 dark:hover:bg-slate-800 focus-within:bg-gray-200 focus-within:hover:bg-slate-800"
 		data-class={ "{'underline underline-offset-6':$sessionId==" + strconv.Itoa(session.Id) + "}" }
 		id={ "menuItem_" + strconv.Itoa(session.Id) }
 		style={ "view-transition-name:menu-item-" + strconv.Itoa(session.Id) }
@@ -127,7 +127,7 @@ templ MenuItem(session models.ChatSession, searchTerm string) {
 			{ session.Title }
 		</a>
 		<button
-			class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-gray-600 focus:ring-2 focus:ring-red-600  focus:text-red-600 hover:text-red-600 "
+			class="appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 font-semibold text-gray-600 dark:text-gray-500 focus:ring-2 focus:ring-red-600 dark:focus:ring-red-300  focus:text-red-600 dark:focus:text-red-300 hover:text-red-600 dark:hover:text-red-300 "
 			data-on:click__viewtransition={ `
                 evt.stopPropagation();
                 $sessionIdToDelete=` + strconv.Itoa(session.Id) + `;                

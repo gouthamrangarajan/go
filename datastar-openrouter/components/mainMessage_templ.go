@@ -116,7 +116,7 @@ func ChatMessage(message models.ChatConversation, stream bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if message.Role == "user" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button aria-label=\"retry\" class=\"appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 bg-gray-100 hover:bg-gray-200 focus:bg-gray-200 focus:ring-1 focus:ring-dark  disabled:cursor-not-allowed disabled:opacity-80\" data-on:click=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button aria-label=\"retry\" class=\"appearance-none outline-none absolute cursor-pointer -bottom-3 right-4 p-1 rounded-full transition duration-300 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-800 focus:bg-gray-200 dark:focus:bg-slate-800 focus:ring-1 focus:ring-dark dark:focus:ring-light  disabled:cursor-not-allowed disabled:opacity-80\" data-on:click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -177,7 +177,7 @@ func ChatMessageRoleLogo(id int, role string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"size-6 shrink-0\" fill=\"currentColor\" stroke=\"currentColor\" aria-label=\"Logo\"><g clip-path=\"url(#clip0_205_3)\"><path d=\"M3 248.945C18 248.945 76 236 106 219C136 202 136 202 198 158C276.497 102.293 332 120.945 423 120.945\" stroke-width=\"90\"></path><path d=\"M511 121.5L357.25 210.268L357.25 32.7324L511 121.5Z\"></path><path d=\"M0 249C15 249 73 261.945 103 278.945C133 295.945 133 295.945 195 339.945C273.497 395.652 329 377 420 377\" stroke-width=\"90\"></path><path d=\"M508 376.445L354.25 287.678L354.25 465.213L508 376.445Z\"></path></g><title style=\"display: none;\">OpenRouter</title><defs><clipPath id=\"clip0_205_3\"><rect width=\"512\" height=\"512\" fill=\"white\"></rect></clipPath></defs></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"size-6 shrink-0\" fill=\"currentColor\" stroke=\"currentColor\" aria-label=\"Logo\"><g clip-path=\"url(#clip0_205_3)\"><path d=\"M3 248.945C18 248.945 76 236 106 219C136 202 136 202 198 158C276.497 102.293 332 120.945 423 120.945\" stroke-width=\"90\"></path><path d=\"M511 121.5L357.25 210.268L357.25 32.7324L511 121.5Z\"></path><path d=\"M0 249C15 249 73 261.945 103 278.945C133 295.945 133 295.945 195 339.945C273.497 395.652 329 377 420 377\" stroke-width=\"90\"></path><path d=\"M508 376.445L354.25 287.678L354.25 465.213L508 376.445Z\"></path></g><title style=\"display: none;\">OpenRouter</title><defs><clipPath id=\"clip0_205_3\"><rect width=\"512\" height=\"512\" fill=\"currentColor\"></rect></clipPath></defs></svg>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -321,7 +321,7 @@ func ChatMessageModelIdDisplay(message models.ChatConversation) templ.Component 
 		}
 		ctx = templ.ClearChildren(ctx)
 		if message.ModelId != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"absolute -bottom-4 right-4 text-xs italic p-1 rounded-full bg-dark  text-white\" id=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"absolute -bottom-4 right-4 text-xs italic p-1 rounded-full bg-dark dark:bg-light  text-light dark:text-dark\" id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

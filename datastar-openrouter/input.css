@@ -8,7 +8,10 @@
 
 @theme {
     --color-dark: #000;
+    --color-light: #fff;
 }
+
+@variant dark (&:where(.dark, .dark *));
 
 @view-transition {
     navigation: auto;

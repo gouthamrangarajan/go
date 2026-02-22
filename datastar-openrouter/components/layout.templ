@@ -2,7 +2,11 @@ package components
 
 templ layout() {
 	<!DOCTYPE html>
-	<html class="w-full h-full">
+	<html
+		class="w-full h-full"
+		data-signals="{_dark: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)}"
+		data-class:dark="$_dark"
+	>
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -13,7 +17,7 @@ templ layout() {
 			<link rel="stylesheet" href="/assets/css/openprops.min.css"/>
 		</head>
 		<body
-			class="w-full h-full overflow-x-hidden overflow-y-hidden bg-background font-(family-name:--font-geometric-humanist) relative bg-gray-50 text-dark "
+			class="w-full h-full overflow-x-hidden overflow-y-hidden bg-background font-(family-name:--font-geometric-humanist) relative bg-light text-dark dark:bg-dark dark:text-light"
 		>
 			{ children... }
 			<script src="/assets/js/datastar.min.js" type="module"></script>

@@ -195,6 +195,6 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 													`+copySvg+`
 													</button>
 													</pre></div>`)
-		channel <- "<div id='markdown_" + strconv.Itoa(conversation.Id) + "' class='prose'>" + mkdwn + "</div>"
+		channel <- "<div id='markdown_" + strconv.Itoa(conversation.Id) + "' class='prose dark:prose-invert'>" + mkdwn + "</div>"
 	}
 }
