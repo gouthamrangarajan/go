@@ -118,7 +118,7 @@ templ MenuItem(session models.ChatSession, searchTerm string) {
 		}
 	}}
 	<li
-		class="w-full flex gap-1 items-center pr-3 hover:bg-gray-200 dark:hover:bg-slate-800 focus-within:bg-gray-200 focus-within:hover:bg-slate-800"
+		class="w-full flex gap-1 items-center pr-3 hover:bg-gray-200 dark:hover:bg-slate-800 focus-within:bg-gray-200 dark:focus-within:bg-slate-800"
 		data-class={ "{'underline underline-offset-6':$sessionId==" + strconv.Itoa(session.Id) + "}" }
 		id={ "menuItem_" + strconv.Itoa(session.Id) }
 		style={ "view-transition-name:menu-item-" + strconv.Itoa(session.Id) }

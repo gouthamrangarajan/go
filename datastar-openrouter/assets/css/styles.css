@@ -1231,15 +1231,6 @@
       }
     }
   }
-  .focus-within\:hover\:bg-slate-800 {
-    &:focus-within {
-      &:hover {
-        @media (hover: hover) {
-          background-color: var(--color-slate-800);
-        }
-      }
-    }
-  }
   .focus\:bg-gray-200 {
     &:focus {
       background-color: var(--color-gray-200);

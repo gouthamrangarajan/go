@@ -124,7 +124,7 @@ func MenuItem(session models.ChatSession, searchTerm string) templ.Component {
 		if searchTerm != "" {
 			href += "?search_menu=" + searchTerm
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<li class=\"w-full flex gap-1 items-center pr-3 hover:bg-gray-200 dark:hover:bg-slate-800 focus-within:bg-gray-200 focus-within:hover:bg-slate-800\" data-class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<li class=\"w-full flex gap-1 items-center pr-3 hover:bg-gray-200 dark:hover:bg-slate-800 focus-within:bg-gray-200 dark:focus-within:bg-slate-800\" data-class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
