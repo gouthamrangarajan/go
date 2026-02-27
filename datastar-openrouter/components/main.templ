@@ -51,7 +51,7 @@ templ Section(messages []models.ChatConversation) {
 
 templ toggleThemeButton() {
 	<button
-		class="appearance-none outline-none cursor-pointer absolute top-3 right-2 transition duration-300 rounded-full p-1 hover:opacity-80  text-dark dark:text-light  focus:ring-2 focus:ring-dark dark:focus:ring-light  disabled:cursor-not-allowed disabled:opacity-80"
+		class="appearance-none outline-none cursor-pointer absolute top-3 right-4 transition duration-300 rounded-full p-1 hover:opacity-80  text-dark dark:text-light  focus:ring-2 focus:ring-dark dark:focus:ring-light  disabled:cursor-not-allowed disabled:opacity-80"
 		aria-label="Toggle Theme"
 		data-on:click__viewtransition="$_dark=!$_dark; localStorage.setItem('theme', $_dark?'dark':'light');"
 	>
