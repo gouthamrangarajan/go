@@ -42,6 +42,8 @@ To get started with the Nexus Chat application, follow these steps:
    - OPEN_ROUTER_API_URL
    - OPEN_ROUTER_EMBEDDING_URL
    - OPEN_ROUTER_EMBEDDING_MODEL
+   - RATE_LIMIT_REQUESTS
+   - RATE_LIMIT_SECONDS
    - TURSO_AUTH_TOKEN
    - TURSO_DATABASE_URL
    - VOYAGE_API_KEY
