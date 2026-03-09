@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@plugin 'tailwind-scrollbar';
+
+
+.inter-font {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+@view-transition {
+    navigation: auto;
+}
+
+
+
+.animate-fade-in,
+.animate-fade-in-1,
+.animate-fade-in-2,
+.animate-fade-in-3,
+.animate-fade-in-4,
+.animate-fade-in-5,
+.animate-fade-in-6 {
+    animation: fade-in 0.6s var(--ease-elastic-out-3) forwards;
+}
+
+.animate-fade-in-1 {
+    animation-delay: 0.1s;
+}
+
+.animate-fade-in-2 {
+    animation-delay: 0.2s;
+}
+
+.animate-fade-in-3 {
+    animation-delay: 0.3s;
+}
+
+.animate-fade-in-4 {
+    animation-delay: 0.4s;
+}
+
+.animate-fade-in-5 {
+    animation-delay: 0.5s;
+}
+
+.animate-fade-in-6 {
+    animation-delay: 0.6s;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-loader {
+    animation: loader 2s var(--ease-spring-3) infinite;
+}
+
+@keyframes loader {
+    0% {
+        transform: rotate(0);
+    }
+
+    100% {
+
+        transform: rotate(360deg);
+    }
+}

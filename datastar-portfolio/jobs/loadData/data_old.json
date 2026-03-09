@@ -1,0 +1,685 @@
+{
+  "info": {
+    "title": "Full Stack Developer & Minimalist Web Architect",
+    "subTitle": "Exploring the Potential of AI-Powered Web Experiences",
+    "media": [
+      {
+        "name": "Github",
+        "url": "https://github.com/gouthamrangarajan",
+        "imgSrc": "/imgs/media/github-simple.svg",
+        "height": 32,
+        "width": 32
+      },
+      {
+        "name": "Codepen",
+        "url": "https://codepen.io/GouthamRangarajan",
+        "imgSrc": "/imgs/media/codepen-simple.svg",
+        "height": 32,
+        "width": 32
+      },
+      {
+        "name": "X",
+        "url": "https://x.com/rgouthamraja",
+        "imgSrc": "/imgs/media/x-simple.svg",
+        "height": 32,
+        "width": 32
+      },
+      {
+        "name": "LinkedIn",
+        "url": "https://www.linkedin.com/in/gouthamrangarajan",
+        "imgSrc": "/imgs/media/linkedin-search.svg",
+        "height": 48,
+        "width": 48
+      }
+    ],
+    "demos": {
+      "featured": [
+        {
+          "order": 1,
+          "title": "Gemini Chat",
+          "imgSrc": "/imgs/cloud/Gemini_Chat.png",
+          "description": "Chat application showcasing advanced Gen AI capabilities. Features include direct Gemini AI model interaction, AI-powered summarization/analysis of uploaded images & PDFs, web search integration, and image generation using Gemini. Implemented similarity search for chat sessions using Gemini embeddings stored in a Turso vector database. Built with Go, HTMX, Alpine, Tailwind CSS, and Turso for a hypermedia-driven user experience",
+          "url": "https://rg-gemini-chat.up.railway.app/",
+          "tags": [
+            "Gemini AI",
+            "Gemini Web Search",
+            "Gemini Image Generation",
+            "Gemini Embeddings",
+            "Golang",
+            "Templ",
+            "Htmx",
+            "Alpine",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Turso db",
+            "Turso Vector Search"
+          ]
+        },
+        {
+          "order": 2,
+          "title": "Tech Tube",
+          "imgSrc": "/imgs/cloud/Tech_Tube.png",
+          "description": "Technology video collection with advanced search. Features: Go-powered backend, YouTube API integration for video metadata, dynamic tagging, and vectorization to Pinecone. Implements Gen AI (Open AI) for intelligent query rephrasing and semantic search, all delivered via a Hypermedia-driven UI (Datastar, Tailwind CSS) with YouTube iframe API integration.",
+          "url": "https://rg-tech-tube.up.railway.app/",
+          "tags": [
+            "Open AI",
+            "Golang",
+            "Templ",
+            "Datastar",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Firestore",
+            "Firebase",
+            "Pinecone",
+            "Semantic Search"
+          ]
+        },
+        {
+          "order": 3,
+          "title": "Global Destination Suggester",
+          "imgSrc": "/imgs/cloud/PlacesToVisit_3.png",
+          "description": "A tool leveraging Go, Datastar, and the Gemini AI model to provide AI-driven tourism recommendations. It fetches and displays geographical coordinates for points of interest in cities on a map UI",
+          "url": "https://placestovisit.up.railway.app/",
+          "tags": [
+            "Gemini AI",
+            "Golang",
+            "Templ",
+            "Datastar",
+            "Leaflet",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Turso db"
+          ]
+        }
+      ],
+      "all": [
+        {
+          "order": 1,
+          "title": "Gemini Chat",
+          "imgSrc": "/imgs/cloud/Gemini_Chat.png",
+          "description": "Chat application showcasing advanced Gen AI capabilities. Features include direct Gemini AI model interaction, AI-powered summarization/analysis of uploaded images & PDFs, web search integration, and image generation using Gemini. Implemented similarity search for chat sessions using Gemini embeddings stored in a Turso vector database. Built with Go, HTMX, Alpine, Tailwind CSS, and Turso for a hypermedia-driven user experience",
+          "url": "https://rg-gemini-chat.up.railway.app/",
+          "tags": [
+            "Gemini AI",
+            "Gemini Web Search",
+            "Gemini Image Generation",
+            "Gemini Embeddings",
+            "Golang",
+            "Templ",
+            "Htmx",
+            "Alpine",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Turso db",
+            "Turso Vector Search"
+          ],
+          "service": "Railway",
+          "display": true,
+          "imgBadgeLightMode": true
+        },
+        {
+          "order": 2,
+          "title": "Claude Chat",
+          "imgSrc": "/imgs/cloud/ClaudeChat.png",
+          "description": "A simple Claude Chat using Golang, Datastar, Tailwind CSS & Turso",
+          "url": "https://rg-claude-chat.up.railway.app/",
+          "tags": [
+            "Claude AI",
+            "Claude Web Search",
+            "Golang",
+            "Templ",
+            "Datastar",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Turso db"
+          ],
+          "service": "Railway",
+          "display": true
+        },
+        {
+          "order": 3,
+          "title": "Open AI Chat",
+          "imgSrc": "/imgs/cloud/OpenAI_Chat_2.png",
+          "description": "A simple Open AI Chat using Remix, Open AI API, Tailwind CSS & Cloudflare KV",
+          "url": "https://rg-openai-chat.pages.dev/",
+          "tags": [
+            "Open AI",
+            "React",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Cloudflare KV"
+          ],
+          "service": "Cloudflare",
+          "display": true,
+          "imgBadgeLightMode": true
+        },
+        {
+          "order": 4,
+          "title": "Tech Tube",
+          "imgSrc": "/imgs/cloud/Tech_Tube.png",
+          "description": "Technology video collection with advanced search. Features: Go-powered backend, YouTube API integration for video metadata, dynamic tagging, and vectorization to Pinecone. Implements Gen AI (Open AI) for intelligent query rephrasing and semantic search, all delivered via a Hypermedia-driven UI (Datastar, Tailwind CSS) with YouTube iframe API integration.",
+          "url": "https://rg-tech-tube.up.railway.app/",
+          "tags": [
+            "Open AI",
+            "Golang",
+            "Templ",
+            "Datastar",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Firestore",
+            "Firebase",
+            "Pinecone",
+            "Semantic Search"
+          ],
+          "service": "Railway",
+          "display": true,
+          "imgBadgeLightMode": true
+        },
+        {
+          "order": 5,
+          "title": "Places to Visit Gemini",
+          "imgSrc": "/imgs/cloud/PlacesToVisit_3.png",
+          "description": "A tool leveraging Go, Datastar, and the Gemini AI model to provide AI-driven tourism recommendations. It fetches and displays geographical coordinates for points of interest in cities on a map UI",
+          "url": "https://placestovisit.up.railway.app/",
+          "tags": [
+            "Gemini AI",
+            "Golang",
+            "Templ",
+            "Datastar",
+            "Leaflet",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Turso db"
+          ],
+          "service": "Railway",
+          "display": true
+        },
+        {
+          "order": 6,
+          "imgSrc": "/imgs/cloud/Stock_Golang.png",
+          "title": "Golang Stock Tracker",
+          "description": "A simple stock tracking tool using Golang, Datastar, TailwindCSS, Echarts and Firebase to view personal tracked stocks",
+          "url": "https://rg-stock.up.railway.app/",
+          "tags": [
+            "Golang",
+            "Templ",
+            "Datastar",
+            "Tailwind CSS",
+            "SSE",
+            "Server-Sent Events",
+            "Firebase",
+            "Alphavantage API",
+            "Echarts"
+          ],
+          "service": "Railway",
+          "display": true
+        },
+        {
+          "order": 7,
+          "imgSrc": "/imgs/cloud/Aastron_Lego.png",
+          "title": "Aastron Lego",
+          "description": "A simple scheduler app for booking appointment with Astrologer using Remix, React, Tailwind CSS & Turso db",
+          "url": "https://aastron-lego-scheduler.pages.dev/",
+          "tags": [
+            "React",
+            "Remix",
+            "Tailwind CSS",
+            "Shadcn",
+            "Turso db"
+          ],
+          "service": "Cloudflare",
+          "display": true
+        },
+        {
+          "order": 8,
+          "imgSrc": "/imgs/cloud/Self.png",
+          "title": "Portfolio",
+          "description": "Portfolio site built with React, React Router & Tailwind CSS",
+          "url": "https://portfolio.goutham.workers.dev/",
+          "tags": [
+            "React",
+            "React Router",
+            "Tailwind CSS",
+            "Cloudflare KV"
+          ],
+          "service": "Cloudflare",
+          "display": true,
+          "imgBadgeLightMode": true
+        },
+        {
+          "order": 9,
+          "title": "Web Learnings",
+          "imgSrc": "/imgs/cloud/WL_2.png",
+          "description": "A React, Remix PWA using TailwindCSS and Firebase to display a collection of You Tube videos about Javascript frameworks",
+          "url": "https://web-learnings.pages.dev/",
+          "tags": [
+            "React",
+            "Open AI Embeddings",
+            "Tailwind CSS",
+            "Vector Search",
+            "Pinecone",
+            "PWA"
+          ],
+          "service": "Firebase",
+          "display": true
+        },
+        {
+          "order": 10,
+          "title": "Notes Golang",
+          "imgSrc": "/imgs/cloud/Notes_Golang.png",
+          "description": "A simple note tracking app using Golang, Datastar, Tailwind CSS, Supabase Auth & Database",
+          "url": "https://rg-notes.up.railway.app/",
+          "tags": [
+            "Golang",
+            "Datastar",
+            "Editorjs",
+            "Tailwind CSS",
+            "Supabase Auth",
+            "Supabase Database"
+          ],
+          "service": "Railway",
+          "display": true
+        },
+        {
+          "order": 11,
+          "title": "Notes Remix js",
+          "imgSrc": "/imgs/cloud/Notes.png",
+          "description": "A simple note tracking app using React, Remix, Tailwind CSS, Supabase Auth & Database",
+          "url": "https://rg-notes-v2.pages.dev/",
+          "tags": [
+            "React",
+            "Remix",
+            "Tailwind CSS",
+            "Supabase Auth",
+            "Supabase Database"
+          ],
+          "service": "Cloudflare",
+          "display": true
+        },
+        {
+          "order": 12,
+          "title": "Places to Visit Open AI",
+          "imgSrc": "/imgs/cloud/PlacesToVisit_2.png",
+          "description": "A simple tool to suggest places to visit for 40,000+ cities in the world using React, Remix, Open AI & Tailwind CSS",
+          "url": "http://placestovisit.pages.dev/",
+          "tags": [
+            "Open AI",
+            "React",
+            "Remix",
+            "Tailwind CSS"
+          ],
+          "service": "Cloudflare",
+          "display": true
+        },
+        {
+          "order": 13,
+          "imgSrc": "/imgs/cloud/React_Drive.png",
+          "title": "React Drive",
+          "description": "A PWA drive using Vite, React, TailwindCSS and Firebase to store and access files and folders",
+          "url": "https://react-drive-2fd13.web.app/",
+          "tags": [
+            "React",
+            "Vite",
+            "Tailwind CSS",
+            "Firebase"
+          ],
+          "service": "Firebase",
+          "display": true
+        },
+        {
+          "order": 14,
+          "imgSrc": "/imgs/cloud/Stock_Remix.png",
+          "title": "Stock Tracker",
+          "description": "A PWA using Remix, React, TailwindCSS, Echarts and Firebase to view personal tracked stocks",
+          "url": "https://rg-stock.netlify.app/",
+          "tags": [
+            "React",
+            "Remix",
+            "Tailwind CSS",
+            "Firebase",
+            "PWA",
+            "Alphavantage API",
+            "Echarts"
+          ],
+          "service": "Netlify",
+          "display": true
+        },
+        {
+          "order": 15,
+          "imgSrc": "/imgs/cloud/Calendar-3.png",
+          "title": "Golang Calendar",
+          "description": "A calendar app using Golang, Htmx, Tailwind CSS, Supabase Auth & Database",
+          "url": "https://rg-calendar.up.railway.app/",
+          "tags": [
+            "Golang",
+            "Templ",
+            "Htmx",
+            "Alpine",
+            "Tailwind CSS",
+            "Supabase"
+          ],
+          "service": "Railway",
+          "display": true
+        },
+        {
+          "order": 16,
+          "imgSrc": "/imgs/cloud/Calendar-2.png",
+          "title": "React Calendar",
+          "description": "A calendar app using React, Remix, Tailwind CSS, Supabase Auth & Database",
+          "url": "https://rg-calendar.netlify.app/",
+          "tags": [
+            "React",
+            "Remix",
+            "Tailwind CSS",
+            "Supabase"
+          ],
+          "service": "Netlify",
+          "display": true
+        },
+        {
+          "order": 17,
+          "url": "https://github.com/gouthamrangarajan/reactjs/tree/main/full-calendar-events",
+          "title": "React FullCalendar Events",
+          "imgSrc": "/imgs/github/ReactFullCalendar.png",
+          "description": "React FullCalendar Events. Month, Week & Day views along with ability to drag, drop events & adjust(increase/decrease) duration of events.",
+          "tags": [
+            "React",
+            "FullCalendar",
+            "Drag & Drop",
+            "Framer Motion"
+          ],
+          "service": "Github",
+          "display": true
+        },
+        {
+          "order": 18,
+          "url": "https://github.com/gouthamrangarajan/python/tree/main/fasthtml_openai",
+          "title": "FastHTML Open AI",
+          "imgSrc": "/imgs/github/FastHTML_OpenAI.png",
+          "description": "A simple FastHTML project to chat with Open AI",
+          "tags": [
+            "FastHTML",
+            "Open AI",
+            "Python",
+            "Turso db"
+          ],
+          "service": "Github",
+          "display": true
+        },
+        {
+          "order": 19,
+          "imgSrc": "/imgs/cloud/Wordle.png",
+          "title": "Wordle Clone",
+          "description": "Wordle clone implementation using React, Remix Cloudflare KV & Tailwind CSS",
+          "url": "https://rg-wordle-clone.pages.dev/",
+          "tags": [
+            "React",
+            "Remix",
+            "Tailwind CSS",
+            "Cloudflare KV"
+          ],
+          "service": "Cloudflare",
+          "display": true
+        },
+        {
+          "order": 20,
+          "url": "https://github.com/gouthamrangarajan/reactjs/tree/main/grocery-list",
+          "title": "React Grocery List",
+          "imgSrc": "/imgs/github/react-grocery-list.png",
+          "description": "A simple Vite PWA for tracking grocery list with real time updates using Reactjs, Tailwind CSS, Framer motion & Partykit",
+          "tags": [
+            "React",
+            "Vite",
+            "Tailwind CSS",
+            "Framer Motion",
+            "Partykit",
+            "PWA"
+          ],
+          "service": "Github",
+          "display": true
+        },
+        {
+          "order": 21,
+          "url": "https://github.com/gouthamrangarajan/Asp.Net/tree/master/SignalR%2BBackgroundService",
+          "title": "SignalR+BackgroundService",
+          "imgSrc": "/imgs/github/SignalR+BackgroundService.png",
+          "description": ".Net core SignalR + BackgroundService to send notification to client/user",
+          "tags": [
+            ".Net Core",
+            "SignalR",
+            "BackgroundService"
+          ],
+          "service": "Github",
+          "display": true
+        },
+        {
+          "order": 22,
+          "url": "https://github.com/gouthamrangarajan/Asp.Net/tree/master/AzureAD%2BGmailAuth",
+          "title": "AzureAD & Gmail Auth",
+          "imgSrc": "/imgs/github/AzureAD+GmailAuth.png",
+          "description": ".Net core Azure AD & Gmail authentication for web app",
+          "tags": [
+            ".Net Core",
+            "Azure AD",
+            "Gmail Auth"
+          ],
+          "service": "Github",
+          "display": true
+        },
+        {
+          "order": 23,
+          "url": "https://github.com/gouthamrangarajan/Asp.Net/tree/master/AzureADAuth",
+          "title": "AzureADWebApp+WebApi",
+          "imgSrc": "/imgs/github/AzureADWebApp+WebApi.png",
+          "description": ".Net core Azure AD authentication for web app and consume a Azure AD protected web api using Microsoft Identity Web",
+          "tags": [
+            ".Net Core",
+            "Azure AD",
+            "Web App",
+            "Web Api"
+          ],
+          "service": "Github",
+          "display": true
+        },
+        {
+          "order": 24,
+          "imgSrc": "/imgs/cloud/Grocery-2.png",
+          "title": "Grocery List",
+          "description": "A simple grocery tracking app using Remix, TailwindCSS, Turso & Open AI API",
+          "url": "http://rg-grocery-list-v2.netlify.app/",
+          "tags": [
+            "React",
+            "Remix",
+            "Tailwind CSS",
+            "Turso db",
+            "Open AI"
+          ],
+          "service": "Netlify",
+          "display": false
+        },
+        {
+          "order": 25,
+          "imgSrc": "/imgs/cloud/EmailSummarize.png",
+          "title": "Email Summarizer",
+          "description": "A simple tool to summarize email body using Next.js (v13), Open AI & Tailwind CSS",
+          "url": "https://rg-email-summarizer.vercel.app/",
+          "tags": [
+            "React",
+            "Next.js",
+            "Open AI",
+            "Tailwind CSS"
+          ],
+          "service": "Vercel",
+          "display": false
+        },
+        {
+          "order": 26,
+          "imgSrc": "/imgs/cloud/React_Chat.png",
+          "title": "React Chat",
+          "description": "A React PWA single room chat project with Firebase google authentication and Firestore data",
+          "url": "https://react-superchat-8b806.web.app/",
+          "tags": [
+            "React",
+            "Firebase",
+            "Firestore",
+            "PWA",
+            "Chat"
+          ],
+          "service": "Firebase",
+          "display": false
+        },
+        {
+          "order": 27,
+          "imgSrc": "/imgs/cloud/Calendar.png",
+          "title": "Calendar Clone",
+          "description": "Google calendar inspired PWA app along with firestore data storage and firebase authentication",
+          "url": "https://calendar-b42b8.web.app/",
+          "tags": [
+            "Vue",
+            "Nuxt",
+            "Firebase",
+            "Firestore",
+            "PWA"
+          ],
+          "service": "Firebase",
+          "display": true
+        },
+        {
+          "order": 28,
+          "imgSrc": "/imgs/cloud/Chat.png",
+          "title": "Vue Chat",
+          "description": "A Vue 3 PWA single room chat project with Firebase google authentication and Firestore data",
+          "url": "https://vue-superchat.web.app/",
+          "tags": [
+            "Vue",
+            "Firebase",
+            "Firestore",
+            "PWA",
+            "Chat"
+          ],
+          "service": "Firebase",
+          "display": true
+        },
+        {
+          "order": 29,
+          "imgSrc": "/imgs/github/Drive.png",
+          "description": "A Simple Client Side Drive implementation using Vue 3, Composition Api & Tailwind CSS",
+          "url": "https://github.com/gouthamrangarajan/Vuejs/tree/master/vue-3-drive",
+          "title": "Vue Drive",
+          "tags": [
+            "Vue",
+            "Composition Api",
+            "Tailwind CSS"
+          ],
+          "service": "Github",
+          "display": true
+        },
+        {
+          "order": 30,
+          "url": "https://codepen.io/GouthamRangarajan/full/XWEGOJK",
+          "imgSrc": "/imgs/codepen/CodePen20.png",
+          "title": "Vue QRCode Generator",
+          "description": "",
+          "tags": [
+            "Vue",
+            "QRCode",
+            "Codepen"
+          ],
+          "service": "Codepen",
+          "display": true
+        },
+        {
+          "order": 31,
+          "url": "https://codepen.io/GouthamRangarajan/full/poQewOO",
+          "imgSrc": "/imgs/codepen/CodePen22.png",
+          "title": "Vue DatePicker",
+          "description": "",
+          "tags": [
+            "Vue",
+            "VueUse",
+            "DatePicker",
+            "Codepen"
+          ],
+          "service": "Codepen",
+          "display": true
+        },
+        {
+          "order": 32,
+          "url": "https://codepen.io/GouthamRangarajan/full/NWoboOG",
+          "imgSrc": "/imgs/codepen/CodePen24.png",
+          "title": "Vue, HTML Popover API & View Transition API",
+          "description": "",
+          "tags": [
+            "Vue",
+            "Popover API",
+            "Codepen",
+            "View Transition API"
+          ],
+          "service": "Codepen",
+          "display": true
+        },
+        {
+          "order": 33,
+          "url": "https://codepen.io/GouthamRangarajan/full/bGzEoYa",
+          "imgSrc": "/imgs/codepen/CodePen23.png",
+          "title": "Vue, HTML Dialog & View Transition API",
+          "description": "",
+          "tags": [
+            "Vue",
+            "HTML Dialog",
+            "Codepen",
+            "View Transition API"
+          ],
+          "service": "Codepen",
+          "display": true
+        },
+        {
+          "order": 34,
+          "url": "https://codepen.io/GouthamRangarajan/full/JjXdemz",
+          "imgSrc": "/imgs/codepen/CodePen2.png",
+          "title": "Vue Tailwind Toastr",
+          "description": "",
+          "tags": [
+            "Vue",
+            "Tailwind CSS",
+            "Codepen"
+          ],
+          "display": false,
+          "service": "Codepen"
+        },
+        {
+          "order": 35,
+          "url": "https://codepen.io/GouthamRangarajan/full/mdxPROp",
+          "imgSrc": "/imgs/codepen/CodePen19.png",
+          "title": "Vue Cart",
+          "description": "",
+          "tags": [
+            "Vue",
+            "Tailwind CSS",
+            "Codepen"
+          ],
+          "display": false,
+          "service": "Codepen"
+        }
+      ]
+    },
+    "filters": [
+      "All Projects",
+      "GenAI",
+      "Cloudflare",
+      "Railway",
+      "Netlify",
+      "Firebase",
+      "Github",
+      "Codepen"
+    ]
+  }
+}
