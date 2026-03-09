@@ -113,7 +113,7 @@ func GetAiModels(channel chan<- []models.AIModel) {
 		return
 	}
 	defer db.Close()
-	rows, err := db.Query("SELECT model_id,model_display_name FROM models WHERE is_active=1 ORDER BY sort_order")
+	rows, err := db.Query("SELECT model_id,model_display_name,is_default FROM models WHERE is_active=1 ORDER BY sort_order")
 	if err != nil {
 		fmt.Printf("Failed to execute query in GetAllModels: %v\n", err.Error())
 		channel <- data
@@ -124,7 +124,7 @@ func GetAiModels(channel chan<- []models.AIModel) {
 	for rows.Next() {
 		var item models.AIModel
 
-		if err := rows.Scan(&item.ModelId, &item.DisplayName); err != nil {
+		if err := rows.Scan(&item.ModelId, &item.DisplayName, &item.IsDefault); err != nil {
 			fmt.Printf("Error scanning row in GetAllModels:%v\n", err.Error())
 		} else {
 			data = append(data, item)

@@ -70,7 +70,11 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 				aria-label="Select AI Model"
 			>
 				for _,model := range aiModels {
-					<option class="bg-light dark:bg-dark  text-dark dark:text-light" value={ model.ModelId }>{ model.DisplayName }</option>
+					if model.IsDefault {
+						<option class="bg-light dark:bg-dark  text-dark dark:text-light" value={ model.ModelId } selected>{ model.DisplayName }</option>
+					} else {
+						<option class="bg-light dark:bg-dark  text-dark dark:text-light" value={ model.ModelId }>{ model.DisplayName }</option>
+					}
 				}
 			</select>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 mr-1">

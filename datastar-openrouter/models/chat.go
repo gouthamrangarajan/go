@@ -28,6 +28,7 @@ type UpdateChatConversation struct {
 type AIModel struct {
 	ModelId     string
 	DisplayName string
+	IsDefault   bool
 }
 
 type DeleteChatConversationsAfterAId struct {
