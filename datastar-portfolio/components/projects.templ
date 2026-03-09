@@ -26,7 +26,8 @@ templ search() {
 	<div
 		class="flex w-full flex-col gap-4 "
 		data-signals="{serviceFilter:[],filtering:false}"
-		data-effect="$serviceFilter &&  @post('/search')"
+		data-on-signal-patch__debounce.600ms="@post('/search')"
+		data-on-signal-patch-filter="{include:/srchTxt|serviceFilter/}"
 	>
 		<div class="flex gap-2 w-full items-center py-1 px-3 transition duration-300 rounded border border-slate-600 focus-within:ring-2 focus-within:ring-slate-600 focus-within:ring-offset-2 focus-within:ring-offset-white">
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -37,7 +38,6 @@ templ search() {
 				class="appearance-none outline-none flex-1 placeholder:text-slate-400"
 				placeholder="Search projects,technologies..."
 				data-bind="srchTxt"
-				data-on:input__debounce.600ms="@post('/search')"
 			/>
 		</div>
 		<div class="flex flex-wrap gap-2 items-center text-sm">
