@@ -9,6 +9,10 @@
     font-style: normal;
 }
 
+:root {
+    --background: hsl(0 0% 98%);
+}
+
 @view-transition {
     navigation: auto;
 }
@@ -88,5 +92,19 @@
 
     100% {
         transform: scale(1);
+    }
+}
+
+.animate-spinner {
+    animation: spinner 1s var(--ease-spring-3) infinite;
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
     }
 }

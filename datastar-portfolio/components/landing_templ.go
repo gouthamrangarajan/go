@@ -44,7 +44,7 @@ func Landing(data []models.DemoItem) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"py-2 px-4 flex flex-col items-center justify-center gap-4 lg:py-20 xl:py-40\"><section class=\"w-full max-w-4xl flex flex-col gap-6 border-b border-slate-200 py-2 px-4 pb-20\"><p class=\"text-4xl font-semibold opacity-0 animate-fade-in\">Goutham Rangarajan</p><p class=\"text-xl opacity-0 animate-fade-in-2\">Full Stack Developer & Minimalist Web Architect.<br><span class=\"text-teal-600\">Exploring the Potential of AI-Powered Web Experiences.</span></p><div class=\"flex items-center gap-2 animate-fade-in-4 opacity-0\"><a target=\"_blank\" href=\"https://x.com/rgouthamraja\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-slate-300\"><svg role=\"img\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" class=\"size-5\"><path fill=\"currentColor\" d=\"M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z\"></path></svg></a> <a target=\"_blank\" href=\"https://www.github.com/gouthamrangarajan\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-slate-300\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-6\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-github-icon lucide-github\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"></path><path d=\"M9 18c-4.51 2-5-2-7-2\"></path></svg></a> <a target=\"_blank\" href=\"https://www.linkedin.com/in/gouthamrangarajan\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-slate-300\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-6\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-linkedin-icon lucide-linkedin\"><path d=\"M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z\"></path><rect width=\"4\" height=\"12\" x=\"2\" y=\"9\"></rect><circle cx=\"4\" cy=\"4\" r=\"2\"></circle></svg></a> <a target=\"_blank\" href=\"https://codepen.io/GouthamRangarajan\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-slate-300\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-6\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-codepen-icon lucide-codepen\"><polygon points=\"12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2\"></polygon><line x1=\"12\" x2=\"12\" y1=\"22\" y2=\"15.5\"></line><polyline points=\"22 8.5 12 15.5 2 8.5\"></polyline><polyline points=\"2 15.5 12 8.5 22 15.5\"></polyline><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"8.5\"></line></svg></a></div></section><section class=\"w-full max-w-4xl flex flex-col gap-6 border-b border-slate-200 py-2 px-4 pb-20\"><p class=\"text-lg font-semibold opacity-0 animate-fade-in text-slate-500\">SELECTED WORK</p><div class=\"pt-10 flex flex-col gap-10\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"py-2 px-4 flex flex-col items-center justify-center gap-4 lg:py-20 xl:py-40\"><section class=\"w-full max-w-4xl flex flex-col gap-6 border-b border-slate-200 py-2 px-4 pb-20\"><p class=\"text-4xl font-semibold opacity-0 animate-fade-in\">Goutham Rangarajan</p><p class=\"text-xl opacity-0 animate-fade-in-2\">Full Stack Developer & Minimalist Web Architect.<br><span class=\"text-teal-600\">Exploring the Potential of AI-Powered Web Experiences.</span></p><div class=\"flex items-center gap-2 animate-fade-in-4 opacity-0\"><a target=\"_blank\" href=\"https://x.com/rgouthamraja\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-blue-600\"><svg role=\"img\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" class=\"size-5\"><path fill=\"currentColor\" d=\"M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z\"></path></svg></a> <a target=\"_blank\" href=\"https://www.github.com/gouthamrangarajan\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-blue-600\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-6\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-github-icon lucide-github\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"></path><path d=\"M9 18c-4.51 2-5-2-7-2\"></path></svg></a> <a target=\"_blank\" href=\"https://www.linkedin.com/in/gouthamrangarajan\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-blue-600\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-6\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-linkedin-icon lucide-linkedin\"><path d=\"M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z\"></path><rect width=\"4\" height=\"12\" x=\"2\" y=\"9\"></rect><circle cx=\"4\" cy=\"4\" r=\"2\"></circle></svg></a> <a target=\"_blank\" href=\"https://codepen.io/GouthamRangarajan\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-blue-600\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-6\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-codepen-icon lucide-codepen\"><polygon points=\"12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2\"></polygon><line x1=\"12\" x2=\"12\" y1=\"22\" y2=\"15.5\"></line><polyline points=\"22 8.5 12 15.5 2 8.5\"></polyline><polyline points=\"2 15.5 12 8.5 22 15.5\"></polyline><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"8.5\"></line></svg></a></div></section><section class=\"w-full max-w-4xl flex flex-col gap-6 border-b border-slate-200 py-2 px-4 pb-20\"><p class=\"text-lg font-semibold opacity-0 animate-fade-in text-slate-500\">SELECTED WORK</p><div class=\"pt-10 flex flex-col gap-10\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -54,7 +54,15 @@ func Landing(data []models.DemoItem) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></section></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></section>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = contact().Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -90,110 +98,214 @@ func featuredCard(data models.DemoItem) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		splittedTags := strings.Split(data.Tags, ",")
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex flex-col gap-4 opacity-0 animate-fade-in-2\"><img src=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex flex-col gap-4 opacity-0 animate-fade-in-2\"><img src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.ImgSrc)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 64, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 65, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" alt=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" alt=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title + "Screenshot")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 64, Col: 58}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 65, Col: 58}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"cursor-pointer rounded-lg transition duration-300 hover:scale-[1.02]\"><div class=\"flex justify-between items-center gap-2\"><p class=\"font-semibold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"cursor-pointer rounded-lg transition duration-300 hover:scale-[1.02]\"><div class=\"flex justify-between items-center gap-2\"><p class=\"font-semibold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 66, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 67, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p><div class=\"flex gap-2 items-center\"><a target=\"_blank\" href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p><div class=\"flex gap-2 items-center\"><a target=\"_blank\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 templ.SafeURL
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(data.CodeUrl)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 70, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 71, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-slate-300\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-5\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-github-icon lucide-github\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"></path><path d=\"M9 18c-4.51 2-5-2-7-2\"></path></svg></a> <a target=\"_blank\" href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-blue-600\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-5\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-github-icon lucide-github\"><path d=\"M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4\"></path><path d=\"M9 18c-4.51 2-5-2-7-2\"></path></svg></a> <a target=\"_blank\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 templ.SafeURL
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(data.Url)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 77, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 78, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-slate-300\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-5\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-square-arrow-out-up-right-icon lucide-square-arrow-out-up-right\"><path d=\"M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6\"></path><path d=\"m21 3-9 9\"></path><path d=\"M15 3h6v6\"></path></svg></a></div></div><p class=\"text-slate-500\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-blue-600\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-5\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-square-arrow-out-up-right-icon lucide-square-arrow-out-up-right\"><path d=\"M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6\"></path><path d=\"m21 3-9 9\"></path><path d=\"M15 3h6v6\"></path></svg></a></div></div><p class=\"text-slate-500\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 84, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 85, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</p><div class=\"flex flex-wrap items-center gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</p><div class=\"flex flex-wrap items-center gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, tag := range splittedTags {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<span class=\"text-sm border border-gray-300 px-3 py-1 rounded-full text-slate-500\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"text-sm border border-gray-300 px-3 py-1 rounded-full text-slate-500\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 87, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 88, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func contact() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<section class=\"w-full max-w-4xl flex flex-col gap-6 border-b border-slate-200 py-2 px-4 pb-20\"><div class=\"flex flex-col gap-6 items-start lg:flex-row lg:gap-6\"><div class=\"flex flex-col gap-3\"><p class=\"text-lg font-semibold opacity-0 animate-fade-in text-slate-500\">CONTACT</p><p class=\"wrap-break-word\">If you would like to discuss a project or just say hi, I am always down to chat.</p></div><form class=\"flex flex-col gap-4 w-full lg:w-8/12\" data-signals=\"{contactFormDisabled: false}\" data-on:submit=\"evt.preventDefault(); !$contactFormDisabled && @post('/contact')\" data-indicator=\"_submitting\"><div class=\"flex flex-col gap-1\"><label for=\"email\" class=\"text-sm font-medium\">Email</label> <input type=\"email\" required placeholder=\"your@email.com\" data-bind=\"email\" data-attr:disabled=\"$contactFormDisabled\" class=\"appearance-none outline-none bg-white py-1 px-3 transition duration-300 rounded-md border border-slate-300 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70\"></div><div class=\"flex flex-col gap-1\"><label for=\"email\" class=\"text-sm font-medium\">Message</label> <textarea rows=\"6\" required placeholder=\"Your message...\" data-bind=\"message\" minlength=\"5\" data-attr:disabled=\"$contactFormDisabled\" class=\"appearance-none outline-none bg-white py-1 px-3 transition duration-300 rounded-md border border-slate-300 placeholder:text-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-70\"></textarea></div><button type=\"submit\" data-attr:disabled=\"$_submitting || $contactFormDisabled\" class=\"appearance-none outline-none cursor-pointer flex justify-center items-center gap-3 rounded-full px-6 py-2 transition duration-300 bg-black text-white hover:bg-gray-800 focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-black disabled:cursor-not-allowed disabled:opacity-70\"><span>Send</span> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5\" style=\"view-transition-name:indicator\" data-show=\"!$_submitting\"><path fill-rule=\"evenodd\" d=\"M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg> <span class=\"animate-spinner w-5 h-5 border-2 border-dashed border-teal-300 rounded-full\" style=\"view-transition-name:indicator\" data-show=\"$_submitting\"></span></button>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = ContactSubmittedMessage("", false).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</form></div></section>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func ContactSubmittedMessage(message string, isError bool) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var12 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var12 == nil {
+			templ_7745c5c3_Var12 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		if strings.TrimSpace(message) == "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<p id=\"contactSubmitMessage\" style=\"view-transition-name:contact-submit-message\"></p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else if isError {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<p id=\"contactSubmitMessage\" class=\"py-1 px-3 bg-red-100 font-semibold text-red-600 rounded-md wrap-break-word\" style=\"view-transition-name:contact-submit-message\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 166, Col: 12}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<p id=\"contactSubmitMessage\" class=\"py-1 px-3 bg-green-100 font-semibold text-green-600 rounded-md wrap-break-word\" style=\"view-transition-name:contact-submit-message\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var14 string
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(message)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/landing.templ`, Line: 172, Col: 12}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		return nil
 	})
