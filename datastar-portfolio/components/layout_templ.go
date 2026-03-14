@@ -37,7 +37,7 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script src=\"/assets/js/data-star.min.js\" type=\"module\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<footer class=\"py-5 border-t border-slate-200\"><div class=\"flex w-full max-w-4xl justify-between items-center mx-auto\"><span>Crafted by Goutham Rangarajan</span></div></footer><script src=\"/assets/js/data-star.min.js\" type=\"module\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

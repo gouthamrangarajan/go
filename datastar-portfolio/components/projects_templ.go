@@ -44,7 +44,7 @@ func Projects(data []models.DemoItem) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"py-2 px-4 flex flex-col items-center justify-center gap-2 lg:py-10 xl:py-20\"><section class=\"w-full max-w-4xl flex flex-col gap-2 py-2 px-4 pb-10\"><p class=\"text-3xl font-semibold opacity-0 animate-fade-in\">Projects</p><p class=\"text-lg opacity-0 animate-fade-in-2\">A collection of things I have built and experiments I have shipped.\t\t\t\t\t</p></section><section class=\"w-full max-w-4xl flex flex-col gap-10 py-2 px-4 pb-20\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"py-2 px-4 flex flex-col items-center justify-center gap-2 lg:py-10 xl:py-20\"><section class=\"w-full max-w-4xl flex flex-col gap-2 py-2 px-4 pb-10\"><p class=\"text-3xl font-semibold opacity-0 animate-fade-in\">Projects</p><p class=\"text-lg opacity-0 animate-fade-in-2\">A collection of things I have built and experiments I have shipped.\t\t\t\t\t</p></section><section class=\"w-full max-w-4xl flex flex-col gap-10 py-2 px-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
