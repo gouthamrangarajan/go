@@ -14,12 +14,14 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/resend/resend-go/v3"
 	"github.com/starfederation/datastar-go/datastar"
 )
 
 var emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+var idMap = make(map[string]chan []models.DemoItem)
 
 func main() {
 	err := godotenv.Load()
@@ -84,15 +86,38 @@ func main() {
 		go services.GetAllDemos(channel, true)
 		allProjects := <-channel
 		close(channel)
-		component := components.Projects(allProjects)
+		id := uuid.NewString()
+		idMap[id] = make(chan []models.DemoItem)
+		component := components.Projects(allProjects, id)
 		component.Render(request.Context(), responseWriter)
+	})
+	router.Get("/sse", func(responseWriter http.ResponseWriter, request *http.Request) {
+		var clientSignal models.ClientSignals
+		err := datastar.ReadSignals(request, &clientSignal)
+		if err != nil {
+			fmt.Printf("Error reading client signals in sse: %v\n", err.Error())
+		}
+		sse := datastar.NewSSE(responseWriter, request)
+		if _, exists := idMap[clientSignal.Id]; exists {
+			for {
+				select {
+				case <-request.Context().Done():
+					delete(idMap, clientSignal.Id)
+					return
+				case searchResults := <-idMap[clientSignal.Id]:
+					sse.PatchElementTempl(components.ProjectCardCollection(searchResults), datastar.WithUseViewTransitions(true))
+					sse.PatchSignals([]byte("{filtering:false}"))
+				}
+			}
+		}
 	})
 	router.Post("/search", func(responseWriter http.ResponseWriter, request *http.Request) {
 		var clientSignal models.ClientSignals
 		err := datastar.ReadSignals(request, &clientSignal)
 		if err != nil {
-			fmt.Printf("Error reading client signals: %v\n", err.Error())
+			fmt.Printf("Error reading client signals in search: %v\n", err.Error())
 		}
+		// fmt.Printf("Received search request with text: '%s' and service filter: %v\n", clientSignal.SrchTxt, clientSignal.ServiceFilter)
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchSignals([]byte("{filtering:true}"))
 		clientSignal.SrchTxt = strings.TrimSpace(clientSignal.SrchTxt)
@@ -109,8 +134,9 @@ func main() {
 				go services.SearchDemos(searchChannel, embeddingResponse.Data[0].Embedding, clientSignal.ServiceFilter)
 				searchResults := <-searchChannel
 				close(searchChannel)
-				sse.PatchElementTempl(components.ProjectCardCollection(searchResults), datastar.WithUseViewTransitions(true))
-				sse.PatchSignals([]byte("{filtering:false}"))
+				if _, exists := idMap[clientSignal.Id]; exists {
+					idMap[clientSignal.Id] <- searchResults
+				}
 				return
 			}
 		}
@@ -118,8 +144,9 @@ func main() {
 		go services.GetAllDemosWithServiceFilter(getAllDataChannel, clientSignal.ServiceFilter)
 		allDemos := <-getAllDataChannel
 		close(getAllDataChannel)
-		sse.PatchElementTempl(components.ProjectCardCollection(allDemos), datastar.WithUseViewTransitions(true))
-		sse.PatchSignals([]byte("{filtering:false}"))
+		if _, exists := idMap[clientSignal.Id]; exists {
+			idMap[clientSignal.Id] <- allDemos
+		}
 	})
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {

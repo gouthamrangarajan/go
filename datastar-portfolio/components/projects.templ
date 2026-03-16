@@ -3,10 +3,12 @@ package components
 import "datastar-portfolio/models"
 import "strings"
 
-templ Projects(data []models.DemoItem) {
+templ Projects(data []models.DemoItem, id string) {
 	@layout() {
 		<main
 			class="py-2 px-4 flex flex-col items-center justify-center gap-2 lg:py-10 xl:py-20"
+			data-signals={ `{id:'` + id + `'}` }
+			data-init="@get('/sse', {openWhenHidden: true})"
 		>
 			<section class="w-full max-w-4xl flex flex-col gap-2 py-2 px-4 pb-10">
 				<p class="text-3xl font-semibold opacity-0 animate-fade-in">Projects</p>
