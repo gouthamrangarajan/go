@@ -120,6 +120,7 @@ func main() {
 		// fmt.Printf("Received search request with text: '%s' and service filter: %v\n", clientSignal.SrchTxt, clientSignal.ServiceFilter)
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchSignals([]byte("{filtering:true}"))
+		dataSentToChannel := false
 		clientSignal.SrchTxt = strings.TrimSpace(clientSignal.SrchTxt)
 		if clientSignal.SrchTxt != "" {
 			embeddingRequest := models.VoyageEmbeddingRequest{
@@ -136,6 +137,7 @@ func main() {
 				close(searchChannel)
 				if _, exists := idMap[clientSignal.Id]; exists {
 					idMap[clientSignal.Id] <- searchResults
+					dataSentToChannel = true
 				}
 				return
 			}
@@ -146,6 +148,10 @@ func main() {
 		close(getAllDataChannel)
 		if _, exists := idMap[clientSignal.Id]; exists {
 			idMap[clientSignal.Id] <- allDemos
+			dataSentToChannel = true
+		}
+		if !dataSentToChannel {
+			sse.PatchSignals([]byte("{filtering:true}"))
 		}
 	})
 
