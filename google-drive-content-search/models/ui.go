@@ -3,6 +3,7 @@ package models
 type ClientSignals struct {
 	Query string `json:"query"`
 	Token string `json:"token"`
+	Id    string `json:"id"`
 }
 
 type SearchResult struct {

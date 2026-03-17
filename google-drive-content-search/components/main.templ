@@ -12,12 +12,14 @@ func formatMessageForDataStar(message string) string {
 	return ret
 }
 
-templ Main() {
+templ Main(id string) {
 	@layout() {
 		<main
 			class="w-full h-full flex flex-col item-center py-4 px-6 pt-10 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-track-white scrollbar-thumb-black"
 			style="view-transition-name:main;display:none;"
 			data-show="true"
+			data-signals={ `{id:'` + id + `',searching:false}` }
+			data-init="@get('/sse',{openWhenHidden:true})"
 		>
 			<div class="flex items-center justify-center">
 				<div class="py-2 px-4 rounded-lg bg-gray-200">
@@ -67,17 +69,15 @@ templ searchInput() {
 				class="appearance-none outline-none flex-1 placeholder:text-slate-400 disabled:cursor-not-allowed disabled:opacity-80"
 				data-bind="query"
 				placeholder="Search file contents..."
-				data-on:keyup="evt.key === 'Enter' && $query.trim()!='' && !$_searchingViaTextInput && !$_searchingViaButton && @post('/search',{openWhenHidden:true})"
-				data-indicator="_searchingViaTextInput"
+				data-on:keyup="evt.key === 'Enter' && $query.trim()!='' && !$searching && @post('/search',{openWhenHidden:true})"
 			/>
-			@loader("$_searchingViaTextInput || $_searchingViaButton")
+			@loader("$searching")
 		</div>
 		<button
 			type="submit"
 			class="apperance-none outline-none cursor-pointer rounded-lg bg-black text-white py-2.5 px-6 transition duration-300 focus:ring-2 focus:ring-black focus:ring-offset-2 focus:ring-offset-gray-200 disabled:cursor-not-allowed disabled:opacity-80"
 			data-on:click="@post('/search',{openWhenHidden:true})"
-			data-indicator="_searchingViaButton"
-			data-attr:disabled="$_searchingViaTextInput || $_searchingViaButton || $query.trim() == ''"
+			data-attr:disabled="$searching || $query.trim() == ''"
 		>
 			Search
 		</button>

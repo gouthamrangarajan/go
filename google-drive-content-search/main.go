@@ -13,10 +13,13 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/starfederation/datastar-go/datastar"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var idMap = make(map[string]chan []models.DocumentChunk)
 
 func main() {
 	err := godotenv.Load()
@@ -30,9 +33,6 @@ func main() {
 	router.Use(middleware.Compress(5))
 	router.Use(services.AuthorizationMiddleware)
 
-	router.Get("/", func(responseWriter http.ResponseWriter, request *http.Request) {
-		components.Main().Render(request.Context(), responseWriter)
-	})
 	router.Post("/login", func(responseWriter http.ResponseWriter, request *http.Request) {
 		var clientSignals models.ClientSignals
 		reqBody, err := io.ReadAll(request.Body)
@@ -58,14 +58,56 @@ func main() {
 		sse := datastar.NewSSE(responseWriter, request)
 		sse.PatchSignals([]byte("{errMsg:'Invalid Token.'}"))
 	})
+	router.Get("/", func(responseWriter http.ResponseWriter, request *http.Request) {
+		id := uuid.New().String()
+		idMap[id] = make(chan []models.DocumentChunk)
+		components.Main(id).Render(request.Context(), responseWriter)
+	})
+	router.Get("/sse", func(responseWriter http.ResponseWriter, request *http.Request) {
+
+		var clientSignals models.ClientSignals
+		datastar.ReadSignals(request, &clientSignals)
+
+		sse := datastar.NewSSE(responseWriter, request)
+		if _, exists := idMap[clientSignals.Id]; exists {
+			for {
+				select {
+				case <-request.Context().Done():
+					delete(idMap, clientSignals.Id)
+					return
+				case dbResults := <-idMap[clientSignals.Id]:
+					uiData := services.ConvertDocumentChunkCollectionToSearchResultCollection(dbResults)
+					sse.PatchElementTempl(components.SearchResults(uiData), datastar.WithUseViewTransitions(true))
+					markDownToHtmlChannel := make(chan string, len(uiData))
+					defer close(markDownToHtmlChannel)
+					for _, singleData := range uiData {
+						go services.ConvertMarkdownToHtml(singleData.Id, []byte(singleData.FileContentMarkdown), markDownToHtmlChannel)
+					}
+					for range uiData {
+						markdownToHtmlData := <-markDownToHtmlChannel
+						if markdownToHtmlData != "" {
+							select {
+							case <-request.Context().Done():
+								continue
+							default:
+								sse.PatchElements(markdownToHtmlData, datastar.WithUseViewTransitions(true))
+								sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
+							}
+						}
+					}
+					sse.PatchSignals([]byte("{searching: false}"))
+				}
+			}
+		}
+	})
 	router.Post("/search", func(responseWriter http.ResponseWriter, request *http.Request) {
 		var clientSignals models.ClientSignals
-		reqBody, err := io.ReadAll(request.Body)
-		if err == nil {
-			json.Unmarshal(reqBody, &clientSignals)
-		}
+		datastar.ReadSignals(request, &clientSignals)
 		clientSignals.Query = strings.TrimSpace(clientSignals.Query)
 		if clientSignals.Query != "" {
+			sse := datastar.NewSSE(responseWriter, request)
+			sse.PatchSignals([]byte("{searching: true}"))
+			dataSentToChannel := false
 			embeddingRequest := models.VoyageEmbeddingRequest{
 				Input: []string{clientSignals.Query},
 			}
@@ -79,26 +121,13 @@ func main() {
 				defer close(searchChannel)
 				go services.SearchData(embeddingData, searchChannel)
 				dbResults := <-searchChannel
-				sse := datastar.NewSSE(responseWriter, request)
-				uiData := services.ConvertDocumentChunkCollectionToSearchResultCollection(dbResults)
-				sse.PatchElementTempl(components.SearchResults(uiData), datastar.WithUseViewTransitions(true))
-				markDownToHtmlChannel := make(chan string, len(uiData))
-				defer close(markDownToHtmlChannel)
-				for _, singleData := range uiData {
-					go services.ConvertMarkdownToHtml(singleData.Id, []byte(singleData.FileContentMarkdown), markDownToHtmlChannel)
+				if _, exists := idMap[clientSignals.Id]; exists {
+					idMap[clientSignals.Id] <- dbResults
+					dataSentToChannel = true
 				}
-				for range uiData {
-					markdownToHtmlData := <-markDownToHtmlChannel
-					if markdownToHtmlData != "" {
-						select {
-						case <-request.Context().Done():
-							continue
-						default:
-							sse.PatchElements(markdownToHtmlData, datastar.WithUseViewTransitions(true))
-							sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
-						}
-					}
-				}
+			}
+			if !dataSentToChannel {
+				sse.PatchSignals([]byte("{searching: false}"))
 			}
 		}
 	})
