@@ -73,6 +73,7 @@ func main() {
 			for {
 				select {
 				case <-request.Context().Done():
+					close(idMap[clientSignals.Id])
 					delete(idMap, clientSignals.Id)
 					return
 				case dbResults := <-idMap[clientSignals.Id]:
