@@ -14,6 +14,7 @@ type ClientSignals struct {
 	ImageGeneration  bool   `json:"imageGeneration"`
 	MessageIdToRetry int    `json:"messageIdToRetry"`
 	SearchMenu       string `json:"searchMenu"`
+	UiSid            string `json:"uiSid"`
 }
 type FileDataDisplay struct {
 	FileName string
@@ -33,4 +34,5 @@ type UIMainModel struct {
 	ImageGeneration  bool
 	CurrentSessionId int
 	MenuSearchTerm   string
+	UiSid            string
 }

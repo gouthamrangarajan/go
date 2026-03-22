@@ -44,7 +44,7 @@ func main() {
 
 	router.Get("/", mainPageHandler)
 	router.Get("/{sessionId}", mainPageHandler)
-	router.Post("/conversations", convertConversationsMarkdownHandler)
+	router.Post("/sse", longSSEHandler)
 	router.Post("/new", newChatHandler)
 	promptRouter.Post("/chat", promptHandler)
 	router.Post("/session/delete", deleteSessionHandler)

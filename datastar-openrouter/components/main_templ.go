@@ -57,15 +57,15 @@ func Main(model models.UIMainModel) templ.Component {
                             showDeleteModal:false,sessionIdToDelete:0,
                             webSearch:` + strconv.FormatBool(model.AllowWebSearch) + `,
                             imageGeneration:` + strconv.FormatBool(model.ImageGeneration) + `,
-							fileUploading:false}`)
+							fileUploading:false,uiSid:'` + model.UiSid + `' }`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 20, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 20, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" data-init=\"@post('/conversations',{openWhenHidden:true});\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" data-init=\"@post('/sse',{openWhenHidden:true});\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
