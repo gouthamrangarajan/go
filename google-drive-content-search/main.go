@@ -70,35 +70,38 @@ func main() {
 		datastar.ReadSignals(request, &clientSignals)
 
 		sse := datastar.NewSSE(responseWriter, request)
-		if session, exists := idMap.Load(clientSignals.Id); exists {
-			for {
-				select {
-				case <-request.Context().Done():
-					close(session.(chan []models.DocumentChunk))
-					idMap.Delete(clientSignals.Id)
-					return
-				case dbResults := <-session.(chan []models.DocumentChunk):
-					uiData := services.ConvertDocumentChunkCollectionToSearchResultCollection(dbResults)
-					sse.PatchElementTempl(components.SearchResults(uiData), datastar.WithUseViewTransitions(true))
-					markDownToHtmlChannel := make(chan string, len(uiData))
-					defer close(markDownToHtmlChannel)
-					for _, singleData := range uiData {
-						go services.ConvertMarkdownToHtml(singleData.Id, []byte(singleData.FileContentMarkdown), markDownToHtmlChannel)
-					}
-					for range uiData {
-						markdownToHtmlData := <-markDownToHtmlChannel
-						if markdownToHtmlData != "" {
-							select {
-							case <-request.Context().Done():
-								continue
-							default:
-								sse.PatchElements(markdownToHtmlData, datastar.WithUseViewTransitions(true))
-								sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
-							}
+		session, exists := idMap.Load(clientSignals.Id)
+		if !exists {
+			session = make(chan []models.DocumentChunk)
+			idMap.Store(clientSignals.Id, session)
+		}
+		for {
+			select {
+			case <-request.Context().Done():
+				close(session.(chan []models.DocumentChunk))
+				idMap.Delete(clientSignals.Id)
+				return
+			case dbResults := <-session.(chan []models.DocumentChunk):
+				uiData := services.ConvertDocumentChunkCollectionToSearchResultCollection(dbResults)
+				sse.PatchElementTempl(components.SearchResults(uiData), datastar.WithUseViewTransitions(true))
+				markDownToHtmlChannel := make(chan string, len(uiData))
+				defer close(markDownToHtmlChannel)
+				for _, singleData := range uiData {
+					go services.ConvertMarkdownToHtml(singleData.Id, []byte(singleData.FileContentMarkdown), markDownToHtmlChannel)
+				}
+				for range uiData {
+					markdownToHtmlData := <-markDownToHtmlChannel
+					if markdownToHtmlData != "" {
+						select {
+						case <-request.Context().Done():
+							continue
+						default:
+							sse.PatchElements(markdownToHtmlData, datastar.WithUseViewTransitions(true))
+							sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
 						}
 					}
-					sse.PatchSignals([]byte("{searching: false}"))
 				}
+				sse.PatchSignals([]byte("{searching: false}"))
 			}
 		}
 	})

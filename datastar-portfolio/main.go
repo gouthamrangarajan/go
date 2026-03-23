@@ -99,19 +99,23 @@ func main() {
 			fmt.Printf("Error reading client signals in sse: %v\n", err.Error())
 		}
 		sse := datastar.NewSSE(responseWriter, request)
-		if session, exists := idMap.Load(clientSignal.Id); exists {
-			for {
-				select {
-				case <-request.Context().Done():
-					close(session.(chan []models.DemoItem))
-					idMap.Delete(clientSignal.Id)
-					return
-				case searchResults := <-session.(chan []models.DemoItem):
-					sse.PatchElementTempl(components.ProjectCardCollection(searchResults), datastar.WithUseViewTransitions(true))
-					sse.PatchSignals([]byte("{filtering:false}"))
-				}
+		session, exists := idMap.Load(clientSignal.Id)
+		if !exists {
+			session = make(chan []models.DemoItem)
+			idMap.Store(clientSignal.Id, session)
+		}
+		for {
+			select {
+			case <-request.Context().Done():
+				close(session.(chan []models.DemoItem))
+				idMap.Delete(clientSignal.Id)
+				return
+			case searchResults := <-session.(chan []models.DemoItem):
+				sse.PatchElementTempl(components.ProjectCardCollection(searchResults), datastar.WithUseViewTransitions(true))
+				sse.PatchSignals([]byte("{filtering:false}"))
 			}
 		}
+
 	})
 	router.Post("/search", func(responseWriter http.ResponseWriter, request *http.Request) {
 		var clientSignal models.ClientSignals
