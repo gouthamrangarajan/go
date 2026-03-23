@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -19,7 +20,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var idMap = make(map[string]chan []models.DocumentChunk)
+var idMap sync.Map
 
 func main() {
 	err := godotenv.Load()
@@ -60,7 +61,7 @@ func main() {
 	})
 	router.Get("/", func(responseWriter http.ResponseWriter, request *http.Request) {
 		id := uuid.New().String()
-		idMap[id] = make(chan []models.DocumentChunk)
+		idMap.Store(id, make(chan []models.DocumentChunk))
 		components.Main(id).Render(request.Context(), responseWriter)
 	})
 	router.Get("/sse", func(responseWriter http.ResponseWriter, request *http.Request) {
@@ -69,14 +70,14 @@ func main() {
 		datastar.ReadSignals(request, &clientSignals)
 
 		sse := datastar.NewSSE(responseWriter, request)
-		if _, exists := idMap[clientSignals.Id]; exists {
+		if session, exists := idMap.Load(clientSignals.Id); exists {
 			for {
 				select {
 				case <-request.Context().Done():
-					close(idMap[clientSignals.Id])
-					delete(idMap, clientSignals.Id)
+					close(session.(chan []models.DocumentChunk))
+					idMap.Delete(clientSignals.Id)
 					return
-				case dbResults := <-idMap[clientSignals.Id]:
+				case dbResults := <-session.(chan []models.DocumentChunk):
 					uiData := services.ConvertDocumentChunkCollectionToSearchResultCollection(dbResults)
 					sse.PatchElementTempl(components.SearchResults(uiData), datastar.WithUseViewTransitions(true))
 					markDownToHtmlChannel := make(chan string, len(uiData))
@@ -122,8 +123,8 @@ func main() {
 				defer close(searchChannel)
 				go services.SearchData(embeddingData, searchChannel)
 				dbResults := <-searchChannel
-				if _, exists := idMap[clientSignals.Id]; exists {
-					idMap[clientSignals.Id] <- dbResults
+				if session, exists := idMap.Load(clientSignals.Id); exists {
+					session.(chan []models.DocumentChunk) <- dbResults
 					dataSentToChannel = true
 				}
 			}
