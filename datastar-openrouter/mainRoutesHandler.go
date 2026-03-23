@@ -160,6 +160,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			case <-ticker.C:
 				fmt.Fprintf(responseWriter, ": heartbeat\n\n")
 				responseWriter.(http.Flusher).Flush()
+				continue
 			}
 		}
 	}
