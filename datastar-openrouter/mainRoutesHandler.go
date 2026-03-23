@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -125,6 +126,9 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+	ticker := time.NewTicker(20 * time.Second) // Send a heartbeat every 20s
+	defer ticker.Stop()
+
 	if userSessionExists {
 		for {
 			select {
@@ -153,6 +157,9 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 					}
 					continue
 				}
+			case <-ticker.C:
+				fmt.Fprintf(responseWriter, ": heartbeat\n\n")
+				responseWriter.(http.Flusher).Flush()
 			}
 		}
 	}
