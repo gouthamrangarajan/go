@@ -740,8 +740,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 			modelMessageChat.FileName = ""
 		}
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			Content:           <-markdownToHtmlChannel,
-			UseViewTransition: true,
+			Content: <-markdownToHtmlChannel,
 		}
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:  "window.mermaid.run()",
