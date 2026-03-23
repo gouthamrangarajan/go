@@ -11,13 +11,14 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/starfederation/datastar-go/datastar"
 )
 
-var uiSidMap = make(map[string]chan models.LongSSEData)
+var uiSidMap sync.Map
 
 func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	// style := styles.Get("github") // Use the same style as in goldmark
@@ -67,7 +68,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	chatConversations := <-chatConversationChannel
 	aiModels := <-aiModelsChannel
 	uiSId := uuid.New().String()
-	uiSidMap[uiSId] = make(chan models.LongSSEData)
+	uiSidMap.Store(services.GenerateUserSessionKey(userId, uiSId), make(chan models.LongSSEData))
 	components.Main(
 		models.UIMainModel{
 			Messages:         chatConversations,
@@ -122,15 +123,17 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 		}
 	}
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+	if userSessionExists {
 		for {
 			select {
 			case <-request.Context().Done():
-				close(uiSidMap[clientSignal.UiSid])
-				delete(uiSidMap, clientSignal.UiSid)
+				close(userSession.(chan models.LongSSEData))
+				uiSidMap.Delete(userSessionKey)
 				return
 
-			case data := <-uiSidMap[clientSignal.UiSid]:
+			case data := <-userSession.(chan models.LongSSEData):
 				switch {
 				case data.IsError:
 					services.SendErrorMessageToUI(sse, data.Content)
@@ -158,21 +161,26 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
+
 	insertChatSessionChannel := make(chan int)
 	defer close(insertChatSessionChannel)
 	newSession := models.ChatSession{Title: "New Chat"}
 	go services.InsertChatSession(userId, newSession, insertChatSessionChannel)
 	newSession.Id = <-insertChatSessionChannel
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+
+	if userSessionExists {
 		if newSession.Id == 0 {
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: `Failed to create new chat session. Please try again later.`,
 				IsError: true,
 			}
 
 			return
 		}
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:  `window.location.href=window.location.origin+'/'+` + strconv.Itoa(newSession.Id),
 			IsScript: true,
 		}
@@ -196,6 +204,7 @@ func deleteSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	userId := request.Context().Value(services.UserIDKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
+
 	if clientSignal.SessionIdToDelete == 0 {
 		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 		return
@@ -218,40 +227,44 @@ func deleteSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	deleteSessionChannel := make(chan int)
 	defer close(deleteSessionChannel)
 	go services.DeleteChatSession(userId, clientSignal.SessionIdToDelete, deleteSessionChannel)
+
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+
 	if <-deleteSessionChannel == 0 {
-		if _, exists := uiSidMap[clientSignal.UiSid]; exists {
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		if userSessionExists {
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: `Failed to delete chat session. Please try again later.`,
 				IsError: true,
 			}
 		}
 		return
 	}
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+	if userSessionExists {
 		if clientSignal.SessionIdToDelete == clientSignal.SessionId {
 			componentBuffer := new(bytes.Buffer)
 			components.Section([]models.ChatConversation{}).Render(context.Background(), componentBuffer)
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:           componentBuffer.String(),
 				Selector:          "section",
 				UseViewTransition: true,
 				Mode:              datastar.WithModeOuter(),
 			}
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  `{sessionId:0,webSearch:false}`,
 				IsSignal: true,
 			}
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  `window.history.replaceState({},'','/')`,
 				IsScript: true,
 			}
 		}
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			IsRemove:          true,
 			Selector:          "#menuItem_" + strconv.Itoa(clientSignal.SessionIdToDelete),
 			UseViewTransition: true,
 		}
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			IsSignal: true,
 			Content:  `{showDeleteModal:false}`}
 	}
@@ -280,10 +293,14 @@ func searchSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 			UserId:     userId,
 			SearchTerm: clientSignal.SearchMenu})
 	}
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+
+	if userSessionExists {
 		componentBuffer := new(bytes.Buffer)
 		components.MenuUl(sessions, clientSignal.SearchMenu).Render(context.Background(), componentBuffer)
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           componentBuffer.String(),
 			UseViewTransition: true,
 		}
@@ -295,7 +312,7 @@ func searchSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 			scriptToExecute += "?search_menu=" + clientSignal.SearchMenu
 		}
 		scriptToExecute += "')"
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:  scriptToExecute,
 			IsScript: true,
 		}
@@ -303,6 +320,7 @@ func searchSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	}
 }
 func fileUploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(services.UserIDKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	if len(clientSignal.FileData) != 1 {
@@ -314,15 +332,18 @@ func fileUploadHandler(responseWriter http.ResponseWriter, request *http.Request
 	imgMatches := services.ImgRegex.FindStringSubmatch(fileDataForRegex)
 	pdfMatches := services.PdfRegex.FindStringSubmatch(fileDataForRegex)
 
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+
+	if userSessionExists {
 		if (clientSignal.FileData[0].Mime == "application/pdf" && len(pdfMatches) != 2) ||
 			(clientSignal.FileData[0].Mime != "application/pdf" && len(imgMatches) != 4) {
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  "{fileData:'',fileUploading:false}",
 				IsSignal: true,
 			}
 			fileName = ""
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: "Invalid file type. Please upload an file with type (JPG, PNG, WEBP, GIF, PDF)",
 				IsError: true,
 			}
@@ -330,11 +351,11 @@ func fileUploadHandler(responseWriter http.ResponseWriter, request *http.Request
 		}
 		decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0].Contents)
 		if err != nil || len(decodedBytes) > 1024*1024 {
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  "{fileData:'',fileUploading:false}",
 				IsSignal: true,
 			}
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: "File too large. Please upload a file smaller than 1 MB.",
 				IsError: true,
 			}
@@ -343,28 +364,32 @@ func fileUploadHandler(responseWriter http.ResponseWriter, request *http.Request
 		}
 		bytesBuffer := new(bytes.Buffer)
 		components.FileAttachmentDisplay(fileName).Render(context.Background(), bytesBuffer)
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           bytesBuffer.String(),
 			UseViewTransition: true,
 		}
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:  "{fileUploading:false}",
 			IsSignal: true,
 		}
 	}
 }
 func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(services.UserIDKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	bytesBuffer := new(bytes.Buffer)
 
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+
+	if userSessionExists {
 		components.FileAttachmentDisplay("").Render(context.Background(), bytesBuffer)
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           bytesBuffer.String(),
 			UseViewTransition: true,
 		}
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:  "{fileData:'',fileUploading:false}",
 			IsSignal: true,
 		}
@@ -442,6 +467,9 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 	}
 
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+
 	if clientSignal.Prompt != "" {
 		if clientSignal.SessionId == 0 {
 			insertChatSessionChannel := make(chan int)
@@ -451,22 +479,22 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			newSession.Id = <-insertChatSessionChannel
 			clientSignal.SessionId = newSession.Id
 			if clientSignal.SessionId == 0 {
-				if _, exists := uiSidMap[clientSignal.UiSid]; exists {
-					uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+				if userSessionExists {
+					userSession.(chan models.LongSSEData) <- models.LongSSEData{
 						Content: `Failed to create new chat session. Please try again later.`,
 						IsError: true,
 					}
 				}
 				return
 			}
-			if _, exists := uiSidMap[clientSignal.UiSid]; exists {
-				uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			if userSessionExists {
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:  `window.history.replaceState({},'','/` + strconv.Itoa(clientSignal.SessionId) + `')`,
 					IsScript: true,
 				}
 				menuItemBuffer := new(bytes.Buffer)
 				components.MenuItem(newSession, clientSignal.SearchMenu).Render(context.Background(), menuItemBuffer)
-				uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:  menuItemBuffer.String(),
 					Mode:     datastar.WithModeAppend(),
 					Selector: "#menu",
@@ -481,34 +509,34 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		userMessageChat.Id = <-insertUserConversationChannel
 
 		if userMessageChat.Id == 0 {
-			if _, exists := uiSidMap[clientSignal.UiSid]; exists {
-				uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			if userSessionExists {
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content: `Failed to save chat conversation. Please try again later.`,
 					IsError: true,
 				}
 			}
 			return
 		}
-		if _, exists := uiSidMap[clientSignal.UiSid]; exists {
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		if userSessionExists {
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  `document.getElementById('hint')?.remove();`,
 				IsScript: true,
 			}
 			userMessageBuffer := new(bytes.Buffer)
 			components.ChatMessage(userMessageChat, true).Render(context.Background(), userMessageBuffer)
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:           userMessageBuffer.String(),
 				UseViewTransition: true,
 				Mode:              datastar.WithModeAppend(),
 				Selector:          "section",
 			}
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  `{prompt:"",sessionId:` + strconv.Itoa(clientSignal.SessionId) + `,fileData:''}`,
 				IsSignal: true,
 			}
 			fileAttachmentBuffer := new(bytes.Buffer)
 			components.FileAttachmentDisplay("").Render(context.Background(), fileAttachmentBuffer)
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:           fileAttachmentBuffer.String(),
 				UseViewTransition: true,
 			}
@@ -519,16 +547,16 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			if userMessageChat.FileData != "" {
 				chatMessageUserFileDataBuffer := new(bytes.Buffer)
 				components.ChatMessageFileData(userMessageChat).Render(context.Background(), chatMessageUserFileDataBuffer)
-				uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:           chatMessageUserFileDataBuffer.String(),
 					UseViewTransition: true,
 				}
 			}
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:           <-markdownToHtmlChannel,
 				UseViewTransition: true,
 			}
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  `window.mermaid.run()`,
 				IsScript: true,
 			}
@@ -587,9 +615,12 @@ func retryHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	// 	services.SendErrorMessageToUI(sse, "Failed to retry chat. Please try again later.")
 	// 	return
 	// }
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+
+	if userSessionExists {
 		for _, id := range deletedIds {
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				IsRemove:          true,
 				Selector:          "#message-" + strconv.Itoa(id),
 				UseViewTransition: true,
@@ -610,8 +641,12 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 	modelMessageChat.Id = <-insertModelConversationChannel
 	modelMessageChatBuffer := new(bytes.Buffer)
 	components.ChatMessage(modelMessageChat, true).Render(context.Background(), modelMessageChatBuffer)
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+
+	if userSessionExists {
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           modelMessageChatBuffer.String(),
 			UseViewTransition: true,
 			Mode:              datastar.WithModeAppend(),
@@ -619,12 +654,12 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		}
 
 		if modelMessageChat.Id == 0 {
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  "Error storing chat conversation.",
 				IsScript: true,
 			}
 		}
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:  `document.querySelector("main").scrollTo(0, document.querySelector("main").scrollHeight);`,
 			IsScript: true,
 		}
@@ -684,7 +719,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		modelMessageChat.Content += msg.DeltaContent
 		modelMessageChat.FileData += msg.DeltaImage
 		modelMessageChat.ModelId = msg.ModelId
-		if _, exists := uiSidMap[clientSignal.UiSid]; !exists {
+		if !userSessionExists {
 			continue
 		}
 		// sse.PatchElementTempl(components.ChatMessage(modelMessageChat, true))
@@ -694,30 +729,30 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 			modelMessageChat.FileName = "generated_image.png"
 			modelMessageChatFileDataBuffer := new(bytes.Buffer)
 			components.ChatMessageFileData(modelMessageChat).Render(context.Background(), modelMessageChatFileDataBuffer)
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:           modelMessageChatFileDataBuffer.String(),
 				UseViewTransition: true,
 			}
 		} else {
 			modelMessageChat.FileName = ""
 		}
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           <-markdownToHtmlChannel,
 			UseViewTransition: true,
 		}
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:  "window.mermaid.run()",
 			IsScript: true,
 		}
 	}
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists {
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+	if userSessionExists {
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			IsRemove: true,
 			Selector: "#thinkingMesssage",
 		}
 		chatMessageModelIdBuffer := new(bytes.Buffer)
 		components.ChatMessageModelIdDisplay(modelMessageChat).Render(context.Background(), chatMessageModelIdBuffer)
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           chatMessageModelIdBuffer.String(),
 			UseViewTransition: true,
 		}
@@ -725,10 +760,10 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 
 	if updateTitleCalled {
 		if <-updateTitleChannel != 0 {
-			if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+			if userSessionExists {
 				menuItemBuffer := new(bytes.Buffer)
 				components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, clientSignal.SearchMenu).Render(context.Background(), menuItemBuffer)
-				uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content: menuItemBuffer.String(),
 				}
 			}
@@ -753,14 +788,14 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		deleteModelConversationChannel := make(chan int)
 		defer close(deleteModelConversationChannel)
 		go services.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
-		if _, exists := uiSidMap[clientSignal.UiSid]; exists {
+		if userSessionExists {
 			if <-deleteModelConversationChannel != 0 {
-				uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					IsRemove: true,
 					Selector: "#message-" + strconv.Itoa(modelMessageChat.Id),
 				}
 			}
-			uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: "Unable to get response from AI. Please try again, or switch to a different model.",
 				IsError: true,
 			}
@@ -777,8 +812,8 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		FileName: modelMessageChat.FileName,
 	}, updateModelConversationChannel)
 	rowsAffected := <-updateModelConversationChannel
-	if _, exists := uiSidMap[clientSignal.UiSid]; exists && rowsAffected == 0 {
-		uiSidMap[clientSignal.UiSid] <- models.LongSSEData{
+	if userSessionExists && rowsAffected == 0 {
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content: "Failed to update chat conversation. Please try again later.",
 			IsError: true,
 		}
