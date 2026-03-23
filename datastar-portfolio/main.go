@@ -11,6 +11,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -21,7 +22,7 @@ import (
 )
 
 var emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
-var idMap = make(map[string]chan []models.DemoItem)
+var idMap sync.Map
 
 func main() {
 	err := godotenv.Load()
@@ -87,7 +88,7 @@ func main() {
 		allProjects := <-channel
 		close(channel)
 		id := uuid.NewString()
-		idMap[id] = make(chan []models.DemoItem)
+		idMap.Store(id, make(chan []models.DemoItem))
 		component := components.Projects(allProjects, id)
 		component.Render(request.Context(), responseWriter)
 	})
@@ -98,14 +99,14 @@ func main() {
 			fmt.Printf("Error reading client signals in sse: %v\n", err.Error())
 		}
 		sse := datastar.NewSSE(responseWriter, request)
-		if _, exists := idMap[clientSignal.Id]; exists {
+		if session, exists := idMap.Load(clientSignal.Id); exists {
 			for {
 				select {
 				case <-request.Context().Done():
-					close(idMap[clientSignal.Id])
-					delete(idMap, clientSignal.Id)
+					close(session.(chan []models.DemoItem))
+					idMap.Delete(clientSignal.Id)
 					return
-				case searchResults := <-idMap[clientSignal.Id]:
+				case searchResults := <-session.(chan []models.DemoItem):
 					sse.PatchElementTempl(components.ProjectCardCollection(searchResults), datastar.WithUseViewTransitions(true))
 					sse.PatchSignals([]byte("{filtering:false}"))
 				}
@@ -136,8 +137,8 @@ func main() {
 				go services.SearchDemos(searchChannel, embeddingResponse.Data[0].Embedding, clientSignal.ServiceFilter)
 				searchResults := <-searchChannel
 				close(searchChannel)
-				if _, exists := idMap[clientSignal.Id]; exists {
-					idMap[clientSignal.Id] <- searchResults
+				if session, exists := idMap.Load(clientSignal.Id); exists {
+					session.(chan []models.DemoItem) <- searchResults
 					dataSentToChannel = true
 				}
 				return
@@ -147,12 +148,12 @@ func main() {
 		go services.GetAllDemosWithServiceFilter(getAllDataChannel, clientSignal.ServiceFilter)
 		allDemos := <-getAllDataChannel
 		close(getAllDataChannel)
-		if _, exists := idMap[clientSignal.Id]; exists {
-			idMap[clientSignal.Id] <- allDemos
+		if session, exists := idMap.Load(clientSignal.Id); exists {
+			session.(chan []models.DemoItem) <- allDemos
 			dataSentToChannel = true
 		}
 		if !dataSentToChannel {
-			sse.PatchSignals([]byte("{filtering:true}"))
+			sse.PatchSignals([]byte("{filtering:false}"))
 		}
 	})
 
