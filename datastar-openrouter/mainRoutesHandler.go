@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -126,40 +125,36 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
-	ticker := time.NewTicker(20 * time.Second) // Send a heartbeat every 20s
-	defer ticker.Stop()
 
-	if userSessionExists {
-		for {
-			select {
-			case <-request.Context().Done():
-				close(userSession.(chan models.LongSSEData))
-				uiSidMap.Delete(userSessionKey)
-				return
+	if !userSessionExists {
+		userSession = make(chan models.LongSSEData)
+		uiSidMap.Store(userSessionKey, userSession)
+	}
+	for {
+		select {
+		case <-request.Context().Done():
+			close(userSession.(chan models.LongSSEData))
+			uiSidMap.Delete(userSessionKey)
+			return
 
-			case data := <-userSession.(chan models.LongSSEData):
-				switch {
-				case data.IsError:
-					services.SendErrorMessageToUI(sse, data.Content)
-				case data.IsScript:
-					sse.ExecuteScript(data.Content, datastar.WithExecuteScriptAutoRemove(true))
-				case data.IsSignal:
-					sse.PatchSignals([]byte(data.Content))
-				case data.IsRemove:
-					sse.RemoveElement(data.Selector, datastar.WithUseViewTransitions(data.UseViewTransition))
-				default:
-					if strings.TrimSpace(data.Selector) == "" {
-						sse.PatchElements(data.Content, datastar.WithUseViewTransitions(data.UseViewTransition))
-					} else if data.Mode != nil {
-						sse.PatchElements(data.Content, datastar.WithSelector(data.Selector), data.Mode, datastar.WithUseViewTransitions(data.UseViewTransition))
-					} else {
-						sse.PatchElements(data.Content, datastar.WithSelector(data.Selector), datastar.WithUseViewTransitions(data.UseViewTransition))
-					}
-					continue
+		case data := <-userSession.(chan models.LongSSEData):
+			switch {
+			case data.IsError:
+				services.SendErrorMessageToUI(sse, data.Content)
+			case data.IsScript:
+				sse.ExecuteScript(data.Content, datastar.WithExecuteScriptAutoRemove(true))
+			case data.IsSignal:
+				sse.PatchSignals([]byte(data.Content))
+			case data.IsRemove:
+				sse.RemoveElement(data.Selector, datastar.WithUseViewTransitions(data.UseViewTransition))
+			default:
+				if strings.TrimSpace(data.Selector) == "" {
+					sse.PatchElements(data.Content, datastar.WithUseViewTransitions(data.UseViewTransition))
+				} else if data.Mode != nil {
+					sse.PatchElements(data.Content, datastar.WithSelector(data.Selector), data.Mode, datastar.WithUseViewTransitions(data.UseViewTransition))
+				} else {
+					sse.PatchElements(data.Content, datastar.WithSelector(data.Selector), datastar.WithUseViewTransitions(data.UseViewTransition))
 				}
-			case <-ticker.C:
-				fmt.Fprintf(responseWriter, ": heartbeat\n\n")
-				responseWriter.(http.Flusher).Flush()
 				continue
 			}
 		}
