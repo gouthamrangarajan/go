@@ -35,7 +35,7 @@ templ inputsAndError(aiModels []models.AIModel) {
 						` }
 				data-on:keydown={ `
                     if (!$_processingViaInput && !$_processingViaButton && 
-						!$_retrying && !$fileUploading && 
+						!$_retrying && !$fileUploading && !$showErrorMessage &&
 						evt.key === 'Enter' && 
                         (evt.metaKey || evt.ctrlKey)) {
                         evt.preventDefault();
@@ -95,7 +95,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
 			<button
 				class="appearance-none outline-none cursor-pointer  transition duration-300 rounded-full p-1 hover:bg-gray-200 dark:hover:bg-slate-800 focus:bg-gray-200 dark:focus:bg-slate-800 focus:ring-1 focus:ring-dark dark:focus:ring-light disabled:cursor-not-allowed disabled:opacity-80"
 				data-class="{'border-dark animate-border':$fileUploading}"
-				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading || $showErrorMessage"
 				aria-label="Attach Image or PDF"
 				data-on:click="$fileInputRef.click()"
 			>
@@ -158,7 +158,7 @@ templ toolsAndSubmitButton(aiModels []models.AIModel) {
                     @post("/chat",{openWhenHidden: true});
                 ` }
 				data-indicator="_processingViaButton"
-				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading"
+				data-attr:disabled="$_processingViaButton || $_processingViaInput || $_retrying || $fileUploading || $showErrorMessage"
 				aria-label="Send Message"
 			>
 				<svg
