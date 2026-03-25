@@ -37,12 +37,7 @@ templ increaseQuantityForm(id int, quantity int) {
 		data-on:submit="evt.preventDefault();@post('/increment',{contentType: 'form'})"
 	>
 		<input type="hidden" value={ strconv.Itoa(id) } name="id"/>
-		<input
-			type="hidden"
-			value={ strconv.Itoa(quantity) }
-			name="currentQuantity"
-			id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
-		/>
+		@IncreaseQuantityFormInput(id, quantity)
 		<button
 			class="appearance-none outline-none cursor-pointer rounded transition duration-300 bg-green-600 text-white  hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50"
 			type="submit"
@@ -54,6 +49,15 @@ templ increaseQuantityForm(id int, quantity int) {
 	</form>
 }
 
+templ IncreaseQuantityFormInput(id int, quantity int) {
+	<input
+		type="hidden"
+		value={ strconv.Itoa(quantity) }
+		name="currentQuantity"
+		id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
+	/>
+}
+
 templ decreaseQuantityForm(id int, quantity int) {
 	<form
 		method="POST"
@@ -61,12 +65,7 @@ templ decreaseQuantityForm(id int, quantity int) {
 		data-on:submit="evt.preventDefault();@post('/decrement',{contentType: 'form'})"
 	>
 		<input type="hidden" value={ strconv.Itoa(id) } name="id"/>
-		<input
-			type="hidden"
-			value={ strconv.Itoa(quantity) }
-			name="currentQuantity"
-			id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
-		/>
+		@DecreaseQuantityFormInput(id, quantity)
 		<button
 			class="appearance-none outline-none cursor-pointer rounded transition duration-300 bg-red-600 text-white hover:opacity-90 disabled:opacity-80 disabled:cursor-not-allowed focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50"
 			type="submit"
@@ -76,6 +75,15 @@ templ decreaseQuantityForm(id int, quantity int) {
 			</svg>
 		</button>
 	</form>
+}
+
+templ DecreaseQuantityFormInput(id int, quantity int) {
+	<input
+		type="hidden"
+		value={ strconv.Itoa(quantity) }
+		name="currentQuantity"
+		id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
+	/>
 }
 
 templ deleteItemForm(id int) {

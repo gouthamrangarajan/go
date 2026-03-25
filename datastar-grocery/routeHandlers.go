@@ -152,10 +152,20 @@ func IncrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 	go services.UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity, channel)
 	rowsAffected := <-channel
 	if rowsAffected != 0 {
-		buff := new(bytes.Buffer)
-		components.ItemQuantityDisplay(id, currentQuantity).Render(context.Background(), buff)
+		displayBuff := new(bytes.Buffer)
+		components.ItemQuantityDisplay(id, currentQuantity).Render(context.Background(), displayBuff)
 		sendSignalToChangeChannels(models.LongSSEChannelData{
-			Content: buff.String(),
+			Content: displayBuff.String(),
+		})
+		inputBuff1 := new(bytes.Buffer)
+		components.IncreaseQuantityFormInput(id, currentQuantity).Render(context.Background(), inputBuff1)
+		sendSignalToChangeChannels(models.LongSSEChannelData{
+			Content: inputBuff1.String(),
+		})
+		inputBuff2 := new(bytes.Buffer)
+		components.DecreaseQuantityFormInput(id, currentQuantity).Render(context.Background(), inputBuff2)
+		sendSignalToChangeChannels(models.LongSSEChannelData{
+			Content: inputBuff2.String(),
 		})
 	}
 
@@ -177,11 +187,21 @@ func DecrementGroceryItemQuantity(w http.ResponseWriter, r *http.Request) {
 	go services.UpdateQuantityGroceryItemViaChannel(databaseUrl, authToken, id, currentQuantity, channel)
 	rowsAffected := <-channel
 	if rowsAffected != 0 {
-		buff := new(bytes.Buffer)
-		components.ItemQuantityDisplay(id, currentQuantity).Render(context.Background(), buff)
+		displayBuff := new(bytes.Buffer)
+		components.ItemQuantityDisplay(id, currentQuantity).Render(context.Background(), displayBuff)
 		sendSignalToChangeChannels(models.LongSSEChannelData{
-			Content: buff.String(),
+			Content: displayBuff.String(),
 			SortVal: getSort(),
+		})
+		inputBuff1 := new(bytes.Buffer)
+		components.DecreaseQuantityFormInput(id, currentQuantity).Render(context.Background(), inputBuff1)
+		sendSignalToChangeChannels(models.LongSSEChannelData{
+			Content: inputBuff1.String(),
+		})
+		inputBuff2 := new(bytes.Buffer)
+		components.IncreaseQuantityFormInput(id, currentQuantity).Render(context.Background(), inputBuff2)
+		sendSignalToChangeChannels(models.LongSSEChannelData{
+			Content: inputBuff2.String(),
 		})
 	}
 

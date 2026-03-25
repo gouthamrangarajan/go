@@ -85,18 +85,6 @@ templ ItemQuantityDisplay(id int, quantity int) {
 		style={ getDisplayQuantityTransitionName(id) }
 		id={ fmt.Sprintf("quantityDisplay_%v", id) }
 	>{ strconv.Itoa(quantity) }</span>
-	<input
-		type="hidden"
-		value={ strconv.Itoa(quantity) }
-		name="currentQuantity"
-		id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
-	/>
-	<input
-		type="hidden"
-		value={ strconv.Itoa(quantity) }
-		name="currentQuantity"
-		id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
-	/>
 }
 
 func getDisplayQuantityTransitionName(id int) string {
