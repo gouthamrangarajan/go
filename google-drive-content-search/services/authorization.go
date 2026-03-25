@@ -37,7 +37,7 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func validateUserIdInCookie(r *http.Request) bool {
+func validateUserIdInCookie(request *http.Request) bool {
 	hashKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_HASH_KEY"))
 	if err != nil {
 		fmt.Printf("Error decoding COOKIE_HASH_KEY: %v\n", err)
@@ -51,7 +51,7 @@ func validateUserIdInCookie(r *http.Request) bool {
 
 	newSecureCookie := securecookie.New(hashKey, blockKey)
 
-	if cookie, err := r.Cookie(COOKIE_NAME); err == nil {
+	if cookie, err := request.Cookie(COOKIE_NAME); err == nil {
 		value := make(map[string]interface{})
 		// This  checks for tampering and expiration automatically
 		if err = newSecureCookie.Decode(COOKIE_NAME, cookie.Value, &value); err == nil {
