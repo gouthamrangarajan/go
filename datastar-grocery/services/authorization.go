@@ -1,72 +1,86 @@
 package services
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
 	"datastar-grocery/components"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/gorilla/securecookie"
 )
 
-func GenerateUserIdCookie() http.Cookie {
+const SESSION_DURATION = 365 * 24 * time.Hour
+
+const COOKIE_NAME = "grocery"
+
+func GenerateUserIdCookie() (http.Cookie, error) {
 	secure := true
 	if os.Getenv("ENV") == "Development" {
 		secure = false
 	}
-	cookieSecretKey := os.Getenv("COOKIE_SECRET")
-	cookieName := "id"
-	userId := os.Getenv("USER_ID")
 
-	mac := hmac.New(sha256.New, []byte(cookieSecretKey))
-	mac.Write([]byte(cookieName))
-	mac.Write([]byte(userId))
-	signature := mac.Sum(nil)
+	value := map[string]interface{}{
+		"user_id": os.Getenv("USER_ID"),
+		"created": time.Now().Unix(),
+	}
 
-	cookieValueSignedBytes := append(signature, []byte(userId)...)
-	cookieValueSignedStr := base64.URLEncoding.EncodeToString(cookieValueSignedBytes)
+	hashKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_HASH_KEY"))
+	if err != nil {
+		fmt.Printf("Error decoding COOKIE_HASH_KEY: %v\n", err)
+		return http.Cookie{}, err
+	}
+	blockKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_BLOCK_KEY"))
+	if err != nil {
+		fmt.Printf("Error decoding COOKIE_BLOCK_KEY: %v\n", err)
+		return http.Cookie{}, err
+	}
+
+	newSecureCookie := securecookie.New(hashKey, blockKey)
+	cookieValue, err := newSecureCookie.Encode(COOKIE_NAME, value)
+	if err != nil {
+		fmt.Printf("Error encoding cookie: %v\n", err)
+		return http.Cookie{}, err
+	}
 
 	cookie := http.Cookie{
-		Name:     cookieName,
-		Value:    cookieValueSignedStr,
+		Name:     COOKIE_NAME,
+		Value:    cookieValue,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   secure,
-		Expires:  time.Now().Add(365 * 24 * time.Hour),
+		MaxAge:   int(SESSION_DURATION.Seconds()),
 		SameSite: http.SameSiteLaxMode,
 	}
-	return cookie
+	return cookie, nil
 }
-func ValidateUserIdInCookie(r *http.Request) bool {
-	cookieName := "id"
-	userIdFromConfig := os.Getenv("USER_ID")
-	cookie, err := r.Cookie(cookieName)
+func validateUserIdInCookie(request *http.Request) bool {
+	hashKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_HASH_KEY"))
 	if err != nil {
+		fmt.Printf("Error decoding COOKIE_HASH_KEY: %v\n", err)
 		return false
 	}
-	cookieValueBase64Encoded := cookie.Value
-	cookieValueSignedStr, err := base64.URLEncoding.DecodeString(cookieValueBase64Encoded)
+	blockKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_BLOCK_KEY"))
 	if err != nil {
+		fmt.Printf("Error decoding COOKIE_BLOCK_KEY: %v\n", err)
 		return false
 	}
 
-	cookieValueSignedBytes := []byte(cookieValueSignedStr)
-	signature := cookieValueSignedBytes[:sha256.Size]
+	newSecureCookie := securecookie.New(hashKey, blockKey)
 
-	userIdFromCookie := cookieValueSignedBytes[sha256.Size:]
-
-	cookieSecretKey := os.Getenv("COOKIE_SECRET")
-	mac := hmac.New(sha256.New, []byte(cookieSecretKey))
-	mac.Write([]byte(cookieName))
-	mac.Write([]byte(userIdFromConfig))
-	expectedSignature := mac.Sum(nil)
-
-	if !hmac.Equal(signature, expectedSignature) {
-		return false
+	if cookie, err := request.Cookie(COOKIE_NAME); err == nil {
+		value := make(map[string]interface{})
+		// This  checks for tampering and expiration automatically
+		if err = newSecureCookie.Decode(COOKIE_NAME, cookie.Value, &value); err == nil {
+			if value["user_id"] == os.Getenv("USER_ID") &&
+				time.Now().Unix()-value["created"].(int64) < int64(SESSION_DURATION.Seconds()) {
+				return true
+			}
+		}
 	}
-	return string(userIdFromCookie) == userIdFromConfig
+	return false
 }
 
 func ChiMiddleware(next http.Handler) http.Handler {
@@ -75,7 +89,7 @@ func ChiMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(responseWriter, request)
 			return
 		}
-		if ValidateUserIdInCookie(request) {
+		if validateUserIdInCookie(request) {
 			next.ServeHTTP(responseWriter, request)
 			return
 		}
@@ -83,6 +97,10 @@ func ChiMiddleware(next http.Handler) http.Handler {
 		if request.Method == "GET" && request.URL.Path == "/" {
 			sort := request.URL.Query().Get("sort")
 			suggestions := request.URL.Query().Get("suggestions")
+			// fmt.Printf("%v\n", base64.StdEncoding.EncodeToString(securecookie.GenerateRandomKey(32)))
+			// fmt.Printf("%v\n", base64.StdEncoding.EncodeToString(securecookie.GenerateRandomKey(32)))
+			// fmt.Printf("%v\n", base64.StdEncoding.EncodeToString(securecookie.GenerateRandomKey(32)))
+			// fmt.Printf("%v\n", base64.StdEncoding.EncodeToString(securecookie.GenerateRandomKey(32)))
 			components.MainElForLogin(sort, suggestions).Render(request.Context(), responseWriter)
 			return
 

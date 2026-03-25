@@ -1,5 +1,7 @@
 package components
 
+import "datastar-grocery/models"
+
 type Item struct {
 	Id             int
 	Name           string
@@ -8,28 +10,30 @@ type Item struct {
 	AnimationClass string
 }
 
-templ MainEl(location string, sort string, suggestions string) {
+templ MainEl(data models.MainElData) {
 	@Layout() {
-		<main class="flex flex-col items-center w-dvw h-dvh  overflow-auto bg-gradient-to-br from-purple-300 to-fuchsia-300 via-fuchsia-200 py-5 lg:py-10 px-2 lg:px-6">
+		<main
+			class="flex flex-col items-center w-dvw h-dvh  overflow-auto bg-gradient-to-br from-purple-300 to-fuchsia-300 via-fuchsia-200 py-5 lg:py-10 px-2 lg:px-6"
+		>
 			<h1 class="text-4xl text-green-700 font-semibold text-center">Groceries</h1>
-			@SectionEl(location, sort, suggestions)
+			@SectionEl(data)
 		</main>
 	}
 }
 
-templ SectionEl(location string, sort string, suggestions string) {
+templ SectionEl(data models.MainElData) {
 	<section
 		style="view-transition-name:section"
 		class="bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12"
 		id="section"
-		data-init="@get('/items')"
-		data-signals="{'_loadingItems':true}"
+		data-signals={ `{sId:'` + data.SId + `',_loadingItems:true}` }
+		data-init="@get('/items',{openWhenHidden:true})"
 	>
 		<div class="flex flex-col gap-1 md:items-center md:flex-row">
-			@addItemForm(location)
-			@sortItemsForm(sort)
+			@addItemForm(data.Location)
+			@sortItemsForm(data.Sort)
 		</div>
-		@OpenAiSuggestions(suggestions)
+		@AiSuggestions(data.Suggestions)
 		<span data-show="$_loadingItems" class="w-full flex justify-center">
 			@loader("border-slate-600 w-8 h-8", "")
 		</span>

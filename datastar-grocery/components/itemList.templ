@@ -14,17 +14,17 @@ templ ItemsUL(items []Item) {
 	</ul>
 }
 
-templ OpenAiSuggestions(concatenatedSuggestion string) {
+templ AiSuggestions(concatenatedSuggestion string) {
 	if strings.Trim(concatenatedSuggestion,"")=="" {
-		<p id="openaiSuggestion" style="view-transition-name:openaiSuggestion"></p>
+		<p id="aiSuggestion" style="view-transition-name:aiSuggestion"></p>
 	} else {
 		{{ suggestions := strings.Split(concatenatedSuggestion, ",") }}
 		<p
-			id="openaiSuggestion"
-			style="view-transition-name:openaiSuggestion"
+			id="aiSuggestion"
+			style="view-transition-name:aiSuggestion"
 			class="py-2 px-4 flex flex-col text-lg"
 		>
-			<span class="italic text-slate-600">* Open AI suggestions click on the item to populate</span>
+			<span class="italic text-slate-600">* AI suggestions click on the item to populate</span>
 			<span class="flex gap-1">
 				for idx,suggestion := range suggestions {
 					<span
@@ -49,7 +49,7 @@ templ itemLi(item Item) {
 		@itemCompletedToggleCheckbox(item)
 		@ItemNameDisplay(item)
 		@decreaseQuantityForm(item.Id, item.Quantity)
-		@ItemQuantityDisplay(item.Id, item.Quantity, false)
+		@ItemQuantityDisplay(item.Id, item.Quantity)
 		@increaseQuantityForm(item.Id, item.Quantity)
 		@deleteItemForm(item.Id)
 	</li>
@@ -61,9 +61,17 @@ func getLiTransitionName(id int) string {
 
 templ ItemNameDisplay(item Item) {
 	if item.Completed {
-		<span class="flex-1 line-through text-2xl" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
+		<span
+			class="flex-1 line-through text-2xl"
+			style={ getDisplayNameTransitionName(item.Id) }
+			id={ fmt.Sprintf("nameDisplay_%v", item.Id) }
+		>{ item.Name }</span>
 	} else {
-		<span class="flex-1 text-2xl" style={ getDisplayNameTransitionName(item.Id) }>{ item.Name }</span>
+		<span
+			class="flex-1 text-2xl"
+			style={ getDisplayNameTransitionName(item.Id) }
+			id={ fmt.Sprintf("nameDisplay_%v", item.Id) }
+		>{ item.Name }</span>
 	}
 }
 
@@ -71,26 +79,26 @@ func getDisplayNameTransitionName(id int) string {
 	return fmt.Sprintf("view-transition-name:item-name-%v", id)
 }
 
-templ ItemQuantityDisplay(id int, quantity int, isOob bool) {
-	if !isOob {
-		<span class="w-5 text-center select-none" style={ getDisplayQuantityTransitionName(id) }>{ strconv.Itoa(quantity) }</span>
-	} else {
-		<span class="w-5 text-center select-none" style={ getDisplayQuantityTransitionName(id) }>{ strconv.Itoa(quantity) }</span>
-		<input
-			type="hidden"
-			value={ strconv.Itoa(quantity) }
-			name="currentQuantity"
-			id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
-			hx-swap-oob="true"
-		/>
-		<input
-			type="hidden"
-			value={ strconv.Itoa(quantity) }
-			name="currentQuantity"
-			id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
-			hx-swap-oob="true"
-		/>
-	}
+templ ItemQuantityDisplay(id int, quantity int) {
+	<span
+		class="w-5 text-center select-none"
+		style={ getDisplayQuantityTransitionName(id) }
+		id={ fmt.Sprintf("quantityDisplay_%v", id) }
+	>{ strconv.Itoa(quantity) }</span>
+	<input
+		type="hidden"
+		value={ strconv.Itoa(quantity) }
+		name="currentQuantity"
+		id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
+		hx-swap-oob="true"
+	/>
+	<input
+		type="hidden"
+		value={ strconv.Itoa(quantity) }
+		name="currentQuantity"
+		id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
+		hx-swap-oob="true"
+	/>
 }
 
 func getDisplayQuantityTransitionName(id int) string {

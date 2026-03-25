@@ -3,7 +3,7 @@ module datastar-grocery
 go 1.24.1
 
 require (
-	github.com/a-h/templ v0.3.960
+	github.com/a-h/templ v0.3.1001
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/lpernett/godotenv v0.0.0-20230527005122-0de1d4c5ef5e
 	github.com/starfederation/datastar-go v1.1.0
@@ -17,6 +17,8 @@ require (
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/coder/websocket v1.8.14 // indirect
+	github.com/google/uuid v1.6.0 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/klauspost/compress v1.18.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 )
