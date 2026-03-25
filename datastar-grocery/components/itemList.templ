@@ -90,14 +90,12 @@ templ ItemQuantityDisplay(id int, quantity int) {
 		value={ strconv.Itoa(quantity) }
 		name="currentQuantity"
 		id={ fmt.Sprintf("inpQuantity_increment_%v", id) }
-		hx-swap-oob="true"
 	/>
 	<input
 		type="hidden"
 		value={ strconv.Itoa(quantity) }
 		name="currentQuantity"
 		id={ fmt.Sprintf("inpQuantity_decrement_%v", id) }
-		hx-swap-oob="true"
 	/>
 }
 

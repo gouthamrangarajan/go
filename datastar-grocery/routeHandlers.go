@@ -47,7 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	sse := datastar.NewSSE(w, r)
 	model := models.MainElData{Location: os.Getenv("LOCATION"), Sort: sort, Suggestions: suggestions, SId: uuid.NewString()}
-	changeSignalMap.Store(model.SId, make(chan string))
+	changeSignalMap.Store(model.SId, make(chan models.LongSSEChannelData))
 	sse.PatchElementTempl(components.SectionEl(model), datastar.WithUseViewTransitions(true))
 }
 func GroceryItemList(w http.ResponseWriter, r *http.Request) {
