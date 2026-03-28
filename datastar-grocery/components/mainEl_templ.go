@@ -99,9 +99,9 @@ func SectionEl(data models.MainElData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(`{sId:'` + data.SId + `',_loadingItems:true,$errorMessage:'',$showErrorMessage:false}`)
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(`{sId:'` + data.SId + `',_loadingItems:true,errorMessage:'',showErrorMessage:false}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainEl.templ`, Line: 29, Col: 103}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainEl.templ`, Line: 29, Col: 101}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
