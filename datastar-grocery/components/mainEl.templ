@@ -26,8 +26,9 @@ templ SectionEl(data models.MainElData) {
 		style="view-transition-name:section"
 		class="bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12"
 		id="section"
-		data-signals={ `{sId:'` + data.SId + `',_loadingItems:true}` }
+		data-signals={ `{sId:'` + data.SId + `',_loadingItems:true,$errorMessage:'',$showErrorMessage:false}` }
 		data-init="@get('/items',{openWhenHidden:true})"
+		data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true}"
 	>
 		<div class="flex flex-col gap-1 md:items-center md:flex-row">
 			@addItemForm(data.Location)

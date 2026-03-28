@@ -65,7 +65,7 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 
 	session, exists := changeSignalMap.Load(ClientSignals.SId)
 	if !exists {
-		session = make(chan string)
+		session = make(chan models.LongSSEChannelData)
 		changeSignalMap.Store(ClientSignals.SId, session)
 	}
 
