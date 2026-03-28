@@ -94,7 +94,7 @@ func SectionEl(data models.MainElData) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section style=\"view-transition-name:section\" class=\"bg-white mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12\" id=\"section\" data-signals=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section style=\"view-transition-name:section\" class=\"bg-white relative mx-auto shadow shadow-red-600 rounded-[var(--radius-drawn-2)] py-8 pb-12 px-2 transition-all duration-300 flex flex-col gap-1 w-full md:w-10/12 lg:w-7/12 xl:w-6/12\" id=\"section\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -107,7 +107,7 @@ func SectionEl(data models.MainElData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" data-init=\"@get('/items',{openWhenHidden:true})\" data-on:datastar-fetch=\"if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true}\"><div class=\"flex flex-col gap-1 md:items-center md:flex-row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" data-init=\"@get('/items',{openWhenHidden:true})\" data-on:datastar-fetch__transition=\"if(evt.detail.type === 'retries-failed'){$errorMessage = '⚠️  Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true}\"><div class=\"w-full\" data-show=\"$showErrorMessage\"><p class=\"bg-red-100 text-red-700 font-semibold py-2 px-6 rounded shadow animate-slide-down\" data-text=\"$errorMessage\"></p></div><div class=\"flex flex-col gap-1 md:items-center md:flex-row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
