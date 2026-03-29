@@ -28,8 +28,9 @@ templ Projects(data []models.DemoItem, id string) {
 templ search() {
 	<div
 		class="flex w-full flex-col gap-4 "
-		data-signals="{serviceFilter:[],filtering:false}"
-		data-on-signal-patch__debounce.600ms="@post('/search')"
+		data-signals="{serviceFilter:[],filtering:false,_readyToSearch:false}"
+		data-init="setTimeout(()=>$_readyToSearch=true,600)"
+		data-on-signal-patch__debounce.600ms="$_readyToSearch && @post('/search')"
 		data-on-signal-patch-filter="{include:/srchTxt|serviceFilter/}"
 	>
 		<div class="bg-white flex gap-2 w-full items-center py-1 px-3 transition duration-300 rounded-md border border-slate-300  focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-slate-600 focus-within:ring-offset-2 focus-within:ring-offset-white">
@@ -84,7 +85,12 @@ templ search() {
 				Codepen
 			</button>
 		</div>
-		<p class="bg-red-100 text-red-700 font-semibold animate-fade-in py-1 px-3 rounded-md" data-show="$showErrorMessage" data-text="$errorMessage"></p>
+		<p
+			class="bg-red-100 text-red-700 font-semibold animate-fade-in py-1 px-3 rounded-md"
+			style="display: none;"
+			data-show="$showErrorMessage"
+			data-text="$errorMessage"
+		></p>
 	</div>
 }
 
@@ -93,12 +99,10 @@ templ ProjectCardCollection(data []models.DemoItem) {
 		for _, item := range data {
 			@projectCard(item)
 		}
-		<div class="absolute top-0 left-0 bg-white/80 w-full h-full py-2 px-4 pt-10 animate-pulse" data-show="$filtering">
-			// <div class="flex gap-3 items-center ml-[50%]">
-			// 	<span class="bg-teal-600 w-2 h-2 animate-loader rounded-full"></span>
-			// 	<span class="bg-teal-600 w-2 h-2 animate-loader-1 rounded-full"></span>
-			// 	<span class="bg-teal-600 w-2 h-2 animate-loader-2 rounded-full"></span>
-			// </div>
+		<div class="absolute top-0 left-0 w-full h-full py-2 px-4 pt-10 flex justify-center" data-show="$filtering">
+			<span
+				class="animate-spinner w-12 h-12 border-3 border-dashed border-teal-700 rounded-full"
+			></span>
 		</div>
 	</div>
 }

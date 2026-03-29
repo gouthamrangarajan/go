@@ -104,7 +104,7 @@ func search() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex w-full flex-col gap-4\" data-signals=\"{serviceFilter:[],filtering:false}\" data-on-signal-patch__debounce.600ms=\"@post('/search')\" data-on-signal-patch-filter=\"{include:/srchTxt|serviceFilter/}\"><div class=\"bg-white flex gap-2 w-full items-center py-1 px-3 transition duration-300 rounded-md border border-slate-300 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-slate-600 focus-within:ring-offset-2 focus-within:ring-offset-white\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" class=\"appearance-none outline-none flex-1 placeholder:text-slate-400\" placeholder=\"Search projects,technologies...\" data-bind=\"srchTxt\"></div><div class=\"flex flex-wrap gap-2 items-center text-sm\"><button class=\"appearance-none outline-none cursor-pointer rounded-full px-3 py-1 transition duration-300 border hover:opacity-80 focus:ring-2 focus:ring-offset-2 focus:ring-offset-white\" data-class=\"{'bg-black text-white border-black focus:ring-black':$serviceFilter.includes('All'),'border-gray-600 focus:ring-gray-600 ':!$serviceFilter.includes('All')}\" data-on:click=\"$serviceFilter.includes('All')?$serviceFilter=$serviceFilter.filter(el=>el!='All'):$serviceFilter=['All']\">All</button> <button class=\"appearance-none outline-none cursor-pointer rounded-full px-3 py-1 transition duration-300 border hover:opacity-80 focus:ring-2 focus:ring-offset-2 focus:ring-offset-white\" data-class=\"{'bg-black text-white border-black focus:ring-black':$serviceFilter.includes('Railway'),'border-gray-600 focus:ring-gray-600 ':!$serviceFilter.includes('Railway')}\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex w-full flex-col gap-4\" data-signals=\"{serviceFilter:[],filtering:false,_readyToSearch:false}\" data-init=\"setTimeout(()=>$_readyToSearch=true,600)\" data-on-signal-patch__debounce.600ms=\"$_readyToSearch && @post('/search')\" data-on-signal-patch-filter=\"{include:/srchTxt|serviceFilter/}\"><div class=\"bg-white flex gap-2 w-full items-center py-1 px-3 transition duration-300 rounded-md border border-slate-300 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-slate-600 focus-within:ring-offset-2 focus-within:ring-offset-white\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" class=\"appearance-none outline-none flex-1 placeholder:text-slate-400\" placeholder=\"Search projects,technologies...\" data-bind=\"srchTxt\"></div><div class=\"flex flex-wrap gap-2 items-center text-sm\"><button class=\"appearance-none outline-none cursor-pointer rounded-full px-3 py-1 transition duration-300 border hover:opacity-80 focus:ring-2 focus:ring-offset-2 focus:ring-offset-white\" data-class=\"{'bg-black text-white border-black focus:ring-black':$serviceFilter.includes('All'),'border-gray-600 focus:ring-gray-600 ':!$serviceFilter.includes('All')}\" data-on:click=\"$serviceFilter.includes('All')?$serviceFilter=$serviceFilter.filter(el=>el!='All'):$serviceFilter=['All']\">All</button> <button class=\"appearance-none outline-none cursor-pointer rounded-full px-3 py-1 transition duration-300 border hover:opacity-80 focus:ring-2 focus:ring-offset-2 focus:ring-offset-white\" data-class=\"{'bg-black text-white border-black focus:ring-black':$serviceFilter.includes('Railway'),'border-gray-600 focus:ring-gray-600 ':!$serviceFilter.includes('Railway')}\" data-on:click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -112,7 +112,7 @@ func search() templ.Component {
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(`$serviceFilter.includes('Railway')?$serviceFilter=$serviceFilter.filter(el=>el!='Railway'):
 								($serviceFilter=$serviceFilter.filter(el=>el!='All')) && $serviceFilter.push('Railway')`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 58, Col: 96}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 59, Col: 96}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -126,7 +126,7 @@ func search() templ.Component {
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(`$serviceFilter.includes('Cloudflare')?$serviceFilter=$serviceFilter.filter(el=>el!='Cloudflare'):
 								($serviceFilter=$serviceFilter.filter(el=>el!='All')) && $serviceFilter.push('Cloudflare')`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 66, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 67, Col: 99}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -140,7 +140,7 @@ func search() templ.Component {
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(`$serviceFilter.includes('Netlify')?$serviceFilter=$serviceFilter.filter(el=>el!='Netlify'):
 								($serviceFilter=$serviceFilter.filter(el=>el!='All')) && $serviceFilter.push('Netlify')`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 74, Col: 96}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 75, Col: 96}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -154,13 +154,13 @@ func search() templ.Component {
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(`$serviceFilter.includes('Codepen')?$serviceFilter=$serviceFilter.filter(el=>el!='Codepen'):
 								($serviceFilter=$serviceFilter.filter(el=>el!='All')) && $serviceFilter.push('Codepen')`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 82, Col: 96}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 83, Col: 96}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\">Codepen</button></div><p class=\"bg-red-100 text-red-700 font-semibold animate-fade-in py-1 px-3 rounded-md\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\"></p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\">Codepen</button></div><p class=\"bg-red-100 text-red-700 font-semibold animate-fade-in py-1 px-3 rounded-md\" style=\"display: none;\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\"></p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -199,7 +199,7 @@ func ProjectCardCollection(data []models.DemoItem) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"absolute top-0 left-0 bg-white/80 w-full h-full py-2 px-4 pt-10 animate-pulse\" data-show=\"$filtering\"></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"absolute top-0 left-0 w-full h-full py-2 px-4 pt-10 flex justify-center\" data-show=\"$filtering\"><span class=\"animate-spinner w-12 h-12 border-3 border-dashed border-teal-700 rounded-full\"></span></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -236,7 +236,7 @@ func projectCard(data models.DemoItem) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.ImgSrc)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 111, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 115, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -249,7 +249,7 @@ func projectCard(data models.DemoItem) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title + "Screenshot")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 111, Col: 58}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 115, Col: 58}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -262,7 +262,7 @@ func projectCard(data models.DemoItem) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 114, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 118, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -275,7 +275,7 @@ func projectCard(data models.DemoItem) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(data.Service)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 115, Col: 102}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 119, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -288,7 +288,7 @@ func projectCard(data models.DemoItem) templ.Component {
 		var templ_7745c5c3_Var15 templ.SafeURL
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinURLErrs(data.Url)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 120, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 124, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -301,7 +301,7 @@ func projectCard(data models.DemoItem) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(data.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 127, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 131, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -319,7 +319,7 @@ func projectCard(data models.DemoItem) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 130, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 134, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
