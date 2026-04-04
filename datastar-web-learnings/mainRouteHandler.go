@@ -56,7 +56,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	openAIResponseChannel := make(chan string)
 	defer close(openAIResponseChannel)
-	go services.VerifyTechnologyTopicsSearchAndOptimizeQuery(query, openAIResponseChannel)
+	go services.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query, openAIResponseChannel)
 	openAIResponse := <-openAIResponseChannel
 	if openAIResponse == "" {
 		fmt.Printf("Query not related to technology topics: %v\n", query)
