@@ -10,8 +10,8 @@ func replaceSpecialCharsVideoId(videoId string) string {
 	return strings.ReplaceAll(videoId, "-", "")
 }
 
-templ Landing(config models.FirebaseAuthConfig) {
-	@layout(config) {
+templ Landing(config models.FirebaseAuthConfig, Sid string) {
+	@layout(config, Sid) {
 		@header()
 		@LandingMain()
 	}
@@ -81,15 +81,14 @@ templ AddVideoButton() {
 
 templ LandingMain() {
 	<main
-		data-indicator="_firstLoad"
-		data-on-load="new URLSearchParams(window.location.search).get('search')?@get('/search/'+new URLSearchParams(window.location.search).get('search')):@get('/data/0')"
 		class="mt-1 px-4 py-2 pb-24 overflow-x-hidden h-[91.5vh] overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
 		data-signals={ `
-						{ _activeInlinePlayerVideoId:null,videoToDelete:'',showDeleteConfirm:false,
+						{ searchTxt:'',_activeInlinePlayerVideoId:null,videoToDelete:'',showDeleteConfirm:false,
 						  _dockedPlayerVideoId:null,_dockedPlayer:null,isDockedPlayerActive:false,
-						  _dockedPlayerDurationToStart:0
+						  _dockedPlayerDurationToStart:0,offset:0,
 						}
 					 ` }
+		data-on-load="$searchTxt=new URLSearchParams(window.location.search).get('search');@get('/sse',{openWhenHidden:true})"
 		data-on-inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
 		data-on-docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId=null;"
 		data-on-docked-video-stopped="$_isDockedPlayerActive=false;"
@@ -109,7 +108,7 @@ templ searchInput() {
 	<form
 		class="flex items-stretch w-full md:w-7/12 lg:w-6/12 xl:w-5/12"
 		data-indicator="_searching"
-		dats-signals="{searchTxt:'',_showClearButton:false}"
+		dats-signals="{_showClearButton:false}"
 		data-on-submit={ `evt.preventDefault();
 						const urlParams=new URLSearchParams(window.location.search).get('search');
 						if(!$_searching && ( 
@@ -120,7 +119,7 @@ templ searchInput() {
 							$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
 							$_allNotInViewportObservers=[];
 							window.history.replaceState({},document.title,window.location.origin+'/?search='+$searchTxt.trim());							
-							@get('/search/'+$searchTxt.trim(),{openWhenHidden: true});
+							@get('/search',{openWhenHidden: true});
 						}` }
 	>
 		<div class="flex gap-2 transition duration-300 rounded-l-full items-center border border-primary/50 py-2 px-4 flex-1 focus-within:border-primary ">
@@ -130,9 +129,8 @@ templ searchInput() {
 				class="appearance-none outline-none flex-1 placeholder:text-secondary/70"
 				placeholder="Search..."
 				data-bind="searchTxt"
-				data-on-load="new URLSearchParams(window.location.search).get('search')?$searchTxt=new URLSearchParams(window.location.search).get('search'):$searchTxt=''"
 			/>
-			@loader("$_searching || $_firstLoad")
+			@loader("$_searching")
 			<button
 				type="button"
 				class="appearance-none outline-none cursor-pointer rounded-full text-red-300 border border-transparent transition duration-300 focus:border-red-300  hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
@@ -144,7 +142,7 @@ templ searchInput() {
 						$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
 						$_allNotInViewportObservers=[];
 						window.history.replaceState({},document.title,window.location.origin+'/');					
-						@get('/search/',{openWhenHidden: true});
+						@get('/search',{openWhenHidden: true});
 					}
 				` }
 				data-show="$_showClearButton"
@@ -160,7 +158,6 @@ templ searchInput() {
 		<button
 			type="submit"
 			class="appearance-none outline-none cursor-pointer py-2 px-4 rounded-r-full bg-background text-primary border border-primary/50 transition duration-300 focus:border-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-			data-attr-disabled="$_searching || $_firstLoad"
 			aria-label="Submit Search"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -174,7 +171,7 @@ templ LoadMore(offset int) {
 	<div
 		id="loadMore"
 		data-indicator="_loading"
-		data-on-intersect__once={ "@get('/data/" + strconv.Itoa(offset) + "')" }
+		data-on-intersect__once={ "$offset=" + strconv.Itoa(offset) + ";@get('/data')" }
 	></div>
 }
 

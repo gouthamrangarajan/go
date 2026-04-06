@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "datastar-web-learnings/models"
 
-func layout(config models.FirebaseAuthConfig) templ.Component {
+func layout(config models.FirebaseAuthConfig, Sid string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -40,10 +40,11 @@ func layout(config models.FirebaseAuthConfig) templ.Component {
 					{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
 					  idToken:'',_allNotInViewportObservers:[],
 					  _firebaseApiKey:'` + config.ApiKey + `',_firebaseAuthDomain:'` + config.Domain + `',
+					  sid:'` + Sid + `'
 					}
 				`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 28, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 29, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -56,7 +57,7 @@ func layout(config models.FirebaseAuthConfig) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`window.initializeFirebaseApp?window.initializeFirebaseApp({apiKey:$_firebaseApiKey,authDomain:$_firebaseAuthDomain}):null`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 29, Col: 141}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 30, Col: 141}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {

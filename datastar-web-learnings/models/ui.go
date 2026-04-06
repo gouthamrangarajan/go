@@ -10,4 +10,6 @@ type UISignals struct {
 	Transcript    string   `json:"transcript"`
 	VideoToDelete string   `json:"videoToDelete"`
 	SearchTxt     string   `json:"searchTxt"`
+	Sid           string   `json:"sid"`
+	Offset        int      `json:"offset"`
 }

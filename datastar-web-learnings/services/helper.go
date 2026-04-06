@@ -1,8 +1,11 @@
 package services
 
 import (
+	"context"
 	"datastar-web-learnings/models"
 	"fmt"
+	"os"
+	"strconv"
 	"strings"
 )
 
@@ -120,4 +123,16 @@ func ConstructTextToVectorize(data models.VideoResponse, description string) mod
 	data.TextToVectorize = fmt.Sprintf(VECTOR_DATA_TEMPLATE, data.Title, data.Subtitle, strings.Join(data.Tags, ", "), description)
 	data.DescriptionFromYTAPI = description
 	return data
+}
+func GetFirstSetOfVideos(ctxt context.Context) []models.VideoResponse {
+	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
+	noOfItems, err := strconv.Atoi(noOfItemsStr)
+	if err != nil {
+		noOfItems = 12
+	}
+	channel := make(chan []models.VideoResponse)
+	go GetVideos(ctxt, models.GetVideosRequest{Limit: noOfItems, Offset: 0}, channel)
+	defer close(channel)
+	videos := <-channel
+	return videos
 }

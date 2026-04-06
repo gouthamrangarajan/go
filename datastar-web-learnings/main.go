@@ -50,9 +50,9 @@ func main() {
 	router.Post("/tags/ui", tagsUIHandler)
 	router.Post("/delete", deleteVideoHandler)
 
-	dataRouter.Get("/data/{offset}", landingPageDataHandler)
-	dataRouter.Get("/search/", emptySearchHandler)
-	dataRouter.Get("/search/{query}", searchHandler)
+	dataRouter.Get("/sse", sseHandler)
+	dataRouter.Get("/data", loadMoreHandler)
+	dataRouter.Get("/search", searchHandler)
 	router.Mount("/", dataRouter)
 	http.ListenAndServe(":3000", router)
 }
