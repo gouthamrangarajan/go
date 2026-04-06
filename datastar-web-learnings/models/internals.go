@@ -9,6 +9,8 @@ const (
 	CLEAR_SEARCH_FUNCTIONALITY
 	INVALID_SEARCH_FUNCTIONALITY
 	NO_DATA_FOUND_FUNCTIONALITY
+	ADD_PAGE_UI
+	LANDING_PAGE_UI
 )
 
 type LongSSEData struct {
@@ -16,4 +18,5 @@ type LongSSEData struct {
 	SearchTxt        string
 	OffsetVal        int
 	Data             []VideoResponse
+	UserAgent        string
 }

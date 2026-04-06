@@ -26,15 +26,21 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 		Domain: os.Getenv("FIREBASE_AUTH_DOMAIN"),
 	}
 	if request.Header.Get("Datastar-Request") == "true" {
-		sse := datastar.NewSSE(responseWriter, request)
-		sse.PatchElementTempl(components.LandingMain(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
-		sse.PatchElementTempl(components.AddVideoButton(), datastar.WithUseViewTransitions(true))
+		var clientSignal models.UISignals
+		datastar.ReadSignals(request, &clientSignal)
+		if sessionSidChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
+			sessionSidChannel.(chan models.LongSSEData) <- models.LongSSEData{
+				FunctionalityVal: models.LANDING_PAGE_UI,
+				SearchTxt:        clientSignal.SearchTxt,
+			}
+		}
 		return
 	}
 	newSid := uuid.New().String()
 	sidMap.Store(newSid, make(chan models.LongSSEData))
 	components.Landing(firebaseConfig, newSid).Render(request.Context(), responseWriter)
 }
+
 func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var clientSignal models.UISignals
 	datastar.ReadSignals(request, &clientSignal)
@@ -79,6 +85,16 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			case models.NO_DATA_FOUND_FUNCTIONALITY:
 				noDataFoundUI(sse)
 				removeLoadMoreUI(sse)
+			case models.ADD_PAGE_UI:
+				addPageUi(sse)
+			case models.LANDING_PAGE_UI:
+				landingPageUI(sse)
+				if strings.TrimSpace(sseData.SearchTxt) == "" {
+					videos = services.GetFirstSetOfVideos(sse.Context())
+					loadVideosWithOffsetUI(models.LongSSEData{Data: videos, OffsetVal: 0}, false, sse)
+				} else {
+					searchUIForFirstSetData(sse, strings.TrimSpace(sseData.SearchTxt))
+				}
 			}
 		}
 	}
@@ -176,6 +192,10 @@ func searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query strin
 	loadVideosWithOffsetUI(models.LongSSEData{Data: videos, OffsetVal: 0, SearchTxt: query}, false, sse)
 	removeLoadMoreUI(sse)
 }
+func landingPageUI(sse *datastar.ServerSentEventGenerator) {
+	sse.PatchElementTempl(components.LandingMainWithoutLoad(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.AddVideoButton(), datastar.WithUseViewTransitions(true))
+}
 func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var clientSignal models.UISignals
 	datastar.ReadSignals(request, &clientSignal)
@@ -262,13 +282,19 @@ func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, channel)
 		isValidToken := <-channel
 		if isValidToken {
-			sse := datastar.NewSSE(responseWriter, request)
-			sse.PatchElementTempl(components.AddVideo(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
-			sse.PatchElementTempl(components.HomeButton(), datastar.WithUseViewTransitions(true))
+			if sessionSidChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+				sessionSidChannel.(chan models.LongSSEData) <- models.LongSSEData{
+					FunctionalityVal: models.ADD_PAGE_UI,
+				}
+			}
 			return
 		}
 	}
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+}
+func addPageUi(sse *datastar.ServerSentEventGenerator) {
+	sse.PatchElementTempl(components.AddVideo(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
+	sse.PatchElementTempl(components.HomeButton(), datastar.WithUseViewTransitions(true))
 }
 func tagsUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userAgent := request.Header.Get("User-Agent")

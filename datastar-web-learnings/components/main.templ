@@ -104,6 +104,30 @@ templ LandingMain() {
 	</main>
 }
 
+templ LandingMainWithoutLoad() {
+	<main
+		class="mt-1 px-4 py-2 pb-24 overflow-x-hidden h-[91.5vh] overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
+		data-signals={ `
+						{ _activeInlinePlayerVideoId:null,videoToDelete:'',showDeleteConfirm:false,
+						  _dockedPlayerVideoId:null,_dockedPlayer:null,isDockedPlayerActive:false,
+						  _dockedPlayerDurationToStart:0,offset:0,
+						}
+					 ` }
+		data-on-inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
+		data-on-docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId=null;"
+		data-on-docked-video-stopped="$_isDockedPlayerActive=false;"
+	>
+		@searchInput()
+		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
+		<div class="py-10">
+			@loader("$_loading")
+		</div>
+		@dockedPlayer()
+		@login()
+		@confirmDelete()
+	</main>
+}
+
 templ searchInput() {
 	<form
 		class="flex items-stretch w-full md:w-7/12 lg:w-6/12 xl:w-5/12"
