@@ -28,10 +28,18 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 	if request.Header.Get("Datastar-Request") == "true" {
 		var clientSignal models.UISignals
 		datastar.ReadSignals(request, &clientSignal)
-		if sessionSidChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
-			sessionSidChannel.(chan models.LongSSEData) <- models.LongSSEData{
+		if sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
+			var videos []models.VideoResponse
+			if strings.TrimSpace(clientSignal.SearchTxt) == "" {
+				videos = services.GetFirstSetOfVideos(request.Context())
+			}
+			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.LANDING_PAGE_UI,
 				SearchTxt:        clientSignal.SearchTxt,
+				Data:             videos,
+			}
+			if strings.TrimSpace(clientSignal.SearchTxt) != "" {
+				services.SearchVideosAndSendDataToChannel(clientSignal.SearchTxt, sessionSseChannel.(chan models.LongSSEData), request.Context())
 			}
 		}
 		return
@@ -87,14 +95,10 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				removeLoadMoreUI(sse)
 			case models.ADD_PAGE_UI:
 				addPageUi(sse)
+			case models.TAGS_UI:
+				tagsUI(sse, sseData)
 			case models.LANDING_PAGE_UI:
-				landingPageUI(sse)
-				if strings.TrimSpace(sseData.SearchTxt) == "" {
-					videos = services.GetFirstSetOfVideos(sse.Context())
-					loadVideosWithOffsetUI(models.LongSSEData{Data: videos, OffsetVal: 0}, false, sse)
-				} else {
-					searchUIForFirstSetData(sse, strings.TrimSpace(sseData.SearchTxt))
-				}
+				landingPageUI(sse, sseData)
 			}
 		}
 	}
@@ -192,9 +196,14 @@ func searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query strin
 	loadVideosWithOffsetUI(models.LongSSEData{Data: videos, OffsetVal: 0, SearchTxt: query}, false, sse)
 	removeLoadMoreUI(sse)
 }
-func landingPageUI(sse *datastar.ServerSentEventGenerator) {
+func landingPageUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	sse.PatchElementTempl(components.LandingMainWithoutLoad(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
 	sse.PatchElementTempl(components.AddVideoButton(), datastar.WithUseViewTransitions(true))
+
+	loadVideosWithOffsetUI(models.LongSSEData{Data: sseData.Data, OffsetVal: 0}, false, sse)
+	if strings.TrimSpace(sseData.SearchTxt) != "" {
+		removeLoadMoreUI(sse)
+	}
 }
 func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var clientSignal models.UISignals
@@ -210,53 +219,7 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 			return
 		}
-		aIResponseChannel := make(chan string)
-		defer close(aIResponseChannel)
-		go services.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query, aIResponseChannel)
-		aIResponse := <-aIResponseChannel
-		if aIResponse == "" {
-			fmt.Printf("Query not related to technology topics: %v\n", query)
-			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-				FunctionalityVal: models.INVALID_SEARCH_FUNCTIONALITY,
-			}
-			return
-		}
-		vectorChannel := make(chan models.VoyageEmbeddingResponse)
-		defer close(vectorChannel)
-		go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{aIResponse}}, vectorChannel)
-		vectorResponse := <-vectorChannel
-		if len(vectorResponse.Data) == 0 || len(vectorResponse.Data[0].Embedding) == 0 {
-			fmt.Printf("No embedding vector received from ai for %v\n", query)
-			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
-			}
-			return
-		}
-		pineconeChannel := make(chan []string)
-		defer close(pineconeChannel)
-		go services.QueryPineconeDb(vectorResponse.Data[0].Embedding, pineconeChannel)
-		videoIds := <-pineconeChannel
-		if len(videoIds) == 0 {
-			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
-			}
-			return
-		}
-		dbChannel := make(chan []models.VideoResponse)
-		defer close(dbChannel)
-		go services.FilterVideos(request.Context(), videoIds, dbChannel)
-		videos := <-dbChannel
-		if len(videos) == 0 {
-			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
-			}
-			return
-		}
-		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-			FunctionalityVal: models.SEARCH_FUNCTIONALITY,
-			SearchTxt:        query,
-			Data:             videos,
-		}
+		services.SearchVideosAndSendDataToChannel(query, sessionSseChannel.(chan models.LongSSEData), request.Context())
 	}
 
 }
@@ -282,8 +245,8 @@ func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, channel)
 		isValidToken := <-channel
 		if isValidToken {
-			if sessionSidChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
-				sessionSidChannel.(chan models.LongSSEData) <- models.LongSSEData{
+			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 					FunctionalityVal: models.ADD_PAGE_UI,
 				}
 			}
@@ -296,17 +259,24 @@ func addPageUi(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.AddVideo(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
 	sse.PatchElementTempl(components.HomeButton(), datastar.WithUseViewTransitions(true))
 }
-func tagsUIHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func tagsHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userAgent := request.Header.Get("User-Agent")
+	var uiSignals models.UISignals
+	datastar.ReadSignals(request, &uiSignals)
+	if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+			FunctionalityVal: models.TAGS_UI,
+			Tags:             uiSignals.Tags,
+			UserAgent:        userAgent,
+		}
+	}
+}
+func tagsUI(sse *datastar.ServerSentEventGenerator, data models.LongSSEData) {
 	useViewTransition := true
-	if strings.Contains(strings.ToLower(userAgent), "mobile") {
+	if strings.Contains(strings.ToLower(data.UserAgent), "mobile") {
 		useViewTransition = false
 	}
-	uiSignalsBytes, _ := io.ReadAll(request.Body)
-	uiSignals := models.UISignals{}
-	_ = json.Unmarshal(uiSignalsBytes, &uiSignals)
-	sse := datastar.NewSSE(responseWriter, request)
-	sse.PatchElementTempl(components.TagsList(uiSignals.Tags), datastar.WithUseViewTransitions(useViewTransition))
+	sse.PatchElementTempl(components.TagsList(data.Tags), datastar.WithUseViewTransitions(useViewTransition))
 }
 
 func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) {

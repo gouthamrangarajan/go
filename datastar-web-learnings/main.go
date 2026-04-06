@@ -47,7 +47,7 @@ func main() {
 	router.Get("/", landingPageHandler)
 	router.Get("/add", addPageHandler)
 	router.Post("/add", addVideoHandler)
-	router.Post("/tags/ui", tagsUIHandler)
+	router.Post("/tags/ui", tagsHandler)
 	router.Post("/delete", deleteVideoHandler)
 
 	dataRouter.Get("/sse", sseHandler)

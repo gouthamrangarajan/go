@@ -11,6 +11,7 @@ const (
 	NO_DATA_FOUND_FUNCTIONALITY
 	ADD_PAGE_UI
 	LANDING_PAGE_UI
+	TAGS_UI
 )
 
 type LongSSEData struct {
@@ -19,4 +20,5 @@ type LongSSEData struct {
 	OffsetVal        int
 	Data             []VideoResponse
 	UserAgent        string
+	Tags             []string
 }

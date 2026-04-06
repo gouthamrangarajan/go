@@ -136,3 +136,53 @@ func GetFirstSetOfVideos(ctxt context.Context) []models.VideoResponse {
 	videos := <-channel
 	return videos
 }
+
+func SearchVideosAndSendDataToChannel(query string, sessionSseChannel chan models.LongSSEData, ctxt context.Context) {
+	aIResponseChannel := make(chan string)
+	defer close(aIResponseChannel)
+	go VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query, aIResponseChannel)
+	aIResponse := <-aIResponseChannel
+	if aIResponse == "" {
+		fmt.Printf("Query not related to technology topics: %v\n", query)
+		sessionSseChannel <- models.LongSSEData{
+			FunctionalityVal: models.INVALID_SEARCH_FUNCTIONALITY,
+		}
+		return
+	}
+	vectorChannel := make(chan models.VoyageEmbeddingResponse)
+	defer close(vectorChannel)
+	go CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{aIResponse}}, vectorChannel)
+	vectorResponse := <-vectorChannel
+	if len(vectorResponse.Data) == 0 || len(vectorResponse.Data[0].Embedding) == 0 {
+		fmt.Printf("No embedding vector received from ai for %v\n", query)
+		sessionSseChannel <- models.LongSSEData{
+			FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
+		}
+		return
+	}
+	pineconeChannel := make(chan []string)
+	defer close(pineconeChannel)
+	go QueryPineconeDb(vectorResponse.Data[0].Embedding, pineconeChannel)
+	videoIds := <-pineconeChannel
+	if len(videoIds) == 0 {
+		sessionSseChannel <- models.LongSSEData{
+			FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
+		}
+		return
+	}
+	dbChannel := make(chan []models.VideoResponse)
+	defer close(dbChannel)
+	go FilterVideos(ctxt, videoIds, dbChannel)
+	videos := <-dbChannel
+	if len(videos) == 0 {
+		sessionSseChannel <- models.LongSSEData{
+			FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
+		}
+		return
+	}
+	sessionSseChannel <- models.LongSSEData{
+		FunctionalityVal: models.SEARCH_FUNCTIONALITY,
+		SearchTxt:        query,
+		Data:             videos,
+	}
+}
