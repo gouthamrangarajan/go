@@ -4,9 +4,7 @@ import (
 	"datastar-web-learnings/components"
 	"datastar-web-learnings/models"
 	"datastar-web-learnings/services"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -80,6 +78,8 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			return
 		case sseData := <-sessionSseChannel.(chan models.LongSSEData):
 			switch sseData.FunctionalityVal {
+			case models.LANDING_PAGE_UI:
+				landingPageUI(sse, sseData)
 			case models.LOAD_MORE_FUNCTIONALITY:
 				loadVideosWithOffsetUI(sseData, true, sse)
 			case models.SEARCH_FUNCTIONALITY:
@@ -97,8 +97,16 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				addPageUi(sse)
 			case models.TAGS_UI:
 				tagsUI(sse, sseData)
-			case models.LANDING_PAGE_UI:
-				landingPageUI(sse, sseData)
+			case models.ADD_VIDEO_VALIDATION_ERROR_FUNCTIONALITY:
+				addVideoValidationErrorUI(sse, sseData)
+			case models.ADD_VIDEO_SUCCESS_FUNCTIONALITY:
+				addVideoSuccessUI(sse, sseData)
+			case models.ADD_VIDEO_ERROR_FUNCTIONALITY:
+				addVideoErrorUI(sse, sseData)
+			case models.DELETE_VIDEO_SUCCESS_FUNCTIONALITY:
+				deleteVideoSuccessUI(sse, sseData)
+			case models.DELETE_VIDEO_ERROR_FUNCTIONALITY:
+				deleteVideoErrorUI(sse)
 			}
 		}
 	}
@@ -236,10 +244,9 @@ func removeLoadMoreUI(sse *datastar.ServerSentEventGenerator) {
 }
 
 func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	uiSignalsString := request.URL.Query().Get("datastar")
 	var uiSignals models.UISignals
-	err := json.Unmarshal([]byte(uiSignalsString), &uiSignals)
-	if err == nil && uiSignals.IdToken != "" {
+	datastar.ReadSignals(request, &uiSignals)
+	if uiSignals.IdToken != "" {
 		channel := make(chan bool)
 		defer close(channel)
 		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, channel)
@@ -281,20 +288,15 @@ func tagsUI(sse *datastar.ServerSentEventGenerator, data models.LongSSEData) {
 
 func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userAgent := request.Header.Get("User-Agent")
-	useViewTransition := true
-	if strings.Contains(strings.ToLower(userAgent), "mobile") {
-		useViewTransition = false
-	}
-	uiSignalsBytes, err := io.ReadAll(request.Body)
-	if err == nil {
-		var uiSignals models.UISignals
-		err = json.Unmarshal(uiSignalsBytes, &uiSignals)
-		if err == nil && uiSignals.IdToken != "" {
-			verifyTokenChannel := make(chan bool)
-			defer close(verifyTokenChannel)
-			go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
-			isValidToken := <-verifyTokenChannel
-			if isValidToken {
+	var uiSignals models.UISignals
+	datastar.ReadSignals(request, &uiSignals)
+	if uiSignals.IdToken != "" {
+		verifyTokenChannel := make(chan bool)
+		defer close(verifyTokenChannel)
+		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
+		isValidToken := <-verifyTokenChannel
+		if isValidToken {
+			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
 				// fmt.Printf("received add video request: %v\n", uiSignals)
 				errorMessages := []string{}
 				errorSignals := ""
@@ -332,10 +334,14 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 						errorSignals += "videoIdError:true,"
 					}
 				}
-				sse := datastar.NewSSE(responseWriter, request)
+				// sse := datastar.NewSSE(responseWriter, request)
 				if len(errorMessages) > 0 {
-					sse.PatchElementTempl(components.AddVideoValidationError(errorMessages), datastar.WithUseViewTransitions(useViewTransition))
-					sse.PatchSignals([]byte(`{` + errorSignals + `}`))
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal:      models.ADD_VIDEO_VALIDATION_ERROR_FUNCTIONALITY,
+						AddVideoErrorMessages: errorMessages,
+						AddVideoErrorsignals:  errorSignals,
+						UserAgent:             userAgent,
+					}
 					return
 				}
 
@@ -344,10 +350,12 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 				go services.UpsertVideo(uiSignals, saveToDbChannel)
 				success := <-saveToDbChannel
 				if success {
-					sse.PatchElementTempl(components.AddVideoSuccessResult(), datastar.WithUseViewTransitions(useViewTransition))
-					sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1}`))
-					sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(useViewTransition))
-
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal:      models.ADD_VIDEO_SUCCESS_FUNCTIONALITY,
+						AddVideoErrorMessages: []string{},
+						AddVideoErrorsignals:  "",
+						UserAgent:             userAgent,
+					}
 					deleteDocIdAndVideoIdNotMatchChannel := make(chan bool)
 					defer close(deleteDocIdAndVideoIdNotMatchChannel)
 					go services.CheckAndDeleteIfDocIdAndVideoIdAreNotSame(uiSignals.VideoId, deleteDocIdAndVideoIdNotMatchChannel)
@@ -371,50 +379,94 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					}
 					<-deleteDocIdAndVideoIdNotMatchChannel
 				} else {
-					sse.PatchElementTempl(components.AddVideoErrorResult(), datastar.WithUseViewTransitions(useViewTransition))
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal:      models.ADD_VIDEO_ERROR_FUNCTIONALITY,
+						AddVideoErrorMessages: []string{},
+						AddVideoErrorsignals:  "",
+						UserAgent:             userAgent,
+					}
 				}
-				return
 			}
+			return
 		}
 	}
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 }
 
+func addVideoValidationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	useViewTransition := true
+	if strings.Contains(strings.ToLower(sseData.UserAgent), "mobile") {
+		useViewTransition = false
+	}
+	sse.PatchElementTempl(components.AddVideoValidationError(sseData.AddVideoErrorMessages), datastar.WithUseViewTransitions(useViewTransition))
+	sse.PatchSignals([]byte(`{` + sseData.AddVideoErrorsignals + `}`))
+}
+func addVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	useViewTransition := true
+	if strings.Contains(strings.ToLower(sseData.UserAgent), "mobile") {
+		useViewTransition = false
+	}
+	sse.PatchElementTempl(components.AddVideoSuccessResult(), datastar.WithUseViewTransitions(useViewTransition))
+	sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1}`))
+	sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(useViewTransition))
+}
+func addVideoErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	useViewTransition := true
+	if strings.Contains(strings.ToLower(sseData.UserAgent), "mobile") {
+		useViewTransition = false
+	}
+	sse.PatchElementTempl(components.AddVideoErrorResult(), datastar.WithUseViewTransitions(useViewTransition))
+
+}
 func deleteVideoHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	uiSignalsBytes, err := io.ReadAll(request.Body)
-	if err == nil {
-		var uiSignals models.UISignals
-		err = json.Unmarshal(uiSignalsBytes, &uiSignals)
-		if err == nil && uiSignals.IdToken != "" {
-			verifyTokenChannel := make(chan bool)
-			defer close(verifyTokenChannel)
-			go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
-			isValidToken := <-verifyTokenChannel
-			if isValidToken {
-				if uiSignals.VideoToDelete == "" {
-					http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
-					return
-				}
-				sse := datastar.NewSSE(responseWriter, request)
+	var uiSignals models.UISignals
+	datastar.ReadSignals(request, &uiSignals)
+	if uiSignals.IdToken != "" {
+		verifyTokenChannel := make(chan bool)
+		defer close(verifyTokenChannel)
+		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
+		isValidToken := <-verifyTokenChannel
+		if isValidToken {
+			if uiSignals.VideoToDelete == "" {
+				http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+				return
+			}
+			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
 				deleteVideoChannel := make(chan bool)
 				defer close(deleteVideoChannel)
 				go services.DeleteVideo(uiSignals.VideoToDelete, deleteVideoChannel)
 				success := <-deleteVideoChannel
 				if success {
-					sse.PatchElementTempl(components.EmptyDeleteVideoResult(), datastar.WithUseViewTransitions(true))
-					sse.PatchSignals([]byte(`{videoToDelete:'',showDeleteConfirm:false}`))
-					time.Sleep(200 * time.Millisecond) //wait for UI animation
-					sse.RemoveElement("#playerContainer_"+uiSignals.VideoToDelete+"_"+uiSignals.SearchTxt, datastar.WithUseViewTransitions(true))
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.DELETE_VIDEO_SUCCESS_FUNCTIONALITY,
+						SearchTxt:        uiSignals.SearchTxt,
+						VideoDeleted:     uiSignals.VideoToDelete,
+					}
 					deletePineconeRecordChannel := make(chan bool)
 					defer close(deletePineconeRecordChannel)
 					go services.DeleteRecordPineconeDb(uiSignals.VideoToDelete, deletePineconeRecordChannel)
 					<-deletePineconeRecordChannel
 				} else {
-					sse.PatchElementTempl(components.DeleteVideoErrorResult(), datastar.WithUseViewTransitions(false))
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.DELETE_VIDEO_ERROR_FUNCTIONALITY,
+						SearchTxt:        uiSignals.SearchTxt,
+						VideoDeleted:     uiSignals.VideoToDelete,
+					}
 				}
 			}
-
+			return
 		}
 	}
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+}
+
+func deleteVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	sse.PatchElementTempl(components.EmptyDeleteVideoResult(), datastar.WithUseViewTransitions(true))
+	sse.PatchSignals([]byte(`{videoToDelete:'',showDeleteConfirm:false}`))
+	time.Sleep(200 * time.Millisecond) //wait for UI animation
+	sse.RemoveElement("#playerContainer_"+sseData.VideoDeleted+"_"+sseData.SearchTxt, datastar.WithUseViewTransitions(true))
+}
+
+func deleteVideoErrorUI(sse *datastar.ServerSentEventGenerator) {
+	sse.PatchElementTempl(components.DeleteVideoErrorResult(), datastar.WithUseViewTransitions(false))
 }
