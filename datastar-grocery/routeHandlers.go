@@ -72,7 +72,6 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 	for {
 		select {
 		case <-r.Context().Done():
-			defer close(session.(chan models.LongSSEChannelData))
 			changeSignalMap.Delete(ClientSignals.SId)
 			return
 
