@@ -133,7 +133,6 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	for {
 		select {
 		case <-request.Context().Done():
-			close(userSession.(chan models.LongSSEData))
 			uiSidMap.Delete(userSessionKey)
 			return
 
