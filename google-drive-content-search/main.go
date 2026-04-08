@@ -78,7 +78,6 @@ func main() {
 		for {
 			select {
 			case <-request.Context().Done():
-				close(session.(chan []models.DocumentChunk))
 				idMap.Delete(clientSignals.Id)
 				return
 			case dbResults := <-session.(chan []models.DocumentChunk):
