@@ -73,7 +73,6 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	for {
 		select {
 		case <-request.Context().Done():
-			close(sessionSseChannel.(chan models.LongSSEData))
 			sidMap.Delete(clientSignal.Sid)
 			return
 		case sseData := <-sessionSseChannel.(chan models.LongSSEData):
