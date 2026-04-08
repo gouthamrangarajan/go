@@ -107,7 +107,6 @@ func main() {
 		for {
 			select {
 			case <-request.Context().Done():
-				close(session.(chan []models.DemoItem))
 				idMap.Delete(clientSignal.Id)
 				return
 			case searchResults := <-session.(chan []models.DemoItem):
