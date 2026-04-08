@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"datastar-web-learnings/components"
 	"datastar-web-learnings/models"
 	"datastar-web-learnings/services"
@@ -26,19 +27,19 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 	if request.Header.Get("Datastar-Request") == "true" {
 		var clientSignal models.UISignals
 		datastar.ReadSignals(request, &clientSignal)
+		var videos []models.VideoResponse
+		if strings.TrimSpace(clientSignal.SearchTxt) == "" {
+			videos = services.GetFirstSetOfVideos(request.Context())
+		}
 		if sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
-			var videos []models.VideoResponse
-			if strings.TrimSpace(clientSignal.SearchTxt) == "" {
-				videos = services.GetFirstSetOfVideos(request.Context())
-			}
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.LANDING_PAGE_UI,
 				SearchTxt:        clientSignal.SearchTxt,
 				Data:             videos,
 			}
-			if strings.TrimSpace(clientSignal.SearchTxt) != "" {
-				services.SearchVideosAndSendDataToChannel(clientSignal.SearchTxt, sessionSseChannel.(chan models.LongSSEData), request.Context())
-			}
+		}
+		if strings.TrimSpace(clientSignal.SearchTxt) != "" {
+			searchVideosAndSendDataToChannel(clientSignal, request.Context())
 		}
 		return
 	}
@@ -115,16 +116,16 @@ func loadMoreHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	var clientSignal models.UISignals
 	datastar.ReadSignals(request, &clientSignal)
 
+	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
+	noOfItems, err := strconv.Atoi(noOfItemsStr)
+	if err != nil {
+		noOfItems = 12
+	}
+	channel := make(chan []models.VideoResponse)
+	defer close(channel)
+	go services.GetVideos(request.Context(), models.GetVideosRequest{Limit: noOfItems, Offset: clientSignal.Offset}, channel)
+	videos := <-channel
 	if sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
-		noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
-		noOfItems, err := strconv.Atoi(noOfItemsStr)
-		if err != nil {
-			noOfItems = 12
-		}
-		channel := make(chan []models.VideoResponse)
-		defer close(channel)
-		go services.GetVideos(request.Context(), models.GetVideosRequest{Limit: noOfItems, Offset: clientSignal.Offset}, channel)
-		videos := <-channel
 		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 			FunctionalityVal: models.LOAD_MORE_FUNCTIONALITY,
 			OffsetVal:        clientSignal.Offset,
@@ -217,17 +218,17 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	datastar.ReadSignals(request, &clientSignal)
 	query := strings.TrimSpace(clientSignal.SearchTxt)
 	// fmt.Printf("Search query received: %v\n", query)
-	if sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
-		if query == "" {
-			videos := services.GetFirstSetOfVideos(request.Context())
+	if query == "" {
+		videos := services.GetFirstSetOfVideos(request.Context())
+		if sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.CLEAR_SEARCH_FUNCTIONALITY,
 				Data:             videos,
 			}
 			return
 		}
-		services.SearchVideosAndSendDataToChannel(query, sessionSseChannel.(chan models.LongSSEData), request.Context())
 	}
+	searchVideosAndSendDataToChannel(clientSignal, request.Context())
 
 }
 
@@ -240,6 +241,65 @@ func invalidSearchUI(sse *datastar.ServerSentEventGenerator) {
 
 func removeLoadMoreUI(sse *datastar.ServerSentEventGenerator) {
 	sse.ExecuteScript("document.getElementById('loadMore')?.remove();", datastar.WithExecuteScriptAutoRemove(true))
+}
+func searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Context) {
+	aIResponseChannel := make(chan string)
+	defer close(aIResponseChannel)
+	go services.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(data.SearchTxt, aIResponseChannel)
+	aIResponse := <-aIResponseChannel
+	if aIResponse == "" {
+		fmt.Printf("Query not related to technology topics: %v\n", data.SearchTxt)
+		if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+				FunctionalityVal: models.INVALID_SEARCH_FUNCTIONALITY,
+			}
+		}
+		return
+	}
+	vectorChannel := make(chan models.VoyageEmbeddingResponse)
+	defer close(vectorChannel)
+	go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{aIResponse}}, vectorChannel)
+	vectorResponse := <-vectorChannel
+	if len(vectorResponse.Data) == 0 || len(vectorResponse.Data[0].Embedding) == 0 {
+		fmt.Printf("No embedding vector received from ai for %v\n", data.SearchTxt)
+		if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
+			}
+		}
+		return
+	}
+	pineconeChannel := make(chan []string)
+	defer close(pineconeChannel)
+	go services.QueryPineconeDb(vectorResponse.Data[0].Embedding, pineconeChannel)
+	videoIds := <-pineconeChannel
+	if len(videoIds) == 0 {
+		if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
+			}
+		}
+		return
+	}
+	dbChannel := make(chan []models.VideoResponse)
+	defer close(dbChannel)
+	go services.FilterVideos(ctxt, videoIds, dbChannel)
+	videos := <-dbChannel
+	if len(videos) == 0 {
+		if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
+			}
+		}
+		return
+	}
+	if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+			FunctionalityVal: models.SEARCH_FUNCTIONALITY,
+			SearchTxt:        data.SearchTxt,
+			Data:             videos,
+		}
+	}
 }
 
 func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -295,95 +355,97 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
 		isValidToken := <-verifyTokenChannel
 		if isValidToken {
-			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
-				// fmt.Printf("received add video request: %v\n", uiSignals)
-				errorMessages := []string{}
-				errorSignals := ""
-				if len(strings.TrimSpace(uiSignals.Title)) < 3 {
-					errorMessages = append(errorMessages, "Please enter a title of at least 3 characters.")
-					errorSignals += "titleError:true,"
+			// fmt.Printf("received add video request: %v\n", uiSignals)
+			errorMessages := []string{}
+			errorSignals := ""
+			if len(strings.TrimSpace(uiSignals.Title)) < 3 {
+				errorMessages = append(errorMessages, "Please enter a title of at least 3 characters.")
+				errorSignals += "titleError:true,"
+			}
+			trimmedTags := []string{}
+			for _, tag := range uiSignals.Tags {
+				trimmedTag := strings.TrimSpace(tag)
+				if trimmedTag != "" {
+					trimmedTags = append(trimmedTags, trimmedTag)
 				}
-				trimmedTags := []string{}
-				for _, tag := range uiSignals.Tags {
-					trimmedTag := strings.TrimSpace(tag)
-					if trimmedTag != "" {
-						trimmedTags = append(trimmedTags, trimmedTag)
-					}
-				}
-				if len(trimmedTags) == 0 {
-					errorMessages = append(errorMessages, "Please add at least one meaningful tag to describe your video.")
-					errorSignals += "tagsError:true,"
-				}
-				if uiSignals.Rank < 1 || uiSignals.Rank > 5 {
-					errorMessages = append(errorMessages, "Please enter a valid rank between 1 and 5.")
-					errorSignals += "rankError:true,"
-				}
-				if len(strings.TrimSpace(uiSignals.VideoId)) != 11 {
+			}
+			if len(trimmedTags) == 0 {
+				errorMessages = append(errorMessages, "Please add at least one meaningful tag to describe your video.")
+				errorSignals += "tagsError:true,"
+			}
+			if uiSignals.Rank < 1 || uiSignals.Rank > 5 {
+				errorMessages = append(errorMessages, "Please enter a valid rank between 1 and 5.")
+				errorSignals += "rankError:true,"
+			}
+			if len(strings.TrimSpace(uiSignals.VideoId)) != 11 {
+				errorMessages = append(errorMessages, "Please enter a valid YouTube video ID.")
+				errorSignals += "videoIdError:true,"
+			}
+			var ytResponse models.YoutubeVideoSearchResponse
+			if len(errorMessages) == 0 {
+				ytVideoSearchChannel := make(chan models.YoutubeVideoSearchResponse)
+				defer close(ytVideoSearchChannel)
+				go services.GetYTVideoResponse(uiSignals.VideoId, ytVideoSearchChannel)
+				ytResponse = <-ytVideoSearchChannel
+				if len(ytResponse.Items) == 0 || ytResponse.Items[0].Id == "" {
 					errorMessages = append(errorMessages, "Please enter a valid YouTube video ID.")
 					errorSignals += "videoIdError:true,"
 				}
-				var ytResponse models.YoutubeVideoSearchResponse
-				if len(errorMessages) == 0 {
-					ytVideoSearchChannel := make(chan models.YoutubeVideoSearchResponse)
-					defer close(ytVideoSearchChannel)
-					go services.GetYTVideoResponse(uiSignals.VideoId, ytVideoSearchChannel)
-					ytResponse = <-ytVideoSearchChannel
-					if len(ytResponse.Items) == 0 || ytResponse.Items[0].Id == "" {
-						errorMessages = append(errorMessages, "Please enter a valid YouTube video ID.")
-						errorSignals += "videoIdError:true,"
-					}
-				}
-				// sse := datastar.NewSSE(responseWriter, request)
-				if len(errorMessages) > 0 {
+			}
+			// sse := datastar.NewSSE(responseWriter, request)
+			if len(errorMessages) > 0 {
+				if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal:      models.ADD_VIDEO_VALIDATION_ERROR_FUNCTIONALITY,
 						AddVideoErrorMessages: errorMessages,
 						AddVideoErrorsignals:  errorSignals,
 						UserAgent:             userAgent,
 					}
-					return
 				}
+				return
+			}
 
-				saveToDbChannel := make(chan bool)
-				defer close(saveToDbChannel)
-				go services.UpsertVideo(uiSignals, saveToDbChannel)
-				success := <-saveToDbChannel
-				if success {
+			saveToDbChannel := make(chan bool)
+			defer close(saveToDbChannel)
+			go services.UpsertVideo(uiSignals, saveToDbChannel)
+			success := <-saveToDbChannel
+			if success {
+				if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal:      models.ADD_VIDEO_SUCCESS_FUNCTIONALITY,
 						AddVideoErrorMessages: []string{},
 						AddVideoErrorsignals:  "",
 						UserAgent:             userAgent,
 					}
-					deleteDocIdAndVideoIdNotMatchChannel := make(chan bool)
-					defer close(deleteDocIdAndVideoIdNotMatchChannel)
-					go services.CheckAndDeleteIfDocIdAndVideoIdAreNotSame(uiSignals.VideoId, deleteDocIdAndVideoIdNotMatchChannel)
+				}
+				deleteDocIdAndVideoIdNotMatchChannel := make(chan bool)
+				defer close(deleteDocIdAndVideoIdNotMatchChannel)
+				go services.CheckAndDeleteIfDocIdAndVideoIdAreNotSame(uiSignals.VideoId, deleteDocIdAndVideoIdNotMatchChannel)
 
-					dataToVectorize := models.VideoResponse{
-						Title:    uiSignals.Title,
-						Subtitle: uiSignals.Subtitle,
-						Tags:     trimmedTags,
-					}
-					dataToVectorize = services.ConstructTextToVectorize(dataToVectorize, ytResponse.Items[0].Snippet.Description)
-					vectorChannel := make(chan models.VoyageEmbeddingResponse)
-					defer close(vectorChannel)
-					go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{dataToVectorize.TextToVectorize}}, vectorChannel)
-					vectorData := <-vectorChannel
-					if len(vectorData.Data) != 0 && len(vectorData.Data[0].Embedding) != 0 {
-						upsertPineconeChannel := make(chan int)
-						defer close(upsertPineconeChannel)
-						go services.UpsertPineconeDb(uiSignals.VideoId, vectorData.Data[0].Embedding, upsertPineconeChannel)
-						<-upsertPineconeChannel
-						// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", dataToVectorize.TextToVectorize)
-					}
-					<-deleteDocIdAndVideoIdNotMatchChannel
-				} else {
-					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-						FunctionalityVal:      models.ADD_VIDEO_ERROR_FUNCTIONALITY,
-						AddVideoErrorMessages: []string{},
-						AddVideoErrorsignals:  "",
-						UserAgent:             userAgent,
-					}
+				dataToVectorize := models.VideoResponse{
+					Title:    uiSignals.Title,
+					Subtitle: uiSignals.Subtitle,
+					Tags:     trimmedTags,
+				}
+				dataToVectorize = services.ConstructTextToVectorize(dataToVectorize, ytResponse.Items[0].Snippet.Description)
+				vectorChannel := make(chan models.VoyageEmbeddingResponse)
+				defer close(vectorChannel)
+				go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{dataToVectorize.TextToVectorize}}, vectorChannel)
+				vectorData := <-vectorChannel
+				if len(vectorData.Data) != 0 && len(vectorData.Data[0].Embedding) != 0 {
+					upsertPineconeChannel := make(chan int)
+					defer close(upsertPineconeChannel)
+					go services.UpsertPineconeDb(uiSignals.VideoId, vectorData.Data[0].Embedding, upsertPineconeChannel)
+					<-upsertPineconeChannel
+					// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", dataToVectorize.TextToVectorize)
+				}
+				<-deleteDocIdAndVideoIdNotMatchChannel
+			} else if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+					FunctionalityVal:      models.ADD_VIDEO_ERROR_FUNCTIONALITY,
+					AddVideoErrorMessages: []string{},
+					AddVideoErrorsignals:  "",
+					UserAgent:             userAgent,
 				}
 			}
 			return
@@ -430,27 +492,27 @@ func deleteVideoHandler(responseWriter http.ResponseWriter, request *http.Reques
 				http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 				return
 			}
-			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
-				deleteVideoChannel := make(chan bool)
-				defer close(deleteVideoChannel)
-				go services.DeleteVideo(uiSignals.VideoToDelete, deleteVideoChannel)
-				success := <-deleteVideoChannel
-				if success {
+			deleteVideoChannel := make(chan bool)
+			defer close(deleteVideoChannel)
+			go services.DeleteVideo(uiSignals.VideoToDelete, deleteVideoChannel)
+			success := <-deleteVideoChannel
+			if success {
+				if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal: models.DELETE_VIDEO_SUCCESS_FUNCTIONALITY,
 						SearchTxt:        uiSignals.SearchTxt,
 						VideoDeleted:     uiSignals.VideoToDelete,
 					}
-					deletePineconeRecordChannel := make(chan bool)
-					defer close(deletePineconeRecordChannel)
-					go services.DeleteRecordPineconeDb(uiSignals.VideoToDelete, deletePineconeRecordChannel)
-					<-deletePineconeRecordChannel
-				} else {
-					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-						FunctionalityVal: models.DELETE_VIDEO_ERROR_FUNCTIONALITY,
-						SearchTxt:        uiSignals.SearchTxt,
-						VideoDeleted:     uiSignals.VideoToDelete,
-					}
+				}
+				deletePineconeRecordChannel := make(chan bool)
+				defer close(deletePineconeRecordChannel)
+				go services.DeleteRecordPineconeDb(uiSignals.VideoToDelete, deletePineconeRecordChannel)
+				<-deletePineconeRecordChannel
+			} else if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+					FunctionalityVal: models.DELETE_VIDEO_ERROR_FUNCTIONALITY,
+					SearchTxt:        uiSignals.SearchTxt,
+					VideoDeleted:     uiSignals.VideoToDelete,
 				}
 			}
 			return
