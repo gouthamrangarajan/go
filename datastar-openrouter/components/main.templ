@@ -19,7 +19,7 @@ templ Main(model models.UIMainModel) {
                             imageGeneration:`+strconv.FormatBool(model.ImageGeneration)+`,
 							fileUploading:false,uiSid:'`+model.UiSid+`' }` }
 			data-init="@post('/sse',{openWhenHidden:true});"
-			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true}"
+			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 		>
 			@menu(model.Sessions, model.MenuSearchTerm)
 			@toggleThemeButton()
