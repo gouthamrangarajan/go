@@ -130,6 +130,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		userSession = make(chan models.LongSSEData)
 		uiSidMap.Store(userSessionKey, userSession)
 	}
+	sse.PatchSignals([]byte(`{showErrorMessage:false}`))
 	for {
 		select {
 		case <-request.Context().Done():
