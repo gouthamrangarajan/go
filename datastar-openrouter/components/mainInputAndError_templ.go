@@ -97,7 +97,7 @@ func inputsAndError(aiModels []models.AIModel) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><p class=\"absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark dark:bg-light py-2 px-4 font-semibold\" data-class=\"{'opacity-70 text-light dark:text-dark':$errorMessage.includes('Reconnecting'),'text-red-300 dark:text-red-600':!$errorMessage.includes('Reconnecting')}\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><p class=\"absolute bottom-4 right-1 z-20 shadow-2xl animate-error-message wrap-break-word rounded-lg bg-dark dark:bg-light py-2 px-4\" data-class=\"{'opacity-70 text-light dark:text-dark':$errorMessage.includes('Reconnecting'),'text-red-300 dark:text-red-600 font-semibold':!$errorMessage.includes('Reconnecting')}\" data-show=\"$showErrorMessage\" data-text=\"$errorMessage\" style=\"display:none\"></p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
