@@ -1089,6 +1089,9 @@
   .underline-offset-6 {
     text-underline-offset: 6px;
   }
+  .opacity-70 {
+    opacity: 70%;
+  }
   .opacity-80 {
     opacity: 80%;
   }
