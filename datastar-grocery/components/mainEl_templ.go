@@ -107,7 +107,7 @@ func SectionEl(data models.MainElData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" data-init=\"@get('/items',{openWhenHidden:true})\" data-on:datastar-fetch__transition=\"if(evt.detail.type === 'retries-failed'){$errorMessage = '⚠️  Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true}\"><div class=\"w-full\" data-show=\"$showErrorMessage\"><p class=\"bg-red-100 text-red-700 font-semibold py-2 px-6 rounded shadow animate-slide-down\" data-text=\"$errorMessage\"></p></div><div class=\"flex flex-col gap-1 md:items-center md:flex-row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" data-init=\"@get('/items',{openWhenHidden:true})\" data-on:datastar-fetch__transition=\"if(evt.detail.type === 'retries-failed'){$errorMessage = '⚠️  Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}\"><div class=\"w-full\" data-show=\"$showErrorMessage\"><p class=\"py-2 px-6 rounded shadow animate-slide-down\" data-class=\"{'bg-red-100 text-red-700 font-semibold':!$errorMessage.includes('Reconnecting'),'opacity-70 text-blue-600':$errorMessage.includes('Reconnecting')}\" data-text=\"$errorMessage\"></p></div><div class=\"flex flex-col gap-1 md:items-center md:flex-row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

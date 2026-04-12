@@ -14,6 +14,7 @@
     --color-green-50: oklch(0.982 0.018 155.826);
     --color-green-600: oklch(0.627 0.194 149.214);
     --color-green-700: oklch(0.527 0.154 150.069);
+    --color-blue-600: oklch(0.546 0.245 262.881);
     --color-purple-300: oklch(0.827 0.119 306.383);
     --color-fuchsia-200: oklch(0.903 0.076 319.62);
     --color-fuchsia-300: oklch(0.833 0.145 321.434);
@@ -438,6 +439,9 @@
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
   }
+  .text-blue-600 {
+    color: var(--color-blue-600);
+  }
   .text-green-600 {
     color: var(--color-green-600);
   }
@@ -467,6 +471,9 @@
   }
   .line-through {
     text-decoration-line: line-through;
+  }
+  .opacity-70 {
+    opacity: 70%;
   }
   .shadow {
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));

@@ -62,6 +62,7 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 	items, _ := tranformGroceryList(groceries, false)
 	sse.PatchElementTempl(components.ItemsUL(items), datastar.WithUseViewTransitions(true))
 	sse.PatchSignals([]byte("{_loadingItems:false}"))
+	sse.PatchSignals([]byte("{showErrorMessage:false}"))
 
 	session, exists := changeSignalMap.Load(ClientSignals.SId)
 	if !exists {

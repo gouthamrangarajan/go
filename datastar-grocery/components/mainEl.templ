@@ -28,10 +28,14 @@ templ SectionEl(data models.MainElData) {
 		id="section"
 		data-signals={ `{sId:'` + data.SId + `',_loadingItems:true,errorMessage:'',showErrorMessage:false}` }
 		data-init="@get('/items',{openWhenHidden:true})"
-		data-on:datastar-fetch__transition="if(evt.detail.type === 'retries-failed'){$errorMessage = '⚠️  Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true}"
+		data-on:datastar-fetch__transition="if(evt.detail.type === 'retries-failed'){$errorMessage = '⚠️  Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 	>
 		<div class="w-full" data-show="$showErrorMessage">
-			<p class="bg-red-100 text-red-700 font-semibold py-2 px-6 rounded shadow animate-slide-down" data-text="$errorMessage"></p>
+			<p
+				class="  py-2 px-6 rounded shadow animate-slide-down"
+				data-class="{'bg-red-100 text-red-700 font-semibold':!$errorMessage.includes('Reconnecting'),'opacity-70 text-blue-600':$errorMessage.includes('Reconnecting')}"
+				data-text="$errorMessage"
+			></p>
 		</div>
 		<div class="flex flex-col gap-1 md:items-center md:flex-row">
 			@addItemForm(data.Location)
