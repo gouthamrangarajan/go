@@ -36,3 +36,9 @@ type UIMainModel struct {
 	MenuSearchTerm   string
 	UiSid            string
 }
+
+type UIToolTipModel struct {
+	DataShowAttribute string
+	Text              string
+	PostionAnchor     string
+}

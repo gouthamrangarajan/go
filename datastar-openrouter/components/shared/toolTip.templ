@@ -1,0 +1,11 @@
+package shared
+
+import "datastar-openrouter/models"
+
+templ ToolTip(data models.UIToolTipModel) {
+	<p
+		class="absolute opacity-70"
+		style={ `position-anchor:` + data.PostionAnchor + ` ;bottom:anchor(top);left:anchor(left);` }
+		data-show={ data.DataShowAttribute }
+	>{ data.Text }</p>
+}
