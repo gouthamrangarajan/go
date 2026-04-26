@@ -219,6 +219,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 			PostionAnchor:     "--file-attachment-button",
 			DataShowAttribute: "$_showFileButtonAnchor",
 			Text:              "Attach Image or PDF",
+			AnchorStyle:       "center:anchor(center);right:anchor(left)",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -231,6 +232,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 			PostionAnchor:     "--search-web-button",
 			DataShowAttribute: "$_showWebSearchAnchor",
 			Text:              "Search Web",
+			AnchorStyle:       "bottom:anchor(top);left:anchor(left)",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -243,6 +245,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 			PostionAnchor:     "--generate-image-button",
 			DataShowAttribute: "$_showGenerateImageAnchor",
 			Text:              "Generate Image",
+			AnchorStyle:       "bottom:anchor(top);left:anchor(left)",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -256,7 +259,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
                     @post("/chat",{openWhenHidden: true});
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 187, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 190, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -311,7 +314,7 @@ func FileAttachmentDisplay(fileName string) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fileNameToDisplay)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 220, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 223, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {

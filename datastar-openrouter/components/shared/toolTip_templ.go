@@ -36,9 +36,9 @@ func ToolTip(data models.UIToolTipModel) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(`position-anchor:` + data.PostionAnchor + ` ;bottom:anchor(top);left:anchor(left);`)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(`position-anchor:` + data.PostionAnchor + ` ;` + data.AnchorStyle + `;`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/toolTip.templ`, Line: 8, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/toolTip.templ`, Line: 8, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {

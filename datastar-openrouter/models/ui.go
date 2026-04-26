@@ -41,4 +41,5 @@ type UIToolTipModel struct {
 	DataShowAttribute string
 	Text              string
 	PostionAnchor     string
+	AnchorStyle       string
 }
