@@ -19,6 +19,7 @@ func main() {
 	} else {
 		fmt.Println("Success loaded .env file")
 	}
+	services.InitDB()
 	fmt.Printf("Starting the session title vector job %v\n...", time.Now())
 	getAllChatSessionsChannel := make(chan []models.ChatSession)
 	defer close(getAllChatSessionsChannel)

@@ -21,6 +21,7 @@ func main() {
 	} else {
 		fmt.Println("Loaded .env file successfully")
 	}
+	services.InitDB()
 	router := chi.NewRouter()
 	promptRouter := chi.NewRouter()
 

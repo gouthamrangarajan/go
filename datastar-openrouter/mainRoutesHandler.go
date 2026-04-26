@@ -665,7 +665,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 	updateTitleCalled := false
 	titleToUpdate := clientSignal.Prompt
 
-	if len(openRouterRequest.Messages) == 1 {
+	if len(openRouterRequest.Messages) == 2 {
 		if strings.TrimSpace(selectedSession.Title) != "New Chat" && strings.TrimSpace(selectedSession.Title) != "" {
 			titleToUpdate = selectedSession.Title
 		}

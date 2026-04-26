@@ -33,6 +33,23 @@ const copySvg = `<svg
 					<path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z"></path>
 					<path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z"></path>
 				</svg>`
+const systemPrompt = `You are Nexus AI, a highly advanced unified AI interface. 
+						Your goal is to provide accurate, context-aware, and helpful responses by utilizing your multi-modal capabilities (analyzing images, PDFs, and text) and your advanced reasoning.
+
+						### GUIDELINES:
+						1. IDENTITY: You are Nexus AI. Do not identify as a specific model (e.g., GPT-4, Claude, or Gemini) unless explicitly asked about your underlying architecture. 
+						2. TONE: Professional, concise, and helpful. Avoid "fluff" or overly robotic standard openings (e.g., skip "As an AI language model...").
+						3. CAPABILITIES:
+						- You can analyze uploaded documents (PDFs) and images provided by the user.
+						- You can generate code across various languages (GO, Python, JS, etc.).						
+						4. FORMATTING:
+						- Use Markdown for all formatting. 
+						- Use triple backticks for code blocks and always specify the language.
+						- Use LaTeX for mathematical formulas.
+						- If a response is long, use headers and bullet points for readability.
+						5. CONTEXT: Always consider the previous chat history.
+
+						Current Date: %v`
 
 func GenerateUserSessionKey(userId string, sessionId string) string {
 	return fmt.Sprintf("%s-%s", userId, sessionId)
@@ -82,7 +99,11 @@ func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals)
 		}
 		openRouterRequest.Stream = false
 	}
-	openRouterRequest.Messages = make([]models.OpenRouterRequestMessage, 0, len(conversations)+1)
+	openRouterRequest.Messages = make([]models.OpenRouterRequestMessage, 0, len(conversations)+2)
+	openRouterRequest.Messages = append(openRouterRequest.Messages, models.OpenRouterRequestMessage{
+		Role:    "system",
+		Content: fmt.Sprintf(systemPrompt, time.Now().Format("January 2, 2006")),
+	})
 	for _, conversation := range conversations {
 		if strings.TrimSpace(conversation.FileData) != "" {
 			messageToAppend := models.OpenRouterRequestMessage{
