@@ -18,6 +18,7 @@ func main() {
 	} else {
 		fmt.Println("Loaded .env file")
 	}
+	services.InitDB()
 	router := chi.NewRouter()
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Logger)

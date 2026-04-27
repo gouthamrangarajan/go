@@ -3,6 +3,7 @@ package services
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -12,16 +13,27 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func createDb(dbUrl string, authToken string) *sql.DB {
+var dbPool *sql.DB
+
+func InitDB() {
+	dbUrl := os.Getenv("TURSO_DATABASE_URL")
+	authToken := os.Getenv("TURSO_AUTH_TOKEN")
 	url := fmt.Sprintf("%v?authToken=%v", dbUrl, authToken)
 
-	db, err := sql.Open("libsql", url)
+	var err error
+	dbPool, err = sql.Open("libsql", url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to open db %s: %s", url, err)
-		os.Exit(1)
+		log.Fatalf("Critical: Could not open DB connection: %v", err)
 	}
-	// defer db.Close()
-	return db
+
+	// NEW: Verify the connection is actually working
+	err = dbPool.Ping()
+	if err != nil {
+		log.Fatalf("Critical: Could not connect to Turso (Ping failed): %v", err)
+	}
+
+	dbPool.SetMaxOpenConns(25)
+	dbPool.SetMaxIdleConns(10)
 }
 
 func GetGroceryList(dbUrl string, authToken string, sort string) []models.Grocery {
@@ -31,11 +43,10 @@ func GetGroceryList(dbUrl string, authToken string, sort string) []models.Grocer
 	} else {
 		sort = fmt.Sprintf(" ORDER BY description COLLATE NOCASE %v", sort)
 	}
-	db := createDb(dbUrl, authToken)
-	defer db.Close()
+
 	var data []models.Grocery = []models.Grocery{}
 	query := "SELECT id,description,quantity,completed FROM grocery WHERE active = true" + sort
-	rows, err := db.Query(query)
+	rows, err := dbPool.Query(query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		return data
@@ -63,10 +74,8 @@ func GetGroceryListViaChannel(databaseUrl string, authToken string, sort string,
 }
 
 func GetGroceryListItem(dbUrl string, authToken string, id int) models.Grocery {
-	db := createDb(dbUrl, authToken)
-	defer db.Close()
 	var data models.Grocery = models.Grocery{}
-	rows, err := db.Query("SELECT id,description,quantity,completed FROM grocery WHERE active = true AND id = ?", id)
+	rows, err := dbPool.Query("SELECT id,description,quantity,completed FROM grocery WHERE active = true AND id = ?", id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
 		return data
@@ -94,9 +103,7 @@ func GetGroceryListItemViaChannel(databaseUrl string, authToken string, id int, 
 }
 
 func InsertGroceryItem(dbUrl string, authToken string, description string, quantity int) int {
-	db := createDb(dbUrl, authToken)
-	defer db.Close()
-	result, err := db.Exec("INSERT INTO grocery (description, quantity) VALUES (?, ?)", description, quantity)
+	result, err := dbPool.Exec("INSERT INTO grocery (description, quantity) VALUES (?, ?)", description, quantity)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
 		return 0
@@ -114,9 +121,7 @@ func InsertGroceryItemViaChannel(databaseUrl string, authToken string, name stri
 }
 
 func DeleteGroceryItem(dbUrl string, authToken string, id int) int {
-	db := createDb(dbUrl, authToken)
-	defer db.Close()
-	result, err := db.Exec("UPDATE grocery SET active = false WHERE id = ?", id)
+	result, err := dbPool.Exec("UPDATE grocery SET active = false WHERE id = ?", id)
 	// result, err := db.Exec("DELETE FROM grocery WHERE id = ?", id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
@@ -135,9 +140,7 @@ func DeleteGroceryItemViaChannel(databaseUrl string, authToken string, id int, c
 }
 
 func UpdateQuantityGroceryItem(dbUrl string, authToken string, id int, quantity int) int {
-	db := createDb(dbUrl, authToken)
-	defer db.Close()
-	result, err := db.Exec("UPDATE grocery SET quantity = ? WHERE id = ?", quantity, id)
+	result, err := dbPool.Exec("UPDATE grocery SET quantity = ? WHERE id = ?", quantity, id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
 		return 0
@@ -155,9 +158,7 @@ func UpdateQuantityGroceryItemViaChannel(databaseUrl string, authToken string, i
 }
 
 func UpdateCompletedFieldGroceryItem(dbUrl string, authToken string, id int, completed bool) int {
-	db := createDb(dbUrl, authToken)
-	defer db.Close()
-	result, err := db.Exec("UPDATE grocery SET completed = ? WHERE id = ?", completed, id)
+	result, err := dbPool.Exec("UPDATE grocery SET completed = ? WHERE id = ?", completed, id)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to execute query: %v\n", err)
 		return 0
