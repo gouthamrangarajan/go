@@ -4,7 +4,7 @@ import "datastar-openrouter/models"
 
 templ ToolTip(data models.UIToolTipModel) {
 	<p
-		class="absolute opacity-80"
+		class="absolute opacity-80 z-10"
 		style={ `position-anchor:` + data.PostionAnchor + ` ;` + data.AnchorStyle + `;` }
 		data-show={ data.DataShowAttribute }
 	>{ data.Text }</p>
