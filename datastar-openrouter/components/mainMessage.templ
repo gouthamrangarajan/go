@@ -101,7 +101,14 @@ templ ChatMessageFileData(message models.ChatConversation, stream bool) {
 			<img
 				src={ message.FileData }
 				id={ "image_" + messageIdStr }
-				alt="generated image"
+				alt={ ` image for ` + messageIdStr }
+				class="w-full h-full"
+			/>
+		} else if message.FileData=="" && stream {
+			<img
+				style="display:none"
+				id={ "image_" + messageIdStr }
+				alt={ ` image for ` + messageIdStr }
 				class="w-full h-full"
 			/>
 		} else if message.FileData=="" && !stream {
@@ -123,13 +130,6 @@ templ ChatMessageFileData(message models.ChatConversation, stream bool) {
 					id={ "image_" + messageIdStr }
 				/>
 			</p>
-		} else if message.FileData=="" && stream {
-			<img
-				style="display:none"
-				id={ "image_" + strconv.Itoa(message.Id) }
-				alt="generated image"
-				class="w-full h-full"
-			/>
 		}
 	}
 }
@@ -139,7 +139,7 @@ templ ChatMessageImageDisplay(messageId int, fileData string) {
 		class="w-[50vh] h-[50vh] absolute top-0 left-0 animate-image z-10 rounded shadow origin-top"
 		src={ fileData }
 		id={ "image_" + strconv.Itoa(messageId) }
-		alt="image"
+		alt={ ` image for ` + strconv.Itoa(messageId) }
 		data-show={ `$showImage_` + strconv.Itoa(messageId) }
 	/>
 }
