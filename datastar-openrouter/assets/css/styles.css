@@ -824,8 +824,8 @@
   .w-11\/12 {
     width: calc(11/12 * 100%);
   }
-  .w-\[50vh\] {
-    width: 50vh;
+  .w-\[50vw\] {
+    width: 50vw;
   }
   .w-full {
     width: 100%;
