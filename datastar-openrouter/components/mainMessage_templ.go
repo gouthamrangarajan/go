@@ -421,7 +421,7 @@ func ChatMessageImageDisplayOnHover(message models.ChatConversation) templ.Compo
 		}
 		ctx = templ.ClearChildren(ctx)
 		messageIdStr := strconv.Itoa(message.Id)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<img class=\"w-auto h-auto max-w-none absolute top-0 left-0 animate-image z-10 rounded shadow origin-top\" src=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<img class=\"w-auto h-auto max-w-screen max-h-screen absolute top-0 left-0 animate-image z-10 rounded shadow origin-top\" src=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

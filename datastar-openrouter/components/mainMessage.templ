@@ -137,7 +137,7 @@ templ ChatMessageFileData(message models.ChatConversation, stream bool) {
 templ ChatMessageImageDisplayOnHover(message models.ChatConversation) {
 	{{ messageIdStr := strconv.Itoa(message.Id) }}
 	<img
-		class="w-auto h-auto max-w-none absolute top-0 left-0 animate-image z-10 rounded shadow origin-top"
+		class="w-auto h-auto max-w-screen max-h-screen absolute top-0 left-0 animate-image z-10 rounded shadow origin-top"
 		src={ message.FileData }
 		id={ "image_" + messageIdStr }
 		alt={ ` image for ` + messageIdStr }
