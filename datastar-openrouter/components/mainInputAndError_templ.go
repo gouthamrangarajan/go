@@ -219,7 +219,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 			PostionAnchor:     "--file-attachment-button",
 			DataShowAttribute: "$_showFileButtonAnchor",
 			Text:              "Attach Image or PDF",
-			AnchorStyle:       "center:anchor(center);right:anchor(left)",
+			AnchorStyle:       "bottom:anchor(top);left:anchor(left)",
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

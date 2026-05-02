@@ -824,6 +824,9 @@
   .w-11\/12 {
     width: calc(11/12 * 100%);
   }
+  .w-\[50vh\] {
+    width: 50vh;
+  }
   .w-full {
     width: 100%;
   }
@@ -835,6 +838,9 @@
   }
   .shrink-0 {
     flex-shrink: 0;
+  }
+  .origin-top {
+    transform-origin: top;
   }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
@@ -1606,6 +1612,19 @@
   to {
     opacity: 1;
     scale: 1;
+  }
+}
+.animate-image {
+  animation: image 0.6s var(--ease-elastic-in-3);
+}
+@keyframes image {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
   }
 }
 .animate-border {

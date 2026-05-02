@@ -222,3 +222,22 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 		channel <- "<div id='markdown_" + strconv.Itoa(conversation.Id) + "' class='prose dark:prose-invert'>" + mkdwn + "</div>"
 	}
 }
+
+func SearchSessionsViaChannel(data models.SearchSessionViaChannelRequest) []models.ChatSession {
+	retVal := []models.ChatSession{}
+	searchSessionsChannel := make(chan []models.ChatSession)
+	defer close(searchSessionsChannel)
+	embeddingsChannel := make(chan models.VoyageEmbeddingResponse)
+	defer close(embeddingsChannel)
+
+	embeddingRequest := models.VoyageEmbeddingRequest{
+		Input: []string{data.SearchTerm},
+	}
+	go CallVoyageEmbedding(embeddingRequest, embeddingsChannel)
+	embeddingResponse := <-embeddingsChannel
+	if len(embeddingResponse.Data) > 0 {
+		go SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
+		retVal = <-searchSessionsChannel
+	}
+	return retVal
+}

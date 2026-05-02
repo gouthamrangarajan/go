@@ -53,6 +53,7 @@ func main() {
 	router.Post("/fileupload", fileUploadHandler)
 	router.Post("/fileupload/remove", removeUploadedFileHandler)
 	router.Post("/retry", retryHandler)
+	router.Post("/image", getImageHandler)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)

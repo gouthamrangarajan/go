@@ -57,9 +57,9 @@ func Main(model models.UIMainModel) templ.Component {
                             showDeleteModal:false,sessionIdToDelete:0,
                             webSearch:` + strconv.FormatBool(model.AllowWebSearch) + `,
                             imageGeneration:` + strconv.FormatBool(model.ImageGeneration) + `,
-							fileUploading:false,uiSid:'` + model.UiSid + `' }`)
+							fileUploading:false,uiSid:'` + model.UiSid + `',messageIdToFetchImage:0 }`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 20, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 20, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {

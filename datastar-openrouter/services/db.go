@@ -200,7 +200,6 @@ func SearchChatSessions(userId string, searchVector []float32, channel chan<- []
 	channel <- data
 }
 func InsertChatSession(userId string, data models.ChatSession, channel chan<- int) {
-
 	result, err := dbPool.Exec("INSERT INTO chat_sessions (user_id,title,allow_web_search,img_generation,created_at) VALUES (?, ?,?,?,?)", userId, data.Title, data.AllowWebSearch, data.ImageGeneration, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("Failed to execute query in InsertChatSession: %v\n", err.Error())
@@ -217,7 +216,6 @@ func InsertChatSession(userId string, data models.ChatSession, channel chan<- in
 }
 
 func UpdateChatSessionTitle(userId string, data models.ChatSession, channel chan<- int) {
-
 	result, err := dbPool.Exec("UPDATE chat_sessions SET title = ? WHERE session_id = ? AND  user_id = ?", data.Title, data.Id, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in UpdateChatSessionTitle: %v\n", err.Error())
@@ -262,7 +260,6 @@ func UpdateChatSessionTitleVector(sessionId int, titleVector []float32, channel 
 	channel <- int(rowsAffected)
 }
 func UpdateChatSessionAllowWebSearch(userId string, sessionId int, webSearch bool, channel chan<- int) {
-
 	result, err := dbPool.Exec("UPDATE chat_sessions SET allow_web_search = ? WHERE session_id = ? AND  user_id = ?", webSearch, sessionId, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in UpdateChatSessionAllowWebSearch: %v\n", err.Error())
@@ -278,7 +275,6 @@ func UpdateChatSessionAllowWebSearch(userId string, sessionId int, webSearch boo
 	channel <- int(rowsAffected)
 }
 func UpdateChatSessionImageGeneration(userId string, sessionId int, imageGeneration bool, channel chan<- int) {
-
 	result, err := dbPool.Exec("UPDATE chat_sessions SET img_generation = ? WHERE session_id = ? AND  user_id = ?", imageGeneration, sessionId, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in UpdateChatSessionImageGeneration: %v\n", err.Error())
@@ -294,7 +290,6 @@ func UpdateChatSessionImageGeneration(userId string, sessionId int, imageGenerat
 	channel <- int(rowsAffected)
 }
 func DeleteChatSession(userId string, sessionId int, channel chan<- int) {
-
 	result, err := dbPool.Exec("DELETE FROM chat_sessions WHERE session_id = ? AND  user_id = ?", sessionId, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in DeleteChatSession: %v\n", err.Error())
@@ -311,10 +306,9 @@ func DeleteChatSession(userId string, sessionId int, channel chan<- int) {
 }
 func GetChatConversationsWithoutMessageAndFileData(userId string, sessionId int, channel chan<- []models.ChatConversation) {
 	var data []models.ChatConversation = []models.ChatConversation{}
-
-	rows, err := dbPool.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,content,role,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
+	rows, err := dbPool.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,role,model_id,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
 	if err != nil {
-		fmt.Printf("Failed to execute query in GetChatConversations: %v\n", err.Error())
+		fmt.Printf("Failed to execute query in GetChatConversationsWithoutMessageAndFileData: %v\n", err.Error())
 		channel <- data
 		return
 	}
@@ -323,21 +317,44 @@ func GetChatConversationsWithoutMessageAndFileData(userId string, sessionId int,
 	for rows.Next() {
 		var item models.ChatConversation
 
-		if err := rows.Scan(&item.Id, &item.SessionId, &item.Content, &item.Role, &item.FileName); err != nil {
-			fmt.Printf("Error scanning row in GetChatConversations:%v\n", err.Error())
+		if err := rows.Scan(&item.Id, &item.SessionId, &item.Role, &item.ModelId, &item.FileName); err != nil {
+			fmt.Printf("Error scanning row in GetChatConversationsWithoutMessageAndFileData:%v\n", err.Error())
 		} else {
 			data = append(data, item)
 		}
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Printf("Error during rows iteration in GetChatConversations:%v\n", err.Error())
+		fmt.Printf("Error during rows iteration in GetChatConversationsWithoutMessageAndFileData:%v\n", err.Error())
+	}
+	channel <- data
+}
+func GetChatConversationsWithoutFileData(userId string, sessionId int, channel chan<- []models.ChatConversation) {
+	var data []models.ChatConversation = []models.ChatConversation{}
+	rows, err := dbPool.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,content,role,model_id,file_name FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
+	if err != nil {
+		fmt.Printf("Failed to execute query in GetChatConversationsWithoutFileData: %v\n", err.Error())
+		channel <- data
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var item models.ChatConversation
+		if err := rows.Scan(&item.Id, &item.SessionId, &item.Content, &item.Role, &item.ModelId, &item.FileName); err != nil {
+			fmt.Printf("Error scanning row in GetChatConversationsWithoutFileData:%v\n", err.Error())
+		} else {
+			data = append(data, item)
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Printf("Error during rows iteration in GetChatConversationsWithoutFileData:%v\n", err.Error())
 	}
 	channel <- data
 }
 func GetChatConversations(userId string, sessionId int, channel chan<- []models.ChatConversation) {
 	var data []models.ChatConversation = []models.ChatConversation{}
-
 	rows, err := dbPool.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,content,role,model_id,file_name,file_data FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? ORDER BY timestamp", sessionId, userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in GetChatConversations: %v\n", err.Error())
@@ -361,10 +378,15 @@ func GetChatConversations(userId string, sessionId int, channel chan<- []models.
 	}
 	channel <- data
 }
-func GetChatConversation(userId string, conversationId int, sessionId int, channel chan<- models.ChatConversation) {
+func GetChatConversation(request models.GetConversationRequest, channel chan<- models.ChatConversation) {
 	var data models.ChatConversation = models.ChatConversation{}
 
-	rows, err := dbPool.Query("SELECT DISTINCT conversation_id,chat_conversations.session_id,content,role,model_id,file_name,file_data FROM chat_conversations INNER JOIN chat_sessions ON chat_sessions.session_id=chat_conversations.session_id WHERE chat_sessions.session_id = ? AND user_id=? AND conversation_id=? ORDER BY timestamp", sessionId, userId, conversationId)
+	rows, err := dbPool.Query(`SELECT DISTINCT conversation_id,chat_conversations.session_id,content,role,model_id,file_name 
+								FROM chat_conversations
+								 INNER JOIN chat_sessions 
+								 ON chat_sessions.session_id=chat_conversations.session_id 
+								 WHERE chat_sessions.session_id = ? AND user_id=? AND conversation_id=? 
+								 ORDER BY timestamp`, request.SessionId, request.UserId, request.ConversationId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in GetChatConversation: %v\n", err.Error())
 		channel <- data
@@ -375,8 +397,8 @@ func GetChatConversation(userId string, conversationId int, sessionId int, chann
 	for rows.Next() {
 		var item models.ChatConversation
 
-		if err := rows.Scan(&item.Id, &item.SessionId, &item.Content, &item.Role, &item.ModelId, &item.FileName, &item.FileData); err != nil {
-			fmt.Printf("Error scanning row in GetChatConversations:%v\n", err.Error())
+		if err := rows.Scan(&item.Id, &item.SessionId, &item.Content, &item.Role, &item.ModelId, &item.FileName); err != nil {
+			fmt.Printf("Error scanning row in GetChatConversation:%v\n", err.Error())
 		} else {
 			data = item
 			break
@@ -384,12 +406,41 @@ func GetChatConversation(userId string, conversationId int, sessionId int, chann
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Printf("Error during rows iteration in GetChatConversations:%v\n", err.Error())
+		fmt.Printf("Error during rows iteration in GetChatConversation:%v\n", err.Error())
 	}
 	channel <- data
 }
-func InsertChatConversation(data models.ChatConversation, channel chan<- int) {
+func GetChatConversationFileData(request models.GetConversationRequest, channel chan<- string) {
+	rows, err := dbPool.Query(`SELECT file_data 
+								FROM chat_conversations
+								 INNER JOIN chat_sessions 
+								 ON chat_sessions.session_id=chat_conversations.session_id 
+								 WHERE chat_sessions.session_id = ? AND user_id=? AND conversation_id=? 
+								 ORDER BY timestamp`, request.SessionId, request.UserId, request.ConversationId)
+	if err != nil {
+		fmt.Printf("Failed to execute query in GetChatConversationFileData: %v\n", err.Error())
+		channel <- ""
+		return
+	}
+	defer rows.Close()
 
+	for rows.Next() {
+		var item string
+
+		if err := rows.Scan(&item); err != nil {
+			fmt.Printf("Error scanning row in GetChatConversationFileData:%v\n", err.Error())
+		} else {
+			channel <- item
+			return
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Printf("Error during rows iteration in GetChatConversationFileData:%v\n", err.Error())
+	}
+	channel <- ""
+}
+func InsertChatConversation(data models.ChatConversation, channel chan<- int) {
 	result, err := dbPool.Exec("INSERT INTO chat_conversations (session_id,content,role,model_id,file_name,file_data,timestamp) VALUES (?, ?,?,?,?,?,?)", data.SessionId, data.Content, data.Role, data.ModelId, data.FileName, data.FileData, time.Now().Unix())
 	if err != nil {
 		fmt.Printf("Failed to execute query in InsertChatConversation: %v\n", err.Error())
@@ -405,7 +456,6 @@ func InsertChatConversation(data models.ChatConversation, channel chan<- int) {
 	channel <- int(newId)
 }
 func UpateMessageChatConversation(data models.UpdateChatConversation, channel chan<- int) {
-
 	result, err := dbPool.Exec("UPDATE chat_conversations SET content= ?,model_id=?,file_data=?,file_name=? WHERE  conversation_id=?", data.Content, data.ModelId, data.FileData, data.FileName, data.Id)
 	if err != nil {
 		fmt.Printf("Failed to execute query in UpateMessageChatConversation: %v\n", err.Error())
@@ -422,7 +472,6 @@ func UpateMessageChatConversation(data models.UpdateChatConversation, channel ch
 }
 
 func DeleteMessageChatConversation(conversationId int, channel chan<- int) {
-
 	result, err := dbPool.Exec("DELETE FROM chat_conversations WHERE  conversation_id=?", conversationId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in DeleteMessageChatConversation: %v\n", err.Error())
@@ -438,7 +487,6 @@ func DeleteMessageChatConversation(conversationId int, channel chan<- int) {
 	channel <- int(rowsAffected)
 }
 func DeleteMessageChatConversationForRetry(data models.DeleteChatConversationsAfterAId, channel chan<- []int) {
-
 	returnIds := []int{}
 
 	rows, err := dbPool.Query("SELECT conversation_id FROM chat_conversations WHERE session_id=? AND conversation_id>? ORDER BY conversation_id", data.SessionId, data.ConversationIdAfterWhichDelete)

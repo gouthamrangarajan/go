@@ -23,7 +23,7 @@ templ ChatMessage(message models.ChatConversation, stream bool) {
 					id={ "markdown_" + strconv.Itoa(message.Id) }
 				></div>
 			}
-			@ChatMessageFileData(message)
+			@ChatMessageFileData(message, stream)
 			if message.Role=="assistant" && stream {
 				<span
 					class="animate-pulse opacity-80 text-sm"
@@ -85,10 +85,13 @@ templ ChatMessageRoleLogo(id int, role string) {
 	}
 }
 
-templ ChatMessageFileData(message models.ChatConversation) {
+templ ChatMessageFileData(message models.ChatConversation, stream bool) {
+	{{ messageIdStr := strconv.Itoa(message.Id) }}
 	if message.FileName!="" {
 		if strings.HasSuffix(strings.ToLower(message.FileName),".pdf") {
-			<p class="font-semibold flex gap-1">
+			<p
+				class="font-semibold flex gap-1 cursor-pointer relative"
+			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
 					<path fill-rule="evenodd" d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z" clip-rule="evenodd"></path>
 				</svg>
@@ -97,19 +100,48 @@ templ ChatMessageFileData(message models.ChatConversation) {
 		} else if message.FileData!="" {
 			<img
 				src={ message.FileData }
-				id={ "image_" + strconv.Itoa(message.Id) }
-				alt="uploaded image"
+				id={ "image_" + messageIdStr }
+				alt="generated image"
 				class="w-full h-full"
 			/>
-		} else {
+		} else if message.FileData=="" && !stream {
+			<p
+				class="font-semibold flex gap-1 cursor-pointer relative"
+				data-signals={ `{showImage_` +messageIdStr + `:false,
+								imageFetched_` + messageIdStr + `:false }` }
+				data-on:mouseenter={ `if(!$imageFetched_` + messageIdStr + `){
+										$messageIdToFetchImage=` + messageIdStr + `;@post('/image');}
+									 else{$showImage_` + messageIdStr + `=true;}` }
+				data-on:mouseleave={ `$showImage_` + messageIdStr + `=false` }
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+					<path fill-rule="evenodd" d="M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z" clip-rule="evenodd"></path>
+				</svg>
+				<span>{ message.FileName }</span>
+				<img
+					style="display:none;"
+					id={ "image_" + messageIdStr }
+				/>
+			</p>
+		} else if message.FileData=="" && stream {
 			<img
 				style="display:none"
 				id={ "image_" + strconv.Itoa(message.Id) }
-				alt="uploaded image"
+				alt="generated image"
 				class="w-full h-full"
 			/>
 		}
 	}
+}
+
+templ ChatMessageImageDisplay(messageId int, fileData string) {
+	<img
+		class="w-[50vh] h-[50vh] absolute top-0 left-0 animate-image z-10 rounded shadow origin-top"
+		src={ fileData }
+		id={ "image_" + strconv.Itoa(messageId) }
+		alt="image"
+		data-show={ `$showImage_` + strconv.Itoa(messageId) }
+	/>
 }
 
 templ ChatMessageModelIdDisplay(message models.ChatConversation) {

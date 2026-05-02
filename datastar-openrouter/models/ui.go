@@ -10,11 +10,12 @@ type ClientSignals struct {
 		Contents string `json:"contents"`
 		Mime     string `json:"mime"`
 	} `json:"fileData"`
-	WebSearch        bool   `json:"webSearch"`
-	ImageGeneration  bool   `json:"imageGeneration"`
-	MessageIdToRetry int    `json:"messageIdToRetry"`
-	SearchMenu       string `json:"searchMenu"`
-	UiSid            string `json:"uiSid"`
+	WebSearch             bool   `json:"webSearch"`
+	ImageGeneration       bool   `json:"imageGeneration"`
+	MessageIdToRetry      int    `json:"messageIdToRetry"`
+	SearchMenu            string `json:"searchMenu"`
+	UiSid                 string `json:"uiSid"`
+	MessageIdToFetchImage int    `json:"messageIdToFetchImage"`
 }
 type FileDataDisplay struct {
 	FileName string

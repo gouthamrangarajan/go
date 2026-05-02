@@ -59,7 +59,7 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	go services.GetAiModels(aiModelsChannel)
 
 	if searchMenuTxt != "" {
-		sessions = SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
+		sessions = services.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
 			UserId:     userId,
 			SearchTerm: searchMenuTxt,
 		})
@@ -92,7 +92,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 		conversationsChannel := make(chan []models.ChatConversation)
 
-		go services.GetChatConversations(userId, clientSignal.SessionId, conversationsChannel)
+		go services.GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
 		conversations := <-conversationsChannel
 		close(conversationsChannel)
 
@@ -105,7 +105,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			default:
 				for _, conversation := range conversations {
 					if conversation.FileData != "" {
-						sse.PatchElementTempl(components.ChatMessageFileData(conversation), datastar.WithUseViewTransitions(false))
+						sse.PatchElementTempl(components.ChatMessageFileData(conversation, true), datastar.WithUseViewTransitions(false))
 					}
 					sse.PatchElementTempl(components.ChatMessageModelIdDisplay(conversation), datastar.WithUseViewTransitions(false))
 				}
@@ -292,7 +292,7 @@ func searchSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 		go services.GetChatSessions(userId, sessionsChannel)
 		sessions = <-sessionsChannel
 	} else {
-		sessions = SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
+		sessions = services.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
 			UserId:     userId,
 			SearchTerm: clientSignal.SearchMenu})
 	}
@@ -538,7 +538,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
 			if userMessageChat.FileData != "" {
 				chatMessageUserFileDataBuffer := new(bytes.Buffer)
-				components.ChatMessageFileData(userMessageChat).Render(context.Background(), chatMessageUserFileDataBuffer)
+				components.ChatMessageFileData(userMessageChat, true).Render(context.Background(), chatMessageUserFileDataBuffer)
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:           chatMessageUserFileDataBuffer.String(),
 					UseViewTransition: true,
@@ -717,7 +717,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		if modelMessageChat.FileData != "" {
 			modelMessageChat.FileName = "generated_image.png"
 			modelMessageChatFileDataBuffer := new(bytes.Buffer)
-			components.ChatMessageFileData(modelMessageChat).Render(context.Background(), modelMessageChatFileDataBuffer)
+			components.ChatMessageFileData(modelMessageChat, true).Render(context.Background(), modelMessageChatFileDataBuffer)
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:           modelMessageChatFileDataBuffer.String(),
 				UseViewTransition: true,
@@ -812,21 +812,31 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 	}
 }
 
-func SearchSessionsViaChannel(data models.SearchSessionViaChannelRequest) []models.ChatSession {
-	retVal := []models.ChatSession{}
-	searchSessionsChannel := make(chan []models.ChatSession)
-	defer close(searchSessionsChannel)
-	embeddingsChannel := make(chan models.VoyageEmbeddingResponse)
-	defer close(embeddingsChannel)
+func getImageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(services.UserIDKey).(string)
+	var clientSignal models.ClientSignals
+	datastar.ReadSignals(request, &clientSignal)
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
-	embeddingRequest := models.VoyageEmbeddingRequest{
-		Input: []string{data.SearchTerm},
+	fileDataChannel := make(chan string)
+	defer close(fileDataChannel)
+
+	go services.GetChatConversationFileData(models.GetConversationRequest{SessionId: clientSignal.SessionId,
+		ConversationId: clientSignal.MessageIdToFetchImage, UserId: userId}, fileDataChannel)
+
+	fileData := <-fileDataChannel
+	if fileData != "" {
+		imageDataBuffer := new(bytes.Buffer)
+		components.ChatMessageImageDisplay(clientSignal.MessageIdToFetchImage, fileData).Render(context.Background(), imageDataBuffer)
+		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content: imageDataBuffer.String(),
+			}
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				IsSignal: true,
+				Content: `{showImage_` + strconv.Itoa(clientSignal.MessageIdToFetchImage) + `:true,
+							imageFetched_` + strconv.Itoa(clientSignal.MessageIdToFetchImage) + `:true}`,
+			}
+		}
 	}
-	go services.CallVoyageEmbedding(embeddingRequest, embeddingsChannel)
-	embeddingResponse := <-embeddingsChannel
-	if len(embeddingResponse.Data) > 0 {
-		go services.SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
-		retVal = <-searchSessionsChannel
-	}
-	return retVal
 }

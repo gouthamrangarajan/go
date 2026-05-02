@@ -36,3 +36,9 @@ type DeleteChatConversationsAfterAId struct {
 	ConversationIdAfterWhichDelete int
 	UserId                         string
 }
+
+type GetConversationRequest struct {
+	UserId         string
+	ConversationId int
+	SessionId      int
+}
