@@ -410,8 +410,9 @@ func GetChatConversation(request models.GetConversationRequest, channel chan<- m
 	}
 	channel <- data
 }
-func GetChatConversationFileData(request models.GetConversationRequest, channel chan<- string) {
-	rows, err := dbPool.Query(`SELECT file_data 
+func GetChatConversationFileData(request models.GetConversationRequest, channel chan<- models.ChatConversation) {
+	var retData models.ChatConversation
+	rows, err := dbPool.Query(`SELECT conversation_id,file_data,role 
 								FROM chat_conversations
 								 INNER JOIN chat_sessions 
 								 ON chat_sessions.session_id=chat_conversations.session_id 
@@ -419,26 +420,25 @@ func GetChatConversationFileData(request models.GetConversationRequest, channel 
 								 ORDER BY timestamp`, request.SessionId, request.UserId, request.ConversationId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in GetChatConversationFileData: %v\n", err.Error())
-		channel <- ""
+		channel <- retData
 		return
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var item string
-
-		if err := rows.Scan(&item); err != nil {
+		var item models.ChatConversation
+		if err := rows.Scan(&item.Id, &item.FileData, &item.Role); err != nil {
 			fmt.Printf("Error scanning row in GetChatConversationFileData:%v\n", err.Error())
 		} else {
-			channel <- item
-			return
+			retData = item
+			break
 		}
 	}
 
 	if err := rows.Err(); err != nil {
 		fmt.Printf("Error during rows iteration in GetChatConversationFileData:%v\n", err.Error())
 	}
-	channel <- ""
+	channel <- retData
 }
 func InsertChatConversation(data models.ChatConversation, channel chan<- int) {
 	result, err := dbPool.Exec("INSERT INTO chat_conversations (session_id,content,role,model_id,file_name,file_data,timestamp) VALUES (?, ?,?,?,?,?,?)", data.SessionId, data.Content, data.Role, data.ModelId, data.FileName, data.FileData, time.Now().Unix())

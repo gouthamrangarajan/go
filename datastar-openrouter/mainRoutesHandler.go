@@ -818,16 +818,16 @@ func getImageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	datastar.ReadSignals(request, &clientSignal)
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
-	fileDataChannel := make(chan string)
+	fileDataChannel := make(chan models.ChatConversation)
 	defer close(fileDataChannel)
 
 	go services.GetChatConversationFileData(models.GetConversationRequest{SessionId: clientSignal.SessionId,
 		ConversationId: clientSignal.MessageIdToFetchImage, UserId: userId}, fileDataChannel)
 
-	fileData := <-fileDataChannel
-	if fileData != "" {
+	converstationWithFileData := <-fileDataChannel
+	if converstationWithFileData.FileData != "" {
 		imageDataBuffer := new(bytes.Buffer)
-		components.ChatMessageImageDisplayOnHover(clientSignal.MessageIdToFetchImage, fileData).Render(context.Background(), imageDataBuffer)
+		components.ChatMessageImageDisplayOnHover(converstationWithFileData).Render(context.Background(), imageDataBuffer)
 		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: imageDataBuffer.String(),
