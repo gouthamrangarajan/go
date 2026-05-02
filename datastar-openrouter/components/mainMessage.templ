@@ -136,23 +136,13 @@ templ ChatMessageFileData(message models.ChatConversation, stream bool) {
 
 templ ChatMessageImageDisplayOnHover(message models.ChatConversation) {
 	{{ messageIdStr := strconv.Itoa(message.Id) }}
-	if message.Role=="assistant" {
-		<img
-			class="w-screen h-screen absolute top-0 left-0 animate-image z-10 rounded shadow origin-top"
-			src={ message.FileData }
-			id={ "image_" + messageIdStr }
-			alt={ ` image for ` + messageIdStr }
-			data-show={ `$showImage_` + messageIdStr }
-		/>
-	} else {
-		<img
-			class="w-[50vw] h-[50vh] absolute top-0 left-0 animate-image z-10 rounded shadow origin-top"
-			src={ message.FileData }
-			id={ "image_" + messageIdStr }
-			alt={ ` image for ` + messageIdStr }
-			data-show={ `$showImage_` + messageIdStr }
-		/>
-	}
+	<img
+		class="w-auto h-auto max-w-none absolute top-0 left-0 animate-image z-10 rounded shadow origin-top"
+		src={ message.FileData }
+		id={ "image_" + messageIdStr }
+		alt={ ` image for ` + messageIdStr }
+		data-show={ `$showImage_` + messageIdStr }
+	/>
 }
 
 templ ChatMessageModelIdDisplay(message models.ChatConversation) {
