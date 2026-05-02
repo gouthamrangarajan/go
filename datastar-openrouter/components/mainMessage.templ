@@ -134,7 +134,7 @@ templ ChatMessageFileData(message models.ChatConversation, stream bool) {
 	}
 }
 
-templ ChatMessageImageDisplay(messageId int, fileData string) {
+templ ChatMessageImageDisplayOnHover(messageId int, fileData string) {
 	{{ messageIdStr := strconv.Itoa(messageId) }}
 	<img
 		class="w-[50vw] h-[50vh] absolute top-0 left-0 animate-image z-10 rounded shadow origin-top"

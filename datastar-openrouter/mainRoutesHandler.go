@@ -827,7 +827,7 @@ func getImageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	fileData := <-fileDataChannel
 	if fileData != "" {
 		imageDataBuffer := new(bytes.Buffer)
-		components.ChatMessageImageDisplay(clientSignal.MessageIdToFetchImage, fileData).Render(context.Background(), imageDataBuffer)
+		components.ChatMessageImageDisplayOnHover(clientSignal.MessageIdToFetchImage, fileData).Render(context.Background(), imageDataBuffer)
 		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: imageDataBuffer.String(),
