@@ -3,6 +3,8 @@ package components
 import (
 	"datastar-openrouter/components/shared"
 	"datastar-openrouter/models"
+	"fmt"
+	"time"
 )
 
 templ inputsAndError(aiModels []models.AIModel) {
@@ -56,7 +58,20 @@ templ inputsAndError(aiModels []models.AIModel) {
 			data-text="$errorMessage"
 			style="display:none"
 		></p>
+		@LiveIndicator()
 	</div>
+}
+
+templ LiveIndicator() {
+	<p
+		id="liveIndicator"
+		data-signals={ `{` + fmt.Sprintf(`_time:new Date(%d).toLocaleTimeString()`, time.Now().UnixMilli()) + `}` }
+		class="absolute bottom-3 left-8 md:left-12 flex items-center gap-2 lg:left-104 xl:left-144"
+		data-show="!$errorMessage.includes('Reconnecting') && !$errorMessage.includes('Failed to connect')"
+	>
+		<span class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-200"></span>
+		<span class="text-xs">Live: <span data-text="$_time"></span></span>
+	</p>
 }
 
 templ toolsAndSubmitButton(aiModels []models.AIModel) {

@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -130,13 +131,17 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		userSession = make(chan models.LongSSEData)
 		uiSidMap.Store(userSessionKey, userSession)
 	}
+	heartBeatTicker := time.NewTicker(20 * time.Second)
+	defer heartBeatTicker.Stop()
 	sse.PatchSignals([]byte(`{showErrorMessage:false}`))
 	for {
 		select {
 		case <-request.Context().Done():
 			uiSidMap.Delete(userSessionKey)
 			return
-
+		case <-heartBeatTicker.C:
+			sse.PatchElementTempl(components.LiveIndicator(), datastar.WithUseViewTransitions(true))
+			continue
 		case data := <-userSession.(chan models.LongSSEData):
 			switch {
 			case data.IsError:

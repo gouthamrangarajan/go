@@ -9,6 +9,8 @@
       "Courier New", monospace;
     --color-red-300: oklch(80.8% 0.114 19.571);
     --color-red-600: oklch(57.7% 0.245 27.325);
+    --color-emerald-200: oklch(90.5% 0.093 164.15);
+    --color-emerald-500: oklch(69.6% 0.17 162.48);
     --color-blue-600: oklch(54.6% 0.245 262.881);
     --color-slate-300: oklch(86.9% 0.022 252.894);
     --color-slate-400: oklch(70.4% 0.04 256.788);
@@ -250,6 +252,9 @@
   .bottom-0 {
     bottom: calc(var(--spacing) * 0);
   }
+  .bottom-3 {
+    bottom: calc(var(--spacing) * 3);
+  }
   .bottom-4 {
     bottom: calc(var(--spacing) * 4);
   }
@@ -258,6 +263,9 @@
   }
   .left-2 {
     left: calc(var(--spacing) * 2);
+  }
+  .left-8 {
+    left: calc(var(--spacing) * 8);
   }
   .z-10 {
     z-index: 10;
@@ -791,6 +799,9 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
+  .h-2 {
+    height: calc(var(--spacing) * 2);
+  }
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
@@ -820,6 +831,9 @@
   }
   .min-h-screen {
     min-height: 100vh;
+  }
+  .w-2 {
+    width: calc(var(--spacing) * 2);
   }
   .w-8 {
     width: calc(var(--spacing) * 8);
@@ -964,6 +978,9 @@
   }
   .bg-dark {
     background-color: var(--color-dark);
+  }
+  .bg-emerald-500 {
+    background-color: var(--color-emerald-500);
   }
   .bg-gray-50 {
     background-color: var(--color-gray-50);
@@ -1323,6 +1340,11 @@
       opacity: 80%;
     }
   }
+  .md\:left-12 {
+    @media (width >= 48rem) {
+      left: calc(var(--spacing) * 12);
+    }
+  }
   .md\:w-7\/12 {
     @media (width >= 48rem) {
       width: calc(7/12 * 100%);
@@ -1347,6 +1369,11 @@
     @media (width >= 48rem) {
       font-size: var(--text-sm);
       line-height: var(--tw-leading, var(--text-sm--line-height));
+    }
+  }
+  .lg\:left-104 {
+    @media (width >= 64rem) {
+      left: calc(var(--spacing) * 104);
     }
   }
   .lg\:mx-auto {
@@ -1384,6 +1411,11 @@
       padding-top: calc(var(--spacing) * 4);
     }
   }
+  .xl\:left-144 {
+    @media (width >= 80rem) {
+      left: calc(var(--spacing) * 144);
+    }
+  }
   .xl\:w-4\/12 {
     @media (width >= 80rem) {
       width: calc(4/12 * 100%);
@@ -1415,6 +1447,11 @@
   .dark\:bg-dark {
     &:where(.dark, .dark *) {
       background-color: var(--color-dark);
+    }
+  }
+  .dark\:bg-emerald-200 {
+    &:where(.dark, .dark *) {
+      background-color: var(--color-emerald-200);
     }
   }
   .dark\:bg-light {
