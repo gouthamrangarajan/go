@@ -149,7 +149,7 @@ func LiveIndicator() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"absolute bottom-3 left-8 md:left-12 flex items-center gap-2 lg:left-104 xl:left-144\" data-show=\"!$errorMessage.includes('Reconnecting') && !$errorMessage.includes('Failed to connect')\"><span class=\"w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-200\"></span> <span class=\"text-xs\">Live: <span data-text=\"$_time\"></span></span></p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"absolute bottom-3 left-8 md:left-12 flex items-center gap-2 lg:left-104 xl:left-144\" data-show=\"!$showErrorMessage || (!$errorMessage.includes('Reconnecting') && !$errorMessage.includes('Failed to connect'))\"><span class=\"w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-200\"></span> <span class=\"text-xs\">Live: <span data-text=\"$_time\"></span></span></p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
