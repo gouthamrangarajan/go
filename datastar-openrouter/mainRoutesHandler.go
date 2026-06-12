@@ -139,9 +139,6 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		case <-request.Context().Done():
 			uiSidMap.Delete(userSessionKey)
 			return
-		case <-heartBeatTicker.C:
-			sse.PatchElementTempl(components.LiveIndicator(), datastar.WithUseViewTransitions(true))
-			continue
 		case data := <-userSession.(chan models.LongSSEData):
 			switch {
 			case data.IsError:
@@ -160,8 +157,9 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				} else {
 					sse.PatchElements(data.Content, datastar.WithSelector(data.Selector), datastar.WithUseViewTransitions(data.UseViewTransition))
 				}
-				continue
 			}
+		case <-heartBeatTicker.C:
+			sse.PatchElementTempl(components.LiveIndicator(), datastar.WithUseViewTransitions(true))
 		}
 	}
 }
