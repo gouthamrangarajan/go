@@ -69,7 +69,6 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	chatConversations := <-chatConversationChannel
 	aiModels := <-aiModelsChannel
 	uiSId := uuid.New().String()
-	uiSidMap.Store(services.GenerateUserSessionKey(userId, uiSId), make(chan models.LongSSEData))
 	components.Main(
 		models.UIMainModel{
 			Messages:         chatConversations,
@@ -125,21 +124,23 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 	}
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
 
-	if !userSessionExists {
-		userSession = make(chan models.LongSSEData)
-		uiSidMap.Store(userSessionKey, userSession)
-	}
+	userSessionChannel := make(chan models.LongSSEData)
+	uiSidMap.Store(userSessionKey, userSessionChannel)
+
 	heartBeatTicker := time.NewTicker(20 * time.Second)
 	defer heartBeatTicker.Stop()
+
 	sse.PatchSignals([]byte(`{showErrorMessage:false}`))
 	for {
 		select {
 		case <-request.Context().Done():
 			uiSidMap.Delete(userSessionKey)
 			return
-		case data := <-userSession.(chan models.LongSSEData):
+		case data := <-userSessionChannel:
+			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
+				return
+			}
 			switch {
 			case data.IsError:
 				services.SendErrorMessageToUI(sse, data.Content)
@@ -159,6 +160,9 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				}
 			}
 		case <-heartBeatTicker.C:
+			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
+				return
+			}
 			sse.PatchElementTempl(components.LiveIndicator(), datastar.WithUseViewTransitions(true))
 		}
 	}
