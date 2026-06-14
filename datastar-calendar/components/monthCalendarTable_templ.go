@@ -9,8 +9,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"htmx-calendar/components/shared"
-	"htmx-calendar/models"
+	"datastar-calendar/components/shared"
+	"datastar-calendar/models"
 	"strings"
 	"time"
 )

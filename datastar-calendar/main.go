@@ -1,9 +1,9 @@
 package main
 
 import (
+	"datastar-calendar/services"
+	"datastar-calendar/services/middleware"
 	"fmt"
-	"htmx-calendar/services"
-	"htmx-calendar/services/middleware"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"

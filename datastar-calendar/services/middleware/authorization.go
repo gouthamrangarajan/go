@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
-	"htmx-calendar/components"
-	"htmx-calendar/services"
+	"datastar-calendar/components"
+	"datastar-calendar/services"
 	"net/http"
 	"os"
 	"strings"

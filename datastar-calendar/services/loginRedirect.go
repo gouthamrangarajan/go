@@ -1,9 +1,9 @@
 package services
 
 import (
-	"htmx-calendar/components"
-	"htmx-calendar/models"
-	"htmx-calendar/services/db"
+	"datastar-calendar/components"
+	"datastar-calendar/models"
+	"datastar-calendar/services/db"
 	"net/http"
 	"os"
 	"time"

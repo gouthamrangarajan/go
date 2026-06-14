@@ -1,8 +1,8 @@
 package components
 
 import (
-	"htmx-calendar/components/shared"
-	"htmx-calendar/models"
+	"datastar-calendar/components/shared"
+	"datastar-calendar/models"
 	"strconv"
 	"strings"
 	"time"
@@ -44,9 +44,7 @@ templ weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 								if displayAll {
 									for _,event := range filterDateEvents(eventsData,calendarData[0][idx]) {
 										{{ allowDelete := active }}
-										{{
-											stopAfterDate, err := time.Parse(dateLayout, event.StopAfter)
-										}}
+										{{ stopAfterDate, err := time.Parse(dateLayout, event.StopAfter) }}
 										if !allowDelete && event.Frequency!=AllowedFrequencies[0] {
 											if err!=nil {
 												{{ allowDelete = true }}

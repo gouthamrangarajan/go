@@ -9,8 +9,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"htmx-calendar/components/shared"
-	"htmx-calendar/models"
+	"datastar-calendar/components/shared"
+	"datastar-calendar/models"
 	"strconv"
 	"strings"
 	"time"
@@ -246,7 +246,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("true")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 58, Col: 29}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 56, Col: 29}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -259,7 +259,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 					var templ_7745c5c3_Var17 string
 					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(event.Id)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 59, Col: 29}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 57, Col: 29}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 					if templ_7745c5c3_Err != nil {
@@ -294,7 +294,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 					var templ_7745c5c3_Var20 string
 					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(event.Task)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 64, Col: 53}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 62, Col: 53}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 					if templ_7745c5c3_Err != nil {
@@ -312,7 +312,7 @@ func weekCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDat
 						var templ_7745c5c3_Var21 string
 						templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(event.Id)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 68, Col: 29}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/weekCalendarTable.templ`, Line: 66, Col: 29}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 						if templ_7745c5c3_Err != nil {

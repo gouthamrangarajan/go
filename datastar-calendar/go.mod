@@ -1,4 +1,4 @@
-module htmx-calendar
+module datastar-calendar
 
 go 1.24.1
 

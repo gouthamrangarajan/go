@@ -3,11 +3,11 @@ package main
 import (
 	"bytes"
 	"context"
+	"datastar-calendar/components"
+	"datastar-calendar/models"
+	"datastar-calendar/services"
 	"encoding/json"
 	"fmt"
-	"htmx-calendar/components"
-	"htmx-calendar/models"
-	"htmx-calendar/services"
 	"os"
 	"time"
 

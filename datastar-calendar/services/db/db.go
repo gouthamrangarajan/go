@@ -1,9 +1,9 @@
 package db
 
 import (
+	"datastar-calendar/models"
 	"encoding/json"
 	"fmt"
-	"htmx-calendar/models"
 	"os"
 
 	"github.com/supabase-community/postgrest-go"
