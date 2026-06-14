@@ -1,0 +1,37 @@
+package components
+
+templ layout() {
+	<!DOCTYPE html>
+	<html class="w-full h-full">
+		<head>
+			<meta charset="UTF-8"/>
+			<title>RG Calendar</title>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="description" content="A simple calendar app to add,edit & view events"/>
+			<link href="/assets/css/flatpickr.css" rel="stylesheet"/>
+			<link href="/assets/css/styles.css" rel="stylesheet"/>
+			<link href="/assets/css/openprops.min.css" rel="stylesheet"/>
+			<link href="/assets/favicon.ico" rel="icon"/>
+			// <script type="text/javascript" src="/assets/js/htmx.min.js"></script>
+			// <script type="text/javascript" defer src="/assets/js/alpine_focus_trap.min.js"></script>
+			// <script type="text/javascript" defer src="/assets/js/alpine.min.js"></script>
+			<script type="text/javascript" defer src="/assets/js/flatpickr.min.js"></script>
+			<script type="module" src="/assets/js/datastar.min.js"></script>
+		</head>
+		<body
+			class="relative w-full h-full font-(family-name:--font-neo-grotesque) bg-slate-100"
+			data-signals="{showRightBackground:false}"
+		>
+			{ children... }
+			// @bodyScript()
+			<div
+				class="absolute top-0 right-0 w-1/3 h-full mx-auto  -z-10 rounded-full
+					bg-[url(/assets/images/background.png)] bg-no-repeat bg-[top_right] bg-auto bg-fixed
+					hidden lg:block"
+				style="corner-shape:Scoop;display:none;"
+				data-show="$showRightBackground"
+			></div>
+			<script type="text/javascript" src="/assets/js/focus-trap.js"></script>
+		</body>
+	</html>
+}

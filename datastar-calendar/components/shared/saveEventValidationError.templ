@@ -1,0 +1,17 @@
+package shared
+
+templ SaveEventValidationError(errs []string, dataShowAttr string) {
+	<p
+		id="eventResult"
+		class="flex flex-col gap-1 animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded"
+		style="view-transition-name:event-result"
+		data-show={ dataShowAttr }
+	>
+		<span>Error!</span>
+		<span class="flex flex-col">
+			for _, err := range errs {
+				<span>{ err }</span>
+			}
+		</span>
+	</p>
+}

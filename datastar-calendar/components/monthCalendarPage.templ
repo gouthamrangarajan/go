@@ -1,0 +1,96 @@
+package components
+
+import (
+	"htmx-calendar/components/shared"
+	"htmx-calendar/models"
+	"strconv"
+	"time"
+)
+
+templ MonthCalendarPage(data models.MonthPageData) {
+	@layout() {
+		<main
+			class="h-dvh w-dvw relative overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600"
+			id="main"
+			data-signals={ `{uiSid:'` + data.UiSid + `',showErrorMessage:false,errorMessage:''}` }
+			data-init="@get('/sse',{openWhenHidden:true})"
+			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
+		>
+			@monthCalendar(data.CalendarData, data.EventsData, data.CurrentMonthAndYear, data.From)
+			<p
+				class="absolute bottom-2 right-2 py-2 px-4 rounded animate-slide-left shadow text-white"
+				data-class="{'bg-orange-600':$errorMessage.includes('Reconnecting'), 'bg-red-600':$errorMessage.includes('Failed')}"
+				data-show="$showErrorMessage"
+				style="view-transition-name:error-message;display:none;"
+				data-text="$errorMessage"
+			></p>
+		</main>
+	}
+}
+
+templ monthCalendar(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
+	<section class="w-full h-full flex flex-col gap-1" style="view-transition-name:mainSection">
+		@monthCalendarheader(currentMonthAndYear, from)
+		@monthCalendarTable(calendarData, eventsData, currentMonthAndYear, from)
+	</section>
+}
+
+templ monthCalendarheader(currentMonthAndYear time.Time, from string) {
+	{{ years := []int{} }}
+	{{
+		for idx := -10; idx <= 10; idx++ {
+			years = append(years, currentMonthAndYear.Year()+idx)
+		}
+	}}
+	<div class="w-full flex justify-between items-center gap-7 py-2 px-4">
+		<div
+			class="flex-1 flex justify-start items-center gap-3 relative"
+			data-signals="{_showYears:false}"
+		>
+			<div
+				class="text-xl text-slate-600 font-semibold text-center flex gap-1"
+				style="view-transition-name:monthAndYearName"
+			>
+				<span>{ currentMonthAndYear.Month().String() }</span>
+				<a
+					href="#"
+					class="appearance-none outline-none px-1 cursor-pointer rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-slate-600"
+					data-on:click__prevent__stop__viewtransition={ `$_showYears=true;` }
+				>{ strconv.Itoa(currentMonthAndYear.Year()) }</a>
+			</div>
+			<div
+				class="absolute top-8 left-11 z-10 w-64 border border-orange-300 bg-white rounded py-2 px-4 flex flex-col gap-2 "
+				style="view-transition-name:year-selector;display:none;"
+				data-on:click__outside={ `
+					if($_showYears){
+						if(document.startViewTransition){
+							document.startViewTransition(() => {
+								$_showYears=false;
+							});
+						} else{
+							$_showYears=false;
+						}
+					}
+				` }
+				data-show="$_showYears"
+			>
+				<span class="text-lg text-slate-600">Select year:</span>
+				<div class="flex gap-2 flex-wrap items-center w-full">
+					for _, year := range years {
+						@goToYearLink(models.GoToDay{
+							GoToMonth: int(currentMonthAndYear.Month()),
+							GoToYear:  year,
+							CurrYear:  int(currentMonthAndYear.Year()),
+						})
+					}
+				</div>
+			</div>
+			@PrevMonthLink(currentMonthAndYear)
+			@NextMonthLink(currentMonthAndYear)
+		</div>
+		<div class="flex items-center">
+			@shared.MonthViewLink(currentMonthAndYear, true)
+			@shared.WeekViewLink(currentMonthAndYear, false)
+		</div>
+	</div>
+}

@@ -1,0 +1,125 @@
+package components
+
+import (
+	"htmx-calendar/components/shared"
+	"htmx-calendar/models"
+	"strings"
+	"time"
+)
+
+templ monthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) {
+	{{ days := []string{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"} }}
+	<table class="w-full h-full table-fixed" style="view-transition-name:none">
+		<thead style="view-transition-name:none">
+			for idx,day := range days {
+				{{ class := "border-y-2 border-gray-300" }}
+				if idx+1!=len(days) {
+					{{ class = "border-y-2 border-r-2 border-gray-300" }}
+				}
+				<th class={ class }><span style={ "view-transition-name:headerDay-" + day }>{ day }</span></th>
+			}
+		</thead>
+		<tbody style="view-transition-name:none">
+			for row := 0; row < len(calendarData); row++ {
+				<tr style="view-transition-name:none">
+					for col:=0;col<len(calendarData[row]);col++ {
+						<td
+							id={ "td-" + calendarData[row][col].Format("2006-01-02") }
+							class={ generateMonthTdClass(models.TableTdTemplateData{Col: col, Row: row, From: from, DaysLen: len(days), DataLen: len(calendarData)}) }
+							style="view-transition-name:none"
+						>
+							{{ active, activeClass := getActiveFlagAndActiveClassMonthTd(calendarData[row][col], currentMonthAndYear) }}
+							{{ events := filterDateEvents(eventsData, calendarData[row][col]) }}
+							<div
+								class="p-1 flex flex-col w-full h-full justify-start items-start gap-1 border-dashed"
+							>
+								@shared.AddEventLink(calendarData[row][col], 0, active)
+								<div
+									class={ generateEventsContainerHeightClass(len(calendarData)) + 
+										` w-full overflow-x-hidden overflow-y-auto  scrollbar-thin scrollbar-track-orange-200
+										 scrollbar-thumb-orange-600 ` }
+								>
+									<div
+										class={ ` flex flex-col gap-1 border-l-5 shadow  ` + activeClass + ` ` }
+										style={ "view-transition-name:none" }
+										id={ "eventsContainer-" + calendarData[row][col].Format("2006-01-02") }
+									>
+										if len(events) > 0 {
+											for _,event := range events {
+												@MonthCalendarTableEventItem(event)
+											}
+										}
+									</div>
+								</div>
+							</div>
+						</td>
+					}
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ MonthCalendarTableEventItem(event models.EventData) {
+	<a
+		href="#"
+		class={ `appearance-none outline-none p-1 cursor-pointer truncate text-sm text-slate-600 rounded-xl 
+														transition duration-300 border border-dashed border-transparent  hover:border-orange-600 focus:border-orange-600` }
+		data-on:click__prevent={ `@get('/` + event.Id + `')` }
+		id={ "event-" + event.Id }
+	>{ event.Task }</a>
+}
+
+func filterDateEvents(eventsData []models.EventData, date time.Time) []models.EventData {
+	dateStr := date.Format("2006-01-02")
+	var retValue []models.EventData
+
+	for _, data := range eventsData {
+		if data.Date == dateStr {
+			retValue = append(retValue, data)
+		}
+	}
+	return retValue
+}
+
+func generateMonthTdClass(templateData models.TableTdTemplateData) string {
+	animationClass := ""
+	if strings.ToLower(templateData.From) == "prev" {
+		animationClass = "animate-slide-right"
+	} else if strings.ToLower(templateData.From) == "next" {
+		animationClass = "animate-slide-left"
+	}
+	tdClass := "border-b-2 border-r-2 border-gray-300 " + animationClass
+	if templateData.Col+1 == templateData.DaysLen && templateData.Row+1 == templateData.DataLen {
+		tdClass = "" + animationClass
+	} else if templateData.Col+1 == templateData.DaysLen {
+		tdClass = "border-b-2 border-gray-300 " + animationClass
+	} else if templateData.Row+1 == templateData.DataLen {
+		tdClass = "border-r-2 border-gray-300 " + animationClass
+	}
+	return tdClass
+}
+
+func generateEventsContainerHeightClass(calendarDataLen int) string {
+	heightClass := "h-14 lg:h-18 xl:h-20"
+	if calendarDataLen < 6 {
+		{
+			heightClass = "h-14 lg:h-24 xl:h-26"
+		}
+	}
+	return heightClass
+}
+
+func getActiveFlagAndActiveClassMonthTd(tdData time.Time, currentMonthAndYear time.Time) (bool, string) {
+	active := true
+	activeClass := "border-purple-600"
+	if tdData.Month() != currentMonthAndYear.Month() || tdData.Year() != currentMonthAndYear.Year() {
+		active = false
+		activeClass = "border-blue-500"
+
+	} else if tdData.Sub(time.Now()).Hours() < -24 {
+		active = false
+		activeClass = "border-blue-500"
+	}
+	return active, activeClass
+}

@@ -1,0 +1,63 @@
+package shared
+
+import (
+	"strconv"
+	"time"
+)
+
+templ MonthViewLink(currentMonthAndYear time.Time, active bool) {
+	{{ url := "/?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) }}
+	{{ activeClass := "bg-teal-700" }}
+	if !active {
+		{{ activeClass = "bg-teal-500" }}
+	}
+	<a
+		class={ "appearance-none outline-none text-white transition duration-300 py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10",activeClass }
+		href={ templ.SafeURL(url) }
+		style="view-transition-name:monthViewLink"
+	>
+		Month
+	</a>
+}
+
+templ WeekViewLink(currentMonthAndYear time.Time, active bool) {
+	{{ url := "/wk?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) + "&week=1" }}
+	{{ activeClass := "bg-teal-700" }}
+	if !active {
+		{{ activeClass = "bg-teal-500" }}
+	}
+	<a
+		class={ "appearance-none outline-none pointer-events-none text-white transition duration-300  py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
+		href={ templ.SafeURL(url) }
+		style="view-transition-name:weekViewLink"
+		disabled
+	>
+		Week
+	</a>
+}
+
+templ AddEventLink(date time.Time, week int, active bool) {
+	{{ url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) }}
+	if week>0 {
+		{{ url = "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) + "&week=" + strconv.Itoa(week) }}
+	}
+	<div class="group flex justify-between items-center w-full cursor-pointer">
+		if active {
+			<span class="text-slate-600 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>
+		} else {
+			<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>
+		}
+		if active {
+			<button
+				class="appearance-none outline-none cursor-pointer p-1 rounded-full transition duration-300 
+					   opacity-0 text-white bg-orange-700 group-hover:opacity-100 focus:opacity-100					 
+					   focus:ring-2 focus:ring-orange-700 focus:ring-offset-2 focus:ring-offset-orange-50"
+				data-on:click={ `@get('` + templ.SafeURL(url) + `')` }
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+					<path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
+				</svg>
+			</button>
+		}
+	</div>
+}

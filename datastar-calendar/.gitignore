@@ -1,0 +1,5 @@
+node_modules
+.env
+analysis/*
+Calendar-3.png
+image.png
