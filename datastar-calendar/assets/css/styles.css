@@ -260,8 +260,8 @@
   .mx-auto {
     margin-inline: auto;
   }
-  .ml-40 {
-    margin-left: calc(var(--spacing) * 40);
+  .ml-2 {
+    margin-left: calc(var(--spacing) * 2);
   }
   .scrollbar-thin {
     &::-webkit-scrollbar-track {
@@ -843,6 +843,11 @@
   .disabled\:opacity-80 {
     &:disabled {
       opacity: 80%;
+    }
+  }
+  .md\:ml-40 {
+    @media (width >= 48rem) {
+      margin-left: calc(var(--spacing) * 40);
     }
   }
   .md\:w-9\/12 {
