@@ -61,7 +61,6 @@ func main() {
 	})
 	router.Get("/", func(responseWriter http.ResponseWriter, request *http.Request) {
 		id := uuid.New().String()
-		idMap.Store(id, make(chan []models.DocumentChunk))
 		components.Main(id).Render(request.Context(), responseWriter)
 	})
 	router.Get("/sse", func(responseWriter http.ResponseWriter, request *http.Request) {
@@ -70,17 +69,19 @@ func main() {
 		datastar.ReadSignals(request, &clientSignals)
 
 		sse := datastar.NewSSE(responseWriter, request)
-		session, exists := idMap.Load(clientSignals.Id)
-		if !exists {
-			session = make(chan []models.DocumentChunk)
-			idMap.Store(clientSignals.Id, session)
-		}
+
+		session := make(chan []models.DocumentChunk)
+		idMap.Store(clientSignals.Id, session)
+
 		for {
 			select {
 			case <-request.Context().Done():
 				idMap.Delete(clientSignals.Id)
 				return
-			case dbResults := <-session.(chan []models.DocumentChunk):
+			case dbResults := <-session:
+				if sessionInMap, ok := idMap.Load(clientSignals.Id); !ok || sessionInMap != session {
+					return
+				}
 				uiData := services.ConvertDocumentChunkCollectionToSearchResultCollection(dbResults)
 				sse.PatchElementTempl(components.SearchResults(uiData), datastar.WithUseViewTransitions(true))
 				markDownToHtmlChannel := make(chan string, len(uiData))
