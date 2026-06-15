@@ -43,7 +43,10 @@ templ AddEventLink(date time.Time, week int, active bool) {
 	}
 	<div class="group flex justify-between items-center w-full cursor-pointer">
 		if active {
-			<span class="text-slate-600 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>
+			<span
+				class="text-slate-600 py-1 px-2"
+				data-on:dblclick={ `@get('` + templ.SafeURL(url) + `')` }
+			>{ strconv.Itoa(date.Day()) }</span>
 		} else {
 			<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>
 		}
