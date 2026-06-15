@@ -26,7 +26,6 @@ func MainPageWithChi(w http.ResponseWriter, r *http.Request) {
 	sort := r.URL.Query().Get("sort")
 	suggestions := r.URL.Query().Get("suggestions")
 	model := models.MainElData{Location: os.Getenv("LOCATION"), Sort: sort, Suggestions: suggestions, SId: uuid.NewString()}
-	changeSignalMap.Store(model.SId, make(chan models.LongSSEChannelData))
 	components.MainEl(model).Render(r.Context(), w)
 }
 
@@ -64,11 +63,8 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 	sse.PatchSignals([]byte("{_loadingItems:false}"))
 	sse.PatchSignals([]byte("{showErrorMessage:false}"))
 
-	session, exists := changeSignalMap.Load(ClientSignals.SId)
-	if !exists {
-		session = make(chan models.LongSSEChannelData)
-		changeSignalMap.Store(ClientSignals.SId, session)
-	}
+	session := make(chan models.LongSSEChannelData)
+	changeSignalMap.Store(ClientSignals.SId, session)
 
 	for {
 		select {
@@ -76,7 +72,10 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 			changeSignalMap.Delete(ClientSignals.SId)
 			return
 
-		case data := <-session.(chan models.LongSSEChannelData):
+		case data := <-session:
+			if sessionInMap, ok := changeSignalMap.Load(ClientSignals.SId); !ok || sessionInMap != session {
+				return
+			}
 			if data.IsSignal {
 				sse.PatchSignals([]byte(data.Content))
 			} else if data.FullRefresh {
