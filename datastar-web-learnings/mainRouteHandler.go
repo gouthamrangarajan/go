@@ -44,7 +44,6 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 		return
 	}
 	newSid := uuid.New().String()
-	sidMap.Store(newSid, make(chan models.LongSSEData))
 	components.Landing(firebaseConfig, newSid).Render(request.Context(), responseWriter)
 }
 
@@ -56,11 +55,10 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid)
-	if !sidExists {
-		sessionSseChannel = make(chan models.LongSSEData)
-		sidMap.Store(clientSignal.Sid, sessionSseChannel)
-	}
+
+	sessionSseChannel := make(chan models.LongSSEData)
+	sidMap.Store(clientSignal.Sid, sessionSseChannel)
+
 	sse := datastar.NewSSE(responseWriter, request)
 
 	var videos []models.VideoResponse
@@ -76,7 +74,10 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		case <-request.Context().Done():
 			sidMap.Delete(clientSignal.Sid)
 			return
-		case sseData := <-sessionSseChannel.(chan models.LongSSEData):
+		case sseData := <-sessionSseChannel:
+			if channelInMap, ok := sidMap.Load(clientSignal.Sid); !ok || channelInMap != sessionSseChannel {
+				return
+			}
 			switch sseData.FunctionalityVal {
 			case models.LANDING_PAGE_UI:
 				landingPageUI(sse, sseData)
