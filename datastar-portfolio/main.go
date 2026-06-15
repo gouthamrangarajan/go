@@ -88,7 +88,6 @@ func main() {
 		allProjects := <-channel
 		close(channel)
 		id := uuid.NewString()
-		idMap.Store(id, make(chan []models.DemoItem))
 		component := components.Projects(allProjects, id)
 		component.Render(request.Context(), responseWriter)
 	})
@@ -99,17 +98,19 @@ func main() {
 			fmt.Printf("Error reading client signals in sse: %v\n", err.Error())
 		}
 		sse := datastar.NewSSE(responseWriter, request)
-		session, exists := idMap.Load(clientSignal.Id)
-		if !exists {
-			session = make(chan []models.DemoItem)
-			idMap.Store(clientSignal.Id, session)
-		}
+
+		session := make(chan []models.DemoItem)
+		idMap.Store(clientSignal.Id, session)
+
 		for {
 			select {
 			case <-request.Context().Done():
 				idMap.Delete(clientSignal.Id)
 				return
-			case searchResults := <-session.(chan []models.DemoItem):
+			case searchResults := <-session:
+				if sessionInMap, ok := idMap.Load(clientSignal.Id); !ok || sessionInMap != session {
+					return
+				}
 				sse.PatchElementTempl(components.ProjectCardCollection(searchResults), datastar.WithUseViewTransitions(true))
 				sse.PatchSignals([]byte("{filtering:false}"))
 			}
