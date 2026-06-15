@@ -100,7 +100,7 @@ func EditEventDrawer() templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5 absolute top-3 right-3 hover:-z-10\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></div></fieldset><fieldset data-show=\"$frequency!='Only once' && $frequency!='Daily'\" class=\"flex items-center gap-1 w-full\"><input type=\"checkbox\" id=\"exact\" name=\"exact\" value=\"yes\" class=\"w-5 h-5 border-gray-300 rounded\"> <label for=\"exact\" class=\"text-slate-600 text-lg\"><span>Use Exact Date:</span></label></fieldset><fieldset data-show=\"$frequency!='Only once'\" class=\"flex flex-col gap-1 w-full\"><label for=\"stopAfter\" class=\"text-slate-600 text-lg\">Stop After:</label> <input type=\"text\" name=\"stopAfter\" id=\"stopAfter\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400 transition duration-300 flex gap-2 items-center bg-white w-full focus:inset-shadow-sm focus:inset-shadow-gray-400 placeholder:text-gray-400\" data-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5 absolute top-3 right-3 hover:-z-10\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></div></fieldset><fieldset data-show=\"$frequency!='Only once' && $frequency!='Daily'\" class=\"flex items-center gap-1 w-full\"><input type=\"checkbox\" id=\"exact\" name=\"exact\" value=\"yes\" class=\"w-5 h-5 border-gray-300 rounded\" data-bind=\"exact\"> <label for=\"exact\" class=\"text-slate-600 text-lg\"><span>Use Exact Date:</span></label></fieldset><fieldset data-show=\"$frequency!='Only once'\" class=\"flex flex-col gap-1 w-full\"><label for=\"stopAfter\" class=\"text-slate-600 text-lg\">Stop After:</label> <input type=\"text\" name=\"stopAfter\" id=\"stopAfter\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400 transition duration-300 flex gap-2 items-center bg-white w-full focus:inset-shadow-sm focus:inset-shadow-gray-400 placeholder:text-gray-400\" data-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -110,7 +110,7 @@ func EditEventDrawer() templ.Component {
 							minDate: new Date(),									
 						});`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 127, Col: 10}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 128, Col: 10}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -153,7 +153,7 @@ func EditEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully updated task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 158, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 159, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -171,7 +171,7 @@ func EditEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("Error updating task " + task + ". Please try again later.")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 166, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 167, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
