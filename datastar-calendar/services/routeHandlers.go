@@ -324,6 +324,9 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 			break
 		}
 	}
+	if stopAfter == "01/01/0001" {
+		stopAfter = ""
+	}
 	if !frequencyAllowed {
 		errors = append(errors, "Frequency is not allowed")
 	} else if frequency == "Only once" && stopAfter != "" {
