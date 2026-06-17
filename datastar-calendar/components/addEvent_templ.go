@@ -39,12 +39,11 @@ func AddEventModal(date time.Time, week int) templ.Component {
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(`
-					if($_addingTask) return;
-					const formData= new FormData(evt.target);
-					const allData = Object.fromEntries(formData.entries());
+					evt.preventDefault();
+					if($_addingTask) return;					
   					@post('/add') `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 48, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 47, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -57,7 +56,7 @@ func AddEventModal(date time.Time, week int) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(date.Format("2006-01-02"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 76, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 75, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -75,7 +74,7 @@ func AddEventModal(date time.Time, week int) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(item)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 92, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 91, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -88,7 +87,7 @@ func AddEventModal(date time.Time, week int) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(item)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 92, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 91, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -109,7 +108,7 @@ func AddEventModal(date time.Time, week int) templ.Component {
 							minDate: new Date(),								
 						});`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 130, Col: 10}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 129, Col: 10}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -152,7 +151,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully added task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 161, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 160, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -170,7 +169,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("Error adding task " + task + ". Please try again later.")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 169, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 168, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {

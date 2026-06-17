@@ -34,9 +34,8 @@ templ EditEventDrawer() {
 			></p>
 			<form
 				data-on:submit={ `
-					if($_savingTask) return;
-					const formData= new FormData(evt.target);
-					const allData = Object.fromEntries(formData.entries());
+					evt.preventDefault();
+					if($_savingTask) return;					
   					@post('/update') ` }
 				class="w-full flex flex-col gap-3"
 				data-indicator="_savingTask"

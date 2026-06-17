@@ -42,9 +42,8 @@ templ AddEventModal(date time.Time, week int) {
 				action="/add"
 				class="w-full flex flex-col gap-3"
 				data-on:submit={ `
-					if($_addingTask) return;
-					const formData= new FormData(evt.target);
-					const allData = Object.fromEntries(formData.entries());
+					evt.preventDefault();
+					if($_addingTask) return;					
   					@post('/add') ` }
 				data-indicator="_addingTask"
 			>
