@@ -324,7 +324,7 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 			break
 		}
 	}
-	if stopAfter == "01/01/0001" {
+	if stopAfter == "01/01/0001" || stopAfter == "0001-01-01" {
 		stopAfter = ""
 	}
 	if !frequencyAllowed {
