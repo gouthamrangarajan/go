@@ -83,6 +83,7 @@ func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.Op
 	line := ""
 
 	for scanner.Scan() {
+		// fmt.Printf("Received line from stream: %s\n", scanner.Text())
 		if strings.TrimSpace(scanner.Text()) == ": OPENROUTER PROCESSING" {
 			continue
 		}
@@ -123,6 +124,11 @@ func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.Op
 				line = ""
 			}
 		}
+	}
+	// Check for errors after the loop
+	if err := scanner.Err(); err != nil {
+		fmt.Printf("Error reading streaming response: %v\n", err.Error())
+		channel <- defaultVal
 	}
 }
 

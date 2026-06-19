@@ -23,6 +23,7 @@
     --color-gray-300: oklch(87.2% 0.01 258.338);
     --color-gray-500: oklch(55.1% 0.027 264.364);
     --color-gray-600: oklch(44.6% 0.03 256.802);
+    --color-gray-900: oklch(21% 0.034 264.665);
     --color-white: #fff;
     --spacing: 0.25rem;
     --text-xs: 0.75rem;
@@ -45,7 +46,7 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
-    --color-dark: #000;
+    --color-dark: var(--color-gray-900);
     --color-light: #fff;
   }
 }
@@ -965,7 +966,7 @@
     border-color: var(--color-dark);
   }
   .border-dark\/50 {
-    border-color: color-mix(in srgb, #000 50%, transparent);
+    border-color: color-mix(in srgb, oklch(21% 0.034 264.665) 50%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-dark) 50%, transparent);
     }
@@ -1182,7 +1183,7 @@
     outline-style: none;
   }
   .scrollbar-thumb-dark {
-    --scrollbar-thumb: #000;
+    --scrollbar-thumb: var(--color-gray-900);
   }
   .scrollbar-track-gray-300 {
     --scrollbar-track: oklch(87.2% 0.01 258.338);

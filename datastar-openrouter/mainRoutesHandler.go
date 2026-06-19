@@ -356,13 +356,13 @@ func fileUploadHandler(responseWriter http.ResponseWriter, request *http.Request
 			return
 		}
 		decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0].Contents)
-		if err != nil || len(decodedBytes) > 1024*1024 {
+		if err != nil || len(decodedBytes) > 6*1024*1024 {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:  "{fileData:'',fileUploading:false}",
 				IsSignal: true,
 			}
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				Content: "File too large. Please upload a file smaller than 1 MB.",
+				Content: "File too large. Please upload a file smaller than 6 MB.",
 				IsError: true,
 			}
 			fileName = ""
@@ -402,7 +402,7 @@ func removeUploadedFileHandler(responseWriter http.ResponseWriter, request *http
 
 // ALGO
 // Handle unauthorized user - user does not exist in table or session id coming from client is not valid
-// Handle bad request - more than 1 file uploaded, invalid file(non pdf and non image), file size > 1 MB
+// Handle bad request - more than 1 file uploaded, invalid file(non pdf and non image), file size > 6 MB
 // Handle new session creation if session id from client is 0, failure return to UI with error message
 // Insert user message chat conversation, failure return to UI with error message
 // Insert model message chat conversation with empty content
@@ -465,7 +465,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			return
 		}
 		decodedBytes, err := base64.StdEncoding.DecodeString(clientSignal.FileData[0].Contents)
-		if err != nil || len(decodedBytes) > 1024*1024 {
+		if err != nil || len(decodedBytes) > 6*1024*1024 {
 			http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 			return
 		}

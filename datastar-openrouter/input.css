@@ -7,7 +7,8 @@
 }
 
 @theme {
-    --color-dark: #000;
+    /* --color-dark: #000; */
+    --color-dark: var(--color-gray-900);
     --color-light: #fff;
 }
 
