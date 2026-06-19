@@ -137,11 +137,11 @@ templ EditEventDrawer() {
 							class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400
 								 transition duration-300 flex gap-2 items-center bg-white w-full
 								 focus:inset-shadow-sm focus:inset-shadow-gray-400 placeholder:text-gray-400"
+							data-bind="stopAfter"
 							data-init={ `flatpickr('#stopAfter',{
 									dateFormat: 'm/d/Y',	
 									minDate: '`+time.Now().Format("01/02/2006") +`',									
 							});` }
-							data-bind="stopAfter"
 						/>
 					</fieldset>
 				</div>
