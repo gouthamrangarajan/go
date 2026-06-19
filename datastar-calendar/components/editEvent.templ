@@ -10,7 +10,7 @@ templ EditEventDrawer() {
 		data-init="$_detailsModalAbortController = focusTrap('#taskDetails')"
 	>
 		<div
-			class="w-11/12 h-full py-2 px-4 pt-6 border-l border-gray-300 animate-slide-left bg-white z-10 shadow flex flex-col gap-6 md:w-9/12 lg:w-1/3 xl:w-1/4"
+			class="w-11/12 h-full py-2 px-4 border-l border-gray-300 animate-slide-left bg-white z-10 shadow flex flex-col gap-6 md:w-9/12 lg:w-1/3 xl:w-1/4"
 			style="view-transition-name:details-modal"
 		>
 			<div class="flex w-full justify-between items-center">
@@ -37,97 +37,114 @@ templ EditEventDrawer() {
 					evt.preventDefault();
 					if($_savingTask) return;					
   					@post('/update') ` }
-				class="w-full flex flex-col gap-3"
+				class="w-full flex flex-col gap-3 h-full"
 				data-indicator="_savingTask"
 			>
-				<fieldset
-					class="py-2 px-4 rounded border-2 border-gray-400 transition duration-300
+				<div class="flex flex-col gap-3 flex-1">
+					<fieldset
+						class="py-2 px-4 rounded border-2 border-gray-400 transition duration-300
 								flex gap-2 items-center bg-white focus-within:inset-shadow-sm
 								focus-within:inset-shadow-gray-400"
-				>
-					<textarea
-						type="text"
-						id="task"
-						class="appearance-none outline-none flex-1 placeholder:text-gray-400"
-						placeholder="Task"
-						name="task"
-						required
-						data-bind="task"
-						rows="3"
-					></textarea>
-				</fieldset>
-				<fieldset class="flex flex-col gap-1">
-					<label for="date" class="text-slate-600 text-lg">Date:</label>
-					<input
-						type="text"
-						id="date"
-						class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400 transition duration-300
-								flex gap-2 items-center bg-white focus:inset-shadow-sm
-								focus:inset-shadow-gray-400 placeholder:text-gray-400"
-						name="date"
-						required
-						data-bind="date"
-						data-init={ `flatpickr('#date',{
-							dateFormat: 'm/d/Y',										
-							minDate: '`+time.Now().Format("01/02/2006") +`'
-						});` }
-					/>
-				</fieldset>
-				<fieldset class="flex flex-col gap-1 w-full ">
-					<label for="frequency" class="text-slate-600 text-lg">Frequency:</label>
-					<div class="relative w-full">
-						<select
-							id="frequency"
-							class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400 transition duration-300
+					>
+						<textarea
+							type="text"
+							id="task"
+							class="appearance-none outline-none flex-1 placeholder:text-gray-400"
+							placeholder="Task"
+							name="task"
+							required
+							data-bind="task"
+							rows="2"
+						></textarea>
+					</fieldset>
+					<fieldset class="flex flex-col gap-1  border-gray-300 lg:border-t lg:border-b lg:pt-1 lg:pb-2">
+						<label for="date" class="text-slate-600 text-lg w-full flex items-center">
+							<span class="flex-1">Date:</span>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 hidden lg:inline">
+								<path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd"></path>
+							</svg>
+						</label>
+						<input
+							type="text"
+							id="date"
+							class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400 transition
+								  duration-300 flex gap-2 items-center bg-white focus:inset-shadow-sm
+								  focus:inset-shadow-gray-400 placeholder:text-gray-400 lg:hidden"
+							name="date"
+							required
+							data-bind="date"
+							data-init={ `
+									 if(window.innerWidth>=1024){
+										flatpickr('#date',{
+											dateFormat: 'm/d/Y',										
+											minDate: '`+time.Now().Format("01/02/2006") +`',
+											inline:true
+										});
+									} else{
+										flatpickr('#date',{
+											dateFormat: 'm/d/Y',	
+											minDate: new Date(),									
+										});
+									} 
+								` }
+						/>
+					</fieldset>
+					<fieldset class="flex flex-col gap-1 w-full ">
+						<label for="frequency" class="text-slate-600 text-lg">Frequency:</label>
+						<div class="relative w-full">
+							<select
+								id="frequency"
+								class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400 transition duration-300
 								flex gap-2 items-center bg-white focus:inset-shadow-sm
 								focus:inset-shadow-gray-400  w-full"
-							name="frequency"
-							data-bind="frequency"
-						>
-							for _,item:= range AllowedFrequencies {
-								<option value={ item }>{ item }</option>
-							}
-						</select>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 absolute top-3 right-3 hover:-z-10">
-							<path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd"></path>
-						</svg>
-					</div>
-				</fieldset>
-				<fieldset
-					data-show="$frequency!='Only once' && $frequency!='Daily'"
-					class="flex items-center gap-1 w-full "
-				>
-					<input
-						type="checkbox"
-						id="exact"
-						name="exact"
-						value="yes"
-						class="w-5 h-5 border-gray-300 rounded"
-						data-bind="exact"
-					/>
-					<label for="exact" class="text-slate-600 text-lg">
-						<span>Use Exact Date:</span>
-					</label>
-				</fieldset>
-				<fieldset
-					data-show="$frequency!='Only once'"
-					class="flex flex-col gap-1 w-full "
-				>
-					<label for="stopAfter" class="text-slate-600 text-lg">Stop After:</label>
-					<input
-						type="text"
-						name="stopAfter"
-						id="stopAfter"
-						class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400
+								name="frequency"
+								data-bind="frequency"
+							>
+								for _,item:= range AllowedFrequencies {
+									<option value={ item }>{ item }</option>
+								}
+							</select>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5 absolute top-3 right-3 hover:-z-10">
+								<path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd"></path>
+							</svg>
+						</div>
+					</fieldset>
+					<fieldset
+						data-show="$frequency!='Only once' && $frequency!='Daily'"
+						class="flex items-center gap-1 w-full "
+					>
+						<input
+							type="checkbox"
+							id="exact"
+							name="exact"
+							value="yes"
+							class="w-5 h-5 border-gray-300 rounded"
+							data-bind="exact"
+						/>
+						<label for="exact" class="text-slate-600 text-lg">
+							<span>Use Exact Date:</span>
+						</label>
+					</fieldset>
+					<fieldset
+						data-show="$frequency!='Only once'"
+						class="flex flex-col gap-1 w-full "
+					>
+						<label for="stopAfter" class="text-slate-600 text-lg">Stop After:</label>
+						<input
+							type="text"
+							name="stopAfter"
+							id="stopAfter"
+							class="appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400
 								 transition duration-300 flex gap-2 items-center bg-white w-full
 								 focus:inset-shadow-sm focus:inset-shadow-gray-400 placeholder:text-gray-400"
-						data-init={ `flatpickr('#stopAfter',{
+							data-init={ `flatpickr('#stopAfter',{
 							dateFormat: 'm/d/Y',	
 							minDate: new Date(),									
 						});` }
-						data-bind="stopAfter"
-					/>
-				</fieldset>
+							data-bind="stopAfter"
+						/>
+					</fieldset>
+				</div>
 				<div class="w-full flex justify-end items-center gap-2">
 					<button
 						class="appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-gray-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70"

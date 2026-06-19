@@ -324,9 +324,7 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 			break
 		}
 	}
-	if stopAfter == "01/01/0001" || stopAfter == "0001-01-01" {
-		stopAfter = ""
-	}
+
 	if !frequencyAllowed {
 		errors = append(errors, "Frequency is not allowed")
 	} else if frequency == "Only once" && stopAfter != "" {
@@ -377,11 +375,13 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 		if subjectErr == nil {
 			channel := make(chan models.EventData)
 			defer close(channel)
-			if stopAfterParseError == nil {
+			if stopAfterParseError == nil && stopAfter != "" {
+				// fmt.Printf("Before Parsed stop after: %v\n", stopAfter)
 				stopAfter = stopAfterParsed.Format("2006-01-02")
 			} else {
 				stopAfter = ""
 			}
+			// fmt.Printf("Parsed stop after: %v\n", stopAfter)
 			dataToDB := models.EventData{
 				Task:      task,
 				Frequency: frequency,
