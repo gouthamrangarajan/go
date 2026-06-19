@@ -106,6 +106,7 @@ templ AddEventModal(date time.Time, week int) {
 						name="exact"
 						value="yes"
 						class="w-5 h-5 border-gray-300 rounded"
+						data-bind="exact"
 					/>
 					<label for="exact" class="text-slate-600 text-lg">
 						<span>Use Exact Date:</span>
@@ -125,7 +126,7 @@ templ AddEventModal(date time.Time, week int) {
 								 focus:inset-shadow-sm focus:inset-shadow-gray-400 placeholder:text-gray-400"
 						data-init={ `flatpickr('#stopAfter',{
 							dateFormat: 'm/d/Y',		
-							minDate: new Date(),								
+							minDate: '`+time.Now().Format("01/02/2006") +`',
 						});` }
 						data-bind="stopAfter"
 					/>

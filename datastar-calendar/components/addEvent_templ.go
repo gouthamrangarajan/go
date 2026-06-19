@@ -98,17 +98,17 @@ func AddEventModal(date time.Time, week int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5 absolute top-3 right-3 hover:-z-10\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></div></fieldset><fieldset data-show=\"$frequency!='Only once' && $frequency!='Daily'\" class=\"flex items-center gap-1 w-full\"><input type=\"checkbox\" id=\"exact\" name=\"exact\" value=\"yes\" class=\"w-5 h-5 border-gray-300 rounded\"> <label for=\"exact\" class=\"text-slate-600 text-lg\"><span>Use Exact Date:</span></label></fieldset><fieldset data-show=\"$frequency!='Only once'\" class=\"flex flex-col gap-1 w-full\"><label for=\"stopAfter\" class=\"text-slate-600 text-lg\">Stop After:</label> <input type=\"text\" name=\"stopAfter\" id=\"stopAfter\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400 transition duration-300 flex gap-2 items-center bg-white w-full focus:inset-shadow-sm focus:inset-shadow-gray-400 placeholder:text-gray-400\" data-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select> <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5 absolute top-3 right-3 hover:-z-10\"><path fill-rule=\"evenodd\" d=\"M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z\" clip-rule=\"evenodd\"></path></svg></div></fieldset><fieldset data-show=\"$frequency!='Only once' && $frequency!='Daily'\" class=\"flex items-center gap-1 w-full\"><input type=\"checkbox\" id=\"exact\" name=\"exact\" value=\"yes\" class=\"w-5 h-5 border-gray-300 rounded\" data-bind=\"exact\"> <label for=\"exact\" class=\"text-slate-600 text-lg\"><span>Use Exact Date:</span></label></fieldset><fieldset data-show=\"$frequency!='Only once'\" class=\"flex flex-col gap-1 w-full\"><label for=\"stopAfter\" class=\"text-slate-600 text-lg\">Stop After:</label> <input type=\"text\" name=\"stopAfter\" id=\"stopAfter\" class=\"appearance-none outline-none py-2 px-4 rounded border-2 border-gray-400 transition duration-300 flex gap-2 items-center bg-white w-full focus:inset-shadow-sm focus:inset-shadow-gray-400 placeholder:text-gray-400\" data-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(`flatpickr('#stopAfter',{
 							dateFormat: 'm/d/Y',		
-							minDate: new Date(),								
+							minDate: '` + time.Now().Format("01/02/2006") + `',
 						});`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 129, Col: 10}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 130, Col: 10}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -151,7 +151,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully added task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 160, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 161, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -169,7 +169,7 @@ func AddEventResult(success bool, task string) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("Error adding task " + task + ". Please try again later.")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 168, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 169, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {

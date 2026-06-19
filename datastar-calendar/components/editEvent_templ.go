@@ -62,7 +62,7 @@ func EditEventDrawer() templ.Component {
 									} else{
 										flatpickr('#date',{
 											dateFormat: 'm/d/Y',	
-											minDate: new Date(),									
+											minDate: '` + time.Now().Format("01/02/2006") + `',								
 										});
 									} 
 								`)
@@ -115,11 +115,11 @@ func EditEventDrawer() templ.Component {
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(`flatpickr('#stopAfter',{
-							dateFormat: 'm/d/Y',	
-							minDate: new Date(),									
-						});`)
+									dateFormat: 'm/d/Y',	
+									minDate: '` + time.Now().Format("01/02/2006") + `',									
+							});`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 143, Col: 10}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 143, Col: 11}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {

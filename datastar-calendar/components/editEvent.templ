@@ -83,7 +83,7 @@ templ EditEventDrawer() {
 									} else{
 										flatpickr('#date',{
 											dateFormat: 'm/d/Y',	
-											minDate: new Date(),									
+											minDate: '`+time.Now().Format("01/02/2006") +`',								
 										});
 									} 
 								` }
@@ -138,9 +138,9 @@ templ EditEventDrawer() {
 								 transition duration-300 flex gap-2 items-center bg-white w-full
 								 focus:inset-shadow-sm focus:inset-shadow-gray-400 placeholder:text-gray-400"
 							data-init={ `flatpickr('#stopAfter',{
-							dateFormat: 'm/d/Y',	
-							minDate: new Date(),									
-						});` }
+									dateFormat: 'm/d/Y',	
+									minDate: '`+time.Now().Format("01/02/2006") +`',									
+							});` }
 							data-bind="stopAfter"
 						/>
 					</fieldset>
