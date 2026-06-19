@@ -53,7 +53,7 @@ func EditEventDrawer() templ.Component {
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`
-									 if(window.innerWidth>=1024){
+									 if(window.innerWidth>=1280){
 										flatpickr('#date',{
 											dateFormat: 'm/d/Y',										
 											minDate: '` + time.Now().Format("01/02/2006") + `',

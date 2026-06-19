@@ -74,7 +74,7 @@ templ EditEventDrawer() {
 							required
 							data-bind="date"
 							data-init={ `
-									 if(window.innerWidth>=1024){
+									 if(window.innerWidth>=1280){
 										flatpickr('#date',{
 											dateFormat: 'm/d/Y',										
 											minDate: '`+time.Now().Format("01/02/2006") +`',
