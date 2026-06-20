@@ -678,6 +678,9 @@
   .scrollbar-track-purple-300 {
     --scrollbar-track: oklch(0.827 0.119 306.383);
   }
+  .scrollbar-track-transparent {
+    --scrollbar-track: transparent;
+  }
   .group-hover\:opacity-100 {
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
