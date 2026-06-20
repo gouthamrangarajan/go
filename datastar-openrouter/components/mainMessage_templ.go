@@ -227,7 +227,8 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 		ctx = templ.ClearChildren(ctx)
 		messageIdStr := strconv.Itoa(message.Id)
 		if message.FileName != "" {
-			if strings.HasSuffix(strings.ToLower(message.FileName), ".pdf") {
+			switch {
+			case strings.HasSuffix(strings.ToLower(message.FileName), ".pdf"):
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<p class=\"font-semibold flex gap-1 cursor-pointer relative\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\" fill=\"currentColor\" class=\"size-5\"><path fill-rule=\"evenodd\" d=\"M15.621 4.379a3 3 0 0 0-4.242 0l-7 7a3 3 0 0 0 4.241 4.243h.001l.497-.5a.75.75 0 0 1 1.064 1.057l-.498.501-.002.002a4.5 4.5 0 0 1-6.364-6.364l7-7a4.5 4.5 0 0 1 6.368 6.36l-3.455 3.553A2.625 2.625 0 1 1 9.52 9.52l3.45-3.451a.75.75 0 1 1 1.061 1.06l-3.45 3.451a1.125 1.125 0 0 0 1.587 1.595l3.454-3.553a3 3 0 0 0 0-4.242Z\" clip-rule=\"evenodd\"></path></svg> <span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -235,7 +236,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(message.FileName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 98, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 99, Col: 29}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -245,7 +246,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-			} else if message.FileData != "" {
+			case message.FileData != "":
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<img src=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -253,7 +254,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(message.FileData)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 102, Col: 26}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 103, Col: 27}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -266,7 +267,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("image_" + messageIdStr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 103, Col: 32}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 104, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -279,7 +280,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(` image for ` + messageIdStr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 104, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 105, Col: 39}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -289,7 +290,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-			} else if message.FileData == "" && stream {
+			case message.FileData == "" && stream:
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<img style=\"display:none\" id=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -297,7 +298,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("image_" + messageIdStr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 110, Col: 32}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 111, Col: 33}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -310,7 +311,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(` image for ` + messageIdStr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 111, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 112, Col: 39}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -320,8 +321,8 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-			} else if message.FileData == "" && !stream {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<p class=\"font-semibold flex gap-1 cursor-pointer relative\" data-signals=\"")
+			case message.FileData == "" && !stream:
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<p class=\"font-semibold flex gap-1 relative\" data-signals=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -329,7 +330,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(`{showImage_` + messageIdStr + `:false,
 								imageFetched_` + messageIdStr + `:false }`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 118, Col: 50}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 119, Col: 50}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -344,7 +345,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 										$messageIdToFetchImage=` + messageIdStr + `;@post('/image');}
 									 else{$showImage_` + messageIdStr + `=true;}`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 121, Col: 54}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 122, Col: 54}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -357,7 +358,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(`$showImage_` + messageIdStr + `=false`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 122, Col: 80}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 123, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -370,7 +371,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(`_fetchingImage_` + messageIdStr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 123, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 124, Col: 54}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -381,9 +382,9 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var20 string
-				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(`{'animate-pulse cursor-wait':$_fetchingImage_` + messageIdStr + `}`)
+				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(`{'animate-pulse cursor-wait':$_fetchingImage_` + messageIdStr + `,'cursor-pointer':!$_fetchingImage_` + messageIdStr + `}`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 124, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 125, Col: 141}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -396,7 +397,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(message.FileName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 129, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 130, Col: 29}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
@@ -409,7 +410,7 @@ func ChatMessageFileData(message models.ChatConversation, stream bool) templ.Com
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("image_" + messageIdStr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 132, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 133, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -454,7 +455,7 @@ func ChatMessageImageDisplayOnHover(message models.ChatConversation) templ.Compo
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(message.FileData)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 143, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 144, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -467,7 +468,7 @@ func ChatMessageImageDisplayOnHover(message models.ChatConversation) templ.Compo
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs("image_" + messageIdStr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 144, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 145, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -480,7 +481,7 @@ func ChatMessageImageDisplayOnHover(message models.ChatConversation) templ.Compo
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(` image for ` + messageIdStr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 145, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 146, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
@@ -493,7 +494,7 @@ func ChatMessageImageDisplayOnHover(message models.ChatConversation) templ.Compo
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(`$showImage_` + messageIdStr)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 146, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 147, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -536,7 +537,7 @@ func ChatMessageModelIdDisplay(message models.ChatConversation) templ.Component 
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs("model_" + strconv.Itoa(message.Id))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 154, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 155, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -549,7 +550,7 @@ func ChatMessageModelIdDisplay(message models.ChatConversation) templ.Component 
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(message.ModelId)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 156, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 157, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -567,7 +568,7 @@ func ChatMessageModelIdDisplay(message models.ChatConversation) templ.Component 
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs("model_" + strconv.Itoa(message.Id))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 161, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMessage.templ`, Line: 162, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
