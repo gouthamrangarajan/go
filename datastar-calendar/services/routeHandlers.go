@@ -125,6 +125,10 @@ func SSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	uiSidMap.Store(sessionKey, userSessionChannel)
 
 	sse := datastar.NewSSE(responseWriter, request)
+
+	heartBeatTicker := time.NewTicker(5 * time.Second)
+	defer heartBeatTicker.Stop()
+
 	sse.PatchSignals([]byte(`{showErrorMessage:false}`))
 	for {
 		select {
@@ -148,6 +152,10 @@ func SSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				} else {
 					sse.PatchElements(channelData.Content, datastar.WithSelector(channelData.Selector), datastar.WithUseViewTransitions(channelData.UseViewTransition))
 				}
+			}
+		case <-heartBeatTicker.C:
+			if channelInMap, ok := uiSidMap.Load(sessionKey); !ok || channelInMap != userSessionChannel {
+				return
 			}
 		}
 	}
