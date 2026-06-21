@@ -128,7 +128,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userSessionChannel := make(chan models.LongSSEData)
 	uiSidMap.Store(userSessionKey, userSessionChannel)
 
-	heartBeatTicker := time.NewTicker(20 * time.Second)
+	heartBeatTicker := time.NewTicker(5 * time.Second)
 	defer heartBeatTicker.Stop()
 
 	sse.PatchSignals([]byte(`{showErrorMessage:false}`))
