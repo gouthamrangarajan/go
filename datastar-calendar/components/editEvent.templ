@@ -1,7 +1,5 @@
 package components
 
-import "time"
-
 templ EditEventDrawer() {
 	<div
 		class="absolute top-0 left-0 bg-white/50 w-full h-full flex justify-end"
@@ -77,13 +75,11 @@ templ EditEventDrawer() {
 									 if(window.innerWidth>=1280){
 										flatpickr('#date',{
 											dateFormat: 'm/d/Y',										
-											minDate: '`+time.Now().Format("01/02/2006") +`',
 											inline:true
 										});
 									} else{
 										flatpickr('#date',{
 											dateFormat: 'm/d/Y',	
-											minDate: '`+time.Now().Format("01/02/2006") +`',								
 										});
 									} 
 								` }
@@ -140,7 +136,6 @@ templ EditEventDrawer() {
 							data-bind="stopAfter"
 							data-init={ `flatpickr('#stopAfter',{
 									dateFormat: 'm/d/Y',	
-									minDate: '`+time.Now().Format("01/02/2006") +`',									
 							});` }
 						/>
 					</fieldset>
