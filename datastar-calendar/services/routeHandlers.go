@@ -43,9 +43,9 @@ func MonthPage(responseWriter http.ResponseWriter, request *http.Request) {
 	month := request.URL.Query().Get("month")
 	year := request.URL.Query().Get("year")
 	model := models.MonthYearDayWeekString{Month: month, Year: year, Day: ""}
-	MonthPageWithOob(responseWriter, request, model, false)
+	monthPageWithData(responseWriter, request, model)
 }
-func MonthPageWithOob(responseWriter http.ResponseWriter, request *http.Request, to models.MonthYearDayWeekString, isOob bool) {
+func monthPageWithData(responseWriter http.ResponseWriter, request *http.Request, to models.MonthYearDayWeekString) {
 	token := request.Context().Value(TokenKey).(string)
 	from := request.URL.Query().Get("from")
 	today := time.Now()
@@ -154,9 +154,9 @@ func SSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 }
 func DetailsUI(responseWriter http.ResponseWriter, request *http.Request) {
 	token := request.Context().Value(TokenKey).(string)
-	var ClientSignals models.ClientSignals
-	datastar.ReadSignals(request, &ClientSignals)
-	key := GenerateUserSessionKey(token, ClientSignals.UiSid)
+	var clientSignals models.ClientSignals
+	datastar.ReadSignals(request, &clientSignals)
+	key := GenerateUserSessionKey(token, clientSignals.UiSid)
 
 	id := chi.URLParam(request, "id")
 	dataChannel := make(chan models.EventData)
@@ -191,9 +191,9 @@ func DetailsUI(responseWriter http.ResponseWriter, request *http.Request) {
 
 func CloseDetailsUI(responseWriter http.ResponseWriter, request *http.Request) {
 	token := request.Context().Value(TokenKey).(string)
-	var ClientSignals models.ClientSignals
-	datastar.ReadSignals(request, &ClientSignals)
-	key := GenerateUserSessionKey(token, ClientSignals.UiSid)
+	var clientSignals models.ClientSignals
+	datastar.ReadSignals(request, &clientSignals)
+	key := GenerateUserSessionKey(token, clientSignals.UiSid)
 	if userSession, userSessionExists := uiSidMap.Load(key); userSessionExists {
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Selector:          "#taskDetails",
@@ -238,9 +238,9 @@ func AddUI(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	addEventDate := time.Date(year, month, day, 0, 0, 0, 0, today.Location())
 	token := request.Context().Value(TokenKey).(string)
-	var ClientSignals models.ClientSignals
-	datastar.ReadSignals(request, &ClientSignals)
-	key := GenerateUserSessionKey(token, ClientSignals.UiSid)
+	var clientSignals models.ClientSignals
+	datastar.ReadSignals(request, &clientSignals)
+	key := GenerateUserSessionKey(token, clientSignals.UiSid)
 
 	dataBuffer := new(bytes.Buffer)
 	components.AddEventModal(addEventDate, week).Render(context.Background(), dataBuffer)
@@ -259,9 +259,9 @@ func AddUI(responseWriter http.ResponseWriter, request *http.Request) {
 }
 func CloseAddUI(responseWriter http.ResponseWriter, request *http.Request) {
 	token := request.Context().Value(TokenKey).(string)
-	var ClientSignals models.ClientSignals
-	datastar.ReadSignals(request, &ClientSignals)
-	key := GenerateUserSessionKey(token, ClientSignals.UiSid)
+	var clientSignals models.ClientSignals
+	datastar.ReadSignals(request, &clientSignals)
+	key := GenerateUserSessionKey(token, clientSignals.UiSid)
 	if userSession, userSessionExists := uiSidMap.Load(key); userSessionExists {
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Selector:          "#addTask",
@@ -277,22 +277,22 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 	token := request.Context().Value(TokenKey).(string)
-	var ClientSignals models.ClientSignals
-	datastar.ReadSignals(request, &ClientSignals)
+	var clientSignals models.ClientSignals
+	datastar.ReadSignals(request, &clientSignals)
 	// fmt.Println("Received signals: ", ClientSignals)
-	key := GenerateUserSessionKey(token, ClientSignals.UiSid)
+	key := GenerateUserSessionKey(token, clientSignals.UiSid)
 
 	dateLayout := "2006-01-02"
-	if ClientSignals.EventId != "" {
+	if clientSignals.EventId != "" {
 		dateLayout = "01/02/2006"
 	}
 	stopAfterDateLayout := "01/02/2006"
 
-	task := strings.Trim(ClientSignals.Task, "")
-	date := ClientSignals.Date
-	frequency := ClientSignals.Frequency
-	stopAfter := ClientSignals.StopAfter
-	exact := ClientSignals.Exact
+	task := strings.Trim(clientSignals.Task, "")
+	date := clientSignals.Date
+	frequency := clientSignals.Frequency
+	stopAfter := clientSignals.StopAfter
+	exact := clientSignals.Exact
 
 	var dateParsed time.Time
 	var stopAfterParsed time.Time
@@ -307,7 +307,7 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 		dateParsed, dateParseError = time.Parse(dateLayout, date)
 		if dateParseError != nil {
 			errors = append(errors, "Date is not in correct format")
-		} else if ClientSignals.EventId != "" {
+		} else if clientSignals.EventId != "" {
 			if time.Until(dateParsed).Hours() < -24 {
 				errors = append(errors, "Date should not be in the past")
 			}
@@ -346,7 +346,7 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 	if len(errors) > 0 {
 		dataBuffer := new(bytes.Buffer)
 		dataShowAttr := "!$_addingTask"
-		if ClientSignals.EventId != "" {
+		if clientSignals.EventId != "" {
 			dataShowAttr = "!$_savingTask"
 		}
 		shared.SaveEventValidationError(errors, dataShowAttr).Render(context.Background(), dataBuffer)
@@ -390,8 +390,8 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 				Exact:     exact,
 				StopAfter: stopAfter,
 			}
-			if ClientSignals.EventId != "" {
-				dataToDB.Id = ClientSignals.EventId
+			if clientSignals.EventId != "" {
+				dataToDB.Id = clientSignals.EventId
 				go db.UpdateData(token, dataToDB, channel)
 
 			} else {
@@ -405,13 +405,13 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	dataBuffer := new(bytes.Buffer)
 	if functionalityErrored {
-		if ClientSignals.EventId != "" {
+		if clientSignals.EventId != "" {
 			components.EditEventResult(false, task).Render(context.Background(), dataBuffer)
 		} else {
 			components.AddEventResult(false, task).Render(context.Background(), dataBuffer)
 		}
 	} else {
-		if ClientSignals.EventId != "" {
+		if clientSignals.EventId != "" {
 			components.EditEventResult(true, task).Render(context.Background(), dataBuffer)
 		} else {
 			components.AddEventResult(true, task).Render(context.Background(), dataBuffer)
@@ -423,7 +423,7 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 			Mode:    datastar.WithModeOuter(),
 		}
 		if !functionalityErrored {
-			if ClientSignals.EventId == "" {
+			if clientSignals.EventId == "" {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:   "{eventId:'',task:'',frequency:'Only once',stopAfter:'',exact:'no'}",
 					IsSignals: true,
@@ -431,7 +431,7 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 			} else {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					IsRemove: true,
-					Selector: "#event-" + ClientSignals.EventId,
+					Selector: "#event-" + clientSignals.EventId,
 				}
 			}
 			newEventDataUIBuffer := new(bytes.Buffer)
@@ -445,157 +445,113 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 }
 
-// func UpdateDate(responseWriter http.ResponseWriter, request *http.Request) {
-// 	var dnd models.DnD
-// 	jsonErr := json.NewDecoder(request.Body).Decode(&dnd)
-// 	if jsonErr != nil {
-// 		responseWriter.WriteHeader(400)
-// 		return
-// 	}
-// 	token := request.Context().Value(TokenKey).(string)
-// 	channel := make(chan bool)
-// 	go db.UpdateDate(token, dnd, channel)
-// 	ret := <-channel
+func DeleteEvent(responseWriter http.ResponseWriter, request *http.Request) {
+	token := request.Context().Value(TokenKey).(string)
+	var clientSignals models.ClientSignals
+	datastar.ReadSignals(request, &clientSignals)
+	// fmt.Println("Received signals: ", ClientSignals)
+	if clientSignals.EventId == "" {
+		responseWriter.WriteHeader(400)
+		return
+	}
+	channel := make(chan bool)
+	go db.DeleteEvent(models.DeleteEvent{AccessToken: token, Id: clientSignals.EventId}, channel)
+	ret := <-channel
+	key := GenerateUserSessionKey(token, clientSignals.UiSid)
+	if userSession, userSessionExists := uiSidMap.Load(key); userSessionExists {
+		dataBuffer := new(bytes.Buffer)
+		if !ret {
+			components.DeleteEventResult(false).Render(context.Background(), dataBuffer)
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content: dataBuffer.String(),
+				Mode:    datastar.WithModeOuter(),
+			}
 
-// 	if ret {
-// 		responseWriter.Write([]byte("Success"))
-// 		return
+		} else {
+			components.DeleteEventResult(true).Render(context.Background(), dataBuffer)
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content: dataBuffer.String(),
+				Mode:    datastar.WithModeOuter(),
+			}
+
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				IsRemove: true,
+				Selector: "#event-" + clientSignals.EventId,
+			}
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:   "{showDeleteConfirm:false}",
+				IsSignals: true,
+			}
+		}
+	}
+
+}
+
+// func WeekPage(responseWriter http.ResponseWriter, request *http.Request) {
+// 	toMonth := request.URL.Query().Get("month")
+// 	toYear := request.URL.Query().Get("year")
+// 	toWeek := request.URL.Query().Get("week")
+// 	model := models.MonthYearDayWeekString{Month: toMonth, Year: toYear, Week: toWeek}
+// 	if request.Header.Get("HX-Request") == "true" {
+// 		WeekPageWithOob(responseWriter, request, model, true)
+// 	} else {
+// 		WeekPageWithOob(responseWriter, request, model, false)
 // 	}
-// 	responseWriter.WriteHeader(500)
 // }
 
-// func AddPageWithOob(responseWriter http.ResponseWriter, request *http.Request, from models.MonthYearDayWeekString, isOob bool) {
+// func WeekPageWithOob(responseWriter http.ResponseWriter, request *http.Request, to models.MonthYearDayWeekString, isOob bool) {
 // 	today := time.Now()
 // 	year := today.Year()
 // 	month := today.Month()
-// 	day := today.Day()
-// 	week := 0
-// 	fromWeek := request.URL.Query().Get("week")
+// 	week := 1
+// 	from := request.URL.Query().Get("from")
 // 	token := request.Context().Value(TokenKey).(string)
-// 	if from.Month != "" {
-// 		monthFromUrl, err := strconv.Atoi(from.Month)
+
+// 	if to.Month != "" {
+// 		monthFromUrl, err := strconv.Atoi(to.Month)
 // 		if err == nil {
 // 			month = time.Month(monthFromUrl)
 // 		}
 // 	}
-// 	if from.Year != "" {
-// 		yearFromUrl, err := strconv.Atoi(from.Year)
+// 	if to.Year != "" {
+// 		yearFromUrl, err := strconv.Atoi(to.Year)
 // 		if err == nil {
 // 			year = yearFromUrl
 // 		}
 // 	}
-// 	if from.Day != "" {
-// 		dayFromUrl, err := strconv.Atoi(from.Day)
-// 		if err == nil {
-// 			day = dayFromUrl
-// 		}
-// 	}
-// 	if fromWeek != "" {
-// 		weekFromUrl, err := strconv.Atoi(fromWeek)
+// 	if to.Week != "" {
+// 		weekFromUrl, err := strconv.Atoi(to.Week)
 // 		if err == nil {
 // 			week = weekFromUrl
 // 		}
 // 	}
-// 	var calendarData calendarDataType
-// 	if week == 0 {
-// 		calendarData = generateCalendarData(year, month, today.Location())
-// 	} else {
-// 		calendarData = generateWeekCalendarData(monthYearDayWeek{Year: year, Month: month, Week: week}, today.Location())
-// 	}
+// 	calendarData := generateWeekCalendarData(monthYearDayWeek{Year: year, Month: month, Week: week}, today.Location())
 // 	channel := make(chan []models.EventData)
 // 	go db.GetData(token, calendarData.calendarDaysStrFormat, channel)
 // 	eventsData := <-channel
-// 	addEventDate := time.Date(year, month, day, 0, 0, 0, 0, today.Location())
-// 	if week == 0 {
-// 		components.AddEventPage(calendarData.data, eventsData, addEventDate, isOob).Render(request.Context(), responseWriter)
-// 	} else {
-// 		components.AddEventPageWeek(calendarData.data, eventsData, addEventDate, week, isOob).Render(request.Context(), responseWriter)
-// 	}
+// 	components.WeekCalendarPage(calendarData.data, eventsData, calendarData.monthStartDate, from, week, isOob).Render(request.Context(), responseWriter)
 // }
 
-func WeekPage(responseWriter http.ResponseWriter, request *http.Request) {
-	toMonth := request.URL.Query().Get("month")
-	toYear := request.URL.Query().Get("year")
-	toWeek := request.URL.Query().Get("week")
-	model := models.MonthYearDayWeekString{Month: toMonth, Year: toYear, Week: toWeek}
-	if request.Header.Get("HX-Request") == "true" {
-		WeekPageWithOob(responseWriter, request, model, true)
-	} else {
-		WeekPageWithOob(responseWriter, request, model, false)
-	}
-}
+// func generateWeekCalendarData(model monthYearDayWeek, location *time.Location) calendarDataType {
+// 	ret := calendarDataType{}
+// 	startDateOfMonth := time.Date(model.Year, model.Month, 1, 0, 0, 0, 0, location)
+// 	startDateForMonthCalendar := startDateOfMonth.AddDate(0, 0, -int(startDateOfMonth.Weekday()))
+// 	endDateOfMonth := time.Date(model.Year, model.Month+1, 0, 23, 59, 0, 0, location)
 
-func WeekPageWithOob(responseWriter http.ResponseWriter, request *http.Request, to models.MonthYearDayWeekString, isOob bool) {
-	today := time.Now()
-	year := today.Year()
-	month := today.Month()
-	week := 1
-	from := request.URL.Query().Get("from")
-	token := request.Context().Value(TokenKey).(string)
+// 	startDateForWeek := startDateForMonthCalendar.AddDate(0, 0, int(model.Week-1)*7)
 
-	if to.Month != "" {
-		monthFromUrl, err := strconv.Atoi(to.Month)
-		if err == nil {
-			month = time.Month(monthFromUrl)
-		}
-	}
-	if to.Year != "" {
-		yearFromUrl, err := strconv.Atoi(to.Year)
-		if err == nil {
-			year = yearFromUrl
-		}
-	}
-	if to.Week != "" {
-		weekFromUrl, err := strconv.Atoi(to.Week)
-		if err == nil {
-			week = weekFromUrl
-		}
-	}
-	calendarData := generateWeekCalendarData(monthYearDayWeek{Year: year, Month: month, Week: week}, today.Location())
-	channel := make(chan []models.EventData)
-	go db.GetData(token, calendarData.calendarDaysStrFormat, channel)
-	eventsData := <-channel
-	components.WeekCalendarPage(calendarData.data, eventsData, calendarData.monthStartDate, from, week, isOob).Render(request.Context(), responseWriter)
-}
+// 	data := make([][7]time.Time, 1)
 
-func generateWeekCalendarData(model monthYearDayWeek, location *time.Location) calendarDataType {
-	ret := calendarDataType{}
-	startDateOfMonth := time.Date(model.Year, model.Month, 1, 0, 0, 0, 0, location)
-	startDateForMonthCalendar := startDateOfMonth.AddDate(0, 0, -int(startDateOfMonth.Weekday()))
-	endDateOfMonth := time.Date(model.Year, model.Month+1, 0, 23, 59, 0, 0, location)
+// 	for idx := range 7 {
+// 		data[0][idx] = startDateForWeek.AddDate(0, 0, idx)
+// 	}
+// 	allDatesToFilter := generateAllDatesStringFromStartToEnd(data[0][0], data[0][6])
+// 	ret.calendarDaysStrFormat = allDatesToFilter
+// 	ret.monthStartDate = startDateOfMonth
+// 	ret.monthEndDate = endDateOfMonth
+// 	ret.calendarStartDate = startDateForWeek
+// 	ret.calendarEndDate = data[0][6]
+// 	ret.data = data
+// 	return ret
 
-	startDateForWeek := startDateForMonthCalendar.AddDate(0, 0, int(model.Week-1)*7)
-
-	data := make([][7]time.Time, 1)
-
-	for idx := range 7 {
-		data[0][idx] = startDateForWeek.AddDate(0, 0, idx)
-	}
-	allDatesToFilter := generateAllDatesStringFromStartToEnd(data[0][0], data[0][6])
-	ret.calendarDaysStrFormat = allDatesToFilter
-	ret.monthStartDate = startDateOfMonth
-	ret.monthEndDate = endDateOfMonth
-	ret.calendarStartDate = startDateForWeek
-	ret.calendarEndDate = data[0][6]
-	ret.data = data
-	return ret
-
-}
-
-func DeleteEvent(responseWriter http.ResponseWriter, request *http.Request) {
-	eventId := request.FormValue("eventId")
-	if eventId == "" {
-		responseWriter.WriteHeader(400)
-		return
-	}
-	token := request.Context().Value(TokenKey).(string)
-	channel := make(chan bool)
-	go db.DeleteEvent(models.DeleteEvent{AccessToken: token, Id: eventId}, channel)
-	ret := <-channel
-
-	if ret {
-		responseWriter.WriteHeader(200)
-		return
-	}
-	responseWriter.WriteHeader(500)
-}
+// }

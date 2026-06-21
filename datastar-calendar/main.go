@@ -31,10 +31,9 @@ func main() {
 	router.Get("/add/close", services.CloseAddUI)
 	router.Post("/add", services.SaveEvent)
 	router.Post("/update", services.SaveEvent)
-	router.Get("/wk", services.WeekPage)
+	// router.Get("/wk", services.WeekPage)
 	router.Post("/login", services.Login)
-	// router.Post("/dnd", services.UpdateDate)
-	router.Delete("/delete", services.DeleteEvent)
+	router.Post("/delete", services.DeleteEvent)
 	router.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
 		fileServer.ServeHTTP(response, request)

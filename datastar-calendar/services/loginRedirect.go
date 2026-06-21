@@ -2,7 +2,6 @@ package services
 
 import (
 	"datastar-calendar/components"
-	"datastar-calendar/models"
 	"datastar-calendar/services/db"
 	"net/http"
 	"os"
@@ -11,11 +10,11 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 )
 
-var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, to models.MonthYearDayWeekString, isOob bool){
-	"/": MonthPageWithOob,
-	// "/add": AddPageWithOob,
-	"/wk": WeekPageWithOob,
-}
+// var loginRedirectRoutes = map[string]func(w http.ResponseWriter, r *http.Request, to models.MonthYearDayWeekString, isOob bool){
+// 	"/": MonthPageWithOob,
+// 	// "/add": AddPageWithOob,
+// 	"/wk": WeekPageWithOob,
+// }
 
 func Login(responseWriter http.ResponseWriter, request *http.Request) {
 	email := request.FormValue("email")

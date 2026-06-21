@@ -23,6 +23,7 @@
     --color-slate-600: oklch(0.446 0.043 257.281);
     --color-slate-700: oklch(0.372 0.044 257.287);
     --color-gray-50: oklch(0.985 0.002 247.839);
+    --color-gray-100: oklch(0.967 0.003 264.542);
     --color-gray-200: oklch(0.928 0.006 264.531);
     --color-gray-300: oklch(0.872 0.01 258.338);
     --color-gray-400: oklch(0.707 0.022 261.325);
@@ -205,6 +206,9 @@
   }
   .static {
     position: static;
+  }
+  .-top-24 {
+    top: calc(var(--spacing) * -24);
   }
   .top-0 {
     top: calc(var(--spacing) * 0);
@@ -488,6 +492,9 @@
   }
   .bg-black\/30 {
     background-color: color-mix(in oklab, var(--color-black) 30%, transparent);
+  }
+  .bg-gray-100 {
+    background-color: var(--color-gray-100);
   }
   .bg-gray-200 {
     background-color: var(--color-gray-200);
@@ -857,16 +864,6 @@
       display: block;
     }
   }
-  .lg\:hidden {
-    @media (width >= 64rem) {
-      display: none;
-    }
-  }
-  .lg\:inline {
-    @media (width >= 64rem) {
-      display: inline;
-    }
-  }
   .lg\:h-14 {
     @media (width >= 64rem) {
       height: calc(var(--spacing) * 14);
@@ -1116,6 +1113,20 @@
   }
   to {
     opacity: 1;
+  }
+}
+.animate-confirm-box {
+  animation: confirm-box 0.2s var(--ease-in-3) forwards;
+}
+@keyframes confirm-box {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
   }
 }
 @layer base {

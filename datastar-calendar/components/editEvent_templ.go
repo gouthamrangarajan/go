@@ -38,7 +38,7 @@ func EditEventDrawer() templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(`
 					evt.preventDefault();
-					if($_savingTask) return;					
+					if($_savingTask || $_deletingTask) return;					
   					@post('/update') `)
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 39, Col: 25}
@@ -125,7 +125,24 @@ func EditEventDrawer() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"></fieldset></div><div class=\"w-full flex justify-end items-center gap-2\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-gray-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close');\" data-attr-disabled=\"$_closingDetails\">Cancel</button> <button data-attr:disabled=\"$_savingTask || $date < new Date()\" type=\"submit\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-700 text-white transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-700 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Save Task</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"></fieldset></div><div class=\"w-full flex items-center justify-between relative\" data-signals=\"{showDeleteConfirm:false}\" data-on:click__outside=\"$showDeleteConfirm=false\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-gray-100 text-red-600 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"$showDeleteConfirm=true\">Delete Task</button><div class=\"py-2 px-4 rounded shadow absolute -top-24 left-0 flex flex-col gap-1 animate-confirm-box\" data-show=\"$showDeleteConfirm\"><p class=\"font-semibold\">Are you sure ? </p><div class=\"flex items-center gap-2\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded text-red-600 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(`
+									evt.stopPropagation();
+									if($_savingTask || $_deletingTask) return;					
+									@post('/delete');								
+								`)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 173, Col: 9}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" data-indicator=\"_deletingTask\" data-attr:disabled=\"$_savingTask || $_deletingTask\">Confirm</button> <button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"$showDeleteConfirm=false\">Cancel</button></div></div><div class=\"flex-1 flex justify-end items-center gap-2\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-gray-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close');\" data-attr-disabled=\"$_closingDetails\">Cancel</button> <button data-attr:disabled=\"$_savingTask || $_deletingTask || $date < new Date()\" type=\"submit\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-700 text-white transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-700 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Save Task</button></div></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -149,44 +166,106 @@ func EditEventResult(success bool, task string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if success {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully updated task " + task)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 175, Col: 37}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</p>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("Error updating task " + task + ". Please try again later.")
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully updated task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 183, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 214, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs("Error updating task " + task + ". Please try again later.")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 222, Col: 60}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		return nil
+	})
+}
+
+func DeleteEventResult(success bool) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		if success {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded\" data-init=\"$_detailsModalAbortController.abort();@get('/detail/close');\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var12 string
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully deleted task ")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 235, Col: 32}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("Error deleting task, please try again")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/editEvent.templ`, Line: 243, Col: 44}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
