@@ -163,7 +163,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
 				return
 			}
-			sse.PatchElementTempl(components.LiveIndicator(), datastar.WithUseViewTransitions(true))
+			sse.PatchElementTempl(components.LiveIndicator(), datastar.WithUseViewTransitions(false))
 		}
 	}
 }
