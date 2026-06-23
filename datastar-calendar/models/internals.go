@@ -9,4 +9,5 @@ type LongSSEData struct {
 	UseViewTransition bool
 	IsRemove          bool
 	IsSignals         bool
+	IsScript          bool
 }

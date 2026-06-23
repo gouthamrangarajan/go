@@ -23,12 +23,11 @@ type TableTdData struct {
 	Data                time.Time
 	CurrentMonthAndYear time.Time
 }
-type MonthPageData struct {
+type MonthCalendarData struct {
 	CalendarData        [][7]time.Time
 	EventsData          []EventData
 	CurrentMonthAndYear time.Time
 	From                string
-	UiSid               string
 }
 type ClientSignals struct {
 	UiSid     string `json:"uiSid"`

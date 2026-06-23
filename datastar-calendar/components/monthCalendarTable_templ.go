@@ -353,9 +353,9 @@ func filterDateEvents(eventsData []models.EventData, date time.Time) []models.Ev
 
 func generateMonthTdClass(templateData models.TableTdTemplateData) string {
 	animationClass := ""
-	if strings.ToLower(templateData.From) == "prev" {
+	if strings.ToLower(templateData.From) == "next" {
 		animationClass = "animate-slide-right"
-	} else if strings.ToLower(templateData.From) == "next" {
+	} else if strings.ToLower(templateData.From) == "prev" {
 		animationClass = "animate-slide-left"
 	}
 	tdClass := "border-b-2 border-r-2 border-gray-300 " + animationClass

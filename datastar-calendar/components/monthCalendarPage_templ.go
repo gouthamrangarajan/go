@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func MonthCalendarPage(data models.MonthPageData) templ.Component {
+func MonthCalendarPage(data models.MonthCalendarData, uiSid string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -53,9 +53,9 @@ func MonthCalendarPage(data models.MonthPageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{uiSid:'` + data.UiSid + `',showErrorMessage:false,errorMessage:''}`)
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{uiSid:'` + uiSid + `',showErrorMessage:false,errorMessage:''}`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 15, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 15, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -65,7 +65,7 @@ func MonthCalendarPage(data models.MonthPageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = monthCalendar(data.CalendarData, data.EventsData, data.CurrentMonthAndYear, data.From).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = MonthCalendar(data).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -83,7 +83,7 @@ func MonthCalendarPage(data models.MonthPageData) templ.Component {
 	})
 }
 
-func monthCalendar(calendarData [][7]time.Time, eventsData []models.EventData, currentMonthAndYear time.Time, from string) templ.Component {
+func MonthCalendar(data models.MonthCalendarData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -104,15 +104,15 @@ func monthCalendar(calendarData [][7]time.Time, eventsData []models.EventData, c
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:mainSection\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<section class=\"w-full h-full flex flex-col gap-1\" style=\"view-transition-name:mainSection\" id=\"section\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = monthCalendarheader(currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = monthCalendarheader(data.CurrentMonthAndYear).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = monthCalendarTable(calendarData, eventsData, currentMonthAndYear, from).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = monthCalendarTable(data.CalendarData, data.EventsData, data.CurrentMonthAndYear, data.From).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -124,7 +124,7 @@ func monthCalendar(calendarData [][7]time.Time, eventsData []models.EventData, c
 	})
 }
 
-func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Component {
+func monthCalendarheader(currentMonthAndYear time.Time) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -156,7 +156,7 @@ func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Compo
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 54, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 58, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -169,7 +169,7 @@ func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Compo
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(`$_showYears=true;`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 58, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 62, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -182,7 +182,7 @@ func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Compo
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentMonthAndYear.Year()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 59, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 63, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -205,7 +205,7 @@ func monthCalendarheader(currentMonthAndYear time.Time, from string) templ.Compo
 					}
 				`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 74, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarPage.templ`, Line: 78, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {

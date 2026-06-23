@@ -63,19 +63,38 @@ func monthPageWithData(responseWriter http.ResponseWriter, request *http.Request
 			year = yearFromUrl
 		}
 	}
+
 	calendarData := generateCalendarData(year, month, today.Location())
 	channel := make(chan []models.EventData)
 	go db.GetData(token, calendarData.calendarDaysStrFormat, channel)
 	eventsData := <-channel
-	uiSid := uuid.New().String()
-	pageData := models.MonthPageData{
+	pageData := models.MonthCalendarData{
 		CalendarData:        calendarData.data,
 		EventsData:          eventsData,
 		CurrentMonthAndYear: calendarData.monthStartDate,
 		From:                from,
-		UiSid:               uiSid,
 	}
-	components.MonthCalendarPage(pageData).Render(request.Context(), responseWriter)
+	if request.Header.Get("Datastar-Request") == "true" {
+		var clientSignals models.ClientSignals
+		datastar.ReadSignals(request, &clientSignals)
+		key := GenerateUserSessionKey(token, clientSignals.UiSid)
+		dataBuffer := new(bytes.Buffer)
+		components.MonthCalendar(pageData).Render(context.Background(), dataBuffer)
+		if userSession, userSessionExists := uiSidMap.Load(key); userSessionExists {
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:           dataBuffer.String(),
+				Mode:              datastar.WithModeOuter(),
+				UseViewTransition: true,
+			}
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:  `window.history.replaceState({}, "", "?month=` + strconv.Itoa(int(month)) + `&year=` + strconv.Itoa(year) + `");`,
+				IsScript: true,
+			}
+		}
+		return
+	}
+	uiSid := uuid.New().String()
+	components.MonthCalendarPage(pageData, uiSid).Render(request.Context(), responseWriter)
 }
 func generateCalendarData(year int, month time.Month, location *time.Location) calendarDataType {
 	ret := calendarDataType{}
@@ -142,6 +161,8 @@ func SSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			switch {
 			case channelData.IsRemove:
 				sse.RemoveElement(channelData.Selector, datastar.WithUseViewTransitions(channelData.UseViewTransition))
+			case channelData.IsScript:
+				sse.ExecuteScript(channelData.Content, datastar.WithExecuteScriptAutoRemove(true))
 			case channelData.IsSignals:
 				sse.PatchSignals([]byte(channelData.Content))
 			default:
