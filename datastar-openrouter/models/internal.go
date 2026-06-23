@@ -1,6 +1,8 @@
 package models
 
-import "github.com/starfederation/datastar-go/datastar"
+import (
+	"github.com/starfederation/datastar-go/datastar"
+)
 
 type SearchSessionViaChannelRequest struct {
 	SearchTerm string
@@ -16,4 +18,11 @@ type LongSSEData struct {
 	Selector          string
 	Mode              datastar.PatchElementOption
 	UseViewTransition bool
+}
+
+type SessionChangeData struct {
+	Session           ChatSession
+	ChatConversations []ChatConversation
+	SearchMenuText    string
+	UserId            string
 }

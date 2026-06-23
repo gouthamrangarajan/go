@@ -55,6 +55,18 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	defer close(chatConversationChannel)
 	go services.GetChatConversationsWithoutMessageAndFileData(userId, sessionId, chatConversationChannel)
 
+	chatConversations := <-chatConversationChannel
+
+	if request.Header.Get("Datastar-Request") == "true" {
+		sessionChangeHandler(request, models.SessionChangeData{
+			UserId:            userId,
+			Session:           selectedSession,
+			ChatConversations: chatConversations,
+			SearchMenuText:    searchMenuTxt,
+		})
+		return
+	}
+
 	aiModelsChannel := make(chan []models.AIModel)
 	defer close(aiModelsChannel)
 	go services.GetAiModels(aiModelsChannel)
@@ -65,9 +77,8 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 			SearchTerm: searchMenuTxt,
 		})
 	}
-
-	chatConversations := <-chatConversationChannel
 	aiModels := <-aiModelsChannel
+
 	uiSId := uuid.New().String()
 	components.Main(
 		models.UIMainModel{
@@ -81,52 +92,22 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 			UiSid:            uiSId,
 		}).Render(request.Context(), responseWriter)
 }
+
 func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 
-	sse := datastar.NewSSE(responseWriter, request)
-
-	if clientSignal.SessionId != 0 {
-
-		conversationsChannel := make(chan []models.ChatConversation)
-
-		go services.GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
-		conversations := <-conversationsChannel
-		close(conversationsChannel)
-
-		if len(conversations) != 0 {
-			markdownToHtmlChannel := make(chan string)
-			go services.ConvertConversationMarkdownsToHtml(conversations, markdownToHtmlChannel)
-			select {
-			case <-request.Context().Done():
-				break
-			default:
-				for _, conversation := range conversations {
-					if conversation.FileData != "" {
-						sse.PatchElementTempl(components.ChatMessageFileData(conversation, true), datastar.WithUseViewTransitions(false))
-					}
-					sse.PatchElementTempl(components.ChatMessageModelIdDisplay(conversation), datastar.WithUseViewTransitions(false))
-				}
-			}
-
-			for element := range markdownToHtmlChannel {
-				select {
-				case <-request.Context().Done():
-					continue
-				default:
-					sse.PatchElements(element, datastar.WithUseViewTransitions(false))
-					sse.ExecuteScript("window.mermaid.run()", datastar.WithExecuteScriptAutoRemove(true))
-				}
-
-			}
-		}
-	}
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
 	userSessionChannel := make(chan models.LongSSEData)
 	uiSidMap.Store(userSessionKey, userSessionChannel)
+
+	if clientSignal.SessionId != 0 {
+		go sendConversationsMarkdown(clientSignal, userId)
+	}
+
+	sse := datastar.NewSSE(responseWriter, request)
 
 	heartBeatTicker := time.NewTicker(5 * time.Second)
 	defer heartBeatTicker.Stop()
@@ -167,6 +148,109 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 	}
 }
+func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string) {
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	conversationsChannel := make(chan []models.ChatConversation)
+
+	go services.GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
+	conversations := <-conversationsChannel
+	close(conversationsChannel)
+
+	if len(conversations) != 0 {
+		markdownToHtmlChannel := make(chan string)
+		go services.ConvertConversationMarkdownsToHtml(conversations, markdownToHtmlChannel)
+
+		for _, conversation := range conversations {
+			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+				if conversation.FileData != "" {
+					fileDataDataBuffer := new(bytes.Buffer)
+					components.ChatMessageFileData(conversation, true).Render(context.Background(), fileDataDataBuffer)
+					userSession.(chan models.LongSSEData) <- models.LongSSEData{
+						Content: fileDataDataBuffer.String(),
+					}
+				}
+				modelIdDisplayDataBuffer := new(bytes.Buffer)
+				components.ChatMessageModelIdDisplay(conversation).Render(context.Background(), modelIdDisplayDataBuffer)
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content: modelIdDisplayDataBuffer.String(),
+				}
+			}
+		}
+
+		for element := range markdownToHtmlChannel {
+			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content: element,
+				}
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content:  `window.mermaid.run()`,
+					IsScript: true,
+				}
+			}
+		}
+	}
+}
+
+func getImageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(services.UserIDKey).(string)
+	var clientSignal models.ClientSignals
+	datastar.ReadSignals(request, &clientSignal)
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+
+	fileDataChannel := make(chan models.ChatConversation)
+	defer close(fileDataChannel)
+
+	go services.GetChatConversationFileData(models.GetConversationRequest{SessionId: clientSignal.SessionId,
+		ConversationId: clientSignal.MessageIdToFetchImage, UserId: userId}, fileDataChannel)
+
+	converstationWithFileData := <-fileDataChannel
+	if converstationWithFileData.FileData != "" {
+		imageDataBuffer := new(bytes.Buffer)
+		components.ChatMessageImageDisplayOnHover(converstationWithFileData).Render(context.Background(), imageDataBuffer)
+		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content: imageDataBuffer.String(),
+			}
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				IsSignal: true,
+				Content: `{showImage_` + strconv.Itoa(clientSignal.MessageIdToFetchImage) + `:true,
+							imageFetched_` + strconv.Itoa(clientSignal.MessageIdToFetchImage) + `:true}`,
+			}
+		}
+	}
+}
+func sessionChangeHandler(request *http.Request, data models.SessionChangeData) {
+	var clientSignal models.ClientSignals
+	datastar.ReadSignals(request, &clientSignal)
+	clientSignal.SessionId = data.Session.Id
+	userSessionKey := services.GenerateUserSessionKey(data.UserId, clientSignal.UiSid)
+	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+		dataBuffer := new(bytes.Buffer)
+		components.Section(data.ChatConversations).Render(context.Background(), dataBuffer)
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			IsSignal: true,
+			Content: `{sessionId:` + strconv.Itoa(data.Session.Id) + `,webSearch:` + strconv.FormatBool(data.Session.AllowWebSearch) +
+				`,imageGeneration:` + strconv.FormatBool(data.Session.ImageGeneration) +
+				`,messageIdToFetchImage:0,showMenu:false,showErrorMessage:false,showDeleteModal:false
+					,sessionIdToDelete:0}`,
+			UseViewTransition: true,
+		}
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:           dataBuffer.String(),
+			UseViewTransition: true,
+		}
+		urlToReplace := `/` + strconv.Itoa(data.Session.Id)
+		if strings.TrimSpace(data.SearchMenuText) != "" {
+			urlToReplace += "?search_menu=" + data.SearchMenuText
+		}
+		// fmt.Printf("Replacing URL with: %s\n", urlToReplace)
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:  `window.history.replaceState({},"","` + urlToReplace + `")`,
+			IsScript: true,
+		}
+	}
+	sendConversationsMarkdown(clientSignal, data.UserId)
+}
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
 	var clientSignal models.ClientSignals
@@ -191,9 +275,37 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			return
 		}
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			Content:  `window.location.href=window.location.origin+'/'+` + strconv.Itoa(newSession.Id),
+			IsSignal: true,
+			Content: `{sessionId:` + strconv.Itoa(newSession.Id) + `,webSearch:false,imageGeneration:false,
+				messageIdToFetchImage:0,showMenu:false,showErrorMessage:false,showDeleteModal:false,
+				sessionIdToDelete:0}`,
+			UseViewTransition: true,
+		}
+		sectionComponentBuffer := new(bytes.Buffer)
+		components.Section([]models.ChatConversation{}).Render(context.Background(), sectionComponentBuffer)
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:           sectionComponentBuffer.String(),
+			Selector:          "section",
+			UseViewTransition: true,
+			Mode:              datastar.WithModeOuter(),
+		}
+		urlToReplace := `/` + strconv.Itoa(newSession.Id)
+		if strings.TrimSpace(clientSignal.SearchMenu) != "" {
+			urlToReplace += "?search_menu=" + clientSignal.SearchMenu
+		}
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:  `window.history.replaceState({},"","` + urlToReplace + `")`,
 			IsScript: true,
 		}
+		menuItemBuffer := new(bytes.Buffer)
+		components.MenuItem(newSession, clientSignal.SearchMenu).Render(context.Background(), menuItemBuffer)
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:           menuItemBuffer.String(),
+			Selector:          "#menu",
+			UseViewTransition: true,
+			Mode:              datastar.WithModeAppend(),
+		}
+
 	}
 	embeddingChannel := make(chan models.VoyageEmbeddingResponse)
 	defer close(embeddingChannel)
@@ -815,35 +927,6 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content: "Failed to update chat conversation. Please try again later.",
 			IsError: true,
-		}
-	}
-}
-
-func getImageHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
-	var clientSignal models.ClientSignals
-	datastar.ReadSignals(request, &clientSignal)
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-
-	fileDataChannel := make(chan models.ChatConversation)
-	defer close(fileDataChannel)
-
-	go services.GetChatConversationFileData(models.GetConversationRequest{SessionId: clientSignal.SessionId,
-		ConversationId: clientSignal.MessageIdToFetchImage, UserId: userId}, fileDataChannel)
-
-	converstationWithFileData := <-fileDataChannel
-	if converstationWithFileData.FileData != "" {
-		imageDataBuffer := new(bytes.Buffer)
-		components.ChatMessageImageDisplayOnHover(converstationWithFileData).Render(context.Background(), imageDataBuffer)
-		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
-			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				Content: imageDataBuffer.String(),
-			}
-			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				IsSignal: true,
-				Content: `{showImage_` + strconv.Itoa(clientSignal.MessageIdToFetchImage) + `:true,
-							imageFetched_` + strconv.Itoa(clientSignal.MessageIdToFetchImage) + `:true}`,
-			}
 		}
 	}
 }

@@ -11,7 +11,7 @@ templ Main(model models.UIMainModel) {
 			class="w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark dark:scrollbar-thumb-light scrollbar-track-gray-300 dark:scrollbar-track-slate-800 md:overflow-x-hidden"
 			style="display:none;"
 			data-show="true"
-			data-signals={ `{sessionId:` + strconv.Itoa(model.CurrentSessionId) + `,_showMenu:false,
+			data-signals={ `{sessionId:` + strconv.Itoa(model.CurrentSessionId) + `,showMenu:false,
                             showErrorMessage:false,errorMessage:'Error.Please try again later',
                             searchMenu:'`+model.MenuSearchTerm+`',
                             showDeleteModal:false,sessionIdToDelete:0,
@@ -32,7 +32,10 @@ templ Main(model models.UIMainModel) {
 }
 
 templ Section(messages []models.ChatConversation) {
-	<section class="w-11/12 ml-6 pb-64  flex flex-col gap-5  lg:gap-3 lg:pt-4 lg:mx-auto xl:w-10/12">
+	<section
+		class="w-11/12 ml-6 pb-64  flex flex-col gap-5  lg:gap-3 lg:pt-4 lg:mx-auto xl:w-10/12"
+		id="mainSection"
+	>
 		for _,message := range messages {
 			@ChatMessage(message, false)
 		}

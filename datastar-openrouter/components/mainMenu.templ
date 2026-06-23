@@ -10,14 +10,14 @@ import (
 templ menu(sessions []models.ChatSession, searchTerm string) {
 	<div
 		class="absolute top-0 left-0 w-full h-full bg-white/40 z-10"
-		data-show="$_showMenu"
+		data-show="$showMenu"
 		data-signals="{_menuFocusAbortController:new AbortController()}"
-		data-on:click__viewtransition="$_showMenu=false"
+		data-on:click__viewtransition="$showMenu=false"
 	>
 		<div
 			class="flex gap-2 items-start h-full w-11/12 md:w-9/12 lg:w-5/12 xl:w-4/12"
 			id="menuContainer"
-			data-effect="$showDeleteModal?$_menuFocusAbortController.abort():$_showMenu?setTimeout(()=>$_menuFocusAbortController=focusTrap('#menuContainer')):$_menuFocusAbortController.abort()"
+			data-effect="$showDeleteModal?$_menuFocusAbortController.abort():$showMenu?setTimeout(()=>$_menuFocusAbortController=focusTrap('#menuContainer')):$_menuFocusAbortController.abort()"
 		>
 			<div
 				class="flex flex-col items-center flex-1 border-r border-gray-600 dark:border-gray-300  h-full overflow-y-auto bg-light dark:bg-dark scroll-smooth scrollbar-thin scrollbar-thumb-dark dark:scrollbar-thumb-light scrollbar-track-gray-300 dark:scrollbar-track-slate-800"
@@ -26,7 +26,7 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 				<button
 					class="appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
 					data-class="{'animate-pulse':$_creatingNewSession}"
-					data-on:click__viewtransition="@post('/new',{openWhenHidden:true});"
+					data-on:click="@post('/new',{openWhenHidden:true});"
 					data-indicator="_creatingNewSession"
 					data-attr:disabled="$_creatingNewSession"
 				>
@@ -85,9 +85,9 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 	</div>
 	<button
 		class="appearance-none outline-none cursor-pointer absolute top-3 left-2 transition duration-300 rounded p-1 hover:opacity-80 bg-dark dark:bg-light  text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark  disabled:cursor-not-allowed disabled:opacity-80"
-		data-on:click__viewtransition="$_showMenu=true"
+		data-on:click__viewtransition="$showMenu=true"
 		style="view-transition-name:menu-button"
-		data-show="!$_showMenu"
+		data-show="!$showMenu"
 		aria-label="Open Menu"
 	>
 		<svg
@@ -123,7 +123,15 @@ templ MenuItem(session models.ChatSession, searchTerm string) {
 		id={ "menuItem_" + strconv.Itoa(session.Id) }
 		style={ "view-transition-name:menu-item-" + strconv.Itoa(session.Id) }
 	>
-		<a href={ href } class="appearance-none outline-none truncate flex-1 py-2 px-4 transition duration-300 cursor-pointer">
+		<a
+			href={ href }
+			data-on:click={ `	
+				evt.preventDefault();
+				$sessionId=` + strconv.Itoa(session.Id) + `;
+				@get('` + href + `');
+				` }
+			class="appearance-none outline-none truncate flex-1 py-2 px-4 transition duration-300 cursor-pointer"
+		>
 			{ session.Title }
 		</a>
 		<button

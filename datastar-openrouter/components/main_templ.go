@@ -51,7 +51,7 @@ func Main(model models.UIMainModel) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{sessionId:` + strconv.Itoa(model.CurrentSessionId) + `,_showMenu:false,
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{sessionId:` + strconv.Itoa(model.CurrentSessionId) + `,showMenu:false,
                             showErrorMessage:false,errorMessage:'Error.Please try again later',
                             searchMenu:'` + model.MenuSearchTerm + `',
                             showDeleteModal:false,sessionIdToDelete:0,
@@ -128,7 +128,7 @@ func Section(messages []models.ChatConversation) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section class=\"w-11/12 ml-6 pb-64 flex flex-col gap-5 lg:gap-3 lg:pt-4 lg:mx-auto xl:w-10/12\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<section class=\"w-11/12 ml-6 pb-64 flex flex-col gap-5 lg:gap-3 lg:pt-4 lg:mx-auto xl:w-10/12\" id=\"mainSection\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
