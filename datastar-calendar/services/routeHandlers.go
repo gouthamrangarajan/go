@@ -140,7 +140,7 @@ func SSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	datastar.ReadSignals(request, &signals)
 	sessionKey := GenerateUserSessionKey(token, signals.UiSid)
 
-	userSessionChannel := make(chan models.LongSSEData)
+	userSessionChannel := make(chan models.LongSSEData, 16)
 	uiSidMap.Store(sessionKey, userSessionChannel)
 
 	sse := datastar.NewSSE(responseWriter, request)
