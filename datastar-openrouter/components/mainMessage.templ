@@ -12,15 +12,15 @@ templ ChatMessage(message models.ChatConversation, stream bool) {
 		class="py-1 px-3 flex gap-4 items-start relative max-w-11/12 md:max-w-full"
 	>
 		@ChatMessageRoleLogo(message.Id, message.Role)
-		<div class="flex w-full flex-col">
+		<div class="flex w-full flex-col" id={ "markdownToHtmlAndFileNameContainer_" + strconv.Itoa(message.Id) }>
 			if !stream {
 				<div
-					id={ "markdown_" + strconv.Itoa(message.Id) }
+					id={ "markdownToHtml_" + strconv.Itoa(message.Id) }
 					class="min-h-screen"
 				></div>
 			} else {
 				<div
-					id={ "markdown_" + strconv.Itoa(message.Id) }
+					id={ "markdownToHtml_" + strconv.Itoa(message.Id) }
 				></div>
 			}
 			@ChatMessageFileData(message, stream)

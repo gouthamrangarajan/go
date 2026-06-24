@@ -138,6 +138,9 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 					sse.PatchElements(data.Content, datastar.WithSelector(data.Selector), datastar.WithUseViewTransitions(data.UseViewTransition))
 				}
 			}
+			if data.FlushResponse {
+				responseWriter.(http.Flusher).Flush()
+			}
 		case <-heartBeatTicker.C:
 			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
 				return
@@ -155,30 +158,20 @@ func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string)
 	defer close(conversationsChannel)
 
 	if len(conversations) != 0 {
-		markdownToHtmlChannel := make(chan string)
+		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)
 		go services.ConvertConversationMarkdownsToHtml(conversations, markdownToHtmlChannel)
-
-		for _, conversation := range conversations {
-			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
-				if conversation.FileData != "" {
-					fileDataDataBuffer := new(bytes.Buffer)
-					components.ChatMessageFileData(conversation, true).Render(context.Background(), fileDataDataBuffer)
-					userSession.(chan models.LongSSEData) <- models.LongSSEData{
-						Content: fileDataDataBuffer.String(),
-					}
-				}
-				modelIdDisplayDataBuffer := new(bytes.Buffer)
-				components.ChatMessageModelIdDisplay(conversation).Render(context.Background(), modelIdDisplayDataBuffer)
-				userSession.(chan models.LongSSEData) <- models.LongSSEData{
-					Content: modelIdDisplayDataBuffer.String(),
-				}
+		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+			//make sure all before data are flushed before sending the markdown to html data
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:       ``,
+				IsScript:      true,
+				FlushResponse: true,
 			}
 		}
-
 		for element := range markdownToHtmlChannel {
 			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
-					Content: element,
+					Content: element.Html,
 				}
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:  `window.mermaid.run()`,
@@ -248,7 +241,6 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 			IsScript: true,
 		}
 	}
-	// time.Sleep(100 * time.Millisecond)
 	go sendConversationsMarkdown(clientSignal, data.UserId)
 }
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -652,7 +644,7 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				UseViewTransition: true,
 			}
 		}
-		markdownToHtmlChannel := make(chan string)
+		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)
 		go services.ConvertConversationMarkdownsToHtml([]models.ChatConversation{userMessageChat}, markdownToHtmlChannel)
 		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
 			if userMessageChat.FileData != "" {
@@ -663,9 +655,9 @@ func promptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 					UseViewTransition: true,
 				}
 			}
-
+			element := <-markdownToHtmlChannel
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				Content:           <-markdownToHtmlChannel,
+				Content:           element.Html,
 				UseViewTransition: true,
 			}
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -831,7 +823,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 			continue
 		}
 		// sse.PatchElementTempl(components.ChatMessage(modelMessageChat, true))
-		markdownToHtmlChannel := make(chan string)
+		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)
 		go services.ConvertConversationMarkdownsToHtml([]models.ChatConversation{modelMessageChat}, markdownToHtmlChannel)
 		if modelMessageChat.FileData != "" {
 			modelMessageChat.FileName = "generated_image.png"
@@ -844,8 +836,9 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		} else {
 			modelMessageChat.FileName = ""
 		}
+		element := <-markdownToHtmlChannel
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			Content: <-markdownToHtmlChannel,
+			Content: element.Html,
 		}
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:  "window.mermaid.run()",

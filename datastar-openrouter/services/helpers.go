@@ -153,7 +153,7 @@ func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string
 	time.Sleep(3000 * time.Millisecond)
 	sse.PatchSignals([]byte("{showErrorMessage:false}"))
 }
-func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation, channel chan<- string) {
+func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation, channel chan<- models.ChatConversationMarkdownToHtml) {
 	defer close(channel)
 	for _, conversation := range conversations {
 		// 	if conversation.Role == "assistant" {
@@ -204,8 +204,8 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 			},
 			highlighting.NewHighlighting(highlighting.WithStyle("dracula"))))
 		if err := md.Convert([]byte(conversation.Content), &buf); err != nil {
-			fmt.Printf("Error converting markdown: %v\n", err)
-			channel <- ""
+			fmt.Printf("Error converting markdown to html: %v\n", err)
+			channel <- models.ChatConversationMarkdownToHtml{Html: "", ConversationId: conversation.Id}
 			return
 		}
 		mkdwn := buf.String()
@@ -219,7 +219,7 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 													`+copySvg+`
 													</button>
 													</pre></div>`)
-		channel <- "<div id='markdown_" + strconv.Itoa(conversation.Id) + "' class='prose dark:prose-invert'>" + mkdwn + "</div>"
+		channel <- models.ChatConversationMarkdownToHtml{Html: "<div id='markdownToHtml_" + strconv.Itoa(conversation.Id) + "' class='prose dark:prose-invert'>" + mkdwn + "</div>", ConversationId: conversation.Id}
 	}
 }
 

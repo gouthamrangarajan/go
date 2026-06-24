@@ -18,6 +18,7 @@ type LongSSEData struct {
 	Selector          string
 	Mode              datastar.PatchElementOption
 	UseViewTransition bool
+	FlushResponse     bool
 }
 
 type SessionChangeData struct {
@@ -25,4 +26,9 @@ type SessionChangeData struct {
 	ChatConversations []ChatConversation
 	SearchMenuText    string
 	UserId            string
+}
+
+type ChatConversationMarkdownToHtml struct {
+	ConversationId int
+	Html           string
 }
