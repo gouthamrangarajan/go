@@ -17,7 +17,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/starfederation/datastar-go/datastar"
 )
 
@@ -93,8 +92,7 @@ func monthPageWithData(responseWriter http.ResponseWriter, request *http.Request
 		}
 		return
 	}
-	uiSid := uuid.New().String()
-	components.MonthCalendarPage(pageData, uiSid).Render(request.Context(), responseWriter)
+	components.MonthCalendarPage(pageData).Render(request.Context(), responseWriter)
 }
 func generateCalendarData(year int, month time.Month, location *time.Location) calendarDataType {
 	ret := calendarDataType{}
