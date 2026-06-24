@@ -248,7 +248,7 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 			IsScript: true,
 		}
 	}
-	time.Sleep(100 * time.Millisecond)
+	// time.Sleep(100 * time.Millisecond)
 	go sendConversationsMarkdown(clientSignal, data.UserId)
 }
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
