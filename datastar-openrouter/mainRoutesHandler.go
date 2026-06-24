@@ -98,11 +98,11 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
-	userSessionChannel := make(chan models.LongSSEData, 16)
+	userSessionChannel := make(chan models.LongSSEData)
 	uiSidMap.Store(userSessionKey, userSessionChannel)
 
 	if clientSignal.SessionId != 0 {
-		go sendConversationsMarkdown(clientSignal, userId, userSessionChannel)
+		go sendConversationsMarkdown(clientSignal, userId)
 	}
 
 	sse := datastar.NewSSE(responseWriter, request)
@@ -146,7 +146,8 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 	}
 }
-func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string, userSessionChannel chan models.LongSSEData) {
+func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string) {
+	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 	conversationsChannel := make(chan []models.ChatConversation)
 
 	go services.GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
@@ -158,27 +159,31 @@ func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string,
 		go services.ConvertConversationMarkdownsToHtml(conversations, markdownToHtmlChannel)
 
 		for _, conversation := range conversations {
-			if conversation.FileData != "" {
-				fileDataDataBuffer := new(bytes.Buffer)
-				components.ChatMessageFileData(conversation, true).Render(context.Background(), fileDataDataBuffer)
-				userSessionChannel <- models.LongSSEData{
-					Content: fileDataDataBuffer.String(),
+			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+				if conversation.FileData != "" {
+					fileDataDataBuffer := new(bytes.Buffer)
+					components.ChatMessageFileData(conversation, true).Render(context.Background(), fileDataDataBuffer)
+					userSession.(chan models.LongSSEData) <- models.LongSSEData{
+						Content: fileDataDataBuffer.String(),
+					}
 				}
-			}
-			modelIdDisplayDataBuffer := new(bytes.Buffer)
-			components.ChatMessageModelIdDisplay(conversation).Render(context.Background(), modelIdDisplayDataBuffer)
-			userSessionChannel <- models.LongSSEData{
-				Content: modelIdDisplayDataBuffer.String(),
+				modelIdDisplayDataBuffer := new(bytes.Buffer)
+				components.ChatMessageModelIdDisplay(conversation).Render(context.Background(), modelIdDisplayDataBuffer)
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content: modelIdDisplayDataBuffer.String(),
+				}
 			}
 		}
 
 		for element := range markdownToHtmlChannel {
-			userSessionChannel <- models.LongSSEData{
-				Content: element,
-			}
-			userSessionChannel <- models.LongSSEData{
-				Content:  `window.mermaid.run()`,
-				IsScript: true,
+			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content: element,
+				}
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content:  `window.mermaid.run()`,
+					IsScript: true,
+				}
 			}
 		}
 	}
@@ -232,6 +237,7 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 					,sessionIdToDelete:0}`,
 			UseViewTransition: true,
 		}
+
 		urlToReplace := `/` + strconv.Itoa(data.Session.Id)
 		if strings.TrimSpace(data.SearchMenuText) != "" {
 			urlToReplace += "?search_menu=" + data.SearchMenuText
@@ -241,8 +247,8 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 			Content:  `window.history.replaceState({},"","` + urlToReplace + `")`,
 			IsScript: true,
 		}
-		go sendConversationsMarkdown(clientSignal, data.UserId, userSession.(chan models.LongSSEData))
 	}
+	go sendConversationsMarkdown(clientSignal, data.UserId)
 }
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
