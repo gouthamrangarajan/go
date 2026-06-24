@@ -3,11 +3,11 @@ package components
 import "datastar-portfolio/models"
 import "strings"
 
-templ Projects(data []models.DemoItem, id string) {
+templ Projects(data []models.DemoItem) {
 	@layout() {
 		<main
 			class="py-2 px-4 flex flex-col items-center justify-center gap-2 lg:py-10 xl:py-20"
-			data-signals={ `{id:'` + id + `',showErrorMessage:false,errorMessage:'Error.Please try again later',}` }
+			data-signals={ `{id:crypto.randomUUID(),showErrorMessage:false,errorMessage:'Error.Please try again later',}` }
 			data-init="@get('/sse', {openWhenHidden: true})"
 			data-on:datastar-fetch__transition="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect to server. Please try refreshing the page.'; $showErrorMessage = true}"
 		>

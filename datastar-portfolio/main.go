@@ -15,7 +15,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/resend/resend-go/v3"
 	"github.com/starfederation/datastar-go/datastar"
@@ -87,8 +86,7 @@ func main() {
 		go services.GetAllDemos(channel, true)
 		allProjects := <-channel
 		close(channel)
-		id := uuid.NewString()
-		component := components.Projects(allProjects, id)
+		component := components.Projects(allProjects)
 		component.Render(request.Context(), responseWriter)
 	})
 	router.Get("/sse", func(responseWriter http.ResponseWriter, request *http.Request) {
@@ -101,6 +99,7 @@ func main() {
 
 		session := make(chan []models.DemoItem)
 		idMap.Store(clientSignal.Id, session)
+		fmt.Printf("New SSE connection established with ID: %s\n", clientSignal.Id)
 
 		for {
 			select {

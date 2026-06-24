@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import "datastar-portfolio/models"
 import "strings"
 
-func Projects(data []models.DemoItem, id string) templ.Component {
+func Projects(data []models.DemoItem) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -49,9 +49,9 @@ func Projects(data []models.DemoItem, id string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{id:'` + id + `',showErrorMessage:false,errorMessage:'Error.Please try again later',}`)
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`{id:crypto.randomUUID(),showErrorMessage:false,errorMessage:'Error.Please try again later',}`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 10, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/projects.templ`, Line: 10, Col: 112}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
