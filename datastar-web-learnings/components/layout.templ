@@ -2,7 +2,7 @@ package components
 
 import "datastar-web-learnings/models"
 
-templ layout(config models.FirebaseAuthConfig, Sid string) {
+templ layout(config models.FirebaseAuthConfig) {
 	<!DOCTYPE html>
 	<html lang="en" class="w-full h-full">
 		<head>
@@ -24,7 +24,7 @@ templ layout(config models.FirebaseAuthConfig, Sid string) {
 					{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
 					  idToken:'',_allNotInViewportObservers:[],
 					  _firebaseApiKey:'`+config.ApiKey+`',_firebaseAuthDomain:'`+config.Domain+`',
-					  sid:'`+Sid+`'
+					  sid:crypto.randomUUID()
 					}
 				` }
 			data-on-load={ `window.initializeFirebaseApp?window.initializeFirebaseApp({apiKey:$_firebaseApiKey,authDomain:$_firebaseAuthDomain}):null` }

@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "datastar-web-learnings/models"
 
-func layout(config models.FirebaseAuthConfig, Sid string) templ.Component {
+func layout(config models.FirebaseAuthConfig) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -40,7 +40,7 @@ func layout(config models.FirebaseAuthConfig, Sid string) templ.Component {
 					{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
 					  idToken:'',_allNotInViewportObservers:[],
 					  _firebaseApiKey:'` + config.ApiKey + `',_firebaseAuthDomain:'` + config.Domain + `',
-					  sid:'` + Sid + `'
+					  sid:crypto.randomUUID()
 					}
 				`)
 		if templ_7745c5c3_Err != nil {

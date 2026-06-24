@@ -13,7 +13,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/starfederation/datastar/sdk/go/datastar"
 )
 
@@ -43,8 +42,7 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 		}
 		return
 	}
-	newSid := uuid.New().String()
-	components.Landing(firebaseConfig, newSid).Render(request.Context(), responseWriter)
+	components.Landing(firebaseConfig).Render(request.Context(), responseWriter)
 }
 
 func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -56,7 +54,7 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	sessionSseChannel := make(chan models.LongSSEData)
+	sessionSseChannel := make(chan models.LongSSEData, 16)
 	sidMap.Store(clientSignal.Sid, sessionSseChannel)
 
 	sse := datastar.NewSSE(responseWriter, request)

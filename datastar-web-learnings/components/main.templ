@@ -10,8 +10,8 @@ func replaceSpecialCharsVideoId(videoId string) string {
 	return strings.ReplaceAll(videoId, "-", "")
 }
 
-templ Landing(config models.FirebaseAuthConfig, Sid string) {
-	@layout(config, Sid) {
+templ Landing(config models.FirebaseAuthConfig) {
+	@layout(config) {
 		@header()
 		@LandingMain()
 	}
