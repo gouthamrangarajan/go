@@ -98,7 +98,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
-	userSessionChannel := make(chan models.LongSSEData)
+	userSessionChannel := make(chan models.LongSSEData, 16)
 	uiSidMap.Store(userSessionKey, userSessionChannel)
 
 	if clientSignal.SessionId != 0 {
