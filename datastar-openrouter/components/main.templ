@@ -17,7 +17,7 @@ templ Main(model models.UIMainModel) {
                             showDeleteModal:false,sessionIdToDelete:0,
                             webSearch:`+strconv.FormatBool(model.AllowWebSearch)+`,
                             imageGeneration:`+strconv.FormatBool(model.ImageGeneration)+`,
-							fileUploading:false,uiSid:'`+model.UiSid+`',messageIdToFetchImage:0 }` }
+							fileUploading:false,messageIdToFetchImage:0 }` }
 			data-init="@post('/sse',{openWhenHidden:true});"
 			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 		>

@@ -35,7 +35,6 @@ type UIMainModel struct {
 	ImageGeneration  bool
 	CurrentSessionId int
 	MenuSearchTerm   string
-	UiSid            string
 }
 
 type UIToolTipModel struct {

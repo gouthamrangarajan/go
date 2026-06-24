@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/starfederation/datastar-go/datastar"
 )
 
@@ -79,7 +78,6 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	}
 	aiModels := <-aiModelsChannel
 
-	uiSId := uuid.New().String()
 	components.Main(
 		models.UIMainModel{
 			Messages:         chatConversations,
@@ -89,7 +87,6 @@ func mainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 			ImageGeneration:  selectedSession.ImageGeneration,
 			CurrentSessionId: sessionId,
 			MenuSearchTerm:   searchMenuTxt,
-			UiSid:            uiSId,
 		}).Render(request.Context(), responseWriter)
 }
 
@@ -97,6 +94,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
+	// fmt.Printf("uisid from client %v\n", clientSignal.UiSid)
 
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
