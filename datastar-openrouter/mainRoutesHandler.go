@@ -226,15 +226,15 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 		dataBuffer := new(bytes.Buffer)
 		components.Section(data.ChatConversations).Render(context.Background(), dataBuffer)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:           dataBuffer.String(),
+			UseViewTransition: true,
+		}
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			IsSignal: true,
 			Content: `{sessionId:` + strconv.Itoa(data.Session.Id) + `,webSearch:` + strconv.FormatBool(data.Session.AllowWebSearch) +
 				`,imageGeneration:` + strconv.FormatBool(data.Session.ImageGeneration) +
 				`,messageIdToFetchImage:0,showMenu:false,showErrorMessage:false,showDeleteModal:false
 					,sessionIdToDelete:0}`,
-			UseViewTransition: true,
-		}
-		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			Content:           dataBuffer.String(),
 			UseViewTransition: true,
 		}
 		urlToReplace := `/` + strconv.Itoa(data.Session.Id)
