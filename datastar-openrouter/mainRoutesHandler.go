@@ -152,7 +152,7 @@ func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string)
 
 	go services.GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
 	conversations := <-conversationsChannel
-	close(conversationsChannel)
+	defer close(conversationsChannel)
 
 	if len(conversations) != 0 {
 		markdownToHtmlChannel := make(chan string)
@@ -248,6 +248,7 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 			IsScript: true,
 		}
 	}
+	time.Sleep(100 * time.Millisecond)
 	go sendConversationsMarkdown(clientSignal, data.UserId)
 }
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
