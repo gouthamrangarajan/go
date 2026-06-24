@@ -182,11 +182,12 @@ func MenuItem(session models.ChatSession, searchTerm string) templ.Component {
 		}
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(`	
+				$pageLoading=true;
 				$sessionId=` + strconv.Itoa(session.Id) + `;				
 				@get('` + href + `');
 				`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMenu.templ`, Line: 131, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMenu.templ`, Line: 132, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -199,7 +200,7 @@ func MenuItem(session models.ChatSession, searchTerm string) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(session.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMenu.templ`, Line: 134, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMenu.templ`, Line: 135, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -216,7 +217,7 @@ func MenuItem(session models.ChatSession, searchTerm string) templ.Component {
                 $showDeleteModal=true;
             `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMenu.templ`, Line: 142, Col: 13}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainMenu.templ`, Line: 143, Col: 13}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

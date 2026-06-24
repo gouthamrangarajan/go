@@ -180,6 +180,12 @@ func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string)
 			}
 		}
 	}
+	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:  `{pageLoading:false}`,
+			IsSignal: true,
+		}
+	}
 }
 
 func getImageHandler(responseWriter http.ResponseWriter, request *http.Request) {

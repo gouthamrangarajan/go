@@ -18,9 +18,14 @@ templ layout() {
 		</head>
 		<body
 			class="w-full h-full overflow-x-hidden overflow-y-hidden bg-background font-(family-name:--font-geometric-humanist) relative bg-gray-50 text-dark dark:bg-dark dark:text-light"
-			data-signals="{uiSid:crypto.randomUUID()}"
+			data-signals="{uiSid:crypto.randomUUID(),pageLoading:false}"
 		>
 			{ children... }
+			<div
+				class="absolute top-0 left-0 animate-page-loader h-1.5 w-full bg-dark dark:bg-light"
+				style="display:none"
+				data-show="$pageLoading"
+			></div>
 			<script src="/assets/js/datastar.min.js" type="module"></script>
 			<script src="/assets/js/focus-trap.js" type="text/javascript"></script>
 			<script src="/assets/js/mermaid.min.js" type="text/javascript"></script>

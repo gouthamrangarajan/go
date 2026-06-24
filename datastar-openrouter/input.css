@@ -126,3 +126,17 @@
         border-left-width: 1px;
     }
 }
+
+.animate-page-loader {
+    animation: page-loader 2s var(--ease-out-3) infinite;
+}
+
+@keyframes page-loader {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}

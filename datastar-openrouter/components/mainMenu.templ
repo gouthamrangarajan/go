@@ -126,6 +126,7 @@ templ MenuItem(session models.ChatSession, searchTerm string) {
 		<a
 			href={ href }
 			data-on:click__prevent={ `	
+				$pageLoading=true;
 				$sessionId=` + strconv.Itoa(session.Id) + `;				
 				@get('` + href + `');
 				` }

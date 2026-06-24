@@ -800,6 +800,9 @@
     width: calc(var(--spacing) * 6);
     height: calc(var(--spacing) * 6);
   }
+  .h-1\.5 {
+    height: calc(var(--spacing) * 1.5);
+  }
   .h-2 {
     height: calc(var(--spacing) * 2);
   }
@@ -1730,6 +1733,17 @@
     border-bottom-width: 1px;
     border-left-style: var(--tw-border-style);
     border-left-width: 1px;
+  }
+}
+.animate-page-loader {
+  animation: page-loader 2s var(--ease-out-3) infinite;
+}
+@keyframes page-loader {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 @layer base {
