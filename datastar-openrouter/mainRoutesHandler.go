@@ -247,7 +247,7 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 			IsScript: true,
 		}
 	}
-	sendConversationsMarkdown(clientSignal, data.UserId)
+	go sendConversationsMarkdown(clientSignal, data.UserId)
 }
 func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(services.UserIDKey).(string)
