@@ -97,7 +97,7 @@ func main() {
 		}
 		sse := datastar.NewSSE(responseWriter, request)
 
-		session := make(chan []models.DemoItem)
+		session := make(chan []models.DemoItem, 16)
 		idMap.Store(clientSignal.Id, session)
 		fmt.Printf("New SSE connection established with ID: %s\n", clientSignal.Id)
 
