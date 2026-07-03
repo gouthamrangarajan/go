@@ -261,15 +261,16 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	newSession.Id = <-insertChatSessionChannel
 
 	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
-
-	if userSessionExists {
+	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
 		if newSession.Id == 0 {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: `Failed to create new chat session. Please try again later.`,
 				IsError: true,
 			}
-
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:  `{pageLoading:false}`,
+				IsSignal: true,
+			}
 			return
 		}
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -303,20 +304,25 @@ func newChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			UseViewTransition: true,
 			Mode:              datastar.WithModeAppend(),
 		}
-
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:  `{pageLoading:false}`,
+			IsSignal: true,
+		}
 	}
-	embeddingChannel := make(chan models.VoyageEmbeddingResponse)
-	defer close(embeddingChannel)
-	embeddingRequest := models.VoyageEmbeddingRequest{
-		Input: []string{newSession.Title},
-	}
-	go services.CallVoyageEmbedding(embeddingRequest, embeddingChannel)
-	embeddingResponse := <-embeddingChannel
-	if len(embeddingResponse.Data) > 0 {
-		updateTitleVectorChannel := make(chan int)
-		defer close(updateTitleVectorChannel)
-		go services.UpdateChatSessionTitleVector(newSession.Id, embeddingResponse.Data[0].Embedding, updateTitleVectorChannel)
-		<-updateTitleVectorChannel
+	if newSession.Id != 0 {
+		embeddingChannel := make(chan models.VoyageEmbeddingResponse)
+		defer close(embeddingChannel)
+		embeddingRequest := models.VoyageEmbeddingRequest{
+			Input: []string{newSession.Title},
+		}
+		go services.CallVoyageEmbedding(embeddingRequest, embeddingChannel)
+		embeddingResponse := <-embeddingChannel
+		if len(embeddingResponse.Data) > 0 {
+			updateTitleVectorChannel := make(chan int)
+			defer close(updateTitleVectorChannel)
+			go services.UpdateChatSessionTitleVector(newSession.Id, embeddingResponse.Data[0].Embedding, updateTitleVectorChannel)
+			<-updateTitleVectorChannel
+		}
 	}
 
 }

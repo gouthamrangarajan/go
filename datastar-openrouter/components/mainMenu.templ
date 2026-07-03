@@ -26,7 +26,7 @@ templ menu(sessions []models.ChatSession, searchTerm string) {
 				<button
 					class="appearance-none outline-none transition duration-300 mt-10 py-2 px-4 rounded cursor-pointer font-semibold w-10/12 bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
 					data-class="{'animate-pulse':$_creatingNewSession}"
-					data-on:click="@post('/new',{openWhenHidden:true});"
+					data-on:click={ `$pageLoading=true;@post('/new',{openWhenHidden:true});` }
 					data-indicator="_creatingNewSession"
 					data-attr:disabled="$_creatingNewSession"
 				>
