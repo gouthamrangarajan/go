@@ -450,24 +450,25 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 			Mode:    datastar.WithModeOuter(),
 		}
 		if !functionalityErrored {
+			eventTableDataUIBuffer := new(bytes.Buffer)
+			components.MonthCalendarTableEventItem(dataFromDbSave).Render(context.Background(), eventTableDataUIBuffer)
+
 			if clientSignals.EventId == "" {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:   "{eventId:'',task:'',frequency:'Only once',stopAfter:'',exact:'no'}",
 					IsSignals: true,
 				}
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content:  eventTableDataUIBuffer.String(),
+					Selector: "#eventsContainer-" + dateParsed.Format("2006-01-02"),
+					Mode:     datastar.WithModeAppend(),
+				}
 			} else {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
-					IsRemove: true,
-					Selector: "#event-" + clientSignals.EventId,
+					Content: eventTableDataUIBuffer.String(),
 				}
 			}
-			newEventDataUIBuffer := new(bytes.Buffer)
-			components.MonthCalendarTableEventItem(dataFromDbSave).Render(context.Background(), newEventDataUIBuffer)
-			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				Content:  newEventDataUIBuffer.String(),
-				Selector: "#eventsContainer-" + dateParsed.Format("2006-01-02"),
-				Mode:     datastar.WithModeAppend(),
-			}
+
 		}
 	}
 }
