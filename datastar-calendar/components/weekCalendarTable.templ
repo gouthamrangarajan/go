@@ -26,7 +26,7 @@ templ weekCalendarTable(data models.WeekCalendarData) {
 			for idx,_:= range days {
 				{{ active, activeClass := getActiveFlagAndActiveClassMonthTd(data.CalendarData[0][idx], data.CurrentMonthAndYear) }}
 				<td class={ getTdClass(idx, data.From) } style="view-transition-name:none">
-					<div class="xl:pt-10">
+					<div class="pt-4 xl:pt-10">
 						@shared.AddEventLink(data.CalendarData[0][idx], active)
 					</div>
 					<div
