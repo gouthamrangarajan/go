@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func MonthViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
+func MonthViewLink(currentMonthAndYear time.Time, activeMenu bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -36,8 +36,8 @@ func MonthViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		url := "/?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year())
 		activeClass := "bg-teal-700"
-		if !active {
-			activeClass = "bg-teal-500"
+		if !activeMenu {
+			activeClass = "bg-teal-600"
 		}
 		var templ_7745c5c3_Var2 = []any{"appearance-none outline-none text-white transition duration-300 py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10", activeClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
@@ -78,7 +78,7 @@ func MonthViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
 	})
 }
 
-func WeekViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
+func WeekViewLink(currentMonthAndYear time.Time, activeMenu bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -101,10 +101,10 @@ func WeekViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		url := "/wk?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) + "&week=1"
 		activeClass := "bg-teal-700"
-		if !active {
-			activeClass = "bg-teal-500"
+		if !activeMenu {
+			activeClass = "bg-teal-600"
 		}
-		var templ_7745c5c3_Var6 = []any{"appearance-none outline-none pointer-events-none text-white transition duration-300  py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50", activeClass}
+		var templ_7745c5c3_Var6 = []any{"appearance-none outline-none text-white transition duration-300  py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50", activeClass}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -135,7 +135,7 @@ func WeekViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" style=\"view-transition-name:weekViewLink\" disabled>Week</a>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" style=\"view-transition-name:weekViewLink\">Week</a>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -143,7 +143,7 @@ func WeekViewLink(currentMonthAndYear time.Time, active bool) templ.Component {
 	})
 }
 
-func AddEventLink(date time.Time, week int, active bool) templ.Component {
+func AddEventLink(date time.Time, active bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -165,9 +165,6 @@ func AddEventLink(date time.Time, week int, active bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day())
-		if week > 0 {
-			url = "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) + "&week=" + strconv.Itoa(week)
-		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"group flex justify-between items-center w-full cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -180,7 +177,7 @@ func AddEventLink(date time.Time, week int, active bool) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(`@get('` + templ.SafeURL(url) + `')`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/actions.templ`, Line: 48, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/actions.templ`, Line: 44, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -193,7 +190,7 @@ func AddEventLink(date time.Time, week int, active bool) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(date.Day()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/actions.templ`, Line: 49, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/actions.templ`, Line: 45, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -211,7 +208,7 @@ func AddEventLink(date time.Time, week int, active bool) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(date.Day()))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/actions.templ`, Line: 51, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/actions.templ`, Line: 47, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -230,7 +227,7 @@ func AddEventLink(date time.Time, week int, active bool) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(`@get('` + templ.SafeURL(url) + `')`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/actions.templ`, Line: 58, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/actions.templ`, Line: 54, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {

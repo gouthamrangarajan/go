@@ -89,6 +89,10 @@ func monthPageWithData(responseWriter http.ResponseWriter, request *http.Request
 				Content:  `window.history.replaceState({}, "", "?month=` + strconv.Itoa(int(month)) + `&year=` + strconv.Itoa(year) + `");`,
 				IsScript: true,
 			}
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:   `{pageLoading:false}`,
+				IsSignals: true,
+			}
 		}
 		return
 	}
@@ -451,7 +455,7 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 		if !functionalityErrored {
 			eventTableDataUIBuffer := new(bytes.Buffer)
-			components.MonthCalendarTableEventItem(dataFromDbSave).Render(context.Background(), eventTableDataUIBuffer)
+			shared.CalendarTableEventItem(dataFromDbSave).Render(context.Background(), eventTableDataUIBuffer)
 
 			if clientSignals.EventId == "" {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -515,71 +519,97 @@ func DeleteEvent(responseWriter http.ResponseWriter, request *http.Request) {
 
 }
 
-// func WeekPage(responseWriter http.ResponseWriter, request *http.Request) {
-// 	toMonth := request.URL.Query().Get("month")
-// 	toYear := request.URL.Query().Get("year")
-// 	toWeek := request.URL.Query().Get("week")
-// 	model := models.MonthYearDayWeekString{Month: toMonth, Year: toYear, Week: toWeek}
-// 	if request.Header.Get("HX-Request") == "true" {
-// 		WeekPageWithOob(responseWriter, request, model, true)
-// 	} else {
-// 		WeekPageWithOob(responseWriter, request, model, false)
-// 	}
-// }
+func WeekPage(responseWriter http.ResponseWriter, request *http.Request) {
+	toMonth := request.URL.Query().Get("month")
+	toYear := request.URL.Query().Get("year")
+	toWeek := request.URL.Query().Get("week")
+	model := models.MonthYearDayWeekString{Month: toMonth, Year: toYear, Week: toWeek}
+	weekPageWithData(responseWriter, request, model)
+}
 
-// func WeekPageWithOob(responseWriter http.ResponseWriter, request *http.Request, to models.MonthYearDayWeekString, isOob bool) {
-// 	today := time.Now()
-// 	year := today.Year()
-// 	month := today.Month()
-// 	week := 1
-// 	from := request.URL.Query().Get("from")
-// 	token := request.Context().Value(TokenKey).(string)
+func weekPageWithData(responseWriter http.ResponseWriter, request *http.Request, to models.MonthYearDayWeekString) {
+	today := time.Now()
+	year := today.Year()
+	month := today.Month()
+	week := 1
+	from := request.URL.Query().Get("from")
+	token := request.Context().Value(TokenKey).(string)
 
-// 	if to.Month != "" {
-// 		monthFromUrl, err := strconv.Atoi(to.Month)
-// 		if err == nil {
-// 			month = time.Month(monthFromUrl)
-// 		}
-// 	}
-// 	if to.Year != "" {
-// 		yearFromUrl, err := strconv.Atoi(to.Year)
-// 		if err == nil {
-// 			year = yearFromUrl
-// 		}
-// 	}
-// 	if to.Week != "" {
-// 		weekFromUrl, err := strconv.Atoi(to.Week)
-// 		if err == nil {
-// 			week = weekFromUrl
-// 		}
-// 	}
-// 	calendarData := generateWeekCalendarData(monthYearDayWeek{Year: year, Month: month, Week: week}, today.Location())
-// 	channel := make(chan []models.EventData)
-// 	go db.GetData(token, calendarData.calendarDaysStrFormat, channel)
-// 	eventsData := <-channel
-// 	components.WeekCalendarPage(calendarData.data, eventsData, calendarData.monthStartDate, from, week, isOob).Render(request.Context(), responseWriter)
-// }
+	if to.Month != "" {
+		monthFromUrl, err := strconv.Atoi(to.Month)
+		if err == nil {
+			month = time.Month(monthFromUrl)
+		}
+	}
+	if to.Year != "" {
+		yearFromUrl, err := strconv.Atoi(to.Year)
+		if err == nil {
+			year = yearFromUrl
+		}
+	}
+	if to.Week != "" {
+		weekFromUrl, err := strconv.Atoi(to.Week)
+		if err == nil {
+			week = weekFromUrl
+		}
+	}
+	calendarData := generateWeekCalendarData(monthYearDayWeek{Year: year, Month: month, Week: week}, today.Location())
+	channel := make(chan []models.EventData)
+	go db.GetData(token, calendarData.calendarDaysStrFormat, channel)
+	eventsData := <-channel
+	pageData := models.WeekCalendarData{
+		EventsData:          eventsData,
+		CalendarData:        calendarData.data,
+		From:                from,
+		Week:                week,
+		CurrentMonthAndYear: calendarData.monthStartDate,
+	}
+	if request.Header.Get("Datastar-Request") == "true" {
+		var clientSignals models.ClientSignals
+		datastar.ReadSignals(request, &clientSignals)
+		key := GenerateUserSessionKey(token, clientSignals.UiSid)
+		dataBuffer := new(bytes.Buffer)
+		components.WeekCalendar(pageData).Render(context.Background(), dataBuffer)
+		if userSession, userSessionExists := uiSidMap.Load(key); userSessionExists {
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:           dataBuffer.String(),
+				Mode:              datastar.WithModeOuter(),
+				UseViewTransition: true,
+			}
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:  `window.history.replaceState({}, "", "/wk?month=` + strconv.Itoa(int(month)) + `&year=` + strconv.Itoa(year) + `&week=` + strconv.Itoa(week) + `");`,
+				IsScript: true,
+			}
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:   `{pageLoading:false}`,
+				IsSignals: true,
+			}
+		}
+		return
+	}
+	components.WeekCalendarPage(pageData).Render(request.Context(), responseWriter)
+}
 
-// func generateWeekCalendarData(model monthYearDayWeek, location *time.Location) calendarDataType {
-// 	ret := calendarDataType{}
-// 	startDateOfMonth := time.Date(model.Year, model.Month, 1, 0, 0, 0, 0, location)
-// 	startDateForMonthCalendar := startDateOfMonth.AddDate(0, 0, -int(startDateOfMonth.Weekday()))
-// 	endDateOfMonth := time.Date(model.Year, model.Month+1, 0, 23, 59, 0, 0, location)
+func generateWeekCalendarData(model monthYearDayWeek, location *time.Location) calendarDataType {
+	ret := calendarDataType{}
+	startDateOfMonth := time.Date(model.Year, model.Month, 1, 0, 0, 0, 0, location)
+	startDateForMonthCalendar := startDateOfMonth.AddDate(0, 0, -int(startDateOfMonth.Weekday()))
+	endDateOfMonth := time.Date(model.Year, model.Month+1, 0, 23, 59, 0, 0, location)
 
-// 	startDateForWeek := startDateForMonthCalendar.AddDate(0, 0, int(model.Week-1)*7)
+	startDateForWeek := startDateForMonthCalendar.AddDate(0, 0, int(model.Week-1)*7)
 
-// 	data := make([][7]time.Time, 1)
+	data := make([][7]time.Time, 1)
 
-// 	for idx := range 7 {
-// 		data[0][idx] = startDateForWeek.AddDate(0, 0, idx)
-// 	}
-// 	allDatesToFilter := generateAllDatesStringFromStartToEnd(data[0][0], data[0][6])
-// 	ret.calendarDaysStrFormat = allDatesToFilter
-// 	ret.monthStartDate = startDateOfMonth
-// 	ret.monthEndDate = endDateOfMonth
-// 	ret.calendarStartDate = startDateForWeek
-// 	ret.calendarEndDate = data[0][6]
-// 	ret.data = data
-// 	return ret
+	for idx := range 7 {
+		data[0][idx] = startDateForWeek.AddDate(0, 0, idx)
+	}
+	allDatesToFilter := generateAllDatesStringFromStartToEnd(data[0][0], data[0][6])
+	ret.calendarDaysStrFormat = allDatesToFilter
+	ret.monthStartDate = startDateOfMonth
+	ret.monthEndDate = endDateOfMonth
+	ret.calendarStartDate = startDateForWeek
+	ret.calendarEndDate = data[0][6]
+	ret.data = data
+	return ret
 
-// }
+}

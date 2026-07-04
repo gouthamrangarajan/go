@@ -6,84 +6,30 @@ import (
 	"time"
 )
 
-templ prevWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) {
+templ prevWeekLink(week int, currentMonthAndYear time.Time) {
 	{{ url := generatePrevWeekUrl(week, currentMonthAndYear) }}
-	if autoFocus {
-		<a
-			class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
-			autoFocus
-			href={ templ.SafeURL(url) }
-			hx-get={ url }
-			hx-boost="true"
-			hx-swap="outerHTML"
-			hx-target="main"
-			hx-trigger="PREV_MONTH_EVENT"
-			hx-push-url="true"
-			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="$store.data.setProcessingForFetch($event,'PREV_MONTH_EVENT')"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-				<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
-			</svg>
-		</a>
-	} else {
-		<a
-			class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
-			href={ templ.SafeURL(url) }
-			hx-get={ url }
-			hx-boost="true"
-			hx-swap="outerHTML"
-			hx-target="main"
-			hx-trigger="PREV_MONTH_EVENT"
-			hx-push-url="true"
-			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="$store.data.setProcessingForFetch($event,'PREV_MONTH_EVENT')"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-				<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
-			</svg>
-		</a>
-	}
+	<a
+		class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+		href={ templ.SafeURL(url) }
+		data-on:click={ `evt.preventDefault();$pageLoading=true; @get('` + templ.SafeURL(url) + `')` }
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+			<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
+		</svg>
+	</a>
 }
 
-templ nextWeekLink(week int, currentMonthAndYear time.Time, autoFocus bool) {
+templ nextWeekLink(week int, currentMonthAndYear time.Time) {
 	{{ url := generateNextWeekUrl(week, currentMonthAndYear) }}
-	if autoFocus {
-		<a
-			class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300  hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
-			autoFocus
-			href={ templ.SafeURL(url) }
-			hx-get={ url }
-			hx-boost="true"
-			hx-swap="outerHTML"
-			hx-target="main"
-			hx-trigger="NEXT_MONTH_EVENT"
-			hx-push-url="true"
-			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="$store.data.setProcessingForFetch($event,'NEXT_MONTH_EVENT')"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-				<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
-			</svg>
-		</a>
-	} else {
-		<a
-			class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300  hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
-			href={ templ.SafeURL(url) }
-			hx-get={ url }
-			hx-boost="true"
-			hx-swap="outerHTML"
-			hx-target="main"
-			hx-trigger="NEXT_MONTH_EVENT"
-			hx-push-url="true"
-			x-bind:class="$store.data.processing?'opacity-80 cursor-not-allowed':'opacity-100 cursor-pointer'"
-			x-on:click="$store.data.setProcessingForFetch($event,'NEXT_MONTH_EVENT')"
-		>
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-				<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
-			</svg>
-		</a>
-	}
+	<a
+		class="appearance-none outline-none bg-orange-600 text-white py-1 px-2 rounded transition duration-300  hover:opacity-80 focus:ring-2 focus:ring-orange-600 focus:ring-offset-2 focus:ring-offset-orange-50"
+		href={ templ.SafeURL(url) }
+		data-on:click={ `evt.preventDefault(); pageLoading=true;@get('` + templ.SafeURL(url) + `')` }
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+			<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
+		</svg>
+	</a>
 }
 
 func numberOfWeeksInMonth(currentMonthAndYear time.Time) int {

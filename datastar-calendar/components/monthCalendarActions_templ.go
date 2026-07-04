@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func PrevMonthLink(currentMonthAndYear time.Time) templ.Component {
+func prevMonthLink(currentMonthAndYear time.Time) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -57,9 +57,9 @@ func PrevMonthLink(currentMonthAndYear time.Time) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`evt.preventDefault(); @get('` + templ.SafeURL(url) + `')`)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(`evt.preventDefault();$pageLoading=true; @get('` + templ.SafeURL(url) + `')`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 18, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 18, Col: 94}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -73,7 +73,7 @@ func PrevMonthLink(currentMonthAndYear time.Time) templ.Component {
 	})
 }
 
-func NextMonthLink(currentMonthAndYear time.Time) templ.Component {
+func nextMonthLink(currentMonthAndYear time.Time) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -116,9 +116,9 @@ func NextMonthLink(currentMonthAndYear time.Time) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(`evt.preventDefault(); @get('` + templ.SafeURL(url) + `')`)
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(`evt.preventDefault();$pageLoading=true; @get('` + templ.SafeURL(url) + `')`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 35, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 35, Col: 94}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -179,7 +179,7 @@ func goToYearLink(model models.GoToDay) templ.Component {
 		var templ_7745c5c3_Var10 templ.SafeURL
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(url))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 51, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 47, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -192,7 +192,7 @@ func goToYearLink(model models.GoToDay) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(model.GoToYear)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 53, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/monthCalendarActions.templ`, Line: 49, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {

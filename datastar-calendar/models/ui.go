@@ -29,6 +29,13 @@ type MonthCalendarData struct {
 	CurrentMonthAndYear time.Time
 	From                string
 }
+type WeekCalendarData struct {
+	CalendarData        [][7]time.Time
+	EventsData          []EventData
+	CurrentMonthAndYear time.Time
+	From                string
+	Week                int
+}
 type ClientSignals struct {
 	UiSid     string `json:"uiSid"`
 	EventId   string `json:"eventId"`

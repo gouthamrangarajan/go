@@ -29,7 +29,21 @@ func layout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html class=\"w-full h-full\"><head><meta charset=\"UTF-8\"><title>RG Calendar</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"A simple calendar app to add,edit & view events\"><link href=\"/assets/css/flatpickr.css\" rel=\"stylesheet\"><link href=\"/assets/css/styles.css\" rel=\"stylesheet\"><link href=\"/assets/css/openprops.min.css\" rel=\"stylesheet\"><link href=\"/assets/favicon.ico\" rel=\"icon\"><script type=\"text/javascript\" defer src=\"/assets/js/flatpickr.min.js\"></script><script type=\"module\" src=\"/assets/js/datastar.min.js\"></script></head><body class=\"relative w-full h-full font-(family-name:--font-neo-grotesque) bg-slate-100\" data-signals=\"{showRightBackground:false,uiSid:crypto.randomUUID()}\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html class=\"w-full h-full\"><head><meta charset=\"UTF-8\"><title>RG Calendar</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"A simple calendar app to add,edit & view events\"><link href=\"/assets/css/flatpickr.css\" rel=\"stylesheet\"><link href=\"/assets/css/calendar.css\" rel=\"stylesheet\"><link href=\"/assets/css/openprops.min.css\" rel=\"stylesheet\"><link href=\"/assets/favicon.ico\" rel=\"icon\"><script type=\"text/javascript\" defer src=\"/assets/js/flatpickr.min.js\"></script><script type=\"module\" src=\"/assets/js/datastar.min.js\"></script></head><body class=\"relative w-full h-full font-(family-name:--font-neo-grotesque) bg-slate-100\" data-signals=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(`{showRightBackground:false,uiSid:crypto.randomUUID(),
+							showErrorMessage:false,errorMessage:'',pageLoading:false}`)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 24, Col: 65}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -37,7 +51,7 @@ func layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"absolute top-0 right-0 w-1/3 h-full mx-auto -z-10 rounded-full bg-[url(/assets/images/background.png)] bg-no-repeat bg-[top_right] bg-auto bg-fixed hidden lg:block\" style=\"corner-shape:Scoop;display:none;\" data-show=\"$showRightBackground\"></div><script type=\"text/javascript\" src=\"/assets/js/focus-trap.js\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"absolute top-0 right-0 w-1/3 h-full mx-auto -z-10 rounded-full bg-[url(/assets/images/background.png)] bg-no-repeat bg-[top_right] bg-auto bg-fixed hidden lg:block\" style=\"corner-shape:Scoop;display:none;\" data-show=\"$showRightBackground\"></div><div class=\"absolute top-0 left-0 animate-page-loader h-1.5 w-full bg-orange-600\" style=\"display:none\" data-show=\"$pageLoading\"></div><script type=\"text/javascript\" src=\"/assets/js/focus-trap.js\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

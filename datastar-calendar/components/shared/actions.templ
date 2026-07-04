@@ -5,11 +5,11 @@ import (
 	"time"
 )
 
-templ MonthViewLink(currentMonthAndYear time.Time, active bool) {
+templ MonthViewLink(currentMonthAndYear time.Time, activeMenu bool) {
 	{{ url := "/?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) }}
 	{{ activeClass := "bg-teal-700" }}
-	if !active {
-		{{ activeClass = "bg-teal-500" }}
+	if !activeMenu {
+		{{ activeClass = "bg-teal-600" }}
 	}
 	<a
 		class={ "appearance-none outline-none text-white transition duration-300 py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10",activeClass }
@@ -20,27 +20,23 @@ templ MonthViewLink(currentMonthAndYear time.Time, active bool) {
 	</a>
 }
 
-templ WeekViewLink(currentMonthAndYear time.Time, active bool) {
+templ WeekViewLink(currentMonthAndYear time.Time, activeMenu bool) {
 	{{ url := "/wk?month=" + strconv.Itoa(int(currentMonthAndYear.Month())) + "&year=" + strconv.Itoa(currentMonthAndYear.Year()) + "&week=1" }}
 	{{ activeClass := "bg-teal-700" }}
-	if !active {
-		{{ activeClass = "bg-teal-500" }}
+	if !activeMenu {
+		{{ activeClass = "bg-teal-600" }}
 	}
 	<a
-		class={ "appearance-none outline-none pointer-events-none text-white transition duration-300  py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
+		class={ "appearance-none outline-none text-white transition duration-300  py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
 		href={ templ.SafeURL(url) }
 		style="view-transition-name:weekViewLink"
-		disabled
 	>
 		Week
 	</a>
 }
 
-templ AddEventLink(date time.Time, week int, active bool) {
+templ AddEventLink(date time.Time, active bool) {
 	{{ url := "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) }}
-	if week>0 {
-		{{ url = "/add?month=" + strconv.Itoa(int(date.Month())) + "&year=" + strconv.Itoa(date.Year()) + "&day=" + strconv.Itoa(date.Day()) + "&week=" + strconv.Itoa(week) }}
-	}
 	<div class="group flex justify-between items-center w-full cursor-pointer">
 		if active {
 			<span

@@ -9,7 +9,7 @@ templ layout() {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<meta name="description" content="A simple calendar app to add,edit & view events"/>
 			<link href="/assets/css/flatpickr.css" rel="stylesheet"/>
-			<link href="/assets/css/styles.css" rel="stylesheet"/>
+			<link href="/assets/css/calendar.css" rel="stylesheet"/>
 			<link href="/assets/css/openprops.min.css" rel="stylesheet"/>
 			<link href="/assets/favicon.ico" rel="icon"/>
 			// <script type="text/javascript" src="/assets/js/htmx.min.js"></script>
@@ -20,7 +20,8 @@ templ layout() {
 		</head>
 		<body
 			class="relative w-full h-full font-(family-name:--font-neo-grotesque) bg-slate-100"
-			data-signals="{showRightBackground:false,uiSid:crypto.randomUUID()}"
+			data-signals={ `{showRightBackground:false,uiSid:crypto.randomUUID(),
+							showErrorMessage:false,errorMessage:'',pageLoading:false}` }
 		>
 			{ children... }
 			// @bodyScript()
@@ -30,6 +31,11 @@ templ layout() {
 					hidden lg:block"
 				style="corner-shape:Scoop;display:none;"
 				data-show="$showRightBackground"
+			></div>
+			<div
+				class="absolute top-0 left-0 animate-page-loader h-1.5 w-full bg-orange-600"
+				style="display:none"
+				data-show="$pageLoading"
 			></div>
 			<script type="text/javascript" src="/assets/js/focus-trap.js"></script>
 		</body>

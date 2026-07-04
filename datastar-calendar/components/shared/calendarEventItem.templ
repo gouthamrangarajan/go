@@ -1,0 +1,14 @@
+package shared
+
+import "datastar-calendar/models"
+
+templ CalendarTableEventItem(event models.EventData) {
+	<a
+		href="#"
+		class={ `appearance-none outline-none p-1 cursor-pointer truncate text-sm text-slate-600 rounded-xl 
+			    transition duration-300 border border-dashed border-transparent
+				 hover:border-orange-600 focus:border-orange-600 w-full` }
+		data-on:click__prevent={ `@get('/` + event.Id + `')` }
+		id={ "event-" + event.Id }
+	>{ event.Task }</a>
+}

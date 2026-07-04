@@ -12,7 +12,6 @@ templ MonthCalendarPage(data models.MonthCalendarData) {
 		<main
 			class="h-dvh w-dvw relative overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600"
 			id="main"
-			data-signals={ `{showErrorMessage:false,errorMessage:''}` }
 			data-init="@get('/sse',{openWhenHidden:true})"
 			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 		>
@@ -89,8 +88,8 @@ templ monthCalendarheader(currentMonthAndYear time.Time) {
 					}
 				</div>
 			</div>
-			@PrevMonthLink(currentMonthAndYear)
-			@NextMonthLink(currentMonthAndYear)
+			@prevMonthLink(currentMonthAndYear)
+			@nextMonthLink(currentMonthAndYear)
 		</div>
 		<div class="flex items-center">
 			@shared.MonthViewLink(currentMonthAndYear, true)

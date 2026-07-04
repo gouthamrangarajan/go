@@ -31,7 +31,7 @@ func main() {
 	router.Get("/add/close", services.CloseAddUI)
 	router.Post("/add", services.SaveEvent)
 	router.Post("/update", services.SaveEvent)
-	// router.Get("/wk", services.WeekPage)
+	router.Get("/wk", services.WeekPage)
 	router.Post("/login", services.Login)
 	router.Post("/delete", services.DeleteEvent)
 	router.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
