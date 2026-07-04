@@ -869,11 +869,6 @@
       padding-bottom: calc(var(--spacing) * 2);
     }
   }
-  .xl\:mt-20 {
-    @media (width >= 80rem) {
-      margin-top: calc(var(--spacing) * 20);
-    }
-  }
   .xl\:hidden {
     @media (width >= 80rem) {
       display: none;
@@ -902,6 +897,11 @@
   .xl\:w-5\/12 {
     @media (width >= 80rem) {
       width: calc(5/12 * 100%);
+    }
+  }
+  .xl\:pt-10 {
+    @media (width >= 80rem) {
+      padding-top: calc(var(--spacing) * 10);
     }
   }
 }
