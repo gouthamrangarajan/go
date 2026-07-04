@@ -39,7 +39,11 @@ func main() {
 		go services.GetFeaturedDemos(featureChannel)
 		features := <-featureChannel
 		close(featureChannel)
-		component := components.Landing(features)
+		projectDetails := make([]models.ProjectDetail, len(features))
+		for idx, demoItem := range features {
+			projectDetails[idx] = covertDbDemoItemToProjectDetail(demoItem)
+		}
+		component := components.Landing(projectDetails)
 		component.Render(request.Context(), responseWriter)
 	})
 	router.Post("/contact", func(responseWriter http.ResponseWriter, request *http.Request) {
@@ -84,9 +88,13 @@ func main() {
 	router.Get("/projects", func(responseWriter http.ResponseWriter, request *http.Request) {
 		channel := make(chan []models.DemoItem)
 		go services.GetAllDemos(channel, true)
+		defer close(channel)
 		allProjects := <-channel
-		close(channel)
-		component := components.Projects(allProjects)
+		allProjectDetails := make([]models.ProjectDetail, len(allProjects))
+		for idx, demoItem := range allProjects {
+			allProjectDetails[idx] = covertDbDemoItemToProjectDetail(demoItem)
+		}
+		component := components.Projects(allProjectDetails)
 		component.Render(request.Context(), responseWriter)
 	})
 	router.Get("/sse", func(responseWriter http.ResponseWriter, request *http.Request) {
@@ -97,7 +105,7 @@ func main() {
 		}
 		sse := datastar.NewSSE(responseWriter, request)
 
-		session := make(chan []models.DemoItem, 16)
+		session := make(chan []models.ProjectDetail, 16)
 		idMap.Store(clientSignal.Id, session)
 		// fmt.Printf("New SSE connection established with ID: %s\n", clientSignal.Id)
 
@@ -132,27 +140,50 @@ func main() {
 				Input: []string{clientSignal.SrchTxt},
 			}
 			embeddingChannel := make(chan models.VoyageEmbeddingResponse)
+			defer close(embeddingChannel)
 			go services.CallVoyageEmbedding(embeddingRequest, embeddingChannel)
 			embeddingResponse := <-embeddingChannel
-			close(embeddingChannel)
 			if len(embeddingResponse.Data) > 0 {
 				searchChannel := make(chan []models.DemoItem)
+				defer close(searchChannel)
 				go services.SearchDemos(searchChannel, embeddingResponse.Data[0].Embedding, clientSignal.ServiceFilter)
 				searchResults := <-searchChannel
-				close(searchChannel)
+				searchResultsTransformed := []models.ProjectDetail{}
+				for _, demoItem := range searchResults {
+					searchResultsTransformed = append(searchResultsTransformed, covertDbDemoItemToProjectDetail(demoItem))
+				}
+				if len(searchResultsTransformed) == 0 {
+					uniqueTagsChannel := make(chan []string)
+					defer close(uniqueTagsChannel)
+					go services.GetUniqueTags(uniqueTagsChannel)
+
+					aiSuggestionChannel := make(chan models.SearchSuggestion)
+					defer close(aiSuggestionChannel)
+					go services.GetOpenRouterSuggestions(clientSignal.SrchTxt, <-uniqueTagsChannel, aiSuggestionChannel)
+					aiSuggestionData := <-aiSuggestionChannel
+					searchResultsTransformed = append(searchResultsTransformed, models.ProjectDetail{
+						AISuggestionTag:    aiSuggestionData.Tag,
+						AISuggestionReason: aiSuggestionData.Suggestion,
+					})
+					// fmt.Printf("OpenRouter suggestion: %s, tag: %s\n", aiSuggestionData.Suggestion, aiSuggestionData.Tag)
+				}
 				if session, exists := idMap.Load(clientSignal.Id); exists {
-					session.(chan []models.DemoItem) <- searchResults
+					session.(chan []models.ProjectDetail) <- searchResultsTransformed
 					dataSentToChannel = true
 				}
 				return
 			}
 		}
 		getAllDataChannel := make(chan []models.DemoItem)
+		defer close(getAllDataChannel)
 		go services.GetAllDemosWithServiceFilter(getAllDataChannel, clientSignal.ServiceFilter)
 		allDemos := <-getAllDataChannel
-		close(getAllDataChannel)
+		allDemosTransformed := make([]models.ProjectDetail, len(allDemos))
+		for idx, demoItem := range allDemos {
+			allDemosTransformed[idx] = covertDbDemoItemToProjectDetail(demoItem)
+		}
 		if session, exists := idMap.Load(clientSignal.Id); exists {
-			session.(chan []models.DemoItem) <- allDemos
+			session.(chan []models.ProjectDetail) <- allDemosTransformed
 			dataSentToChannel = true
 		}
 		if !dataSentToChannel {
@@ -164,4 +195,18 @@ func main() {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
 	})
 	http.ListenAndServe(":3000", router)
+}
+
+func covertDbDemoItemToProjectDetail(dbItem models.DemoItem) models.ProjectDetail {
+	return models.ProjectDetail{
+		Id:                dbItem.Id,
+		Title:             dbItem.Title,
+		ImgSrc:            dbItem.ImgSrc,
+		Description:       dbItem.Description,
+		Url:               dbItem.Url,
+		Service:           dbItem.Service,
+		Tags:              dbItem.Tags,
+		ImgBadgeLightMode: dbItem.ImgBadgeLightMode,
+		CodeUrl:           dbItem.CodeUrl,
+	}
 }

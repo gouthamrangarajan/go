@@ -3,7 +3,7 @@ package components
 import "datastar-portfolio/models"
 import "strings"
 
-templ Landing(data []models.DemoItem) {
+templ Landing(data []models.ProjectDetail) {
 	@layout() {
 		<main
 			class="py-2 px-4 flex flex-col items-center justify-center gap-4 lg:py-20 xl:py-40"
@@ -46,7 +46,7 @@ templ Landing(data []models.DemoItem) {
 					</a>
 				</div>
 			</section>
-			<section class="w-full max-w-4xl flex flex-col gap-6 border-b border-slate-200 py-2 px-4 pb-20">
+			<section class="w-full max-w-4xl flex flex-col gap-6 py-2 px-4 pb-20">
 				<p class="text-lg font-semibold opacity-0 animate-fade-in text-slate-500">SELECTED WORK</p>
 				<div class="pt-10 flex flex-col gap-10">
 					for _, item := range data {
@@ -59,9 +59,9 @@ templ Landing(data []models.DemoItem) {
 	}
 }
 
-templ featuredCard(data models.DemoItem) {
+templ featuredCard(data models.ProjectDetail) {
 	{{ splittedTags := strings.Split(data.Tags, ",") }}
-	<div class="flex flex-col gap-4 opacity-0 animate-fade-in-2">
+	<div class="flex flex-col gap-4 opacity-0 animate-fade-in-2 pb-4 border-b border-gray-300">
 		<img src={ data.ImgSrc } alt={ data.Title + "Screenshot" } class="cursor-pointer rounded-lg transition duration-300 hover:scale-[1.02]"/>
 		<div class="flex justify-between items-center gap-2">
 			<p class="font-semibold">{ data.Title }</p>
@@ -138,14 +138,12 @@ templ contact() {
 						viewBox="0 0 24 24"
 						fill="currentColor"
 						class="size-5"
-						style="view-transition-name:indicator"
 						data-show="!$_submitting"
 					>
 						<path fill-rule="evenodd" d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
 					</svg>
 					<span
 						class="animate-spinner w-5 h-5 border-2 border-dashed border-teal-300 rounded-full"
-						style="view-transition-name:indicator"
 						data-show="$_submitting"
 					></span>
 				</button>

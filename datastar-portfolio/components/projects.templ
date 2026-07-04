@@ -3,7 +3,7 @@ package components
 import "datastar-portfolio/models"
 import "strings"
 
-templ Projects(data []models.DemoItem) {
+templ Projects(data []models.ProjectDetail) {
 	@layout() {
 		<main
 			class="py-2 px-4 flex flex-col items-center justify-center gap-2 lg:py-10 xl:py-20"
@@ -30,7 +30,7 @@ templ search() {
 		class="flex w-full flex-col gap-4 "
 		data-signals="{serviceFilter:[],filtering:false,_readyToSearch:false}"
 		data-init="setTimeout(()=>$_readyToSearch=true,600)"
-		data-on-signal-patch__debounce.600ms="$_readyToSearch && @post('/search')"
+		data-on-signal-patch__debounce.600ms={ ` $_readyToSearch  &&  @post('/search')` }
 		data-on-signal-patch-filter="{include:/srchTxt|serviceFilter/}"
 	>
 		<div class="bg-white flex gap-2 w-full items-center py-1 px-3 transition duration-300 rounded-md border border-slate-300  focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-slate-600 focus-within:ring-offset-2 focus-within:ring-offset-white">
@@ -94,12 +94,16 @@ templ search() {
 	</div>
 }
 
-templ ProjectCardCollection(data []models.DemoItem) {
+templ ProjectCardCollection(data []models.ProjectDetail) {
 	<div class="flex flex-col gap-10 relative" id="projects" style="view-transition-name:projects-container">
 		for _, item := range data {
 			@projectCard(item)
 		}
-		<div class="absolute top-0 left-0 w-full h-full py-2 px-4 pt-10 flex justify-center" data-show="$filtering">
+		<div
+			class="absolute top-0 left-0 w-full h-full py-2 px-4 pt-10 flex justify-center"
+			data-show="$filtering"
+			style="display: none;"
+		>
 			<span
 				class="animate-spinner w-12 h-12 border-3 border-dashed border-teal-700 rounded-full"
 			></span>
@@ -107,32 +111,50 @@ templ ProjectCardCollection(data []models.DemoItem) {
 	</div>
 }
 
-templ projectCard(data models.DemoItem) {
-	{{ splittedTags := strings.Split(data.Tags, ",") }}
-	<div
-		class="flex flex-col gap-4 opacity-0 animate-fade-in-2"
-	>
-		<img src={ data.ImgSrc } alt={ data.Title + "Screenshot" } class="cursor-pointer rounded-lg transition duration-300 hover:scale-[1.02]"/>
-		<div class="flex justify-between items-center gap-2">
+templ projectCard(data models.ProjectDetail) {
+	if data.Id==0 {
+		<div class="flex flex-col gap-4 shadow py-2 px-4 rounded-xl">
+			<p class="text-slate-900">No exact match. { data.AISuggestionReason } </p>
 			<div class="flex items-center gap-2">
-				<p class="font-semibold">{ data.Title }</p>
-				<span class="text-sm border border-gray-300  px-3 py-1 rounded-full text-slate-500">{ data.Service }</span>
-			</div>
-			<div class="flex gap-2 items-center">
+				<span>Try this</span>
 				<a
-					target="_blank"
-					href={ data.Url }
-					class="appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-blue-600"
+					href="#"
+					data-on:click__prevent__stop={ `$serviceFilter=[];$srchTxt='` + data.AISuggestionTag + `'` }
+					class={ `appearance-none outline-none px-4 py-2 rounded-full font-medium transition-colors
+						 bg-blue-50 text-blue-700 hover:bg-blue-700 hover:text-white
+				` }
 				>
-					<svg xmlns="http://www.w3.org/2000/svg" class="size-5" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-arrow-out-up-right-icon lucide-square-arrow-out-up-right"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"></path><path d="m21 3-9 9"></path><path d="M15 3h6v6"></path></svg>
+					{ data.AISuggestionTag }
 				</a>
 			</div>
 		</div>
-		<p class="text-slate-500">{ data.Description }</p>
-		<div class="flex flex-wrap items-center gap-2">
-			for _, tag := range splittedTags {
-				<span class="text-sm border border-gray-300  px-3 py-1 rounded-full text-slate-500">{ tag }</span>
-			}
+	} else {
+		{{ splittedTags := strings.Split(data.Tags, ",") }}
+		<div
+			class="flex flex-col gap-4 opacity-0 animate-fade-in-2 pb-4 border-b border-gray-300"
+		>
+			<img src={ data.ImgSrc } alt={ data.Title + "Screenshot" } class="cursor-pointer rounded-lg transition duration-300 hover:scale-[1.02]"/>
+			<div class="flex justify-between items-center gap-2">
+				<div class="flex items-center gap-2">
+					<p class="font-semibold">{ data.Title }</p>
+					<span class="text-sm border border-gray-300  px-3 py-1 rounded-full text-slate-500">{ data.Service }</span>
+				</div>
+				<div class="flex gap-2 items-center">
+					<a
+						target="_blank"
+						href={ data.Url }
+						class="appearance-none outline-none cursor-pointer rounded-full p-1 transition duration-300 focus:bg-slate-100 hover:bg-slate-100 focus:ring-2 focus:ring-blue-600"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" class="size-5" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-arrow-out-up-right-icon lucide-square-arrow-out-up-right"><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"></path><path d="m21 3-9 9"></path><path d="M15 3h6v6"></path></svg>
+					</a>
+				</div>
+			</div>
+			<p class="text-slate-500">{ data.Description }</p>
+			<div class="flex flex-wrap items-center gap-2">
+				for _, tag := range splittedTags {
+					<span class="text-sm border border-gray-300  px-3 py-1 rounded-full text-slate-500">{ tag }</span>
+				}
+			</div>
 		</div>
-	</div>
+	}
 }

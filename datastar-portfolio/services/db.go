@@ -268,3 +268,43 @@ func SearchDemos(channel chan []models.DemoItem, embeddingToSearch []float32, se
 	}
 	channel <- data
 }
+
+func GetUniqueTags(channel chan []string) {
+	retVal := []string{}
+	uniqueTagsMap := make(map[string]bool)
+	db, err := createDb()
+	if err != nil {
+		fmt.Printf("Failed to create db connection in GetUniqueTags: %v\n", err.Error())
+		channel <- retVal
+		return
+	}
+	defer db.Close()
+	queryStatement := "SELECT tags FROM demos WHERE display=1"
+
+	rows, err := db.Query(queryStatement)
+	if err != nil {
+		fmt.Printf("Failed to execute query in GetUniqueTags: %v\n", err.Error())
+		channel <- retVal
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var item string
+		if err := rows.Scan(&item); err != nil {
+			fmt.Printf("Error scanning row in GetUniqueTags:%v\n", err.Error())
+		} else {
+			tags := strings.Split(item, ",")
+			for _, tag := range tags {
+				tag = strings.TrimSpace(tag)
+				if tag != "" {
+					uniqueTagsMap[tag] = true
+				}
+			}
+		}
+
+	}
+	for tag := range uniqueTagsMap {
+		retVal = append(retVal, tag)
+	}
+	channel <- retVal
+}
