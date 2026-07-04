@@ -138,7 +138,7 @@ func weekCalendarTable(data models.WeekCalendarData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var9 = []any{`shadow border-l-2  flex flex-col items-start gap-3 ` + activeClass}
+			var templ_7745c5c3_Var9 = []any{`shadow border-l-5  flex flex-col items-start gap-3 ` + activeClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var9...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

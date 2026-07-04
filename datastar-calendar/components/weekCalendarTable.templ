@@ -34,7 +34,7 @@ templ weekCalendarTable(data models.WeekCalendarData) {
 								 scrollbar-thin scrollbar-track-orange-200 scrollbar-thumb-orange-600` }
 					>
 						<div
-							class={ `shadow border-l-2  flex flex-col items-start gap-3 ` + activeClass }
+							class={ `shadow border-l-5  flex flex-col items-start gap-3 ` + activeClass }
 							id={ "eventsContainer-" + data.CalendarData[0][idx].Format("2006-01-02") }
 						>
 							for _,event := range filterDateEvents(data.EventsData,data.CalendarData[0][idx]) {
