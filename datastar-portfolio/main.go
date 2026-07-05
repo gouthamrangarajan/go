@@ -13,8 +13,12 @@ import (
 	"strings"
 	"sync"
 
+	"strconv"
+	"time"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
 	"github.com/joho/godotenv"
 	"github.com/resend/resend-go/v3"
 	"github.com/starfederation/datastar-go/datastar"
@@ -31,6 +35,29 @@ func main() {
 		fmt.Println("Loaded .env file successfully")
 	}
 	router := chi.NewRouter()
+	searchRouter := chi.NewRouter()
+	rateLimitSecondsStr := os.Getenv("RATE_LIMIT_SECONDS")
+	rateLimitRequestsStr := os.Getenv("RATE_LIMIT_REQUESTS")
+
+	rateLimitSeconds, err := strconv.Atoi(rateLimitSecondsStr)
+	if err != nil {
+		rateLimitSeconds = 5
+	}
+	rateLimitRequests, err := strconv.Atoi(rateLimitRequestsStr)
+	if err != nil {
+		rateLimitRequests = 10
+	}
+	searchRouter.Use(middleware.RealIP)
+	searchRouter.Use(httprate.Limit(
+		rateLimitRequests,
+		time.Duration(rateLimitSeconds)*time.Second,	
+		httprate.WithKeyFuncs(httprate.KeyByRealIP),
+		httprate.WithLimitHandler(func(responseWriter http.ResponseWriter, request *http.Request) {
+			fmt.Printf("Request blocked from  %v\n", request.RemoteAddr)
+			http.Error(responseWriter, "Too many requests.", http.StatusTooManyRequests)
+		}),
+	)) // 10 request in 5 seconds
+
 	router.Use(middleware.Logger)
 	router.Use(middleware.Compress(5))
 
@@ -124,7 +151,7 @@ func main() {
 		}
 
 	})
-	router.Post("/search", func(responseWriter http.ResponseWriter, request *http.Request) {
+	searchRouter.Post("/", func(responseWriter http.ResponseWriter, request *http.Request) {
 		var clientSignal models.ClientSignals
 		err := datastar.ReadSignals(request, &clientSignal)
 		if err != nil {
@@ -194,6 +221,7 @@ func main() {
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
 	})
+	router.Mount("/search", searchRouter)
 	http.ListenAndServe(":3000", router)
 }
 
@@ -210,3 +238,6 @@ func covertDbDemoItemToProjectDetail(dbItem models.DemoItem) models.ProjectDetai
 		CodeUrl:           dbItem.CodeUrl,
 	}
 }
+
+
+	

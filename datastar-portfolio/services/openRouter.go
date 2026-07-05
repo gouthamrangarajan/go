@@ -82,7 +82,7 @@ func GetOpenRouterSuggestions(userQuery string, tagsFromDb []string, channel cha
 		return
 	}
 	if len(responseVal.Choices) > 0 {
-		fmt.Printf("OpenRouter API call returned content: %s\n", responseVal.Choices[0].Message.Content)
+		// fmt.Printf("OpenRouter API call returned content: %s\n", responseVal.Choices[0].Message.Content)
 		// Split the content into suggestion and tag
 		content := responseVal.Choices[0].Message.Content
 		contentSplit := strings.Split(content, "|")
