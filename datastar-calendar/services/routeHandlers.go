@@ -208,8 +208,9 @@ func DetailsUI(responseWriter http.ResponseWriter, request *http.Request) {
 		if stopAfterErr == nil {
 			stopAfterFormatted = stopAfterParsed.Format("01/02/2006")
 		}
+		// fmt.Printf(`{pageLoading:false,eventId:"%s",task:"%s",date:"%s",dateChanged:false,frequency:"%s",stopAfter:"%s",exact:"%s"}\n`, data.Id, data.Task, dateFormatted, data.Frequency, stopAfterFormatted, data.Exact)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			Content:   fmt.Sprintf(`{eventId:"%s",task:"%s",date:"%s",frequency:"%s",stopAfter:"%s",exact:"%s"}`, data.Id, data.Task, dateFormatted, data.Frequency, stopAfterFormatted, data.Exact),
+			Content:   fmt.Sprintf(`{pageLoading:false,eventId:"%s",task:"%s",date:"%s",dateChanged:false,frequency:"%s",stopAfter:"%s",exact:"%s"}`, data.Id, data.Task, dateFormatted, data.Frequency, stopAfterFormatted, data.Exact),
 			IsSignals: true,
 		}
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -278,7 +279,7 @@ func AddUI(responseWriter http.ResponseWriter, request *http.Request) {
 
 	if userSession, userSessionExists := uiSidMap.Load(key); userSessionExists {
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			Content:   fmt.Sprintf(`{eventId:'',task:'',date:'%s',frequency:'Only once',stopAfter:'',exact:''}`, addEventDate.Format("2006-01-02")),
+			Content:   fmt.Sprintf(`{pageLoading:false,eventId:'',task:'',date:'%s',frequency:'Only once',stopAfter:'',exact:''}`, addEventDate.Format("2006-01-02")),
 			IsSignals: true,
 		}
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -319,7 +320,7 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	stopAfterDateLayout := "01/02/2006"
 
-	task := strings.Trim(clientSignals.Task, "")
+	task := strings.TrimSpace(clientSignals.Task)
 	date := clientSignals.Date
 	frequency := clientSignals.Frequency
 	stopAfter := clientSignals.StopAfter
@@ -456,8 +457,8 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 		if !functionalityErrored {
 			eventTableDataUIBuffer := new(bytes.Buffer)
 			shared.CalendarTableEventItem(dataFromDbSave).Render(context.Background(), eventTableDataUIBuffer)
-
-			if clientSignals.EventId == "" {
+			switch {
+			case clientSignals.EventId == "":
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:   "{eventId:'',task:'',frequency:'Only once',stopAfter:'',exact:'no'}",
 					IsSignals: true,
@@ -467,9 +468,19 @@ func SaveEvent(responseWriter http.ResponseWriter, request *http.Request) {
 					Selector: "#eventsContainer-" + dateParsed.Format("2006-01-02"),
 					Mode:     datastar.WithModeAppend(),
 				}
-			} else {
+			case clientSignals.EventId != "" && !clientSignals.DateChanged:
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content: eventTableDataUIBuffer.String(),
+				}
+			case clientSignals.EventId != "" && clientSignals.DateChanged:
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					IsRemove: true,
+					Selector: "#event-" + clientSignals.EventId,
+				}
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content:  eventTableDataUIBuffer.String(),
+					Selector: "#eventsContainer-" + dateParsed.Format("2006-01-02"),
+					Mode:     datastar.WithModeAppend(),
 				}
 			}
 

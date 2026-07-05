@@ -157,6 +157,7 @@ templ AddEventResult(success bool, task string) {
 			id="eventResult"
 			style="view-transition-name:event-result"
 			class="animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded"
+			data-show="!$_addingTask"
 		>
 			{ "Succesfully added task "+task }
 		</p>
@@ -165,6 +166,7 @@ templ AddEventResult(success bool, task string) {
 			id="eventResult"
 			style="view-transition-name:event-result"
 			class="animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded"
+			data-show="!$_addingTask"
 		>
 			{ "Error adding task "+task+". Please try again later." }
 		</p>

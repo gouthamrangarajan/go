@@ -144,14 +144,14 @@ func AddEventResult(success bool, task string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if success {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded\" data-show=\"!$_addingTask\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("Succesfully added task " + task)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 161, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 162, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -162,14 +162,14 @@ func AddEventResult(success bool, task string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded\" data-show=\"!$_addingTask\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("Error adding task " + task + ". Please try again later.")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 169, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/addEvent.templ`, Line: 171, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {

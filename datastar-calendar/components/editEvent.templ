@@ -83,6 +83,7 @@ templ EditEventDrawer() {
 										});
 									} 
 								` }
+							data-on:change="$dateChanged=true;"
 						/>
 					</fieldset>
 					<fieldset class="flex flex-col gap-1 w-full ">
@@ -205,6 +206,7 @@ templ EditEventResult(success bool, task string) {
 			id="eventResult"
 			style="view-transition-name:event-result"
 			class="animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded"
+			data-show="!$_deletingTask && !$_savingTask"
 		>
 			{ "Succesfully updated task "+task }
 		</p>
@@ -213,6 +215,7 @@ templ EditEventResult(success bool, task string) {
 			id="eventResult"
 			style="view-transition-name:event-result"
 			class="animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded"
+			data-show="!$_deletingTask && !$_savingTask"
 		>
 			{ "Error updating task "+task+". Please try again later." }
 		</p>
@@ -234,6 +237,7 @@ templ DeleteEventResult(success bool) {
 			id="eventResult"
 			style="view-transition-name:event-result"
 			class="animate-result py-1 px-3 w-full bg-red-200 text-red-600 font-semibold rounded"
+			data-show="!$_deletingTask && !$_savingTask"
 		>
 			{ "Error deleting task, please try again" }
 		</p>

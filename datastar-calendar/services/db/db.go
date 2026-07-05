@@ -95,31 +95,6 @@ func GetDataById(request struct {
 	channel <- response
 }
 
-func UpdateDate(accessToken string, data models.DnD, channel chan<- bool) {
-	anonKey := os.Getenv("SUPABASE_ANON_KEY")
-	apiUrl := os.Getenv("SUPABASE_API_URL")
-	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
-		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
-	})
-	if err != nil {
-		fmt.Printf("Error connecting to supabase %v\n", err.Error())
-		channel <- false
-		return
-	}
-	_, count, err := client.From("calendar").Update(map[string]string{"date": data.Date}, "minimal", "exact").Eq("id", data.Id).Execute()
-	if err != nil {
-		fmt.Printf("Error executing query %v\n", err.Error())
-		channel <- false
-		return
-	}
-	if count == 0 {
-		fmt.Printf("No records affected\n")
-		channel <- false
-		return
-	}
-	channel <- true
-}
-
 func AddData(accessToken string, data models.EventData, channel chan<- models.EventData) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")

@@ -37,11 +37,12 @@ type WeekCalendarData struct {
 	Week                int
 }
 type ClientSignals struct {
-	UiSid     string `json:"uiSid"`
-	EventId   string `json:"eventId"`
-	Task      string `json:"task"`
-	Frequency string `json:"frequency"`
-	StopAfter string `json:"stopAfter"`
-	Date      string `json:"date"`
-	Exact     string `json:"exact"`
+	UiSid       string `json:"uiSid"`
+	EventId     string `json:"eventId"`
+	Task        string `json:"task"`
+	Frequency   string `json:"frequency"`
+	StopAfter   string `json:"stopAfter"`
+	Date        string `json:"date"`
+	DateChanged bool   `json:"dateChanged"`
+	Exact       string `json:"exact"`
 }
