@@ -41,7 +41,27 @@ func main() {
 	if err != nil {
 		rateLimitRequests = 10
 	}
-	promptRouter.Use(httprate.LimitByIP(rateLimitRequests, time.Duration(rateLimitSeconds)*time.Second)) // 10 request in 5 seconds
+	promptRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
+	promptRouter.Use(httprate.LimitBy(
+		rateLimitRequests,
+		time.Duration(rateLimitSeconds)*time.Second,	
+		func(request *http.Request) (string, error) {
+			// Get the IP that middleware.RealIP has already verified
+			ip := middleware.GetClientIP(request.Context())
+			// Canonicalize handles IPv6 /64 subnets naturally
+			// Fallback: If for some reason the middleware failed (local dev), 
+			// use the direct network address.
+			if ip == "" {
+				ip = request.RemoteAddr
+			}
+			return httprate.CanonicalizeIP(ip), nil
+		},
+		httprate.WithLimitHandler(func(responseWriter http.ResponseWriter, request *http.Request) {
+			realIP := middleware.GetClientIP(request.Context())
+			fmt.Printf("Blocked request from IP: %s\n", realIP)
+			http.Error(responseWriter, "Too many requests.", http.StatusTooManyRequests)
+		}),
+	)) // 10 request in 5 seconds
 
 	router.Get("/", mainPageHandler)
 	router.Get("/{sessionId}", mainPageHandler)
