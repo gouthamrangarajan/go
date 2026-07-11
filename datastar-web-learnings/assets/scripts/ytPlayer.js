@@ -27,7 +27,7 @@ async function initYTPlayer(vId, retryIdx) {
     },
     events: {
       onReady: function (event) {
-        //   console.log(player);
+          // console.log(player);
       },
       onStateChange: function (event) {
         if (event.data == YT.PlayerState.PLAYING) {
@@ -44,6 +44,7 @@ async function initYTPlayer(vId, retryIdx) {
       },
     },
   });
+  console.log(player);
   return player;
 }
 function initDockedYTPlayer(vId, dockedPlayerSignal, durationToPlaySignal) {
