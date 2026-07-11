@@ -44,7 +44,7 @@ async function initYTPlayer(vId, retryIdx) {
       },
     },
   });
-  console.log(player);
+  // console.log(player);
   return player;
 }
 function initDockedYTPlayer(vId, dockedPlayerSignal, durationToPlaySignal) {
