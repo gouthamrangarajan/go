@@ -39,7 +39,27 @@ func main() {
 		rateLimitRequests = 10
 	}
 
-	dataRouter.Use(httprate.LimitByIP(rateLimitRequests, time.Duration(rateLimitSeconds)*time.Second)) // 10 request in 5 seconds
+	dataRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
+	dataRouter.Use(httprate.LimitBy(
+		rateLimitRequests,
+		time.Duration(rateLimitSeconds)*time.Second,	
+		func(request *http.Request) (string, error) {
+			// Get the IP that middleware.RealIP has already verified
+			ip := middleware.GetClientIP(request.Context())
+			// Canonicalize handles IPv6 /64 subnets naturally
+			// Fallback: If for some reason the middleware failed (local dev), 
+			// use the direct network address.
+			if ip == "" {
+				ip = request.RemoteAddr
+			}
+			return httprate.CanonicalizeIP(ip), nil
+		},
+		httprate.WithLimitHandler(func(responseWriter http.ResponseWriter, request *http.Request) {
+			realIP := middleware.GetClientIP(request.Context())
+			fmt.Printf("Blocked request from IP: %s\n", realIP)
+			http.Error(responseWriter, "Too many requests.", http.StatusTooManyRequests)
+		}),
+	)) // 10 request in 5 seconds
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
