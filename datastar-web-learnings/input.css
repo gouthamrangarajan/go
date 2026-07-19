@@ -113,7 +113,7 @@
 @keyframes quiz {
     0% {
         opacity: 0;
-        transform: translateX(10%);
+        transform: translateX(2%);
     }
 
     100% {
@@ -136,7 +136,7 @@
     }
 }
 
-.animate-fade{
+.animate-fade {
     animation: fade 0.2s var(--ease-out-3) forwards;
 }
 

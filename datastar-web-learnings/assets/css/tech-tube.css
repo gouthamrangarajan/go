@@ -938,7 +938,7 @@
 @keyframes quiz {
   0% {
     opacity: 0;
-    transform: translateX(10%);
+    transform: translateX(2%);
   }
   100% {
     opacity: 1;
