@@ -1,9 +1,9 @@
 module datastar-calendar
 
-go 1.24.1
+go 1.25.0
 
 require (
-	github.com/a-h/templ v0.3.1001
+	github.com/a-h/templ v0.3.1020
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/joho/godotenv v1.5.1

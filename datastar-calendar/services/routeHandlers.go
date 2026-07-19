@@ -144,6 +144,7 @@ func SSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	userSessionChannel := make(chan models.LongSSEData, 16)
 	uiSidMap.Store(sessionKey, userSessionChannel)
+	defer uiSidMap.CompareAndDelete(sessionKey, userSessionChannel)
 
 	sse := datastar.NewSSE(responseWriter, request)
 
@@ -154,7 +155,6 @@ func SSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	for {
 		select {
 		case <-request.Context().Done():
-			uiSidMap.Delete(sessionKey)
 			return
 		case channelData := <-userSessionChannel:
 			if channelInMap, ok := uiSidMap.Load(sessionKey); !ok || channelInMap != userSessionChannel {
