@@ -27,7 +27,7 @@ func main() {
 
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.Compress(5))
+	// router.Use(middleware.Compress(5))
 	router.Use(services.AuthorizationMiddleware)
 
 	rateLimitSecondsStr := os.Getenv("RATE_LIMIT_SECONDS")
@@ -41,6 +41,7 @@ func main() {
 	if err != nil {
 		rateLimitRequests = 10
 	}
+	promptRouter.Use(services.AuthorizationMiddleware)
 	promptRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	promptRouter.Use(httprate.LimitBy(
 		rateLimitRequests,
