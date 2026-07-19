@@ -297,16 +297,10 @@ func GetFirstSetOfVideos(ctxt context.Context) []models.VideoResponse {
 
 func removeJSONCodeFence(input string) string {
 	output := strings.TrimSpace(input)
-
-	if strings.HasPrefix(output, "```json") {
-		output = strings.TrimPrefix(output, "```json")
-	} else if strings.HasPrefix(output, "```JSON") {
-		output = strings.TrimPrefix(output, "```JSON")
-	} else if strings.HasPrefix(output, "```") {
-		output = strings.TrimPrefix(output, "```")
-	}
-
+  output,_ = strings.CutPrefix(output, "```json")
+  output,_ = strings.CutPrefix(output, "```JSON")
+  output,_ = strings.CutPrefix(output, "```")
 	output = strings.TrimSpace(output)
-	output = strings.TrimSuffix(output, "```")
+	output,_ = strings.CutSuffix(output, "```")
 	return strings.TrimSpace(output)
 }
