@@ -180,6 +180,7 @@ func SSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			if channelInMap, ok := uiSidMap.Load(sessionKey); !ok || channelInMap != userSessionChannel {
 				return
 			}
+			sse.Send(datastar.EventType("heartbeat"), []string{fmt.Sprintf(": heartbeat %d\n\n", time.Now().Unix())})
 		}
 	}
 }

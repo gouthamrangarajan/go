@@ -124,6 +124,7 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			if channelInMap, ok := sidMap.Load(clientSignal.Sid); !ok || channelInMap != sessionSseChannel {
 				return
 			}
+			sse.Send(datastar.EventType("heartbeat"), []string{fmt.Sprintf(": heartbeat %d\n\n", time.Now().Unix())})
 		}
 	}
 }
