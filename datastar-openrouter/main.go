@@ -41,7 +41,6 @@ func main() {
 	if err != nil {
 		rateLimitRequests = 10
 	}
-	promptRouter.Use(services.AuthorizationMiddleware)
 	promptRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	promptRouter.Use(httprate.LimitBy(
 		rateLimitRequests,
