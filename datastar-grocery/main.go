@@ -22,7 +22,7 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Logger)
-	router.Use(middleware.Compress(5))
+	// router.Use(middleware.Compress(5))
 
 	router.Use(services.ChiMiddleware)
 

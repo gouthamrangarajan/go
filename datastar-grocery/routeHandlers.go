@@ -65,11 +65,11 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 
 	session := make(chan models.LongSSEChannelData)
 	changeSignalMap.Store(ClientSignals.SId, session)
+	defer changeSignalMap.CompareAndDelete(ClientSignals.SId, session)
 
 	for {
 		select {
-		case <-r.Context().Done():
-			changeSignalMap.Delete(ClientSignals.SId)
+		case <-r.Context().Done():	
 			return
 
 		case data := <-session:
