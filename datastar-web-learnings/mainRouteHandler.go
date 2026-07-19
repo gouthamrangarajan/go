@@ -13,10 +13,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/starfederation/datastar/sdk/go/datastar"
+	"github.com/starfederation/datastar-go/datastar"
 )
 
 var sidMap = sync.Map{}
+var quizMap = sync.Map{}
 
 func landingPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	firebaseConfig := models.FirebaseAuthConfig{
@@ -25,6 +26,7 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 	}
 	if request.Header.Get("Datastar-Request") == "true" {
 		var clientSignal models.UISignals
+
 		datastar.ReadSignals(request, &clientSignal)
 		var videos []models.VideoResponse
 		if strings.TrimSpace(clientSignal.SearchTxt) == "" {
@@ -106,6 +108,14 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				deleteVideoSuccessUI(sse, sseData)
 			case models.DELETE_VIDEO_ERROR_FUNCTIONALITY:
 				deleteVideoErrorUI(sse)
+			case models.LOAD_QUIZ_UI_FUNCTIONALITY:
+				loadQuizUI(sse, sseData)
+			case models.QUIZ_GENERATING_FUNCTIONALITY:
+				quizGeneratingUI(sse)
+			case models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY:
+				quizGenerationErrorUI(sse)
+			case models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY:
+				quizQuestionUI(sse, sseData)
 			}
 		}
 	}
@@ -348,6 +358,11 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	userAgent := request.Header.Get("User-Agent")
 	var uiSignals models.UISignals
 	datastar.ReadSignals(request, &uiSignals)
+	uiSignals.Title = strings.TrimSpace(uiSignals.Title)
+	uiSignals.Subtitle = strings.TrimSpace(uiSignals.Subtitle)
+	uiSignals.VideoId = strings.TrimSpace(uiSignals.VideoId)
+	uiSignals.Transcript = strings.TrimSpace(uiSignals.Transcript)
+
 	if uiSignals.IdToken != "" {
 		verifyTokenChannel := make(chan bool)
 		defer close(verifyTokenChannel)
@@ -422,9 +437,10 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 				go services.CheckAndDeleteIfDocIdAndVideoIdAreNotSame(uiSignals.VideoId, deleteDocIdAndVideoIdNotMatchChannel)
 
 				dataToVectorize := models.VideoResponse{
-					Title:    uiSignals.Title,
-					Subtitle: uiSignals.Subtitle,
-					Tags:     trimmedTags,
+					Title:      uiSignals.Title,
+					Subtitle:   uiSignals.Subtitle,
+					Tags:       trimmedTags,
+					Transcript: uiSignals.Transcript,
 				}
 				dataToVectorize = services.ConstructTextToVectorize(dataToVectorize, ytResponse.Items[0].Snippet.Description)
 				vectorChannel := make(chan models.VoyageEmbeddingResponse)
@@ -529,4 +545,107 @@ func deleteVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models
 
 func deleteVideoErrorUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.DeleteVideoErrorResult(), datastar.WithUseViewTransitions(false))
+}
+func loadQuizHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	var uiSignals models.UISignals
+	datastar.ReadSignals(request, &uiSignals)
+	if strings.TrimSpace(uiSignals.QuizVideoId) == "" {
+		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+			FunctionalityVal: models.LOAD_QUIZ_UI_FUNCTIONALITY,
+			QuizVideoId:      uiSignals.QuizVideoId,
+		}
+	}
+}
+func loadQuizUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	sse.PatchSignals([]byte(`{_loadingQuiz:false,_showQuiz:true}`))
+	dbChannel := make(chan []models.VideoResponse)
+	defer close(dbChannel)
+	go services.FilterVideos(sse.Context(), []string{sseData.QuizVideoId}, dbChannel)
+	quizVideos := <-dbChannel
+	transcript := ""
+	if len(quizVideos) > 0 && strings.TrimSpace(quizVideos[0].Transcript) != "" {
+		transcript = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(quizVideos[0].Transcript, "'", "\\'"), "\n", "\\n"))
+	}
+	sse.PatchElementTempl(components.CreateQuizForm(transcript),
+		datastar.WithModeInner(), datastar.WithSelector("#quizDialog"))
+}
+func quizGeneratingUI(sse *datastar.ServerSentEventGenerator) {
+	sse.PatchElementTempl(components.QuizGenerating(), datastar.WithSelector("#quizDialog"), datastar.WithModeInner())
+}
+func quizGenerationAndPrevNextHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	var uiSignals models.UISignals
+	datastar.ReadSignals(request, &uiSignals)
+	transcript := strings.TrimSpace(uiSignals.Transcript)
+	if transcript == "" {
+		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	// fmt.Printf("Transcript %v\n",transcript)
+	if quizMapItem, quizMapExists := quizMap.Load(uiSignals.Sid); quizMapExists {
+		quizResponse := quizMapItem.(models.QuizResponse)
+		if quizResponse.VideoId == uiSignals.QuizVideoId {
+			if uiSignals.QuizIndex < 0 || uiSignals.QuizIndex >= len(quizResponse.Questions) {
+				http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+				return
+			}
+			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+					FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
+					QuizIndex:        uiSignals.QuizIndex,
+					Sid:              uiSignals.Sid,
+				}
+			}
+			return
+		}
+	}
+	if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+			FunctionalityVal: models.QUIZ_GENERATING_FUNCTIONALITY,
+		}
+	}
+	openRouterChannel := make(chan models.QuizResponse)
+	defer close(openRouterChannel)
+	go services.GenerateQuizUsingOpenRouter(uiSignals, openRouterChannel)
+
+	updateTranscriptChannel := make(chan bool)
+	defer close(updateTranscriptChannel)
+	go services.UpdateTranscriptForQuiz(uiSignals, updateTranscriptChannel)
+
+	quizResponse := <-openRouterChannel
+	if len(quizResponse.Questions) > 0 {
+		quizResponse.VideoId = uiSignals.QuizVideoId
+		quizMap.Store(uiSignals.Sid, quizResponse)
+
+		if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+				FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
+				QuizIndex:        0,
+				Sid:              uiSignals.Sid,
+			}
+		}
+	} else {
+		if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+				FunctionalityVal: models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY,
+			}
+		}
+	}
+	<-updateTranscriptChannel
+}
+
+func quizQuestionUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	quizResponse, _ := quizMap.Load(sseData.Sid)
+	sse.PatchElementTempl(components.QuizQuestion(quizResponse.(models.QuizResponse), sseData.QuizIndex),
+		datastar.WithSelector("#quizDialog"),
+		datastar.WithModeInner())
+}
+
+func quizGenerationErrorUI(sse *datastar.ServerSentEventGenerator) {
+	sse.PatchElementTempl(components.QuizGenerationError(),
+		datastar.WithSelector("#quizDialog"),
+		datastar.WithModeInner())
 }

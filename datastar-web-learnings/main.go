@@ -42,12 +42,12 @@ func main() {
 	dataRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	dataRouter.Use(httprate.LimitBy(
 		rateLimitRequests,
-		time.Duration(rateLimitSeconds)*time.Second,	
+		time.Duration(rateLimitSeconds)*time.Second,
 		func(request *http.Request) (string, error) {
 			// Get the IP that middleware.RealIP has already verified
 			ip := middleware.GetClientIP(request.Context())
 			// Canonicalize handles IPv6 /64 subnets naturally
-			// Fallback: If for some reason the middleware failed (local dev), 
+			// Fallback: If for some reason the middleware failed (local dev),
 			// use the direct network address.
 			if ip == "" {
 				ip = request.RemoteAddr
@@ -69,10 +69,12 @@ func main() {
 	router.Post("/add", addVideoHandler)
 	router.Post("/tags/ui", tagsHandler)
 	router.Post("/delete", deleteVideoHandler)
+	router.Get("/quiz", loadQuizHandler)
 
 	dataRouter.Get("/sse", sseHandler)
 	dataRouter.Get("/data", loadMoreHandler)
 	dataRouter.Get("/search", searchHandler)
+	dataRouter.Post("/quiz", quizGenerationAndPrevNextHandler)
 	router.Mount("/", dataRouter)
 	http.ListenAndServe(":3000", router)
 }

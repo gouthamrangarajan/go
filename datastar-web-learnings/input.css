@@ -41,12 +41,15 @@
 }
 
 ::view-transition-new(login-modal),
-::view-transition-new(delete-modal) {
+::view-transition-new(delete-modal),
+::view-transition-new(quiz-modal),
+.animate-modal {
     animation: modal 0.6s var(--ease-elastic-out-5) forwards;
 }
 
 ::view-transition-old(login-modal),
-::view-transition-old(delete-modal) {
+::view-transition-old(delete-modal),
+::view-transition-old(quiz-modal) {
     animation: modal-out 0.2s var(--ease-out-5) forwards;
 }
 
@@ -100,5 +103,49 @@
         transform: scaleY(1);
         opacity: 1;
         transform-origin: bottom;
+    }
+}
+
+.animate-quiz {
+    animation: quiz 0.2s var(--ease-out-3) forwards;
+}
+
+@keyframes quiz {
+    0% {
+        opacity: 0;
+        transform: translateX(10%);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-spin {
+    animation: spin 2s var(--ease-spring-3) infinite forwards;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-fade{
+    animation: fade 0.2s var(--ease-out-3) forwards;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }

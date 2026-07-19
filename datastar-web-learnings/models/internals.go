@@ -17,6 +17,10 @@ const (
 	ADD_VIDEO_ERROR_FUNCTIONALITY
 	DELETE_VIDEO_SUCCESS_FUNCTIONALITY
 	DELETE_VIDEO_ERROR_FUNCTIONALITY
+	LOAD_QUIZ_UI_FUNCTIONALITY
+	QUIZ_GENERATING_FUNCTIONALITY
+	QUIZ_GENERATION_ERROR_FUNCTIONALTIY
+	QUIZ_AND_PREV_NEXT_FUNCTIONALITY
 )
 
 type LongSSEData struct {
@@ -29,4 +33,7 @@ type LongSSEData struct {
 	AddVideoErrorMessages []string
 	AddVideoErrorsignals  string
 	VideoDeleted          string
+	QuizVideoId           string
+	QuizIndex             int
+	Sid                   string
 }

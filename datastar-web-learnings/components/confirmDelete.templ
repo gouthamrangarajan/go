@@ -19,7 +19,7 @@ templ confirmDelete() {
 				<button
 					class="appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
 					aria-label="close delete confirm"
-					data-on-click__viewTransition={ `$videoToDelete='';$showDeleteConfirm = false;document.getElementById('deleteResult').outerHTML='<p id="deleteResult"></p>';` }
+					data-on:click__viewTransition={ `$videoToDelete='';$showDeleteConfirm = false;document.getElementById('deleteResult').outerHTML='<p id="deleteResult"></p>';` }
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 						<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
@@ -33,15 +33,15 @@ templ confirmDelete() {
 			<div class="mt-10 w-full flex gap-2 justify-end items-center">
 				<button
 					class="appearance-none outline-none cursor-pointer py-2 px-4 text-primary border border-primary rounded font-semibold transition duration-300 hover:opacity-90 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-2"
-					data-on-click__viewTransition={ `$videoToDelete='';$showDeleteConfirm = false;document.getElementById('deleteResult').outerHTML='<p id="deleteResult"></p>';` }
+					data-on:click__viewTransition={ `$videoToDelete='';$showDeleteConfirm = false;document.getElementById('deleteResult').outerHTML='<p id="deleteResult"></p>';` }
 				>
 					Cancel
 				</button>
 				<button
-					class="appearance-none outline-none cursor-pointer py-2 px-4 bg-secondary text-slate-700 rounded font-semibold transition duration-300 hover:opacity-90 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-background-2 disabled:cursor-not-allowed disabled:opacity-50"
+					class="appearance-none outline-none cursor-pointer py-2 px-4 bg-secondary text-slate-700 rounded font-semibold transition duration-300 hover:opacity-90 focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-background-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
 					data-indicator="_deletingVideo"
-					data-attr-disabled="$_deletingVideo"
-					data-on-click={ `
+					data-attr:disabled="$_deletingVideo"
+					data-on:click={ `
 							AUTH.currentUser.getIdToken().then(result=>{
 								$idToken=result;								
 								@post('/delete');

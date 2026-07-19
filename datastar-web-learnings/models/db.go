@@ -31,6 +31,7 @@ type VideoResponse struct {
 	Subtitle             string    `json:"subtitle,omitempty"`
 	Tags                 []string  `json:"tags"`
 	Created              time.Time `json:"createdAt"`
+	Transcript           string    `json:"transcript,omitempty"`
 	DescriptionFromYTAPI string
 	TextToVectorize      string
 }

@@ -20,20 +20,18 @@ templ layout(config models.FirebaseAuthConfig) {
 		</head>
 		<body
 			class="w-full h-full font-roboto bg-background text-primary relative overflow-hidden"
-			data-signals={ `
-					{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
-					  idToken:'',_allNotInViewportObservers:[],
-					  _firebaseApiKey:'`+config.ApiKey+`',_firebaseAuthDomain:'`+config.Domain+`',
-					  sid:crypto.randomUUID()
-					}
-				` }
-			data-on-load={ `window.initializeFirebaseApp?window.initializeFirebaseApp({apiKey:$_firebaseApiKey,authDomain:$_firebaseAuthDomain}):null` }
+			data-signals={ `{ _showLogin: false,_showLoginButton:false,_showAddVideoButton:false,
+					  idToken:'',_firebaseApiKey:'`+config.ApiKey+`',_firebaseAuthDomain:'`+config.Domain+`',
+					  sid:crypto.randomUUID()}` }
+			data-init={ ` window.initializeFirebaseApp ? 
+								window.initializeFirebaseApp({apiKey:$_firebaseApiKey,authDomain:$_firebaseAuthDomain})
+									:
+								null` }
 		>
 			{ children... }
 			<script type="module" src="/assets/scripts/data-star.min.js"></script>
 			<script type="text/javascript" src="/assets/scripts/ytPlayer.js"></script>
 			<script type="text/javascript" src="/assets/scripts/focusTrap.js"></script>
-			<script type="text/javascript" src="/assets/scripts/viewportObserver.js"></script>
 		</body>
 	</html>
 }

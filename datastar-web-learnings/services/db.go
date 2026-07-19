@@ -207,12 +207,13 @@ func UpsertVideo(request models.UISignals, channel chan<- bool) {
 	}
 	defer fireStore.Close()
 	_, err = fireStore.Collection("data").Doc(request.VideoId).Set(context.Background(), map[string]interface{}{
-		"title":     request.Title,
-		"videoId":   request.VideoId,
-		"tags":      request.Tags,
-		"rank":      request.Rank,
-		"subtitle":  request.Subtitle,
-		"createdAt": firestore.ServerTimestamp,
+		"title":      request.Title,
+		"videoId":    request.VideoId,
+		"tags":       request.Tags,
+		"rank":       request.Rank,
+		"subtitle":   request.Subtitle,
+		"createdAt":  firestore.ServerTimestamp,
+		"transcript": request.Transcript,
 	})
 	if err != nil {
 		fmt.Printf("Error saving documents%v\n:", err)
@@ -307,5 +308,54 @@ func DeleteVideo(videoId string, channel chan<- bool) {
 			return
 		}
 	}
+	channel <- true
+}
+func UpdateTranscriptForQuiz(request models.UISignals, channel chan<- bool) {
+	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
+	if firebaseConfigErr != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+		channel <- false
+		return
+	}
+	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
+		firebaseConfigJson,
+	))
+
+	if appErr != nil {
+		fmt.Printf("Error initializing Firebase app:%v\n", appErr)
+		channel <- false
+		return
+	}
+
+	fireStore, err := app.Firestore(context.Background())
+
+	if err != nil {
+		fmt.Printf("Error getting Firestore client:%v\n", err)
+		channel <- false
+		return
+	}
+	defer fireStore.Close()
+	docSnaps, err := fireStore.Collection("data").Where("videoId", "==", request.QuizVideoId).Documents(context.Background()).GetAll()
+	if err != nil {
+		fmt.Printf("Error getting documents:%v\n", err)
+		channel <- false
+		return
+	}
+	if len(docSnaps) == 0 {
+		channel <- false
+		return
+	}
+	for _, docSnap := range docSnaps {
+		_, err = fireStore.Collection("data").Doc(docSnap.Ref.ID).Update(context.Background(), []firestore.Update{
+			{Path: "transcript", Value: request.Transcript},
+		})
+		if err != nil {
+			fmt.Printf("Error updating transcript:%v\n", err)
+			channel <- false
+			return
+		}
+		fmt.Printf("Success updating transcript\n")
+	}
+
 	channel <- true
 }

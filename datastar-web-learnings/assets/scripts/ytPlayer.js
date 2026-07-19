@@ -27,7 +27,7 @@ async function initYTPlayer(vId, retryIdx) {
     },
     events: {
       onReady: function (event) {
-          // console.log(player);
+        // console.log(player.getVideoData());
       },
       onStateChange: function (event) {
         if (event.data == YT.PlayerState.PLAYING) {

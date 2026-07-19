@@ -35,19 +35,19 @@ templ header() {
 
 templ loginButton() {
 	<button
-		class="appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+		class="appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
 		data-class="{'z-10':!$_showLogin}"
 		aria-label="Log In"
-		data-on-click__viewTransition="$_showLogin = true"
+		data-on:click__viewTransition="$_showLogin = true"
 		data-show="$_showLoginButton"
-		data-on-firebase-loaded__window={ `AUTH.currentUser!=null ?
+		data-on:firebase-loaded__window={ `AUTH.currentUser!=null ?
 												 setTimeout(()=>{
 												 	$_showLoginButton = false;
 													$_showLogin=false;
 													$_showAddVideoButton=true;
 													},1) : 
 													$_showLoginButton = true` }
-		style="view-transition-name:page-action"
+		style="view-transition-name:page-action;display:none;"
 	>
 		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-in-icon lucide-log-in"><path d="m10 17 5-5-5-5"></path><path d="M15 12H3"></path><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path></svg>
 	</button>
@@ -56,22 +56,18 @@ templ loginButton() {
 templ AddVideoButton() {
 	<button
 		id="pageAction"
-		class="appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+		class="appearance-none outline-none shadow shadow-secondary cursor-pointer fixed bottom-7 right-7 p-2 rounded-full bg-primary text-background-2 focus:ring-offset-2 focus:ring-offset-background-2 transition duration-300 focus:ring-2 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
 		data-class="{'z-10':!$showDeleteConfirm}"
 		aria-label="Add Video"
 		data-show="$_showAddVideoButton"
-		style="view-transition-name:page-action"
-		data-on-click={ `$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
-						$_allNotInViewportObservers=[];
-						if($_dockedPlayer){
-							$_dockedPlayer.pauseVideo();
-							$_dockedPlayerVideoId=null;
-						}
+		style="view-transition-name:page-action;display:none;"
+		data-on:click={ `
+						
 						setTimeout(()=>{
 							AUTH.currentUser.getIdToken().then(result=>{$idToken=result;@get('/add');});
 						},1)` }
 		data-indicator="_fetchingAddVideo"
-		data-attr-disabled="$_fetchingAddVideo"
+		data-attr:disabled="$_fetchingAddVideo"
 	>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 			<path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
@@ -82,16 +78,13 @@ templ AddVideoButton() {
 templ LandingMain() {
 	<main
 		class="mt-1 px-4 py-2 pb-24 overflow-x-hidden h-[91.5vh] overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
-		data-signals={ `
-						{ searchTxt:'',_activeInlinePlayerVideoId:null,videoToDelete:'',showDeleteConfirm:false,
-						  _dockedPlayerVideoId:null,_dockedPlayer:null,isDockedPlayerActive:false,
-						  _dockedPlayerDurationToStart:0,offset:0,
-						}
-					 ` }
-		data-on-load="$searchTxt=new URLSearchParams(window.location.search).get('search');@get('/sse',{openWhenHidden:true})"
-		data-on-inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
-		data-on-docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId=null;"
-		data-on-docked-video-stopped="$_isDockedPlayerActive=false;"
+		data-signals={ `{ searchTxt:'',_activeInlinePlayerVideoId:'',videoToDelete:'',showDeleteConfirm:false,
+						  _dockedPlayerVideoId:'',_dockedPlayer:null,isDockedPlayerActive:false,
+						  _dockedPlayerDurationToStart:0,offset:0,_loadingQuiz:false,_showQuiz:false,quizVideoId:'',quizVideoTitle:''}` }
+		data-init="$searchTxt=new URLSearchParams(window.location.search).get('search');@get('/sse',{openWhenHidden:true})"
+		data-on:inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
+		data-on:docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';"
+		data-on:docked-video-stopped="$_isDockedPlayerActive=false;"
 	>
 		@searchInput()
 		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
@@ -100,6 +93,7 @@ templ LandingMain() {
 		</div>
 		@dockedPlayer()
 		@login()
+		@quiz()
 		@confirmDelete()
 	</main>
 }
@@ -107,15 +101,12 @@ templ LandingMain() {
 templ LandingMainWithoutLoad() {
 	<main
 		class="mt-1 px-4 py-2 pb-24 overflow-x-hidden h-[91.5vh] overflow-y-auto flex flex-col gap-2 items-center scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2"
-		data-signals={ `
-						{ _activeInlinePlayerVideoId:null,videoToDelete:'',showDeleteConfirm:false,
-						  _dockedPlayerVideoId:null,_dockedPlayer:null,isDockedPlayerActive:false,
-						  _dockedPlayerDurationToStart:0,offset:0,
-						}
-					 ` }
-		data-on-inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
-		data-on-docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId=null;"
-		data-on-docked-video-stopped="$_isDockedPlayerActive=false;"
+		data-signals={ `{ _activeInlinePlayerVideoId:'',videoToDelete:'',showDeleteConfirm:false,
+						  _dockedPlayerVideoId:'',_dockedPlayer:null,isDockedPlayerActive:false,
+						  _dockedPlayerDurationToStart:0,offset:0,_loadingQuiz:false,_showQuiz:false,quizVideoId:'',quizVideoTitle:''}` }
+		data-on:inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
+		data-on:docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';"
+		data-on:docked-video-stopped="$_isDockedPlayerActive=false;"
 	>
 		@searchInput()
 		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
@@ -124,6 +115,7 @@ templ LandingMainWithoutLoad() {
 		</div>
 		@dockedPlayer()
 		@login()
+		@quiz()
 		@confirmDelete()
 	</main>
 }
@@ -133,15 +125,13 @@ templ searchInput() {
 		class="flex items-stretch w-full md:w-7/12 lg:w-6/12 xl:w-5/12"
 		data-indicator="_searching"
 		dats-signals="{_showClearButton:false}"
-		data-on-submit={ `evt.preventDefault();
+		data-on:submit={ `evt.preventDefault();
 						const urlParams=new URLSearchParams(window.location.search).get('search');
 						if(!$_searching && ( 
 								(urlParams!=null && urlParams!=$searchTxt.trim())
 								|| (urlParams==null && $searchTxt.trim()!='')
 											)
-						  ){							
-							$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
-							$_allNotInViewportObservers=[];
+						  ){														
 							window.history.replaceState({},document.title,window.location.origin+'/?search='+$searchTxt.trim());							
 							@get('/search',{openWhenHidden: true});
 						}` }
@@ -157,22 +147,20 @@ templ searchInput() {
 			@loader("$_searching")
 			<button
 				type="button"
-				class="appearance-none outline-none cursor-pointer rounded-full text-red-300 border border-transparent transition duration-300 focus:border-red-300  hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+				class="appearance-none outline-none cursor-pointer rounded-full text-red-300 border border-transparent transition duration-300 focus:border-red-300  hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
 				aria-label="clear search"
-				data-on-click={ `
+				data-on:click={ `
 					evt.preventDefault();					
 					$searchTxt='';
 					if (new URLSearchParams(window.location.search).get('search')){
-						$_allNotInViewportObservers.forEach(observerDisconnectFn=>observerDisconnectFn());
-						$_allNotInViewportObservers=[];
 						window.history.replaceState({},document.title,window.location.origin+'/');					
 						@get('/search',{openWhenHidden: true});
 					}
 				` }
 				data-show="$_showClearButton"
-				data-attr-disabled="$_searching"
+				data-attr:disabled="$_searching"
 				data-effect__viewTransition={ "$_showClearButton=$searchTxt.trim()!=''" }
-				style="view-transition-name:clear-search-button"
+				style="view-transition-name:clear-search-button;display:none;"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
 					<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"></path>
@@ -181,7 +169,7 @@ templ searchInput() {
 		</div>
 		<button
 			type="submit"
-			class="appearance-none outline-none cursor-pointer py-2 px-4 rounded-r-full bg-background text-primary border border-primary/50 transition duration-300 focus:border-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+			class="appearance-none outline-none cursor-pointer py-2 px-4 rounded-r-full bg-background text-primary border border-primary/50 transition duration-300 focus:border-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
 			aria-label="Submit Search"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">

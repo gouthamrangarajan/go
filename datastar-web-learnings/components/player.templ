@@ -46,37 +46,26 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 		class={ " animate-card shadow bg-secondary/20 rounded-xl grid grid-cols-1 gap-1 overflow-hidden relative h-88 lg:h-86" }
 		style={ " opacity:0;animation-delay: " + animationDelayStyle + ";view-transition-name:video_" + videoIdReplaced }
 		data-signals={ "{_video_" + videoIdReplaced + ":null,_video_" + videoIdReplaced + "_showTags:false}" }
-		data-on-load={ `
-						initYTPlayer('` + video.VideoId + `',0)
-						.then(player=>{$_video_` + videoIdReplaced + `=player;});
-						$_allNotInViewportObservers.push(notInViewportObserver('#` + containerId + `'));
-					` }
-		data-effect={ `
-						'` + videoIdReplaced + `'!=$_activeInlinePlayerVideoId.replaceAll('-','') 
-						&& $_activeInlinePlayerVideoId && $_video_` + videoIdReplaced + `.getPlayerState
-					    && $_video_` + videoIdReplaced + `.getPlayerState()==1 
-						? $_video_` + videoIdReplaced + `.pauseVideo() : null
-					` }
-		data-on-not-in-viewport={ `
-									$_video_` + videoIdReplaced + `.getPlayerState 
-									&& $_video_` + videoIdReplaced + `.getPlayerState()==1 ? 
+		data-init={ `initYTPlayer('` + video.VideoId + `',0).then(player=>{$_video_` + videoIdReplaced + `=player;});` }
+		data-effect={ `$_activeInlinePlayerVideoId && '` + videoIdReplaced + `'!=$_activeInlinePlayerVideoId.replaceAll('-','') 
+						&& $_video_` + videoIdReplaced + `.getPlayerState && $_video_` + videoIdReplaced + `.getPlayerState()==1 
+						? $_video_` + videoIdReplaced + `.pauseVideo() : null` }
+		data-on-intersect__exit={ `$_video_` + videoIdReplaced + `.getPlayerState && $_video_` + videoIdReplaced + `.getPlayerState()==1 
+									? 
 									setTimeout(()=>{
 										$_dockedPlayerDurationToStart=$_video_` + videoIdReplaced + `.getCurrentTime();
 										$_video_` + videoIdReplaced + `.pauseVideo();										
 										$_dockedPlayerVideoId='` + video.VideoId + `';										
 									},1)
-									: null
-								` }
+									: null` }
 	>
 		<div
 			class="h-64"
 			id={ "player_" + video.VideoId }
 			data-show={ "!$_video_" + videoIdReplaced + "_showTags" }
-			data-effect={ `
-							$_isDockedPlayerActive && $_video_` + videoIdReplaced + `.getPlayerState 
+			data-effect={ `$_isDockedPlayerActive && $_video_` + videoIdReplaced + `.getPlayerState 
 							&& $_video_` + videoIdReplaced + `.getPlayerState()==1 
-							? $_video_` + videoIdReplaced + `.pauseVideo() : null
-							` }
+							? $_video_` + videoIdReplaced + `.pauseVideo() : null` }
 		></div>
 		<div class="py-1 px-3 flex gap-1 items-center">
 			<div class="flex flex-col flex-1 gap-1">
@@ -84,9 +73,33 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 				<h4 class="text-secondary italic text-sm">{ video.Subtitle }</h4>
 			</div>
 			<button
+				class="appearance-none outline-none cursor-pointer p-1 rounded-full text-primary transition duration-300 focus:ring-1 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
+				data-show={ "!$_video_" + videoIdReplaced + "_showTags" }
+				aria-label="Open Quiz"
+				data-on:click={ `$quizVideoId='` + video.VideoId + `';$quizVideoTitle='` + video.Title + `';$_loadingQuiz=true;@get('/quiz')` }
+				data-attr:disabled="$_loadingQuiz"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="size-5"
+				>
+					<path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"></path>
+					<path d="M2 6h4"></path><path d="M2 10h4"></path><path d="M2 14h4"></path><path d="M2 18h4"></path>
+					<path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path>
+				</svg>
+			</button>
+			<button
 				class="appearance-none outline-none cursor-pointer p-1 rounded-full text-secondary transition duration-300 focus:ring-1 focus:ring-secondary hover:opacity-90"
 				data-show={ "!$_video_" + videoIdReplaced + "_showTags" }
-				data-on-click={ "initYTPlayer('" + video.VideoId + "',0).then(player=>{$_video_" + videoIdReplaced + "=player;});" }
+				data-on:click={ "initYTPlayer('" + video.VideoId + "',0).then(player=>{$_video_" + videoIdReplaced + "=player;});" }
 				aria-label="Reload Video"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -95,8 +108,9 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 			</button>
 			<button
 				class="appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
-				data-on-click__viewTransition={ `$videoToDelete='` + video.VideoId + `';$showDeleteConfirm=true;` }
+				data-on:click__viewTransition={ `$videoToDelete='` + video.VideoId + `';$showDeleteConfirm=true;` }
 				data-show={ "!$_video_" + videoIdReplaced + "_showTags && !$_showLoginButton" }
+				style="display:none;"
 				aria-label="Delete Video"
 			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -105,7 +119,7 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 			</button>
 			<button
 				class="appearance-none outline-none cursor-pointer p-1 rounded-full text-primary transition duration-300 focus:ring-1 focus:ring-primary hover:opacity-90"
-				data-on-click={ "$_video_" + videoIdReplaced + "_showTags=true;" }
+				data-on:click={ "$_video_" + videoIdReplaced + "_showTags=true;" }
 				data-show={ "!$_video_" + videoIdReplaced + "_showTags" }
 				aria-label="Show Tags"
 			>
@@ -130,7 +144,7 @@ templ Tags(videoIdReplaced string, tags []string) {
 		</div>
 		<button
 			class="appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
-			data-on-click={ "$_video_" + videoIdReplaced + "_showTags=false;" }
+			data-on:click={ "$_video_" + videoIdReplaced + "_showTags=false;" }
 			data-show={ "$_video_" + videoIdReplaced + "_showTags" }
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
@@ -145,18 +159,16 @@ templ dockedPlayer() {
 		class="animate-docked-player h-[30vh] w-11/12 fixed bottom-0 left-0.5 md:left-1.5 md:w-9/12 lg:h-[50vh] lg:left-3 lg:w-6/12  xl:left-3.5 xl:w-5/12"
 		style="display:none;"
 		data-show="$_dockedPlayerVideoId"
-		data-effect={ `
-						$_dockedPlayerVideoId ? 																		
+		data-effect={ `$_dockedPlayerVideoId ? 																		
 						setTimeout(()=>{
 							$_dockedPlayer=initDockedYTPlayer($_dockedPlayerVideoId,$_dockedPlayer,$_dockedPlayerDurationToStart);
 						},1)
-						:null												
-					` }
+						:null` }
 	>
 		<button
 			class="appearance-none outline-none absolute top-2 right-2 cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
 			aria-label="close player"
-			data-on-click__viewTransition={ `$_dockedPlayer.pauseVideo();$_dockedPlayerVideoId=null;` }
+			data-on:click__viewTransition={ `$_dockedPlayer.pauseVideo();$_dockedPlayerVideoId='';` }
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 				<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
@@ -165,12 +177,9 @@ templ dockedPlayer() {
 		<div
 			class="w-full h-full"
 			id="docker_player"
-			data-effect={ ` 
-						 $_activeInlinePlayerVideoId && $_dockedPlayer &&
-						 $_dockedPlayer.getPlayerState &&
-						 $_dockedPlayer.getPlayerState()==1 
-						 ? $_dockedPlayer.pauseVideo() : null						   
-						` }
+			data-effect={ ` $_activeInlinePlayerVideoId && $_dockedPlayer && $_dockedPlayer.getPlayerState && $_dockedPlayer.getPlayerState()==1 
+								 ? 
+							$_dockedPlayer.pauseVideo() : null` }
 		></div>
 	</div>
 }
