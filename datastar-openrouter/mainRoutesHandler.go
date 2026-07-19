@@ -100,6 +100,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	userSessionChannel := make(chan models.LongSSEData, 16)
 	uiSidMap.Store(userSessionKey, userSessionChannel)
+	defer uiSidMap.CompareAndDelete(userSessionKey, userSessionChannel)
 
 	if clientSignal.SessionId != 0 {
 		go sendConversationsMarkdown(clientSignal, userId)
@@ -114,7 +115,6 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	for {
 		select {
 		case <-request.Context().Done():
-			uiSidMap.Delete(userSessionKey)
 			return
 		case data := <-userSessionChannel:
 			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {

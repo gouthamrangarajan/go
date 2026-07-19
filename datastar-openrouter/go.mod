@@ -1,9 +1,9 @@
 module datastar-openrouter
 
-go 1.24.1
+go 1.25.0
 
 require (
-	github.com/a-h/templ v0.3.1001
+	github.com/a-h/templ v0.3.1020
 	github.com/go-chi/chi/v5 v5.3.0
 	github.com/go-chi/httprate v0.16.0
 	github.com/google/uuid v1.6.0
