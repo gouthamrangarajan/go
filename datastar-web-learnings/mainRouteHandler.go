@@ -69,6 +69,9 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		searchUIForFirstSetData(sse, strings.TrimSpace(clientSignal.SearchTxt))
 	}
 
+	heartBeatTicker := time.NewTicker(5 * time.Second)
+	defer heartBeatTicker.Stop()
+
 	for {
 		select {
 		case <-request.Context().Done():
@@ -116,6 +119,10 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				quizGenerationErrorUI(sse)
 			case models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY:
 				quizQuestionUI(sse, sseData)
+			}
+		case <-heartBeatTicker.C:
+			if channelInMap, ok := sidMap.Load(clientSignal.Sid); !ok || channelInMap != sessionSseChannel {
+				return
 			}
 		}
 	}
