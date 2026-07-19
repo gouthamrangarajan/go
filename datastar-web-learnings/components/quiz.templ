@@ -43,7 +43,7 @@ templ CreateQuizForm(transcript string) {
 	<span class="mt-4" data-text="$quizVideoTitle"></span>
 	<form
 		class="mt-3 flex flex-col gap-3 w-full animate-fade"
-		data-on:submit__prevent={ `@post('/quiz')` }
+		data-on:submit__prevent={ `if(!$_submitting){@post('/quiz');}` }
 		data-indicator="_submitting"
 		id="quizForm"
 	>
@@ -150,7 +150,7 @@ templ QuizQuestion(data models.QuizResponse, index int) {
 	</div>
 	<form
 		class="mt-4 flex flex-col gap-3 w-full animate-quiz"
-		data-on:submit={ `evt.preventDefault();@post('/quiz')` }
+		data-on:submit__prevent={ `if(!$_submitting){@post('/quiz');}` }
 		data-indicator="_submitting"
 		id="quizForm"
 		data-signals={ `{_showAnswer:false,quizIndex:` + strconv.Itoa(index) + `}` }
