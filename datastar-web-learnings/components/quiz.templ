@@ -130,7 +130,7 @@ templ QuizGenerating() {
 		<p>Analyzing the transcript and generating <br/> questions grounded in the video.</p>
 		<span>This usually takes 10-30 seconds.</span>
 	</div>
-	<div class="w-full flex items-center justify-center mt-4">
+	<div class="w-full flex items-center justify-center mt-4 h-[30vh]">
 		<span class="w-8 h-8 rounded-full border-dashed border-2 border-secondary animate-spin"></span>
 	</div>
 }
@@ -155,8 +155,8 @@ templ QuizQuestion(data models.QuizResponse, index int) {
 		id="quizForm"
 		data-signals={ `{_showAnswer:false,quizIndex:` + strconv.Itoa(index) + `}` }
 	>
-		<span class="w-full">{ data.Questions[index].Question }</span>
-		<span class="text-xs text-secondary">Think or answer aloud</span>
+		<p class="w-full text-lg">{ data.Questions[index].Question }</p>
+		<span class="text-xs text-secondary" data-show="!$_showAnswer">Think or answer aloud</span>
 		<a
 			href="#"
 			data-show="!$_showAnswer"
@@ -168,7 +168,7 @@ templ QuizQuestion(data models.QuizResponse, index int) {
 		</a>
 		<div data-show="$_showAnswer" class="flex flex-col gap-3 w-full animate-result">
 			<span>Suggested Answer:</span>
-			<span class="w-full">{ data.Questions[index].ShortAnswer }</span>
+			<p class="w-full text-lg">{ data.Questions[index].ShortAnswer }</p>
 		</div>
 		<div class="flex items-center justify-end w-full gap-2">
 			if index !=0 {

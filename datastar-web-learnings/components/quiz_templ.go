@@ -177,7 +177,7 @@ func QuizGenerating() templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"flex items-center justify-between\"><h2 class=\"text-xl text-secondary font-semibold\">Creating your quiz...</h2><button class=\"appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90\" aria-label=\"close quiz\" data-on:click__viewTransition=\"$_showQuiz = false\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div><div class=\"mt-4 flex flex-col gap-3 w-full\"><p>Analyzing the transcript and generating <br>questions grounded in the video.</p><span>This usually takes 10-30 seconds.</span></div><div class=\"w-full flex items-center justify-center mt-4\"><span class=\"w-8 h-8 rounded-full border-dashed border-2 border-secondary animate-spin\"></span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"flex items-center justify-between\"><h2 class=\"text-xl text-secondary font-semibold\">Creating your quiz...</h2><button class=\"appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90\" aria-label=\"close quiz\" data-on:click__viewTransition=\"$_showQuiz = false\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div><div class=\"mt-4 flex flex-col gap-3 w-full\"><p>Analyzing the transcript and generating <br>questions grounded in the video.</p><span>This usually takes 10-30 seconds.</span></div><div class=\"w-full flex items-center justify-center mt-4 h-[30vh]\"><span class=\"w-8 h-8 rounded-full border-dashed border-2 border-secondary animate-spin\"></span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -258,20 +258,20 @@ func QuizQuestion(data models.QuizResponse, index int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><span class=\"w-full\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><p class=\"w-full text-lg\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(data.Questions[index].Question)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 158, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 158, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span> <span class=\"text-xs text-secondary\">Think or answer aloud</span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</p><span class=\"text-xs text-secondary\" data-show=\"!$_showAnswer\">Think or answer aloud</span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -307,20 +307,20 @@ func QuizQuestion(data models.QuizResponse, index int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\">Show answer</a><div data-show=\"$_showAnswer\" class=\"flex flex-col gap-3 w-full animate-result\"><span>Suggested Answer:</span> <span class=\"w-full\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\">Show answer</a><div data-show=\"$_showAnswer\" class=\"flex flex-col gap-3 w-full animate-result\"><span>Suggested Answer:</span><p class=\"w-full text-lg\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(data.Questions[index].ShortAnswer)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 171, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 171, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</span></div><div class=\"flex items-center justify-end w-full gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</p></div><div class=\"flex items-center justify-end w-full gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
