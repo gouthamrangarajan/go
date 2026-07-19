@@ -143,7 +143,7 @@ func GenerateQuizUsingOpenRouter(data models.UISignals, channel chan<- models.Qu
 		return
 	}
 	if len(responseVal.Choices) > 0 {
-		content := responseVal.Choices[0].Message.Content
+		content := removeJSONCodeFence(responseVal.Choices[0].Message.Content)
 		// fmt.Printf("Received message: %v\n", content)
 		err = json.Unmarshal([]byte(content), &retVal)
 		if err != nil {
