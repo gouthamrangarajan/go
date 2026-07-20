@@ -53,6 +53,13 @@ func GroceryItemList(w http.ResponseWriter, r *http.Request) {
 	var ClientSignals models.ClientSignals
 	datastar.ReadSignals(r, &ClientSignals)
 	// fmt.Printf("ClientSignals: %v\n", ClientSignals)
+
+	w.Header().Set("Content-Type", "text/event-stream")
+    w.Header().Set("Cache-Control", "no-cache")
+    w.Header().Set("Connection", "keep-alive")
+    // This header tells Nginx/Railway Proxy not to buffer the stream
+    w.Header().Set("X-Accel-Buffering", "no") 
+	
 	sse := datastar.NewSSE(w, r)
 	// sort := r.URL.Query().Get("sort")
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
