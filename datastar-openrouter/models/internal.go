@@ -18,7 +18,7 @@ type LongSSEData struct {
 	Selector          string
 	Mode              datastar.PatchElementOption
 	UseViewTransition bool
-	FlushResponse     bool
+	SendHeartBeat     bool
 }
 
 type SessionChangeData struct {

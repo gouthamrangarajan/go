@@ -106,16 +106,10 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go sendConversationsMarkdown(clientSignal, userId)
 	}
 	
-	responseWriter.Header().Set("Content-Type", "text/event-stream")
-    responseWriter.Header().Set("Cache-Control", "no-cache")
-    responseWriter.Header().Set("Connection", "keep-alive")
-    // This header tells Nginx/Railway Proxy not to buffer the stream
-    responseWriter.Header().Set("X-Accel-Buffering", "no") 
-
 	sse := datastar.NewSSE(responseWriter, request)
 
-	heartBeatTicker := time.NewTicker(5 * time.Second)
-	defer heartBeatTicker.Stop()
+	liveIndicatorTicker := time.NewTicker(5 * time.Second)
+	defer liveIndicatorTicker.Stop()
 
 	sse.PatchSignals([]byte(`{showErrorMessage:false}`))
 	for {
@@ -127,6 +121,8 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				return
 			}
 			switch {
+			case data.SendHeartBeat:
+				sse.Send(datastar.EventType("heartbeat"), []string{fmt.Sprintf(": heartbeat %d\n\n", time.Now().Unix())})
 			case data.IsError:
 				services.SendErrorMessageToUI(sse, data.Content)
 			case data.IsScript:
@@ -144,10 +140,8 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 					sse.PatchElements(data.Content, datastar.WithSelector(data.Selector), datastar.WithUseViewTransitions(data.UseViewTransition))
 				}
 			}
-			if data.FlushResponse {
-				responseWriter.(http.Flusher).Flush()
-			}
-		case <-heartBeatTicker.C:
+			
+		case <-liveIndicatorTicker.C:
 			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
 				return
 			}
@@ -169,9 +163,7 @@ func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string)
 		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
 			//make sure all before data are flushed before sending the markdown to html data
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				Content:       ``,
-				IsScript:      true,
-				FlushResponse: true,
+				SendHeartBeat: true,
 			}
 		}
 		for element := range markdownToHtmlChannel {
