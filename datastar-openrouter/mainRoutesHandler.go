@@ -106,6 +106,12 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go sendConversationsMarkdown(clientSignal, userId)
 	}
 	
+	responseWriter.Header().Set("Content-Type", "text/event-stream")
+    responseWriter.Header().Set("Cache-Control", "no-cache")
+    responseWriter.Header().Set("Connection", "keep-alive")
+    // This header tells Nginx/Railway Proxy not to buffer the stream
+    responseWriter.Header().Set("X-Accel-Buffering", "no") 
+
 	sse := datastar.NewSSE(responseWriter, request)
 
 	liveIndicatorTicker := time.NewTicker(5 * time.Second)
