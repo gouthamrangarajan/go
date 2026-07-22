@@ -9,8 +9,8 @@ templ quiz() {
 	<div
 		class="absolute  top-0 left-0 bg-secondary/20 w-full h-full grid place-items-center"
 		data-show="$_showQuiz"
-		data-signals="{_abortControllerForQuiz:new AbortController()}"
-		data-effect="{$_showQuiz?$_abortControllerForQuiz=focusTrap('#quizDialog'):setTimeout(()=>{$transcript='';$_abortControllerForQuiz.abort();},1)}"
+		data-signals="{_abortControllerForQuiz:new AbortController(),transcript:''}"
+		data-effect="{$_showQuiz?$_abortControllerForQuiz=focusTrap('#quizDialog'):setTimeout(()=>{$transcript='';$_abortControllerForQuiz.abort();})}"
 		style="display:none;"
 	>
 		<dialog
@@ -27,7 +27,7 @@ templ quiz() {
 	</div>
 }
 
-templ CreateQuizForm(transcript string) {
+templ CreateQuizForm() {
 	<div class="flex items-center justify-between">
 		<h2 class="text-xl text-secondary font-semibold">Create a quiz</h2>
 		<button
@@ -76,7 +76,6 @@ templ CreateQuizForm(transcript string) {
 			for="transcript"
 			class=" flex flex-col gap-1"
 			id="lblTranscript"
-			data-signals={ `{transcript:'` + transcript + `'}` }
 		>
 			<span>2. Paste the transcript</span>
 			<span class="ml-1">Keep timestamps so answers can link to the video.</span>

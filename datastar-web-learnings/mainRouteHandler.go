@@ -61,11 +61,11 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	defer sidMap.CompareAndDelete(clientSignal.Sid, sessionSseChannel)
 
 	responseWriter.Header().Set("Content-Type", "text/event-stream")
-    responseWriter.Header().Set("Cache-Control", "no-cache")
-    responseWriter.Header().Set("Connection", "keep-alive")
-    // This header tells Nginx/Railway Proxy not to buffer the stream
-    responseWriter.Header().Set("X-Accel-Buffering", "no") 
-	
+	responseWriter.Header().Set("Cache-Control", "no-cache")
+	responseWriter.Header().Set("Connection", "keep-alive")
+	// This header tells Nginx/Railway Proxy not to buffer the stream
+	responseWriter.Header().Set("X-Accel-Buffering", "no")
+
 	sse := datastar.NewSSE(responseWriter, request)
 
 	var videos []models.VideoResponse
@@ -584,8 +584,10 @@ func loadQuizUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEDa
 	if len(quizVideos) > 0 && strings.TrimSpace(quizVideos[0].Transcript) != "" {
 		transcript = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(quizVideos[0].Transcript, "'", "\\'"), "\n", "\\n"))
 	}
-	sse.PatchElementTempl(components.CreateQuizForm(transcript),
+	// fmt.Printf("Transcript for quiz generation: %v\n", transcript[0:100])
+	sse.PatchElementTempl(components.CreateQuizForm(),
 		datastar.WithModeInner(), datastar.WithSelector("#quizDialog"))
+	sse.PatchSignals([]byte(`{transcript:'` + transcript + `'}`))
 }
 func quizGeneratingUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.QuizGenerating(), datastar.WithSelector("#quizDialog"), datastar.WithModeInner())
