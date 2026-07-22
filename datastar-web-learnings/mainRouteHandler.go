@@ -497,7 +497,7 @@ func addVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models.Lo
 		useViewTransition = false
 	}
 	sse.PatchElementTempl(components.AddVideoSuccessResult(), datastar.WithUseViewTransitions(useViewTransition))
-	sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1}`))
+	sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1,transcription:''}`))
 	sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(useViewTransition))
 }
 func addVideoErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
