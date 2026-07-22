@@ -829,6 +829,11 @@
       padding-top: calc(var(--spacing) * 10);
     }
   }
+  .lg\:pb-19 {
+    @media (width >= 64rem) {
+      padding-bottom: calc(var(--spacing) * 19);
+    }
+  }
   .xl\:left-3\.5 {
     @media (width >= 80rem) {
       left: calc(var(--spacing) * 3.5);

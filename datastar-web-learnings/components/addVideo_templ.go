@@ -253,7 +253,7 @@ func AddVideo() templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<main class=\"w-full overflow-x-hidden h-[91.5vh] overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2\"><div class=\"flex flex-col gap-6 container max-w-4xl py-4 px-6 pb-24 mx-auto lg:pt-10\"><div class=\"flex flex-col gap-1\"><h1 class=\"text-3xl font-semibold text-primary\">Add New Video</h1><h2 class=\"text-lg text-secondary\">Add a new YouTube video to your technology collection</h2></div><form class=\"border border-gray-600 py-2 px-4 rounded-xl flex flex-col gap-3\" data-signals=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<main class=\"w-full overflow-x-hidden h-[91.5vh] overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-secondary scrollbar-track-background-2\"><div class=\"flex flex-col gap-6 container max-w-4xl py-4 px-6 pb-24 mx-auto lg:pt-10 lg:pb-19\"><div class=\"flex flex-col gap-1\"><h1 class=\"text-3xl font-semibold text-primary\">Add New Video</h1><h2 class=\"text-lg text-secondary\">Add a new YouTube video to your technology collection</h2></div><form class=\"border border-gray-600 py-2 px-4 rounded-xl flex flex-col gap-3\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
