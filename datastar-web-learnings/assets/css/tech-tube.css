@@ -559,9 +559,6 @@
   .pt-10 {
     padding-top: calc(var(--spacing) * 10);
   }
-  .pb-19 {
-    padding-bottom: calc(var(--spacing) * 19);
-  }
   .pb-24 {
     padding-bottom: calc(var(--spacing) * 24);
   }
