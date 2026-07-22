@@ -10,7 +10,7 @@ templ HomeButton() {
 		data-class="{'z-10':!$showDeleteConfirm}"
 		aria-label="Go to Home"
 		style="view-transition-name:page-action"
-		data-on:click="@get('/')"
+		data-on:click="$transcript='';@get('/')"
 		data-indicator="_fetchingHomePage"
 		data-attr:disabled="$_fetchingHomePage"
 	>
