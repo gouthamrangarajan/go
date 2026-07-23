@@ -20,8 +20,8 @@ templ quiz() {
 			id="quizDialog"
 			style="view-transition-name:quiz-modal"
 		>
-			<div class="w-full flex items-center justify-center mt-4  h-[30vh]">
-				<span class="w-8 h-8 rounded-full border-dashed border-2 border-secondary animate-spin"></span>
+			<div class="w-full flex justify-center mt-4  h-[30vh]">
+				@loader("true")
 			</div>
 		</dialog>
 	</div>
@@ -129,8 +129,8 @@ templ QuizGenerating() {
 		<p>Analyzing the transcript and generating <br/> questions grounded in the video.</p>
 		<span>This usually takes 10-30 seconds.</span>
 	</div>
-	<div class="w-full flex items-center justify-center mt-4 h-[30vh]">
-		<span class="w-8 h-8 rounded-full border-dashed border-2 border-secondary animate-spin"></span>
+	<div class="w-full flex justify-center mt-4 h-[30vh]">
+		@loader("true")
 	</div>
 }
 
