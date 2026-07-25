@@ -354,7 +354,7 @@ func UpdateTranscriptForQuiz(request models.UISignals, channel chan<- bool) {
 			channel <- false
 			return
 		}
-		fmt.Printf("Success updating transcript\n")
+		// fmt.Printf("Success updating transcript\n")
 	}
 
 	channel <- true

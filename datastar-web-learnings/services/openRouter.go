@@ -16,7 +16,7 @@ func VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query string, c
 	key := os.Getenv("OPENROUTER_API_KEY")
 	responseVal := models.OpenRouterResponse{}
 	aiRequestBytes, err := json.Marshal(models.OpenRouterRequest{
-		Model: os.Getenv("OPENROUTER_API_MODEL"),
+		Model: os.Getenv("OPENROUTER_API_MODEL_FOR_TECHNOLOGY_SEARCH_CHECK"),
 		Messages: []models.OpenRouterRequestMessage{
 			{
 				Role:    "user",
