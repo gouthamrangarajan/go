@@ -622,14 +622,14 @@ func finishQuizBtn() templ.Component {
 			templ_7745c5c3_Var34 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<button type=\"submit\" class=\"appearance-none outline-none cursor-pointer text-slate-700 py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none\" data-on:click__prevent=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<button type=\"submit\" class=\"appearance-none outline-none cursor-pointer text-slate-700 py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none\" data-on:click__prevent__viewTransition=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue(`$verifyAnswer=false;$quizIndex=0;$_showQuiz = false;`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 247, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 247, Col: 97}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
 		if templ_7745c5c3_Err != nil {
