@@ -38,3 +38,13 @@ type QuizResponse struct {
 		StartSeconds   string   `json:"startSeconds"`
 	} `json:"questions"`
 }
+
+type AnswerEvaluation struct {
+	IsTechnicallyCorrect bool     `json:"is_technically_correct"`
+	AccuracyScore        float32  `json:"accuracy_score"`
+	FluencyScore         float32  `json:"fluency_score"`
+	UsedKeywords         []string `json:"used_keywords"`
+	MissingKeywords      []string `json:"missing_keywords"`
+	FeedbackTip          string   `json:"feedback_tip"`
+	ImprovedSpokenAnswer string   `json:"improved_spoken_answer"`
+}

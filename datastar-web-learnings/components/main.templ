@@ -89,7 +89,7 @@ templ LandingMain() {
 		@searchInput()
 		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
 		<div class="py-10">
-			@loader("$_loading")
+			@loader("$_loading","bg-secondary")
 		</div>
 		@dockedPlayer()
 		@login()
@@ -111,7 +111,7 @@ templ LandingMainWithoutLoad() {
 		@searchInput()
 		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
 		<div class="py-10">
-			@loader("$_loading")
+			@loader("$_loading","bg-secondary")
 		</div>
 		@dockedPlayer()
 		@login()
@@ -144,7 +144,7 @@ templ searchInput() {
 				placeholder="Search..."
 				data-bind="searchTxt"
 			/>
-			@loader("$_searching")
+			@loader("$_searching","bg-secondary")
 			<button
 				type="button"
 				class="appearance-none outline-none cursor-pointer rounded-full text-red-300 border border-transparent transition duration-300 focus:border-red-300  hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
@@ -187,18 +187,18 @@ templ LoadMore(offset int) {
 	></div>
 }
 
-templ loader(dataShowSignal string) {
+templ loader(dataShowSignal string,bgColorClass string) {
 	<div class="flex gap-2 items-center justify-center" data-show={ dataShowSignal } style="display:none;">
 		<div
-			class="w-2 h-2 bg-secondary rounded-full animate-loader"
+			class={`w-2 h-2 rounded-full animate-loader `+bgColorClass}
 			style="animation-delay: 0ms"
 		></div>
 		<div
-			class="w-2 h-2 bg-secondary rounded-full animate-loader"
+			class={`w-2 h-2 rounded-full animate-loader `+bgColorClass}
 			style="animation-delay: 200ms"
 		></div>
 		<div
-			class="w-2 h-2 bg-secondary rounded-full animate-loader"
+			class={`w-2 h-2 rounded-full animate-loader `+bgColorClass}
 			style="animation-delay: 400ms"
 		></div>
 	</div>

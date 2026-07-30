@@ -15,4 +15,6 @@ type UISignals struct {
 	QuizVideoId    string   `json:"quizVideoId"`
 	QuizVideoTitle string   `json:"quizVideoTitle"`
 	QuizIndex      int      `json:"quizIndex"`
+	Answer         string   `json:"answer"`
+	VerifyAnswer   bool     `json:"verifyAnswer"`
 }

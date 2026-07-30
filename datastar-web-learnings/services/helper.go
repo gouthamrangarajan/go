@@ -136,10 +136,10 @@ Requirements:
 8. Return only JSON matching the supplied schema.
 
 VIDEO TITLE:
-%v
+%[1]v
 
 TRANSCRIPT:
-%v
+%[2]v
 
 OUTPUT FORMAT:
 {
@@ -166,7 +166,38 @@ OUTPUT FORMAT:
 }
 
 `
+const PROMPT_TO_EVALUATE_ANSWER=`You are an expert Technical Communication Coach helping a non-native English speaker practice explaining software engineering concepts.
 
+### CONTEXT:
+- Question Asked: %[1]v
+- Reference Short Answer: %[2]v
+- Ideal Natural Spoken Answer: %[3]v
+- Required Key Terms to Learn: %[4]v
+- User's Answer: %[5]v
+
+### EVALUATION CRITERIA:
+1. Technical Accuracy (0.0 to 1.0): Did the user demonstrate a correct understanding of the core concept?
+2. Spoken English Naturalness (0.0 to 1.0): Is the phrasing grammatically sound and natural for a spoken technical discussion?
+3. Keyword Usage: Identify which required key terms were used, paraphrased accurately, or completely missed.
+4. Paraphrasing Rule: Accept valid paraphrases. Do NOT require exact transcript phrasing.
+
+### INSTRUCTIONS:
+- Evaluate technical accuracy and language naturalness independently. (A user can be 100%% accurate technically while sounding awkward grammatically).
+- Provide a concise, constructive feedback tip (max 2 sentences).
+- Provide a "Better Spoken Version" that keeps the user's original idea but rewrites it into clean, natural spoken English using any missing key terms.
+
+### OUTPUT FORMAT:
+Respond strictly in JSON matching this schema:
+{
+  "is_technically_correct": true,
+  "accuracy_score": 0.85,
+  "fluency_score": 0.70,
+  "used_keywords": ["term 1"],
+  "missing_keywords": ["term 2"],
+  "feedback_tip": "Great technical explanation! However, try to use 'prompt caching' instead of saying 'saving the input'.",
+  "improved_spoken_answer": "Output caching stores the final response, whereas prompt caching stores only the input prompt data to avoid re-processing it."
+}
+`
 const QUIZ_MOCK_DATA = `{"summary": "This quiz covers five essential technical terms related to Agentic AI: agents.md, agent skills, the Model Context Protocol (MCP), Agent-to-Agent (A2A) communication, and sub-agents. It focuses on how these components enable AI agents to plan tasks, use tools, and collaborate autonomously.",
   "talkingPoints": [
     {

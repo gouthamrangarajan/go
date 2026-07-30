@@ -3,6 +3,7 @@ package components
 import (
 	"datastar-web-learnings/models"
 	"strconv"
+	"slices"
 )
 
 templ quiz() {
@@ -21,7 +22,7 @@ templ quiz() {
 			style="view-transition-name:quiz-modal"
 		>
 			<div class="w-full flex justify-center mt-4  h-[30vh]">
-				@loader("true")
+				@loader("true","bg-secondary")
 			</div>
 		</dialog>
 	</div>
@@ -87,7 +88,11 @@ templ CreateQuizForm() {
 				required
 				minlength="500"
 				spellcheck="false"
-				class="appearance-none outline-none ml-1 rounded transion duration-300 h-[30vh] w-full py-2 px-4 resize-none overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-secondary border border-secondary focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2"
+				data-attr:disabled="$_submitting"
+				class={`appearance-none outline-none ml-1 rounded transion duration-300 h-[30vh] w-full py-2 px-4 resize-none overflow-y-auto
+					   scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-secondary border border-secondary 
+					   focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2
+					   disabled:cursor-not-allowed disabled:opacity-80`}
 			></textarea>
 			<span class="text-xs italic"><span data-text="$transcript.length"></span> characters</span>
 		</label>
@@ -101,7 +106,7 @@ templ CreateQuizForm() {
 			</button>
 			<button
 				type="submit"
-				class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
+				class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none"
 				data-attr:disabled="$_submitting"
 			>
 				Generate quiz
@@ -130,7 +135,7 @@ templ QuizGenerating() {
 		<span>This usually takes 10-30 seconds.</span>
 	</div>
 	<div class="w-full flex justify-center mt-4 h-[30vh]">
-		@loader("true")
+		@loader("true","bg-secondary")
 	</div>
 }
 
@@ -140,7 +145,7 @@ templ QuizQuestion(data models.QuizResponse, index int) {
 		<button
 			class="appearance-none outline-none cursor-pointer p-1 rounded-full text-red-300 transition duration-300 focus:ring-1 focus:ring-red-300 hover:opacity-90"
 			aria-label="close quiz"
-			data-on:click__viewTransition="$_showQuiz = false"
+			data-on:click__viewTransition="$verifyAnswer=false;$_showQuiz = false"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
 				<path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"></path>
@@ -152,58 +157,120 @@ templ QuizQuestion(data models.QuizResponse, index int) {
 		data-on:submit__prevent={ `if(!$_submitting){@post('/quiz');}` }
 		data-indicator="_submitting"
 		id="quizForm"
-		data-signals={ `{_showAnswer:false,quizIndex:` + strconv.Itoa(index) + `}` }
+		data-signals={ `{quizIndex:` + strconv.Itoa(index) + `,answer:'',verifyAnswer:false}` }
 	>
 		<p class="w-full text-lg">{ data.Questions[index].Question }</p>
-		<span class="text-xs text-secondary" data-show="!$_showAnswer">Think or answer aloud</span>
-		<a
-			href="#"
-			data-show="!$_showAnswer"
-			data-on:click__prevent={ `$_showAnswer=true` }
-			class={ `appearance-none outline-none cursor-pointer underline underline-offset-4 transition duration-300 p-1
-				rounded focus:opacity-90 hover:opacity-90 focus:ring-1 focus:ring-primary focus:no-underline` }
+		<label
+			for="answer"
+			class=" flex flex-col gap-1"
+			id="lblAnswer"
 		>
-			Show answer
-		</a>
-		<div data-show="$_showAnswer" class="flex flex-col gap-3 w-full animate-result">
-			<span>Suggested Answer:</span>
-			<p class="w-full text-lg">{ data.Questions[index].ShortAnswer }</p>
-		</div>
-		<div class="flex items-center justify-end w-full gap-2">
+			<span>Write your answer</span>
+			<textarea
+				type="text"
+				id="answer"
+				name="answer"
+				data-bind="answer"
+				required
+				minlength="50"
+				data-attr:disabled="$_submitting"
+				class={`appearance-none outline-none ml-1 rounded transion duration-300 h-[10vh] w-full py-2 px-4 resize-none overflow-y-auto 
+						scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-secondary border border-secondary 
+						focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2 
+						disabled:cursor-not-allowed disabled:opacity-80`}
+			></textarea>
+		</label>
+		<div class="flex items-center justify-end w-full gap-2" id="quizResultAndAction">
 			if index !=0 {
-				<div class="flex-1 flex items-start">
-					<button
-						type="submit"
-						class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
-						data-attr:disabled="$_submitting"
-						data-on:click={ `$quizIndex--` }
-					>
-						Prev Question
-					</button>
-				</div>
+				@previousQuestionBtn()
 			}
-			if index + 1 == len(data.Questions) {
-				<button
-					type="submit"
-					class="appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
-					data-on:click={ `$quizIndex=0;$_showQuiz = false;` }
-				>
-					Finish Quiz
-				</button>
-			} else {
-				<button
-					type="submit"
-					class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
-					data-attr:disabled="$_submitting"
-					data-on:click={ `$quizIndex++` }
-				>
-					Next Question
-				</button>
-			}
+			@verifyAnswerButton("Check Explanation")
 		</div>
 	</form>
 }
 
+templ verifyAnswerButton(btnText string){
+	<button
+		type="submit"
+		class={`appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 
+				flex gap-2 items-center focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90
+				disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none`}
+		data-attr:disabled="$_submitting"
+		data-on:click={ `$verifyAnswer = true` }
+	>
+		<span>{btnText}</span>
+		@loader("$_submitting","bg-slate-700")
+	</button>
+}
+
+templ ResultAndPrevNextQuestion(quizAnswer models.AnswerEvaluation, quizData models.QuizResponse, index int){
+		{{cardClass := "border-green-300"}}
+		if quizAnswer.AccuracyScore < 0.5 || quizAnswer.FluencyScore < 0.5{
+			{{ cardClass = "border-red-300" }}
+		}
+		<div class="flex w-full flex-col gap-2" id="quizResultAndAction">
+			<div class={` rounded-xl py-2 px-4 flex flex-col gap-1 border-2 border-dashed `+cardClass}>
+				<span>Keywords</span>
+				<p class="flex items-center p-1 flex-wrap gap-2 text-slate-700">
+					for _,term := range quizData.Questions[index].KeyTerms{
+						if  slices.Contains(quizAnswer.UsedKeywords,term){
+							<span class="bg-green-100 p-1 rounded-full">{term}</span>
+						} else {
+							<span class="bg-red-100 p-1 rounded-full">{term}</span>
+						}
+					}
+				</p>
+				<span>Scores</span>
+				<p class="p-1 flex flex-col gap-1">
+					<span>Technical Accuracy: <span class="text-secondary">{strconv.FormatFloat(float64(quizAnswer.AccuracyScore), 'f', -1, 32)}</span></span> 
+					<span>English Naturalness: <span class="text-secondary">{strconv.FormatFloat(float64(quizAnswer.FluencyScore), 'f', -1, 32)}</span></span> 
+				</p>
+				<span>Tip: <span class="text-secondary">{quizAnswer.FeedbackTip}</span></span>
+				<span>Better Spoke Version:  <span class="text-secondary">{quizAnswer.ImprovedSpokenAnswer}</span></span>
+			</div>
+			<div class="flex items-center justify-end w-full gap-2">
+				if index !=0 {
+					@previousQuestionBtn()
+				}
+				if index + 1 == len(quizData.Questions) {
+					@finishQuizBtn()
+				} else {
+					@nextQuestionBtn()	
+				}
+			</div>
+		</div>
+}
+templ finishQuizBtn(){
+	<button
+		type="submit"
+		class="appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none"
+		data-on:click={ `$verifyAnswer=false;$quizIndex=0;$_showQuiz = false;` }
+	>
+		Finish Quiz
+	</button>
+}
+templ previousQuestionBtn(){
+	<div class="flex-1 flex items-start">
+		<button
+			type="submit"
+			class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none"
+			data-attr:disabled="$_submitting"
+			data-on:click__prevent={ `if(!$_submitting){$verifyAnswer=false;$quizIndex--;@post('/quiz');}`}
+		>
+			Prev Question
+		</button>
+	</div>
+}
+templ nextQuestionBtn(){
+	<button
+		type="submit"
+		class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none"
+		data-attr:disabled="$_submitting"
+		data-on:click={ `$verifyAnswer=false;$quizIndex++` }
+	>
+		Next Question
+	</button>
+}
 templ QuizGenerationError() {
 	<div class="flex items-center justify-between">
 		<h2 class="text-xl text-red-300 font-semibold">We couldn't create the quiz.</h2>
@@ -221,5 +288,35 @@ templ QuizGenerationError() {
 		class="mt-4 flex flex-col gap-3 w-full"
 	>
 		<p>Your transcript has been preserved. Please try again later</p>
+	</div>
+}
+
+templ AnswerEvaluationError(index int,quizData models.QuizResponse){
+	<div class="flex w-full flex-col gap-2" id="quizResultAndAction" data-signals="{_showReferenceAnswer:false}">
+		<h3 class="text-lg text-red-300 font-semibold" data-show="!$_submitting">Couldn't evaluate your answer right now.</h3>
+		<a
+			href="#"
+			data-show="!$_showReferenceAnswer"
+			data-on:click__prevent={ `$_showReferenceAnswer=true` }
+			class={ `appearance-none outline-none cursor-pointer underline underline-offset-4 transition duration-300 p-1
+				rounded focus:opacity-90 hover:opacity-90 focus:ring-1 focus:ring-primary focus:no-underline` }
+		>
+			View Reference Answer
+		</a>
+		<div data-show="$_showReferenceAnswer" class="flex flex-col gap-3 w-full animate-result">
+			<span>Suggested Answer:</span>
+			<p class="w-full text-lg">{ quizData.Questions[index].ShortAnswer }</p>
+		</div>
+		<div class="flex items-center justify-end w-full gap-2">
+			if index !=0 {
+				@previousQuestionBtn()
+			}
+			@verifyAnswerButton("Retry")
+			if index + 1 == len(quizData.Questions) {
+				@finishQuizBtn()
+			} else {
+				@nextQuestionBtn()
+			}
+		</div>
 	</div>
 }

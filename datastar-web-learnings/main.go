@@ -74,7 +74,7 @@ func main() {
 	dataRouter.Get("/sse", sseHandler)
 	dataRouter.Get("/data", loadMoreHandler)
 	dataRouter.Get("/search", searchHandler)
-	dataRouter.Post("/quiz", quizGenerationAndPrevNextHandler)
+	dataRouter.Post("/quiz", quizGenerationVerifyAnswerPrevNextHandler)
 	router.Mount("/", dataRouter)
 	http.ListenAndServe(":3000", router)
 }

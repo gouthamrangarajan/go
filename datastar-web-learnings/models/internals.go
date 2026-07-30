@@ -20,6 +20,8 @@ const (
 	LOAD_QUIZ_UI_FUNCTIONALITY
 	QUIZ_GENERATING_FUNCTIONALITY
 	QUIZ_GENERATION_ERROR_FUNCTIONALTIY
+	QUIZ_VERIFY_ANSWER_FUNCTIONALITY
+	QUIZ_VERIFY_ANSWER_ERROR
 	QUIZ_AND_PREV_NEXT_FUNCTIONALITY
 )
 
@@ -36,4 +38,5 @@ type LongSSEData struct {
 	QuizVideoId           string
 	QuizIndex             int
 	Sid                   string
+	Answer				  AnswerEvaluation
 }

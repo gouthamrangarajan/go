@@ -123,6 +123,10 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				quizGeneratingUI(sse)
 			case models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY:
 				quizGenerationErrorUI(sse)
+			case models.QUIZ_VERIFY_ANSWER_FUNCTIONALITY:
+				quizAnswerVerificationUI(sse,sseData)
+			case models.QUIZ_VERIFY_ANSWER_ERROR:
+				quizAnswerVerificationErrorUI(sse,sseData)
 			case models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY:
 				quizQuestionUI(sse, sseData)
 			}
@@ -592,7 +596,7 @@ func loadQuizUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEDa
 func quizGeneratingUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.QuizGenerating(), datastar.WithSelector("#quizDialog"), datastar.WithModeInner())
 }
-func quizGenerationAndPrevNextHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	var uiSignals models.UISignals
 	datastar.ReadSignals(request, &uiSignals)
 	transcript := strings.TrimSpace(uiSignals.Transcript)
@@ -608,11 +612,40 @@ func quizGenerationAndPrevNextHandler(responseWriter http.ResponseWriter, reques
 				http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 				return
 			}
+			var evaluationAnswer models.AnswerEvaluation
+			if uiSignals.VerifyAnswer {
+				if len(strings.TrimSpace(uiSignals.Answer))<50 {
+					http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
+					return
+				} else{
+					answerEvaluationChannel := make(chan models.AnswerEvaluation)
+					defer close(answerEvaluationChannel)
+					go services.VerifyQuizAnswerUsingOpenRouter(uiSignals.Answer,quizResponse,uiSignals.QuizIndex,answerEvaluationChannel)
+					evaluationAnswer = <-answerEvaluationChannel
+				}
+			}
 			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
-				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-					FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
-					QuizIndex:        uiSignals.QuizIndex,
-					Sid:              uiSignals.Sid,
+				switch{
+					case uiSignals.VerifyAnswer && evaluationAnswer.FluencyScore==0 && evaluationAnswer.AccuracyScore==0:
+						sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+							FunctionalityVal: models.QUIZ_VERIFY_ANSWER_ERROR,
+							QuizIndex:        uiSignals.QuizIndex,
+							Sid:              uiSignals.Sid,
+						}
+							
+					case uiSignals.VerifyAnswer:
+						sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+							FunctionalityVal: models.QUIZ_VERIFY_ANSWER_FUNCTIONALITY,
+							QuizIndex:        uiSignals.QuizIndex,
+							Sid:              uiSignals.Sid,
+							Answer: 		  evaluationAnswer,
+						}
+					default:
+						sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+							FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
+							QuizIndex:        uiSignals.QuizIndex,
+							Sid:              uiSignals.Sid,
+						}
 				}
 			}
 			return
@@ -659,9 +692,20 @@ func quizQuestionUI(sse *datastar.ServerSentEventGenerator, sseData models.LongS
 		datastar.WithSelector("#quizDialog"),
 		datastar.WithModeInner())
 }
-
+func quizAnswerVerificationUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	quizResponse, _ := quizMap.Load(sseData.Sid)
+	sse.PatchElementTempl(components.ResultAndPrevNextQuestion(sseData.Answer,quizResponse.(models.QuizResponse),sseData.QuizIndex),
+						 datastar.WithModeOuter())
+	sse.PatchSignals([]byte(`{verifyAnswer:false}`))
+}
 func quizGenerationErrorUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.QuizGenerationError(),
 		datastar.WithSelector("#quizDialog"),
 		datastar.WithModeInner())
+}
+
+func quizAnswerVerificationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData){
+	quizResponse, _ := quizMap.Load(sseData.Sid)
+	sse.PatchElementTempl(components.AnswerEvaluationError(sseData.QuizIndex,quizResponse.(models.QuizResponse)),
+						  datastar.WithModeOuter())
 }
