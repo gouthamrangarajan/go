@@ -614,7 +614,7 @@ func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWrite
 			}
 			var evaluationAnswer models.AnswerEvaluation
 			if uiSignals.VerifyAnswer {
-				if len(strings.TrimSpace(uiSignals.Answer))<50 {
+				if len(strings.TrimSpace(uiSignals.Answer))<25 {
 					http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 					return
 				} else{
