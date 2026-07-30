@@ -664,20 +664,20 @@ func previousQuestionBtn() templ.Component {
 			templ_7745c5c3_Var36 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex-1 flex items-start\"><button type=\"submit\" class=\"appearance-none outline-none cursor-pointer text-slate-700 py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none\" data-attr:disabled=\"$_submitting\" data-on:click__prevent=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex-1 flex items-start\"><button type=\"submit\" class=\"appearance-none outline-none cursor-pointer text-slate-700 py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none\" data-attr:disabled=\"$_submitting || $_fetchingPrevious || $_fetchingNext\" data-on:click__prevent=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var37 string
-		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue(`if(!$_submitting){$verifyAnswer=false;$quizIndex--;@post('/quiz');}`)
+		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue(`if(!$_submitting && !$_fetchingPrevious && !$_fetchingNext){$verifyAnswer=false;$quizIndex--;@post('/quiz');}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 258, Col: 97}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 258, Col: 139}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var37)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\">Prev Question</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" data-indicator=\"_fetchingPrevious\">Prev Question</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -706,20 +706,20 @@ func nextQuestionBtn() templ.Component {
 			templ_7745c5c3_Var38 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<button type=\"submit\" class=\"appearance-none outline-none cursor-pointer text-slate-700 py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none\" data-attr:disabled=\"$_submitting\" data-on:click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<button type=\"submit\" class=\"appearance-none outline-none cursor-pointer text-slate-700 py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none\" data-attr:disabled=\"$_submitting || $_fetchingPrevious || $_fetchingNext\" data-on:click__prevent=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var39 string
-		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(`$verifyAnswer=false;$quizIndex++`)
+		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(`if(!$_submitting && !$_fetchingPrevious && !$_fetchingNext){$verifyAnswer=false;$quizIndex++;@post('/quiz');}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 269, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 270, Col: 138}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\">Next Question</button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" data-indicator=\"_fetchingNext\">Next Question</button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -794,7 +794,7 @@ func AnswerEvaluationError(index int, quizData models.QuizResponse) templ.Compon
 		var templ_7745c5c3_Var43 string
 		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.ResolveAttributeValue(`$_showReferenceAnswer=true`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 300, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 302, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var43)
 		if templ_7745c5c3_Err != nil {
@@ -820,7 +820,7 @@ func AnswerEvaluationError(index int, quizData models.QuizResponse) templ.Compon
 		var templ_7745c5c3_Var45 string
 		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(quizData.Questions[index].ShortAnswer)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 308, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/quiz.templ`, Line: 310, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 		if templ_7745c5c3_Err != nil {
