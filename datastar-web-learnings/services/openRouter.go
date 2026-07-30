@@ -168,20 +168,19 @@ func GenerateQuizUsingOpenRouterMock(inputData models.UISignals, channel chan<- 
 	channel <- retVal
 }
 
-
-func VerifyQuizAnswerUsingOpenRouter(userAnswer string,quizResponse models.QuizResponse, quizIndex int,channel chan<- models.AnswerEvaluation) {
+func VerifyQuizAnswerUsingOpenRouter(userAnswer string, quizResponse models.QuizResponse, quizIndex int, channel chan<- models.AnswerEvaluation) {
 	url := os.Getenv("OPENROUTER_API_URL")
 	key := os.Getenv("OPENROUTER_API_KEY")
 	retVal := models.AnswerEvaluation{}
 	responseVal := models.OpenRouterResponse{}
-	quizInIndex :=  quizResponse.Questions[quizIndex]
+	quizInIndex := quizResponse.Questions[quizIndex]
 	aiRequestBytes, err := json.Marshal(models.OpenRouterRequest{
 		Model: os.Getenv("OPENROUTER_API_MODEL"),
 		Messages: []models.OpenRouterRequestMessage{
 			{
-				Role:    "user",
-				Content: fmt.Sprintf(PROMPT_TO_EVALUATE_ANSWER,quizInIndex.Question,quizInIndex.ShortAnswer,quizInIndex.SpeakingAnswer,
-							strings.Join(quizInIndex.KeyTerms,","), userAnswer),
+				Role: "user",
+				Content: fmt.Sprintf(PROMPT_TO_EVALUATE_ANSWER, quizInIndex.Question, quizInIndex.ShortAnswer, quizInIndex.SpeakingAnswer,
+					strings.Join(quizInIndex.KeyTerms, ","), userAnswer),
 			},
 		},
 	})

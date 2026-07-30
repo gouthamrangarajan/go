@@ -124,9 +124,9 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			case models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY:
 				quizGenerationErrorUI(sse)
 			case models.QUIZ_VERIFY_ANSWER_FUNCTIONALITY:
-				quizAnswerVerificationUI(sse,sseData)
+				quizAnswerVerificationUI(sse, sseData)
 			case models.QUIZ_VERIFY_ANSWER_ERROR:
-				quizAnswerVerificationErrorUI(sse,sseData)
+				quizAnswerVerificationErrorUI(sse, sseData)
 			case models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY:
 				quizQuestionUI(sse, sseData)
 			}
@@ -614,38 +614,38 @@ func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWrite
 			}
 			var evaluationAnswer models.AnswerEvaluation
 			if uiSignals.VerifyAnswer {
-				if len(strings.TrimSpace(uiSignals.Answer))<25 {
+				if len(strings.TrimSpace(uiSignals.Answer)) < 25 {
 					http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 					return
-				} else{
+				} else {
 					answerEvaluationChannel := make(chan models.AnswerEvaluation)
 					defer close(answerEvaluationChannel)
-					go services.VerifyQuizAnswerUsingOpenRouter(uiSignals.Answer,quizResponse,uiSignals.QuizIndex,answerEvaluationChannel)
+					go services.VerifyQuizAnswerUsingOpenRouter(uiSignals.Answer, quizResponse, uiSignals.QuizIndex, answerEvaluationChannel)
 					evaluationAnswer = <-answerEvaluationChannel
 				}
 			}
 			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
-				switch{
-					case uiSignals.VerifyAnswer && evaluationAnswer.FluencyScore==0 && evaluationAnswer.AccuracyScore==0:
-						sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-							FunctionalityVal: models.QUIZ_VERIFY_ANSWER_ERROR,
-							QuizIndex:        uiSignals.QuizIndex,
-							Sid:              uiSignals.Sid,
-						}
-							
-					case uiSignals.VerifyAnswer:
-						sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-							FunctionalityVal: models.QUIZ_VERIFY_ANSWER_FUNCTIONALITY,
-							QuizIndex:        uiSignals.QuizIndex,
-							Sid:              uiSignals.Sid,
-							Answer: 		  evaluationAnswer,
-						}
-					default:
-						sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-							FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
-							QuizIndex:        uiSignals.QuizIndex,
-							Sid:              uiSignals.Sid,
-						}
+				switch {
+				case uiSignals.VerifyAnswer && evaluationAnswer.FluencyScore == 0 && evaluationAnswer.AccuracyScore == 0:
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.QUIZ_VERIFY_ANSWER_ERROR,
+						QuizIndex:        uiSignals.QuizIndex,
+						Sid:              uiSignals.Sid,
+					}
+
+				case uiSignals.VerifyAnswer:
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.QUIZ_VERIFY_ANSWER_FUNCTIONALITY,
+						QuizIndex:        uiSignals.QuizIndex,
+						Sid:              uiSignals.Sid,
+						Answer:           evaluationAnswer,
+					}
+				default:
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
+						QuizIndex:        uiSignals.QuizIndex,
+						Sid:              uiSignals.Sid,
+					}
 				}
 			}
 			return
@@ -694,8 +694,8 @@ func quizQuestionUI(sse *datastar.ServerSentEventGenerator, sseData models.LongS
 }
 func quizAnswerVerificationUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	quizResponse, _ := quizMap.Load(sseData.Sid)
-	sse.PatchElementTempl(components.ResultAndPrevNextQuestion(sseData.Answer,quizResponse.(models.QuizResponse),sseData.QuizIndex),
-						 datastar.WithModeOuter())
+	sse.PatchElementTempl(components.ResultAndPrevNextQuestion(sseData.Answer, quizResponse.(models.QuizResponse), sseData.QuizIndex),
+		datastar.WithModeOuter())
 	sse.PatchSignals([]byte(`{verifyAnswer:false}`))
 }
 func quizGenerationErrorUI(sse *datastar.ServerSentEventGenerator) {
@@ -704,8 +704,8 @@ func quizGenerationErrorUI(sse *datastar.ServerSentEventGenerator) {
 		datastar.WithModeInner())
 }
 
-func quizAnswerVerificationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData){
+func quizAnswerVerificationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	quizResponse, _ := quizMap.Load(sseData.Sid)
-	sse.PatchElementTempl(components.AnswerEvaluationError(sseData.QuizIndex,quizResponse.(models.QuizResponse)),
-						  datastar.WithModeOuter())
+	sse.PatchElementTempl(components.AnswerEvaluationError(sseData.QuizIndex, quizResponse.(models.QuizResponse)),
+		datastar.WithModeOuter())
 }

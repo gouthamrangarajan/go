@@ -38,5 +38,5 @@ type LongSSEData struct {
 	QuizVideoId           string
 	QuizIndex             int
 	Sid                   string
-	Answer				  AnswerEvaluation
+	Answer                AnswerEvaluation
 }

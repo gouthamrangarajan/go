@@ -166,7 +166,7 @@ OUTPUT FORMAT:
 }
 
 `
-const PROMPT_TO_EVALUATE_ANSWER=`You are an expert Technical Communication Coach helping a non-native English speaker practice explaining software engineering concepts.
+const PROMPT_TO_EVALUATE_ANSWER = `You are an expert Technical Communication Coach helping a non-native English speaker practice explaining software engineering concepts.
 
 ### CONTEXT:
 - Question Asked: %[1]v
@@ -328,10 +328,10 @@ func GetFirstSetOfVideos(ctxt context.Context) []models.VideoResponse {
 
 func removeJSONCodeFence(input string) string {
 	output := strings.TrimSpace(input)
-  output,_ = strings.CutPrefix(output, "```json")
-  output,_ = strings.CutPrefix(output, "```JSON")
-  output,_ = strings.CutPrefix(output, "```")
+	output, _ = strings.CutPrefix(output, "```json")
+	output, _ = strings.CutPrefix(output, "```JSON")
+	output, _ = strings.CutPrefix(output, "```")
 	output = strings.TrimSpace(output)
-	output,_ = strings.CutSuffix(output, "```")
+	output, _ = strings.CutSuffix(output, "```")
 	return strings.TrimSpace(output)
 }
