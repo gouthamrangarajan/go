@@ -166,19 +166,95 @@ templ QuizQuestion(data models.QuizResponse, index int) {
 			id="lblAnswer"
 		>
 			<span>Write your answer</span>
-			<textarea
-				type="text"
-				id="answer"
-				name="answer"
-				data-bind="answer"
-				required
-				minlength="25"
-				data-attr:disabled="$_submitting"
-				class={ `appearance-none outline-none ml-1 rounded transion duration-300 h-[10vh] w-full py-2 px-4 resize-none overflow-y-auto 
-						scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-secondary border border-secondary 
-						focus:ring-secondary focus:ring-2  focus:ring-offset-2 focus:ring-offset-background-2 
-						disabled:cursor-not-allowed disabled:opacity-80` }
-			></textarea>
+			<div
+				class={ `w-full flex items-end ml-1 transion duration-300 py-2 px-4 rounded border border-secondary  
+						focus-within:ring-secondary focus-within:ring-2  focus-within:ring-offset-2 focus-within:ring-offset-background-2` }
+			>
+				<textarea
+					type="text"
+					id="answer"
+					name="answer"
+					data-bind="answer"
+					required
+					minlength="25"
+					data-attr:disabled="$_submitting"
+					class={ `appearance-none outline-none border-none  h-[10vh] flex-1  resize-none overflow-y-auto 
+							scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-secondary border border-secondary  
+							disabled:cursor-not-allowed disabled:opacity-80` }
+				></textarea>
+				<button
+					type="button"
+					class={ `appearance-none outline-none cursor-pointer p-1 rounded-full focus:ring-1 focus:ring-primary 
+							disabled:cursor-not-allowed disabled:opacity-80` }
+					data-attr:disabled="$_submitting"
+					data-signals="{_speechRecog:''}"
+					data-on:user-speech__window={ `$answer=evt.detail.value;` }
+					data-on:click={ `
+						let finalTranscript = '';
+						if  ($_speechRecog) {	
+							$_speechRecog.stop();
+							return;
+						}
+					
+						const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+						if (!SpeechRecognition) {
+							console.log('Speech recognition is not supported in this browser.');
+							return;
+						}
+						const recog=new SpeechRecognition();
+						recog.continuous = true;
+						recog.interimResults = true;
+						recog.lang = 'en-US';	
+						recog.onerror = (event) => {
+							console.error('Speech recognition error:', event.error);
+						};
+						recog.onend = () => {
+							$_speechRecog = '';
+							finalTranscript='';
+						};
+						recog.onresult = (event) => {	
+							let interimTranscript = '';
+							for (let idx = event.resultIndex; idx < event.results.length; idx++) {
+								const result = event.results[idx];							
+								if (result.isFinal) {			
+									finalTranscript +=  result[0].transcript.trim()+' ';
+								} else {
+									interimTranscript += result[0].transcript.trim()+' ';
+								}
+								window.dispatchEvent(new CustomEvent('user-speech', { detail: 
+																						{ value: finalTranscript+' '+interimTranscript }
+																					  }
+																	));
+							}
+						};
+						recog.start();
+						$_speechRecog = recog;						
+					` }
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="size-6"
+						style="display:none;view-transition-name: speech-icon;"
+						data-show="!$_speechRecog"
+					>
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z"></path>
+					</svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+						class="size-6"
+						style="display:none;view-transition-name: speech-icon;"
+						data-show="$_speechRecog"
+					>
+						<path fill-rule="evenodd" d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z" clip-rule="evenodd"></path>
+					</svg>
+				</button>
+			</div>
 		</label>
 		<div class="flex items-center justify-end w-full gap-2" id="quizResultAndAction">
 			if index !=0 {
