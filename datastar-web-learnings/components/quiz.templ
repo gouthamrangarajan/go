@@ -207,6 +207,7 @@ templ QuizQuestion(data models.QuizResponse, index int) {
 						recog.lang = 'en-US';	
 						recog.onerror = (event) => {
 							console.error('Speech recognition error:', event.error);
+							$_speechRecog = '';
 						};
 						recog.onend = () => {
 							$_speechRecog = '';
