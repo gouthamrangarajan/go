@@ -105,12 +105,12 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	if clientSignal.SessionId != 0 {
 		go sendConversationsMarkdown(clientSignal, userId)
 	}
-	
+
 	responseWriter.Header().Set("Content-Type", "text/event-stream")
-    responseWriter.Header().Set("Cache-Control", "no-cache")
-    responseWriter.Header().Set("Connection", "keep-alive")
-    // This header tells Nginx/Railway Proxy not to buffer the stream
-    responseWriter.Header().Set("X-Accel-Buffering", "no") 
+	responseWriter.Header().Set("Cache-Control", "no-cache")
+	responseWriter.Header().Set("Connection", "keep-alive")
+	// This header tells Nginx/Railway Proxy not to buffer the stream
+	responseWriter.Header().Set("X-Accel-Buffering", "no")
 
 	sse := datastar.NewSSE(responseWriter, request)
 
@@ -146,7 +146,7 @@ func longSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 					sse.PatchElements(data.Content, datastar.WithSelector(data.Selector), datastar.WithUseViewTransitions(data.UseViewTransition))
 				}
 			}
-			
+
 		case <-liveIndicatorTicker.C:
 			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
 				return
@@ -166,12 +166,7 @@ func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string)
 	if len(conversations) != 0 {
 		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)
 		go services.ConvertConversationMarkdownsToHtml(conversations, markdownToHtmlChannel)
-		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
-			//make sure all before data are flushed before sending the markdown to html data
-			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				SendHeartBeat: true,
-			}
-		}
+
 		for element := range markdownToHtmlChannel {
 			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -250,6 +245,12 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 			Content:  `window.history.replaceState({},"","` + urlToReplace + `")`,
 			IsScript: true,
 		}
+
+		//make sure all before data are flushed before sending the markdown to html data
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			SendHeartBeat: true,
+		}
+
 	}
 	go sendConversationsMarkdown(clientSignal, data.UserId)
 }
