@@ -225,7 +225,8 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 		components.Section(data.ChatConversations).Render(context.Background(), dataBuffer)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           dataBuffer.String(),
-			UseViewTransition: true,
+			UseViewTransition: false,
+			Mode:              datastar.WithModeOuter(),
 		}
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			IsSignal: true,
@@ -247,9 +248,9 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 		}
 
 		//make sure all before data are flushed before sending the markdown to html data
-		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			SendHeartBeat: true,
-		}
+		// userSession.(chan models.LongSSEData) <- models.LongSSEData{
+		// 	SendHeartBeat: true,
+		// }
 
 	}
 	go sendConversationsMarkdown(clientSignal, data.UserId)
