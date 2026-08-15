@@ -20,7 +20,7 @@ func main() {
 	}
 	router := chi.NewRouter()
 	router.Use(chiMiddleware.Logger)
-	// router.Use(chiMiddleware.Compress(5))
+	router.Use(chiMiddleware.Compress(5))
 	router.Use(middleware.Authorization)
 
 	router.Get("/", services.MonthPage)

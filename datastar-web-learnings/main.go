@@ -24,7 +24,7 @@ func main() {
 	dataRouter := chi.NewRouter()
 
 	router.Use(middleware.Logger)
-	// router.Use(middleware.Compress(5))
+	router.Use(middleware.Compress(5))
 	router.Use(middleware.Recoverer)
 
 	rateLimitSecondsStr := os.Getenv("RATE_LIMIT_SECONDS")

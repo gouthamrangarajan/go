@@ -27,7 +27,7 @@ func main() {
 
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	// router.Use(middleware.Compress(5))
+	router.Use(middleware.Compress(5))
 	router.Use(services.AuthorizationMiddleware)
 
 	rateLimitSecondsStr := os.Getenv("RATE_LIMIT_SECONDS")
@@ -44,12 +44,12 @@ func main() {
 	promptRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	promptRouter.Use(httprate.LimitBy(
 		rateLimitRequests,
-		time.Duration(rateLimitSeconds)*time.Second,	
+		time.Duration(rateLimitSeconds)*time.Second,
 		func(request *http.Request) (string, error) {
 			// Get the IP that middleware.RealIP has already verified
 			ip := middleware.GetClientIP(request.Context())
 			// Canonicalize handles IPv6 /64 subnets naturally
-			// Fallback: If for some reason the middleware failed (local dev), 
+			// Fallback: If for some reason the middleware failed (local dev),
 			// use the direct network address.
 			if ip == "" {
 				ip = request.RemoteAddr
