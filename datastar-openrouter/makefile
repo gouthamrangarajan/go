@@ -7,6 +7,6 @@ dev:
 build:
 	npm ci
 	npx tailwindcss -i ./assets/css/input.css -o ./assets/css/nexus.css --minify
-	templ generate
+	go run github.com/a-h/templ/cmd/templ@v0.3.1020 generate
 	go build -ldflags="-s -w" -o bin/datastar-openrouter ./cmd/server
 	
