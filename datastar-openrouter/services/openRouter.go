@@ -3,7 +3,7 @@ package services
 import (
 	"bufio"
 	"bytes"
-	"datastar-openrouter/models"
+	"datastar-openrouter/internal/models"
 	"encoding/json"
 	"fmt"
 	"io"

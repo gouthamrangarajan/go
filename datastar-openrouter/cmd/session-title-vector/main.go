@@ -1,7 +1,7 @@
 package main
 
 import (
-	"datastar-openrouter/models"
+	"datastar-openrouter/internal/models"
 	"datastar-openrouter/services"
 	"fmt"
 	"os"

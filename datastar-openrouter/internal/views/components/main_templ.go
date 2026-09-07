@@ -9,7 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"datastar-openrouter/models"
+	"datastar-openrouter/internal/models"
 	"strconv"
 )
 
@@ -59,7 +59,7 @@ func Main(model models.UIMainModel) templ.Component {
                             imageGeneration:` + strconv.FormatBool(model.ImageGeneration) + `,
 							fileUploading:false,messageIdToFetchImage:0 }`)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 20, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 20, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {

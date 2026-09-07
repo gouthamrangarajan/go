@@ -2,7 +2,7 @@ package services
 
 import (
 	"bytes"
-	"datastar-openrouter/models"
+	"datastar-openrouter/internal/models"
 	"fmt"
 	"os"
 	"regexp"

@@ -2,7 +2,7 @@ package services
 
 import (
 	"database/sql"
-	"datastar-openrouter/models"
+	"datastar-openrouter/internal/models"
 	"encoding/json"
 	"fmt"
 	"log"

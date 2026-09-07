@@ -1,6 +1,7 @@
-package main
+package server
 
 import (
+	"datastar-openrouter/internal/handlers"
 	"datastar-openrouter/services"
 	"fmt"
 	"net/http"
@@ -11,25 +12,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
-	"github.com/joho/godotenv"
 )
 
-func main() {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-	} else {
-		fmt.Println("Loaded .env file successfully")
-	}
-	services.InitDB()
-	router := chi.NewRouter()
-	promptRouter := chi.NewRouter()
+type Router struct {
+	rateLimitSeconds  int
+	rateLimitRequests int
+}
 
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
-	router.Use(middleware.Compress(5))
-	router.Use(services.AuthorizationMiddleware)
-
+func NewRouter() *Router {
 	rateLimitSecondsStr := os.Getenv("RATE_LIMIT_SECONDS")
 	rateLimitRequestsStr := os.Getenv("RATE_LIMIT_REQUESTS")
 
@@ -41,10 +31,26 @@ func main() {
 	if err != nil {
 		rateLimitRequests = 10
 	}
+
+	return &Router{
+		rateLimitSeconds:  rateLimitSeconds,
+		rateLimitRequests: rateLimitRequests,
+	}
+}
+
+func (r *Router) NewHttpHandler() http.Handler {
+	router := chi.NewRouter()
+	promptRouter := chi.NewRouter()
+
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.Compress(5))
+	router.Use(services.AuthorizationMiddleware)
+
 	promptRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	promptRouter.Use(httprate.LimitBy(
-		rateLimitRequests,
-		time.Duration(rateLimitSeconds)*time.Second,
+		r.rateLimitRequests,
+		time.Duration(r.rateLimitSeconds)*time.Second,
 		func(request *http.Request) (string, error) {
 			// Get the IP that middleware.RealIP has already verified
 			ip := middleware.GetClientIP(request.Context())
@@ -63,21 +69,21 @@ func main() {
 		}),
 	)) // 10 request in 5 seconds
 
-	router.Get("/", mainPageHandler)
-	router.Get("/{sessionId}", mainPageHandler)
-	router.Post("/sse", longSSEHandler)
-	router.Post("/new", newChatHandler)
-	promptRouter.Post("/chat", promptHandler)
-	router.Post("/session/delete", deleteSessionHandler)
-	router.Post("/sessions/search", searchSessionHandler)
-	router.Post("/fileupload", fileUploadHandler)
-	router.Post("/fileupload/remove", removeUploadedFileHandler)
-	router.Post("/retry", retryHandler)
-	router.Post("/image", getImageHandler)
+	router.Get("/", handlers.MainPageHandler)
+	router.Get("/{sessionId}", handlers.MainPageHandler)
+	router.Post("/sse", handlers.LongSSEHandler)
+	router.Post("/new", handlers.NewChatHandler)
+	promptRouter.Post("/chat", handlers.PromptHandler)
+	router.Post("/session/delete", handlers.DeleteSessionHandler)
+	router.Post("/sessions/search", handlers.SearchSessionHandler)
+	router.Post("/fileupload", handlers.FileUploadHandler)
+	router.Post("/fileupload/remove", handlers.RemoveUploadedFileHandler)
+	router.Post("/retry", handlers.RetryHandler)
+	router.Post("/image", handlers.GetImageHandler)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
 	})
 	router.Mount("/", promptRouter)
-	http.ListenAndServe(":3000", router)
+	return router
 }

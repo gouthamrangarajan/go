@@ -9,8 +9,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"datastar-openrouter/components/shared"
-	"datastar-openrouter/models"
+	"datastar-openrouter/internal/models"
+	"datastar-openrouter/internal/views/components/shared"
 	"fmt"
 	"time"
 )
@@ -64,7 +64,7 @@ func inputsAndError(aiModels []models.AIModel) templ.Component {
 							}
 						`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 37, Col: 7}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 37, Col: 7}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -85,7 +85,7 @@ func inputsAndError(aiModels []models.AIModel) templ.Component {
                     }
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 46, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 46, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -143,7 +143,7 @@ func LiveIndicator() templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(`{` + fmt.Sprintf(`_time:new Date(%d).toLocaleTimeString()`, time.Now().UnixMilli()) + `}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 68, Col: 107}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 68, Col: 107}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -191,7 +191,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(model.ModelId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 90, Col: 92}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 90, Col: 92}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 				if templ_7745c5c3_Err != nil {
@@ -204,7 +204,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(model.DisplayName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 90, Col: 123}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 90, Col: 123}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -222,7 +222,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(model.ModelId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 92, Col: 92}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 92, Col: 92}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 				if templ_7745c5c3_Err != nil {
@@ -235,7 +235,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(model.DisplayName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 92, Col: 114}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 92, Col: 114}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -311,7 +311,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
                     @post("/chat",{openWhenHidden: true});
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 205, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 205, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 		if templ_7745c5c3_Err != nil {
@@ -366,7 +366,7 @@ func FileAttachmentDisplay(fileName string) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fileNameToDisplay)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/mainInputAndError.templ`, Line: 238, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/mainInputAndError.templ`, Line: 238, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {

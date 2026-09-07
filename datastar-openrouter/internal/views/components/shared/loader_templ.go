@@ -42,7 +42,7 @@ func Loader(dataShowAttribute string) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(dataShowAttribute)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/shared/loader.templ`, Line: 19, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/shared/loader.templ`, Line: 19, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 			if templ_7745c5c3_Err != nil {
