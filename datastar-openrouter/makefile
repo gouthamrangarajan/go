@@ -5,7 +5,6 @@ dev:
 
 
 build:
-	npm ci
 	npx tailwindcss -i ./assets/css/input.css -o ./assets/css/nexus.css --minify
 	templ generate
 	go build -ldflags="-s -w" -o bin/datastar-openrouter ./cmd/server

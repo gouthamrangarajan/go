@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["go", "nodejs", "npm"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["make build"]
