@@ -528,6 +528,11 @@ func (d *DBService) DeleteMessageChatConversationForRetry(data models.DeleteChat
 			returnIds = append(returnIds, conversationId)
 		}
 	}
+	if err := rows.Err(); err != nil {
+		fmt.Printf("Error iterating rows in DeleteMessageChatConversationForRetry: %v\n", err.Error())
+		channel <- returnIds
+		return
+	}
 	result, err := d.dbPool.Exec("DELETE FROM chat_conversations  WHERE session_id=? AND conversation_id>? ", data.SessionId, data.ConversationIdAfterWhichDelete)
 	if err != nil {
 		fmt.Printf("Failed to execute query in DeleteMessageChatConversationForRetry: %v\n", err.Error())
