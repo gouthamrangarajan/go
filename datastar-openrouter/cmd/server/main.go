@@ -2,7 +2,6 @@ package main
 
 import (
 	"datastar-openrouter/internal/server"
-	"datastar-openrouter/services"
 	"fmt"
 	"net/http"
 
@@ -16,7 +15,6 @@ func main() {
 	} else {
 		fmt.Println("Loaded .env file successfully")
 	}
-	services.InitDB()
 	routerHandler := server.NewRouter().HttpHandler()
 	http.ListenAndServe(":3000", routerHandler)
 }

@@ -42,11 +42,12 @@ func NewRouter() *Router {
 func (r *Router) HttpHandler() http.Handler {
 	router := chi.NewRouter()
 	promptRouter := chi.NewRouter()
+	dbService := services.NewDBService()
 
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Compress(5))
-	router.Use(services.AuthorizationMiddleware)
+	router.Use(services.AuthorizationMiddleware(dbService))
 
 	promptRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	promptRouter.Use(httprate.LimitBy(
@@ -70,12 +71,13 @@ func (r *Router) HttpHandler() http.Handler {
 		}),
 	)) // 10 request in 5 seconds
 	var uiSidMap sync.Map
-	helperService := services.NewHelperService()
-	mainHandler := handlers.NewMainHandler(&uiSidMap, helperService)
-	fileHandler := handlers.NewFileHandler(&uiSidMap, helperService)
-	sessionActionHandler := handlers.NewSessionActionHandler(&uiSidMap, helperService)
+
+	helperService := services.NewHelperService(dbService)
+	mainHandler := handlers.NewMainHandler(&uiSidMap, helperService, dbService)
+	fileHandler := handlers.NewFileHandler(&uiSidMap, helperService, dbService)
+	sessionActionHandler := handlers.NewSessionActionHandler(&uiSidMap, helperService, dbService)
 	sseHandler := handlers.NewSSEHandler(&uiSidMap, helperService)
-	promptHandler := handlers.NewPromptHandler(&uiSidMap, helperService)
+	promptHandler := handlers.NewPromptHandler(&uiSidMap, helperService, dbService)
 
 	router.Get("/", mainHandler.HandleMainPage)
 	router.Get("/{sessionId}", mainHandler.HandleMainPage)

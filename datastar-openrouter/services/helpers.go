@@ -23,10 +23,11 @@ type HelperService struct {
 	pdfRegex     *regexp.Regexp
 	copySvg      string
 	systemPrompt string
+	dbService    *DBService
 }
 type contextKey string
 
-func NewHelperService() *HelperService {
+func NewHelperService(dbService *DBService) *HelperService {
 	imgRegex, err := regexp.Compile(os.Getenv("IMG_REGEX"))
 	if err != nil {
 		fmt.Printf("Error compiling IMG_REGEX: %v\n", err)
@@ -64,6 +65,7 @@ func NewHelperService() *HelperService {
 						5. CONTEXT: Always consider the previous chat history.
 
 						Current Date: %v`,
+		dbService: dbService,
 	}
 }
 
@@ -72,16 +74,14 @@ func (h *HelperService) GenerateUserSessionKey(userId string, sessionId string) 
 }
 func (h *HelperService) GetChatSessionsViaChannel(userId string) []models.ChatSession {
 	sessionChannel := make(chan []models.ChatSession)
-	defer close(sessionChannel)
-	go GetChatSessions(userId, sessionChannel)
+	go h.dbService.GetChatSessions(userId, sessionChannel)
 	sessions := <-sessionChannel
 	return sessions
 }
 func (h *HelperService) InsertChatSessionViaChannel(userId string, data models.ChatSession) int {
 	var sessionId int = 0
 	insertSessionChannel := make(chan int)
-	defer close(insertSessionChannel)
-	go InsertChatSession(userId, data, insertSessionChannel)
+	go h.dbService.InsertChatSession(userId, data, insertSessionChannel)
 	sessionId = <-insertSessionChannel
 	return sessionId
 }
@@ -89,8 +89,7 @@ func (h *HelperService) InsertChatSessionViaChannel(userId string, data models.C
 func (h *HelperService) GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals) (models.OpenRouterRequest, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
-	defer close(conversationsChannel)
-	go GetChatConversations(userId, clientSignal.SessionId, conversationsChannel)
+	go h.dbService.GetChatConversations(userId, clientSignal.SessionId, conversationsChannel)
 	conversations := <-conversationsChannel
 	if strings.TrimSpace(clientSignal.ModelId) == "" {
 		clientSignal.ModelId = os.Getenv("DEFAULT_MODEL_ID")
@@ -173,7 +172,6 @@ func (h *HelperService) SendErrorMessageToUI(sse *datastar.ServerSentEventGenera
 func (h *HelperService) SearchSessionsViaChannel(data models.SearchSessionViaChannelRequest) []models.ChatSession {
 	retVal := []models.ChatSession{}
 	searchSessionsChannel := make(chan []models.ChatSession)
-	defer close(searchSessionsChannel)
 	embeddingsChannel := make(chan models.VoyageEmbeddingResponse)
 	defer close(embeddingsChannel)
 
@@ -183,7 +181,7 @@ func (h *HelperService) SearchSessionsViaChannel(data models.SearchSessionViaCha
 	go CallVoyageEmbedding(embeddingRequest, embeddingsChannel)
 	embeddingResponse := <-embeddingsChannel
 	if len(embeddingResponse.Data) > 0 {
-		go SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
+		go h.dbService.SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
 		retVal = <-searchSessionsChannel
 	}
 	return retVal
@@ -192,9 +190,8 @@ func (h *HelperService) ConvertConversationMarkdownToHtmlAndSendToUserSessionCha
 	userSessionKey := h.GenerateUserSessionKey(userId, clientSignal.UiSid)
 	conversationsChannel := make(chan []models.ChatConversation)
 
-	go GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
+	go h.dbService.GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
 	conversations := <-conversationsChannel
-	defer close(conversationsChannel)
 
 	if len(conversations) != 0 {
 		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)

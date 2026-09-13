@@ -20,13 +20,15 @@ type SessionActionHandler struct {
 	uisidMap      *sync.Map
 	userIdKey     string
 	helperService *services.HelperService
+	dbService     *services.DBService
 }
 
-func NewSessionActionHandler(uisidMap *sync.Map, helperService *services.HelperService) *SessionActionHandler {
+func NewSessionActionHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService) *SessionActionHandler {
 	return &SessionActionHandler{
 		uisidMap:      uisidMap,
 		userIdKey:     os.Getenv("USER_ID_KEY"),
 		helperService: helperService,
+		dbService:     dbService,
 	}
 }
 
@@ -36,9 +38,8 @@ func (s *SessionActionHandler) HandleNewChat(responseWriter http.ResponseWriter,
 	datastar.ReadSignals(request, &clientSignal)
 
 	insertChatSessionChannel := make(chan int)
-	defer close(insertChatSessionChannel)
 	newSession := models.ChatSession{Title: "New Chat"}
-	go services.InsertChatSession(userId, newSession, insertChatSessionChannel)
+	go s.dbService.InsertChatSession(userId, newSession, insertChatSessionChannel)
 	newSession.Id = <-insertChatSessionChannel
 
 	userSessionKey := s.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
@@ -100,8 +101,7 @@ func (s *SessionActionHandler) HandleNewChat(responseWriter http.ResponseWriter,
 		embeddingResponse := <-embeddingChannel
 		if len(embeddingResponse.Data) > 0 {
 			updateTitleVectorChannel := make(chan int)
-			defer close(updateTitleVectorChannel)
-			go services.UpdateChatSessionTitleVector(newSession.Id, embeddingResponse.Data[0].Embedding, updateTitleVectorChannel)
+			go s.dbService.UpdateChatSessionTitleVector(newSession.Id, embeddingResponse.Data[0].Embedding, updateTitleVectorChannel)
 			<-updateTitleVectorChannel
 		}
 	}
@@ -118,8 +118,7 @@ func (s *SessionActionHandler) HandleDeleteSession(responseWriter http.ResponseW
 		return
 	}
 	sessionsChannel := make(chan []models.ChatSession)
-	defer close(sessionsChannel)
-	go services.GetChatSessions(userId, sessionsChannel)
+	go s.dbService.GetChatSessions(userId, sessionsChannel)
 	sessions := <-sessionsChannel
 	var selectedSession models.ChatSession
 	for _, session := range sessions {
@@ -133,8 +132,7 @@ func (s *SessionActionHandler) HandleDeleteSession(responseWriter http.ResponseW
 		return
 	}
 	deleteSessionChannel := make(chan int)
-	defer close(deleteSessionChannel)
-	go services.DeleteChatSession(userId, clientSignal.SessionIdToDelete, deleteSessionChannel)
+	go s.dbService.DeleteChatSession(userId, clientSignal.SessionIdToDelete, deleteSessionChannel)
 
 	userSessionKey := s.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
 	userSession, userSessionExists := s.uisidMap.Load(userSessionKey)
@@ -181,8 +179,7 @@ func (s *SessionActionHandler) HandleDeleteSession(responseWriter http.ResponseW
 func (s *SessionActionHandler) HandleSearchSessions(responseWriter http.ResponseWriter, request *http.Request) {
 	userId := request.Context().Value(s.userIdKey).(string)
 	userExistsChannel := make(chan bool)
-	defer close(userExistsChannel)
-	go services.CheckUserExistsInTable(userId, userExistsChannel)
+	go s.dbService.CheckUserExistsInTable(userId, userExistsChannel)
 	if !<-userExistsChannel {
 		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -194,8 +191,7 @@ func (s *SessionActionHandler) HandleSearchSessions(responseWriter http.Response
 	clientSignal.SearchMenu = strings.TrimSpace(clientSignal.SearchMenu)
 	if clientSignal.SearchMenu == "" {
 		sessionsChannel := make(chan []models.ChatSession)
-		defer close(sessionsChannel)
-		go services.GetChatSessions(userId, sessionsChannel)
+		go s.dbService.GetChatSessions(userId, sessionsChannel)
 		sessions = <-sessionsChannel
 	} else {
 		sessions = s.helperService.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{

@@ -19,11 +19,10 @@ func main() {
 	} else {
 		fmt.Println("Success loaded .env file")
 	}
-	services.InitDB()
+	dbService := services.NewDBService()
 	fmt.Printf("Starting the session title vector job %v\n...", time.Now())
 	getAllChatSessionsChannel := make(chan []models.ChatSession)
-	defer close(getAllChatSessionsChannel)
-	go services.GetAllChatSessionsForJob(getAllChatSessionsChannel)
+	go dbService.GetAllChatSessionsForJob(getAllChatSessionsChannel)
 	allSessions := <-getAllChatSessionsChannel
 	fmt.Printf("Total sessions: %d\n", len(allSessions))
 
@@ -45,13 +44,13 @@ func main() {
 			endIdx = len(allSessions)
 		}
 		sessionsToUpdateTitleVector := allSessions[startIdx:endIdx]
-		go workerCallVoyageAPIAndUpdateDb(sessionsToUpdateTitleVector, &waitGroup)
+		go workerCallVoyageAPIAndUpdateDb(sessionsToUpdateTitleVector, &waitGroup, dbService)
 	}
 	waitGroup.Wait()
 	fmt.Printf("Completed the session title vector job %v\n...", time.Now())
 }
 
-func workerCallVoyageAPIAndUpdateDb(dbData []models.ChatSession, wg *sync.WaitGroup) {
+func workerCallVoyageAPIAndUpdateDb(dbData []models.ChatSession, wg *sync.WaitGroup, dbService *services.DBService) {
 	defer wg.Done()
 	voyageRequestChannel := make(chan models.VoyageEmbeddingResponse)
 	defer close(voyageRequestChannel)
@@ -73,14 +72,13 @@ func workerCallVoyageAPIAndUpdateDb(dbData []models.ChatSession, wg *sync.WaitGr
 			sessionIdToUpdate := dbData[embeddingItem.Index].Id
 			// fmt.Printf("Received embedding for session id %v\n", sessionIdToUpdate)
 			dbUpdateChannels[embeddingItem.Index] = make(chan int)
-			go services.UpdateChatSessionTitleVector(sessionIdToUpdate, embeddingItem.Embedding, dbUpdateChannels[embeddingItem.Index])
+			go dbService.UpdateChatSessionTitleVector(sessionIdToUpdate, embeddingItem.Embedding, dbUpdateChannels[embeddingItem.Index])
 		}
 		for _, dbUpdateChannel := range dbUpdateChannels {
 			result := <-dbUpdateChannel
 			if result == 1 {
 				fmt.Printf("Successfully updated session title vector for session id %v\n", dbData[result].Id)
 			}
-			close(dbUpdateChannel)
 		}
 	}
 

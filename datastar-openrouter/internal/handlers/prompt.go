@@ -24,15 +24,17 @@ type PromptHandler struct {
 	imgRegex      *regexp.Regexp
 	pdfRegex      *regexp.Regexp
 	helperService *services.HelperService
+	dbService     *services.DBService
 }
 
-func NewPromptHandler(uisidMap *sync.Map, helperService *services.HelperService) *PromptHandler {
+func NewPromptHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService) *PromptHandler {
 	return &PromptHandler{
 		uisidMap:      uisidMap,
 		userIdKey:     os.Getenv("USER_ID_KEY"),
 		imgRegex:      regexp.MustCompile(os.Getenv("IMG_REGEX")),
 		pdfRegex:      regexp.MustCompile(os.Getenv("PDF_REGEX")),
 		helperService: helperService,
+		dbService:     dbService,
 	}
 }
 
@@ -58,16 +60,14 @@ func (p *PromptHandler) HandlePrompt(responseWriter http.ResponseWriter, request
 	clientSignal.SearchMenu = strings.TrimSpace(clientSignal.SearchMenu)
 
 	userExistsChannel := make(chan bool)
-	defer close(userExistsChannel)
-	go services.CheckUserExistsInTable(userId, userExistsChannel)
+	go p.dbService.CheckUserExistsInTable(userId, userExistsChannel)
 	if !<-userExistsChannel {
 		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	sessionsChannel := make(chan []models.ChatSession)
-	defer close(sessionsChannel)
-	go services.GetChatSessions(userId, sessionsChannel)
+	go p.dbService.GetChatSessions(userId, sessionsChannel)
 	sessions := <-sessionsChannel
 
 	var selectedSession models.ChatSession
@@ -111,9 +111,8 @@ func (p *PromptHandler) HandlePrompt(responseWriter http.ResponseWriter, request
 	if clientSignal.Prompt != "" {
 		if clientSignal.SessionId == 0 {
 			insertChatSessionChannel := make(chan int)
-			defer close(insertChatSessionChannel)
 			newSession := models.ChatSession{Title: clientSignal.Prompt}
-			go services.InsertChatSession(userId, newSession, insertChatSessionChannel)
+			go p.dbService.InsertChatSession(userId, newSession, insertChatSessionChannel)
 			newSession.Id = <-insertChatSessionChannel
 			clientSignal.SessionId = newSession.Id
 			if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
@@ -139,9 +138,8 @@ func (p *PromptHandler) HandlePrompt(responseWriter http.ResponseWriter, request
 		}
 
 		insertUserConversationChannel := make(chan int)
-		defer close(insertUserConversationChannel)
 		userMessageChat := models.ChatConversation{Role: "user", Content: clientSignal.Prompt, SessionId: clientSignal.SessionId, FileName: fileName, FileData: fileData}
-		go services.InsertChatConversation(userMessageChat, insertUserConversationChannel)
+		go p.dbService.InsertChatConversation(userMessageChat, insertUserConversationChannel)
 		userMessageChat.Id = <-insertUserConversationChannel
 
 		if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
@@ -220,8 +218,7 @@ func (p *PromptHandler) HandleRetry(responseWriter http.ResponseWriter, request 
 	clientSignal.SearchMenu = strings.TrimSpace(clientSignal.SearchMenu)
 
 	sessionsChannel := make(chan []models.ChatSession)
-	defer close(sessionsChannel)
-	go services.GetChatSessions(userId, sessionsChannel)
+	go p.dbService.GetChatSessions(userId, sessionsChannel)
 	sessions := <-sessionsChannel
 	var selectedSession models.ChatSession
 	for _, session := range sessions {
@@ -239,8 +236,7 @@ func (p *PromptHandler) HandleRetry(responseWriter http.ResponseWriter, request 
 		return
 	}
 	deleteChannel := make(chan []int)
-	defer close(deleteChannel)
-	go services.DeleteMessageChatConversationForRetry(models.DeleteChatConversationsAfterAId{
+	go p.dbService.DeleteMessageChatConversationForRetry(models.DeleteChatConversationsAfterAId{
 		UserId:                         userId,
 		SessionId:                      clientSignal.SessionId,
 		ConversationIdAfterWhichDelete: clientSignal.MessageIdToRetry,
@@ -265,12 +261,11 @@ func (p *PromptHandler) HandleRetry(responseWriter http.ResponseWriter, request 
 
 func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clientSignal models.ClientSignals, userId string, selectedSession models.ChatSession) {
 	insertModelConversationChannel := make(chan int)
-	defer close(insertModelConversationChannel)
 	modelMessageChat := models.ChatConversation{Role: "assistant", Content: "", SessionId: clientSignal.SessionId, FileData: ""}
 	if clientSignal.ImageGeneration {
 		modelMessageChat.FileName = "generating_image.png"
 	}
-	go services.InsertChatConversation(modelMessageChat, insertModelConversationChannel)
+	go p.dbService.InsertChatConversation(modelMessageChat, insertModelConversationChannel)
 	modelMessageChat.Id = <-insertModelConversationChannel
 	modelMessageChatBuffer := new(bytes.Buffer)
 	components.ChatMessage(modelMessageChat, true).Render(context.Background(), modelMessageChatBuffer)
@@ -301,7 +296,6 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 	go services.CallOpenRouter(openRouterRequest, openRouterChannel)
 
 	updateTitleChannel := make(chan int)
-	defer close(updateTitleChannel)
 	embeddingChannel := make(chan models.VoyageEmbeddingResponse)
 	defer close(embeddingChannel)
 	updateTitleCalled := false
@@ -315,7 +309,7 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 		if len(titleToVectorize) > 500 {
 			titleToVectorize = titleToUpdate[:500]
 		}
-		go services.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, updateTitleChannel)
+		go p.dbService.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, updateTitleChannel)
 		updateTitleCalled = true
 
 		embeddingRequest := models.VoyageEmbeddingRequest{
@@ -325,19 +319,17 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 	}
 
 	updateWebSearchChannel := make(chan int)
-	defer close(updateWebSearchChannel)
 	updateWebSearchCalled := false
 
 	updateImageGenerationChannel := make(chan int)
-	defer close(updateImageGenerationChannel)
 	updateImageGeneratioCalled := false
 
 	if selectedSession.AllowWebSearch != clientSignal.WebSearch {
-		go services.UpdateChatSessionAllowWebSearch(userId, clientSignal.SessionId, clientSignal.WebSearch, updateWebSearchChannel)
+		go p.dbService.UpdateChatSessionAllowWebSearch(userId, clientSignal.SessionId, clientSignal.WebSearch, updateWebSearchChannel)
 		updateWebSearchCalled = true
 	}
 	if selectedSession.ImageGeneration != clientSignal.ImageGeneration {
-		go services.UpdateChatSessionImageGeneration(userId, clientSignal.SessionId, clientSignal.ImageGeneration, updateImageGenerationChannel)
+		go p.dbService.UpdateChatSessionImageGeneration(userId, clientSignal.SessionId, clientSignal.ImageGeneration, updateImageGenerationChannel)
 		updateImageGeneratioCalled = true
 	}
 	userSession, userSessionExists := p.uisidMap.Load(userSessionKey)
@@ -406,8 +398,7 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 		embeddingResponse := <-embeddingChannel
 		if len(embeddingResponse.Data) > 0 {
 			updateTitleVectorChannel := make(chan int)
-			defer close(updateTitleVectorChannel)
-			go services.UpdateChatSessionTitleVector(clientSignal.SessionId, embeddingResponse.Data[0].Embedding, updateTitleVectorChannel)
+			go p.dbService.UpdateChatSessionTitleVector(clientSignal.SessionId, embeddingResponse.Data[0].Embedding, updateTitleVectorChannel)
 			<-updateTitleVectorChannel
 		}
 	}
@@ -421,8 +412,7 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 	if (modelMessageChat.Content == "" || strings.TrimSpace(modelMessageChat.Content) == "Error") &&
 		modelMessageChat.FileData == "" {
 		deleteModelConversationChannel := make(chan int)
-		defer close(deleteModelConversationChannel)
-		go services.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
+		go p.dbService.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
 		if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 			if <-deleteModelConversationChannel != 0 {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -438,8 +428,7 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 	}
 
 	updateModelConversationChannel := make(chan int)
-	defer close(updateModelConversationChannel)
-	go services.UpateMessageChatConversation(models.UpdateChatConversation{
+	go p.dbService.UpdateMessageChatConversation(models.UpdateChatConversation{
 		Id:       modelMessageChat.Id,
 		Content:  modelMessageChat.Content,
 		ModelId:  modelMessageChat.ModelId,

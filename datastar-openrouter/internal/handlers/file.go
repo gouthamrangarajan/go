@@ -21,12 +21,13 @@ import (
 type FileHandler struct {
 	uisidMap      *sync.Map
 	helperService *services.HelperService
+	dbService     *services.DBService
 	userIdKey     string
 	imgRegex      *regexp.Regexp
 	pdfRegex      *regexp.Regexp
 }
 
-func NewFileHandler(uisidMap *sync.Map, helperService *services.HelperService) *FileHandler {
+func NewFileHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService) *FileHandler {
 	imgRegex, err := regexp.Compile(os.Getenv("IMG_REGEX"))
 	if err != nil {
 		fmt.Printf("Error compiling IMG_REGEX: %v\n", err)
@@ -38,6 +39,7 @@ func NewFileHandler(uisidMap *sync.Map, helperService *services.HelperService) *
 	return &FileHandler{
 		uisidMap:      uisidMap,
 		helperService: helperService,
+		dbService:     dbService,
 		userIdKey:     os.Getenv("USER_ID_KEY"),
 		imgRegex:      imgRegex,
 		pdfRegex:      pdfRegex,
@@ -51,9 +53,7 @@ func (h *FileHandler) HandleGetImage(responseWriter http.ResponseWriter, request
 	userSessionKey := h.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
 	fileDataChannel := make(chan models.ChatConversation)
-	defer close(fileDataChannel)
-
-	go services.GetChatConversationFileData(models.GetConversationRequest{SessionId: clientSignal.SessionId,
+	go h.dbService.GetChatConversationFileData(models.GetConversationRequest{SessionId: clientSignal.SessionId,
 		ConversationId: clientSignal.MessageIdToFetchImage, UserId: userId}, fileDataChannel)
 
 	converstationWithFileData := <-fileDataChannel

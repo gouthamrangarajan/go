@@ -20,13 +20,15 @@ type MainHandler struct {
 	uisidMap      *sync.Map
 	userIdKey     string
 	helperService *services.HelperService
+	dbService     *services.DBService
 }
 
-func NewMainHandler(uisidMap *sync.Map, helperService *services.HelperService) *MainHandler {
+func NewMainHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService) *MainHandler {
 	return &MainHandler{
 		uisidMap:      uisidMap,
 		userIdKey:     os.Getenv("USER_ID_KEY"),
 		helperService: helperService,
+		dbService:     dbService,
 	}
 }
 
@@ -45,8 +47,7 @@ func (h *MainHandler) HandleMainPage(responseWriter http.ResponseWriter, request
 		sessionId = 0
 	}
 	sessionsChannel := make(chan []models.ChatSession)
-	defer close(sessionsChannel)
-	go services.GetChatSessions(userId, sessionsChannel)
+	go h.dbService.GetChatSessions(userId, sessionsChannel)
 	sessions := <-sessionsChannel
 	var selectedSession models.ChatSession
 	for _, session := range sessions {
@@ -61,8 +62,7 @@ func (h *MainHandler) HandleMainPage(responseWriter http.ResponseWriter, request
 	}
 
 	chatConversationChannel := make(chan []models.ChatConversation)
-	defer close(chatConversationChannel)
-	go services.GetChatConversationsWithoutMessageAndFileData(userId, sessionId, chatConversationChannel)
+	go h.dbService.GetChatConversationsWithoutMessageAndFileData(userId, sessionId, chatConversationChannel)
 
 	chatConversations := <-chatConversationChannel
 
@@ -77,8 +77,7 @@ func (h *MainHandler) HandleMainPage(responseWriter http.ResponseWriter, request
 	}
 
 	aiModelsChannel := make(chan []models.AIModel)
-	defer close(aiModelsChannel)
-	go services.GetAiModels(aiModelsChannel)
+	go h.dbService.GetAiModels(aiModelsChannel)
 
 	if searchMenuTxt != "" {
 		sessions = h.helperService.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
