@@ -9,11 +9,32 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"os"
+	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/starfederation/datastar-go/datastar"
 )
+
+type PromptHandler struct {
+	uisidMap      *sync.Map
+	userIdKey     string
+	imgRegex      *regexp.Regexp
+	pdfRegex      *regexp.Regexp
+	helperService *services.HelperService
+}
+
+func NewPromptHandler(uisidMap *sync.Map, helperService *services.HelperService) *PromptHandler {
+	return &PromptHandler{
+		uisidMap:      uisidMap,
+		userIdKey:     os.Getenv("USER_ID_KEY"),
+		imgRegex:      regexp.MustCompile(os.Getenv("IMG_REGEX")),
+		pdfRegex:      regexp.MustCompile(os.Getenv("PDF_REGEX")),
+		helperService: helperService,
+	}
+}
 
 // ALGO
 // Handle unauthorized user - user does not exist in table or session id coming from client is not valid
@@ -29,8 +50,8 @@ import (
 // wait for allow web search update if called
 // If message is empty/error, return error message to UI and delete the model message chat conversation, return
 // Update model message chat conversation with full content after streaming is done if message is not empty
-func PromptHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+func (p *PromptHandler) HandlePrompt(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(p.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	clientSignal.Prompt = strings.TrimSpace(clientSignal.Prompt)
@@ -71,8 +92,8 @@ func PromptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	if len(clientSignal.FileData) == 1 {
 		fileData = "data:" + clientSignal.FileData[0].Mime + ";base64," + clientSignal.FileData[0].Contents
 		fileName = clientSignal.FileData[0].Name
-		imgMatches := services.ImgRegex.FindStringSubmatch(fileData)
-		pdfMatches := services.PdfRegex.FindStringSubmatch(fileData)
+		imgMatches := p.imgRegex.FindStringSubmatch(fileData)
+		pdfMatches := p.pdfRegex.FindStringSubmatch(fileData)
 		if (clientSignal.FileData[0].Mime == "application/pdf" && len(pdfMatches) != 2) ||
 			(clientSignal.FileData[0].Mime != "application/pdf" && len(imgMatches) != 4) {
 			http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
@@ -85,7 +106,7 @@ func PromptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 	}
 
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSessionKey := p.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
 	if clientSignal.Prompt != "" {
 		if clientSignal.SessionId == 0 {
@@ -95,7 +116,7 @@ func PromptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			go services.InsertChatSession(userId, newSession, insertChatSessionChannel)
 			newSession.Id = <-insertChatSessionChannel
 			clientSignal.SessionId = newSession.Id
-			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+			if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 				if clientSignal.SessionId == 0 {
 					userSession.(chan models.LongSSEData) <- models.LongSSEData{
 						Content: `Failed to create new chat session. Please try again later.`,
@@ -123,7 +144,7 @@ func PromptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go services.InsertChatConversation(userMessageChat, insertUserConversationChannel)
 		userMessageChat.Id = <-insertUserConversationChannel
 
-		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+		if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 			if userMessageChat.Id == 0 {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content: `Failed to save chat conversation. Please try again later.`,
@@ -155,8 +176,8 @@ func PromptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 		}
 		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)
-		go services.ConvertConversationMarkdownsToHtml([]models.ChatConversation{userMessageChat}, markdownToHtmlChannel)
-		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+		go p.helperService.ConvertConversationMarkdownsToHtml([]models.ChatConversation{userMessageChat}, markdownToHtmlChannel)
+		if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 			if userMessageChat.FileData != "" {
 				chatMessageUserFileDataBuffer := new(bytes.Buffer)
 				components.ChatMessageFileData(userMessageChat, true).Render(context.Background(), chatMessageUserFileDataBuffer)
@@ -175,7 +196,7 @@ func PromptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 				IsScript: true,
 			}
 		}
-		createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clientSignal, userId, selectedSession)
+		p.createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clientSignal, userId, selectedSession)
 	}
 }
 
@@ -192,8 +213,8 @@ func PromptHandler(responseWriter http.ResponseWriter, request *http.Request) {
 // wait for allow web search update if called
 // If message is empty/error, return error message to UI and delete the model message chat conversation, return
 // Update model message chat conversation with full content after streaming is done if message is not empty
-func RetryHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+func (p *PromptHandler) HandleRetry(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(p.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	clientSignal.SearchMenu = strings.TrimSpace(clientSignal.SearchMenu)
@@ -229,8 +250,8 @@ func RetryHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	// 	services.SendErrorMessageToUI(sse, "Failed to retry chat. Please try again later.")
 	// 	return
 	// }
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+	userSessionKey := p.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 		for _, id := range deletedIds {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				IsRemove:          true,
@@ -239,10 +260,10 @@ func RetryHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 		}
 	}
-	createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clientSignal, userId, selectedSession)
+	p.createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clientSignal, userId, selectedSession)
 }
 
-func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clientSignal models.ClientSignals, userId string, selectedSession models.ChatSession) {
+func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clientSignal models.ClientSignals, userId string, selectedSession models.ChatSession) {
 	insertModelConversationChannel := make(chan int)
 	defer close(insertModelConversationChannel)
 	modelMessageChat := models.ChatConversation{Role: "assistant", Content: "", SessionId: clientSignal.SessionId, FileData: ""}
@@ -254,8 +275,8 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 	modelMessageChatBuffer := new(bytes.Buffer)
 	components.ChatMessage(modelMessageChat, true).Render(context.Background(), modelMessageChatBuffer)
 
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+	userSessionKey := p.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           modelMessageChatBuffer.String(),
 			UseViewTransition: true,
@@ -275,7 +296,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		}
 	}
 	openRouterChannel := make(chan models.OpenRouterModelIdAndDeltaString)
-	openRouterRequest, _ := services.GenerateOpenRouterRequest(userId, clientSignal)
+	openRouterRequest, _ := p.helperService.GenerateOpenRouterRequest(userId, clientSignal)
 
 	go services.CallOpenRouter(openRouterRequest, openRouterChannel)
 
@@ -319,7 +340,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		go services.UpdateChatSessionImageGeneration(userId, clientSignal.SessionId, clientSignal.ImageGeneration, updateImageGenerationChannel)
 		updateImageGeneratioCalled = true
 	}
-	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+	userSession, userSessionExists := p.uisidMap.Load(userSessionKey)
 	for msg := range openRouterChannel {
 		if msg.DeltaContent == "Error" {
 			fmt.Printf("Error in getting response from OpenRouter\n")
@@ -334,7 +355,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		}
 		// sse.PatchElementTempl(components.ChatMessage(modelMessageChat, true))
 		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)
-		go services.ConvertConversationMarkdownsToHtml([]models.ChatConversation{modelMessageChat}, markdownToHtmlChannel)
+		go p.helperService.ConvertConversationMarkdownsToHtml([]models.ChatConversation{modelMessageChat}, markdownToHtmlChannel)
 		if modelMessageChat.FileData != "" {
 			modelMessageChat.FileName = "generated_image.png"
 			modelMessageChatFileDataBuffer := new(bytes.Buffer)
@@ -355,7 +376,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 			IsScript: true,
 		}
 	}
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+	if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			IsRemove: true,
 			Selector: "#thinkingMesssage",
@@ -374,7 +395,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 
 	if updateTitleCalled {
 		if <-updateTitleChannel != 0 {
-			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+			if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 				menuItemBuffer := new(bytes.Buffer)
 				components.MenuItem(models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, clientSignal.SearchMenu).Render(context.Background(), menuItemBuffer)
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -402,7 +423,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		deleteModelConversationChannel := make(chan int)
 		defer close(deleteModelConversationChannel)
 		go services.DeleteMessageChatConversation(modelMessageChat.Id, deleteModelConversationChannel)
-		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+		if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists {
 			if <-deleteModelConversationChannel != 0 {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					IsRemove: true,
@@ -426,7 +447,7 @@ func createModelMessageChatCallOpenRouterUpdateSessionMetadataSendDataToUI(clien
 		FileName: modelMessageChat.FileName,
 	}, updateModelConversationChannel)
 	rowsAffected := <-updateModelConversationChannel
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists && rowsAffected == 0 {
+	if userSession, userSessionExists := p.uisidMap.Load(userSessionKey); userSessionExists && rowsAffected == 0 {
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content: "Failed to update chat conversation. Please try again later.",
 			IsError: true,

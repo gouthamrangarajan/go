@@ -7,6 +7,7 @@ import (
 	"datastar-openrouter/internal/views/components"
 	"datastar-openrouter/services"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -15,15 +16,27 @@ import (
 	"github.com/starfederation/datastar-go/datastar"
 )
 
-var uiSidMap sync.Map
+type MainHandler struct {
+	uisidMap      *sync.Map
+	userIdKey     string
+	helperService *services.HelperService
+}
 
-func MainPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func NewMainHandler(uisidMap *sync.Map, helperService *services.HelperService) *MainHandler {
+	return &MainHandler{
+		uisidMap:      uisidMap,
+		userIdKey:     os.Getenv("USER_ID_KEY"),
+		helperService: helperService,
+	}
+}
+
+func (h *MainHandler) HandleMainPage(responseWriter http.ResponseWriter, request *http.Request) {
 	// style := styles.Get("github") // Use the same style as in goldmark
 	// formatter := html.New(html.WithClasses(true))
 	// buf := bytes.Buffer{}
 	// formatter.WriteCSS(&buf, style)
 	// fmt.Println(buf.String())
-	userId := request.Context().Value(services.UserIDKey).(string)
+	userId := request.Context().Value(h.userIdKey).(string)
 	sessionId := 0
 	sessionIdStr := chi.URLParam(request, "sessionId")
 	searchMenuTxt := strings.TrimSpace(request.URL.Query().Get("search_menu"))
@@ -54,7 +67,7 @@ func MainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	chatConversations := <-chatConversationChannel
 
 	if request.Header.Get("Datastar-Request") == "true" {
-		sessionChangeHandler(request, models.SessionChangeData{
+		h.handleSessionChange(request, models.SessionChangeData{
 			UserId:            userId,
 			Session:           selectedSession,
 			ChatConversations: chatConversations,
@@ -68,7 +81,7 @@ func MainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	go services.GetAiModels(aiModelsChannel)
 
 	if searchMenuTxt != "" {
-		sessions = services.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
+		sessions = h.helperService.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
 			UserId:     userId,
 			SearchTerm: searchMenuTxt,
 		})
@@ -87,12 +100,12 @@ func MainPageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 		}).Render(request.Context(), responseWriter)
 }
 
-func sessionChangeHandler(request *http.Request, data models.SessionChangeData) {
+func (h *MainHandler) handleSessionChange(request *http.Request, data models.SessionChangeData) {
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	clientSignal.SessionId = data.Session.Id
-	userSessionKey := services.GenerateUserSessionKey(data.UserId, clientSignal.UiSid)
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+	userSessionKey := h.helperService.GenerateUserSessionKey(data.UserId, clientSignal.UiSid)
+	if userSession, userSessionExists := h.uisidMap.Load(userSessionKey); userSessionExists {
 		dataBuffer := new(bytes.Buffer)
 		components.Section(data.ChatConversations).Render(context.Background(), dataBuffer)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -125,5 +138,5 @@ func sessionChangeHandler(request *http.Request, data models.SessionChangeData) 
 		// }
 
 	}
-	go sendConversationsMarkdown(clientSignal, data.UserId)
+	go h.helperService.ConvertConversationMarkdownToHtmlAndSendToUserSessionChannel(h.uisidMap, clientSignal, data.UserId)
 }

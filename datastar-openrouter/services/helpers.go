@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/starfederation/datastar-go/datastar"
@@ -17,14 +18,27 @@ import (
 	"go.abhg.dev/goldmark/mermaid"
 )
 
+type HelperService struct {
+	imgRegex     *regexp.Regexp
+	pdfRegex     *regexp.Regexp
+	copySvg      string
+	systemPrompt string
+}
 type contextKey string
 
-const UserIDKey contextKey = "userId"
-
-var ImgRegex = regexp.MustCompile(`^data:(image/(png|jpeg|jpg|webp|gif));base64,([A-Za-z0-9+/=]+)$`)
-var PdfRegex = regexp.MustCompile(`^data:application/pdf;base64,([A-Za-z0-9+/=]+)$`)
-
-const copySvg = `<svg
+func NewHelperService() *HelperService {
+	imgRegex, err := regexp.Compile(os.Getenv("IMG_REGEX"))
+	if err != nil {
+		fmt.Printf("Error compiling IMG_REGEX: %v\n", err)
+	}
+	pdfRegex, err := regexp.Compile(os.Getenv("PDF_REGEX"))
+	if err != nil {
+		fmt.Printf("Error compiling PDF_REGEX: %v\n", err)
+	}
+	return &HelperService{
+		imgRegex: imgRegex,
+		pdfRegex: pdfRegex,
+		copySvg: `<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
 					fill="currentColor"
@@ -32,36 +46,38 @@ const copySvg = `<svg
 				>
 					<path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z"></path>
 					<path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z"></path>
-				</svg>`
-const systemPrompt = `You are Nexus AI, a highly advanced unified AI interface. 
+				</svg>`,
+		systemPrompt: `You are Nexus AI, a highly advanced unified AI interface.
 						Your goal is to provide accurate, context-aware, and helpful responses by utilizing your multi-modal capabilities (analyzing images, PDFs, and text) and your advanced reasoning.
 
 						### GUIDELINES:
-						1. IDENTITY: You are Nexus AI. Do not identify as a specific model (e.g., GPT-4, Claude, or Gemini) unless explicitly asked about your underlying architecture. 
+						1. IDENTITY: You are Nexus AI. Do not identify as a specific model (e.g., GPT-4, Claude, or Gemini) unless explicitly asked about your underlying architecture.
 						2. TONE: Professional, concise, and helpful. Avoid "fluff" or overly robotic standard openings (e.g., skip "As an AI language model...").
 						3. CAPABILITIES:
 						- You can analyze uploaded documents (PDFs) and images provided by the user.
-						- You can generate code across various languages (GO, Python, JS, etc.).						
+						- You can generate code across various languages (GO, Python, JS, etc.).
 						4. FORMATTING:
-						- Use Markdown for all formatting. 
+						- Use Markdown for all formatting.
 						- Use triple backticks for code blocks and always specify the language.
 						- Use LaTeX for mathematical formulas.
 						- If a response is long, use headers and bullet points for readability.
 						5. CONTEXT: Always consider the previous chat history.
 
-						Current Date: %v`
+						Current Date: %v`,
+	}
+}
 
-func GenerateUserSessionKey(userId string, sessionId string) string {
+func (h *HelperService) GenerateUserSessionKey(userId string, sessionId string) string {
 	return fmt.Sprintf("%s-%s", userId, sessionId)
 }
-func GetChatSessionsViaChannel(userId string) []models.ChatSession {
+func (h *HelperService) GetChatSessionsViaChannel(userId string) []models.ChatSession {
 	sessionChannel := make(chan []models.ChatSession)
 	defer close(sessionChannel)
 	go GetChatSessions(userId, sessionChannel)
 	sessions := <-sessionChannel
 	return sessions
 }
-func InsertChatSessionViaChannel(userId string, data models.ChatSession) int {
+func (h *HelperService) InsertChatSessionViaChannel(userId string, data models.ChatSession) int {
 	var sessionId int = 0
 	insertSessionChannel := make(chan int)
 	defer close(insertSessionChannel)
@@ -70,7 +86,7 @@ func InsertChatSessionViaChannel(userId string, data models.ChatSession) int {
 	return sessionId
 }
 
-func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals) (models.OpenRouterRequest, string) {
+func (h *HelperService) GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals) (models.OpenRouterRequest, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	defer close(conversationsChannel)
@@ -102,7 +118,7 @@ func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals)
 	openRouterRequest.Messages = make([]models.OpenRouterRequestMessage, 0, len(conversations)+2)
 	openRouterRequest.Messages = append(openRouterRequest.Messages, models.OpenRouterRequestMessage{
 		Role:    "system",
-		Content: fmt.Sprintf(systemPrompt, time.Now().Format("January 2, 2006")),
+		Content: fmt.Sprintf(h.systemPrompt, time.Now().Format("January 2, 2006")),
 	})
 	for _, conversation := range conversations {
 		if strings.TrimSpace(conversation.FileData) != "" {
@@ -115,14 +131,14 @@ func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals)
 					Text: conversation.Content,
 				})
 			var contentWithFileData models.OpenRouterRequestMessageContentWithFileData
-			if ImgRegex.MatchString(conversation.FileData) {
+			if h.imgRegex.MatchString(conversation.FileData) {
 				contentWithFileData = models.OpenRouterRequestMessageContentWithFileData{
 					Type: "image_url",
 					ImageUrl: struct {
 						Url string `json:"url,omitempty"`
 					}{Url: conversation.FileData},
 				}
-			} else if PdfRegex.MatchString(conversation.FileData) {
+			} else if h.pdfRegex.MatchString(conversation.FileData) {
 				contentWithFileData = models.OpenRouterRequestMessageContentWithFileData{
 					Type: "file",
 					File: struct {
@@ -148,12 +164,62 @@ func GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals)
 	// fmt.Printf("Generated OpenRouter Request: %+v\n", openRouterRequest)
 	return openRouterRequest, errToRet
 }
-func SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string) {
+func (h *HelperService) SendErrorMessageToUI(sse *datastar.ServerSentEventGenerator, message string) {
 	sse.PatchSignals([]byte(`{showErrorMessage:true,errorMessage:'` + message + `'}`))
 	time.Sleep(3000 * time.Millisecond)
 	sse.PatchSignals([]byte("{showErrorMessage:false}"))
 }
-func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation, channel chan<- models.ChatConversationMarkdownToHtml) {
+
+func (h *HelperService) SearchSessionsViaChannel(data models.SearchSessionViaChannelRequest) []models.ChatSession {
+	retVal := []models.ChatSession{}
+	searchSessionsChannel := make(chan []models.ChatSession)
+	defer close(searchSessionsChannel)
+	embeddingsChannel := make(chan models.VoyageEmbeddingResponse)
+	defer close(embeddingsChannel)
+
+	embeddingRequest := models.VoyageEmbeddingRequest{
+		Input: []string{data.SearchTerm},
+	}
+	go CallVoyageEmbedding(embeddingRequest, embeddingsChannel)
+	embeddingResponse := <-embeddingsChannel
+	if len(embeddingResponse.Data) > 0 {
+		go SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
+		retVal = <-searchSessionsChannel
+	}
+	return retVal
+}
+func (h *HelperService) ConvertConversationMarkdownToHtmlAndSendToUserSessionChannel(uiSidMap *sync.Map, clientSignal models.ClientSignals, userId string) {
+	userSessionKey := h.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	conversationsChannel := make(chan []models.ChatConversation)
+
+	go GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
+	conversations := <-conversationsChannel
+	defer close(conversationsChannel)
+
+	if len(conversations) != 0 {
+		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)
+		go h.ConvertConversationMarkdownsToHtml(conversations, markdownToHtmlChannel)
+
+		for element := range markdownToHtmlChannel {
+			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content: element.Html,
+				}
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content:  `window.mermaid.run()`,
+					IsScript: true,
+				}
+			}
+		}
+	}
+	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:  `{pageLoading:false}`,
+			IsSignal: true,
+		}
+	}
+}
+func (h *HelperService) ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation, channel chan<- models.ChatConversationMarkdownToHtml) {
 	defer close(channel)
 	for _, conversation := range conversations {
 		// 	if conversation.Role == "assistant" {
@@ -216,28 +282,9 @@ func ConvertConversationMarkdownsToHtml(conversations []models.ChatConversation,
 		mkdwn = preEndRegex.ReplaceAllString(mkdwn, `<button class="appearance-none outline-none absolute top-1.5 right-1.5 text-white p-1 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer hover:ring-1 hover:ring-white focus:ring-1 focus:ring-white"
 														alt="Copy to Clipboard"
 														data-on:click__viewtransition="window.navigator.clipboard.writeText((evt.srcElement.previousElementSibling || evt.srcElement.parentElement).innerText.replaceAll('\n\n','\n')).then(()=>{evt.srcElement.innerHTML=document.getElementById('copiedSvg').innerHTML; setTimeout(()=>{evt.srcElement.innerHTML=document.getElementById('copySvg').innerHTML},2000)})">
-													`+copySvg+`
+													`+h.copySvg+`
 													</button>
 													</pre></div>`)
 		channel <- models.ChatConversationMarkdownToHtml{Html: "<div id='markdownToHtml_" + strconv.Itoa(conversation.Id) + "' class='prose dark:prose-invert'>" + mkdwn + "</div>", ConversationId: conversation.Id}
 	}
-}
-
-func SearchSessionsViaChannel(data models.SearchSessionViaChannelRequest) []models.ChatSession {
-	retVal := []models.ChatSession{}
-	searchSessionsChannel := make(chan []models.ChatSession)
-	defer close(searchSessionsChannel)
-	embeddingsChannel := make(chan models.VoyageEmbeddingResponse)
-	defer close(embeddingsChannel)
-
-	embeddingRequest := models.VoyageEmbeddingRequest{
-		Input: []string{data.SearchTerm},
-	}
-	go CallVoyageEmbedding(embeddingRequest, embeddingsChannel)
-	embeddingResponse := <-embeddingsChannel
-	if len(embeddingResponse.Data) > 0 {
-		go SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)
-		retVal = <-searchSessionsChannel
-	}
-	return retVal
 }

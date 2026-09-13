@@ -7,14 +7,31 @@ import (
 	"datastar-openrouter/internal/views/components"
 	"datastar-openrouter/services"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
+
+	"sync"
 
 	"github.com/starfederation/datastar-go/datastar"
 )
 
-func NewChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+type SessionActionHandler struct {
+	uisidMap      *sync.Map
+	userIdKey     string
+	helperService *services.HelperService
+}
+
+func NewSessionActionHandler(uisidMap *sync.Map, helperService *services.HelperService) *SessionActionHandler {
+	return &SessionActionHandler{
+		uisidMap:      uisidMap,
+		userIdKey:     os.Getenv("USER_ID_KEY"),
+		helperService: helperService,
+	}
+}
+
+func (s *SessionActionHandler) HandleNewChat(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(s.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 
@@ -24,8 +41,8 @@ func NewChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	go services.InsertChatSession(userId, newSession, insertChatSessionChannel)
 	newSession.Id = <-insertChatSessionChannel
 
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+	userSessionKey := s.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	if userSession, userSessionExists := s.uisidMap.Load(userSessionKey); userSessionExists {
 		if newSession.Id == 0 {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: `Failed to create new chat session. Please try again later.`,
@@ -91,8 +108,8 @@ func NewChatHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 }
 
-func DeleteSessionHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+func (s *SessionActionHandler) HandleDeleteSession(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(s.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 
@@ -119,8 +136,8 @@ func DeleteSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	defer close(deleteSessionChannel)
 	go services.DeleteChatSession(userId, clientSignal.SessionIdToDelete, deleteSessionChannel)
 
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	userSession, userSessionExists := uiSidMap.Load(userSessionKey)
+	userSessionKey := s.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSession, userSessionExists := s.uisidMap.Load(userSessionKey)
 
 	if <-deleteSessionChannel == 0 {
 		if userSessionExists {
@@ -161,8 +178,8 @@ func DeleteSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 	}
 }
 
-func SearchSessionHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+func (s *SessionActionHandler) HandleSearchSessions(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(s.userIdKey).(string)
 	userExistsChannel := make(chan bool)
 	defer close(userExistsChannel)
 	go services.CheckUserExistsInTable(userId, userExistsChannel)
@@ -181,13 +198,13 @@ func SearchSessionHandler(responseWriter http.ResponseWriter, request *http.Requ
 		go services.GetChatSessions(userId, sessionsChannel)
 		sessions = <-sessionsChannel
 	} else {
-		sessions = services.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
+		sessions = s.helperService.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
 			UserId:     userId,
 			SearchTerm: clientSignal.SearchMenu})
 	}
 
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+	userSessionKey := s.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	if userSession, userSessionExists := s.uisidMap.Load(userSessionKey); userSessionExists {
 		componentBuffer := new(bytes.Buffer)
 		components.MenuUl(sessions, clientSignal.SearchMenu).Render(context.Background(), componentBuffer)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{

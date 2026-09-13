@@ -7,17 +7,48 @@ import (
 	"datastar-openrouter/internal/views/components"
 	"datastar-openrouter/services"
 	"encoding/base64"
+	"fmt"
 	"net/http"
+	"os"
+	"regexp"
 	"strconv"
+
+	"sync"
 
 	"github.com/starfederation/datastar-go/datastar"
 )
 
-func GetImageHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+type FileHandler struct {
+	uisidMap      *sync.Map
+	helperService *services.HelperService
+	userIdKey     string
+	imgRegex      *regexp.Regexp
+	pdfRegex      *regexp.Regexp
+}
+
+func NewFileHandler(uisidMap *sync.Map, helperService *services.HelperService) *FileHandler {
+	imgRegex, err := regexp.Compile(os.Getenv("IMG_REGEX"))
+	if err != nil {
+		fmt.Printf("Error compiling IMG_REGEX: %v\n", err)
+	}
+	pdfRegex, err := regexp.Compile(os.Getenv("PDF_REGEX"))
+	if err != nil {
+		fmt.Printf("Error compiling PDF_REGEX: %v\n", err)
+	}
+	return &FileHandler{
+		uisidMap:      uisidMap,
+		helperService: helperService,
+		userIdKey:     os.Getenv("USER_ID_KEY"),
+		imgRegex:      imgRegex,
+		pdfRegex:      pdfRegex,
+	}
+}
+
+func (h *FileHandler) HandleGetImage(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(h.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSessionKey := h.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
 	fileDataChannel := make(chan models.ChatConversation)
 	defer close(fileDataChannel)
@@ -29,7 +60,7 @@ func GetImageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	if converstationWithFileData.FileData != "" {
 		imageDataBuffer := new(bytes.Buffer)
 		components.ChatMessageImageDisplayOnHover(converstationWithFileData).Render(context.Background(), imageDataBuffer)
-		if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+		if userSession, userSessionExists := h.uisidMap.Load(userSessionKey); userSessionExists {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: imageDataBuffer.String(),
 			}
@@ -42,8 +73,8 @@ func GetImageHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	}
 }
 
-func FileUploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+func (h *FileHandler) HandleFileUpload(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(h.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	if len(clientSignal.FileData) != 1 {
@@ -52,11 +83,11 @@ func FileUploadHandler(responseWriter http.ResponseWriter, request *http.Request
 	}
 	fileDataForRegex := "data:" + clientSignal.FileData[0].Mime + ";base64," + clientSignal.FileData[0].Contents
 	fileName := clientSignal.FileData[0].Name
-	imgMatches := services.ImgRegex.FindStringSubmatch(fileDataForRegex)
-	pdfMatches := services.PdfRegex.FindStringSubmatch(fileDataForRegex)
+	imgMatches := h.imgRegex.FindStringSubmatch(fileDataForRegex)
+	pdfMatches := h.pdfRegex.FindStringSubmatch(fileDataForRegex)
 
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+	userSessionKey := h.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	if userSession, userSessionExists := h.uisidMap.Load(userSessionKey); userSessionExists {
 		if (clientSignal.FileData[0].Mime == "application/pdf" && len(pdfMatches) != 2) ||
 			(clientSignal.FileData[0].Mime != "application/pdf" && len(imgMatches) != 4) {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -96,14 +127,14 @@ func FileUploadHandler(responseWriter http.ResponseWriter, request *http.Request
 	}
 }
 
-func RemoveUploadedFileHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+func (h *FileHandler) HandleRemoveUploadedFile(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(h.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	bytesBuffer := new(bytes.Buffer)
 
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
+	userSessionKey := h.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	if userSession, userSessionExists := h.uisidMap.Load(userSessionKey); userSessionExists {
 		components.FileAttachmentDisplay("").Render(context.Background(), bytesBuffer)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           bytesBuffer.String(),

@@ -6,26 +6,42 @@ import (
 	"datastar-openrouter/services"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
+
+	"sync"
 
 	"github.com/starfederation/datastar-go/datastar"
 )
 
-func LongSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
-	userId := request.Context().Value(services.UserIDKey).(string)
+type SSEHandler struct {
+	uisidMap      *sync.Map
+	userIdKey     string
+	helperService *services.HelperService
+}
+
+func NewSSEHandler(uisidMap *sync.Map, helperService *services.HelperService) *SSEHandler {
+	return &SSEHandler{
+		uisidMap:      uisidMap,
+		userIdKey:     os.Getenv("USER_ID_KEY"),
+		helperService: helperService,
+	}
+}
+func (s *SSEHandler) HandleLongSSE(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(s.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	// fmt.Printf("uisid from client %v\n", clientSignal.UiSid)
 
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	userSessionKey := s.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
 
 	userSessionChannel := make(chan models.LongSSEData, 16)
-	uiSidMap.Store(userSessionKey, userSessionChannel)
-	defer uiSidMap.CompareAndDelete(userSessionKey, userSessionChannel)
+	s.uisidMap.Store(userSessionKey, userSessionChannel)
+	defer s.uisidMap.CompareAndDelete(userSessionKey, userSessionChannel)
 
 	if clientSignal.SessionId != 0 {
-		go sendConversationsMarkdown(clientSignal, userId)
+		go s.helperService.ConvertConversationMarkdownToHtmlAndSendToUserSessionChannel(s.uisidMap, clientSignal, userId)
 	}
 
 	responseWriter.Header().Set("Content-Type", "text/event-stream")
@@ -45,14 +61,14 @@ func LongSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		case <-request.Context().Done():
 			return
 		case data := <-userSessionChannel:
-			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
+			if channelInMap, ok := s.uisidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
 				return
 			}
 			switch {
 			case data.SendHeartBeat:
 				sse.Send(datastar.EventType("heartbeat"), []string{fmt.Sprintf(": heartbeat %d\n\n", time.Now().Unix())})
 			case data.IsError:
-				services.SendErrorMessageToUI(sse, data.Content)
+				s.helperService.SendErrorMessageToUI(sse, data.Content)
 			case data.IsScript:
 				sse.ExecuteScript(data.Content, datastar.WithExecuteScriptAutoRemove(true))
 			case data.IsSignal:
@@ -70,42 +86,10 @@ func LongSSEHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			}
 
 		case <-liveIndicatorTicker.C:
-			if channelInMap, ok := uiSidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
+			if channelInMap, ok := s.uisidMap.Load(userSessionKey); !ok || channelInMap != userSessionChannel {
 				return
 			}
 			sse.PatchElementTempl(components.LiveIndicator(), datastar.WithUseViewTransitions(false))
-		}
-	}
-}
-
-func sendConversationsMarkdown(clientSignal models.ClientSignals, userId string) {
-	userSessionKey := services.GenerateUserSessionKey(userId, clientSignal.UiSid)
-	conversationsChannel := make(chan []models.ChatConversation)
-
-	go services.GetChatConversationsWithoutFileData(userId, clientSignal.SessionId, conversationsChannel)
-	conversations := <-conversationsChannel
-	defer close(conversationsChannel)
-
-	if len(conversations) != 0 {
-		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)
-		go services.ConvertConversationMarkdownsToHtml(conversations, markdownToHtmlChannel)
-
-		for element := range markdownToHtmlChannel {
-			if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
-				userSession.(chan models.LongSSEData) <- models.LongSSEData{
-					Content: element.Html,
-				}
-				userSession.(chan models.LongSSEData) <- models.LongSSEData{
-					Content:  `window.mermaid.run()`,
-					IsScript: true,
-				}
-			}
-		}
-	}
-	if userSession, userSessionExists := uiSidMap.Load(userSessionKey); userSessionExists {
-		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			Content:  `{pageLoading:false}`,
-			IsSignal: true,
 		}
 	}
 }

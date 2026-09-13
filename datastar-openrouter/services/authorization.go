@@ -19,6 +19,7 @@ const SESSION_DURATION = 365 * 24 * time.Hour
 const COOKIE_NAME = "chat"
 
 func generateUserIdCookie(uuidString string) (http.Cookie, error) {
+
 	secure := true
 	if os.Getenv("ENV") == "Development" {
 		secure = false
@@ -115,7 +116,8 @@ func AuthorizationMiddleware(next http.Handler) http.Handler {
 				return
 			}
 		}
-		ctx := context.WithValue(request.Context(), UserIDKey, userId)
+		var userIdKey = os.Getenv("USER_ID_KEY")
+		ctx := context.WithValue(request.Context(), userIdKey, userId)
 		request = request.WithContext(ctx)
 		next.ServeHTTP(responseWriter, request)
 	})

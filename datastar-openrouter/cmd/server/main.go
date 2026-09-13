@@ -17,6 +17,6 @@ func main() {
 		fmt.Println("Loaded .env file successfully")
 	}
 	services.InitDB()
-	routerHandler := server.NewRouter().NewHttpHandler()
+	routerHandler := server.NewRouter().HttpHandler()
 	http.ListenAndServe(":3000", routerHandler)
 }

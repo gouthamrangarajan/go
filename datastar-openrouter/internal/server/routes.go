@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -38,7 +39,7 @@ func NewRouter() *Router {
 	}
 }
 
-func (r *Router) NewHttpHandler() http.Handler {
+func (r *Router) HttpHandler() http.Handler {
 	router := chi.NewRouter()
 	promptRouter := chi.NewRouter()
 
@@ -68,18 +69,25 @@ func (r *Router) NewHttpHandler() http.Handler {
 			http.Error(responseWriter, "Too many requests.", http.StatusTooManyRequests)
 		}),
 	)) // 10 request in 5 seconds
+	var uiSidMap sync.Map
+	helperService := services.NewHelperService()
+	mainHandler := handlers.NewMainHandler(&uiSidMap, helperService)
+	fileHandler := handlers.NewFileHandler(&uiSidMap, helperService)
+	sessionActionHandler := handlers.NewSessionActionHandler(&uiSidMap, helperService)
+	sseHandler := handlers.NewSSEHandler(&uiSidMap, helperService)
+	promptHandler := handlers.NewPromptHandler(&uiSidMap, helperService)
 
-	router.Get("/", handlers.MainPageHandler)
-	router.Get("/{sessionId}", handlers.MainPageHandler)
-	router.Post("/sse", handlers.LongSSEHandler)
-	router.Post("/new", handlers.NewChatHandler)
-	promptRouter.Post("/chat", handlers.PromptHandler)
-	router.Post("/session/delete", handlers.DeleteSessionHandler)
-	router.Post("/sessions/search", handlers.SearchSessionHandler)
-	router.Post("/fileupload", handlers.FileUploadHandler)
-	router.Post("/fileupload/remove", handlers.RemoveUploadedFileHandler)
-	router.Post("/retry", handlers.RetryHandler)
-	router.Post("/image", handlers.GetImageHandler)
+	router.Get("/", mainHandler.HandleMainPage)
+	router.Get("/{sessionId}", mainHandler.HandleMainPage)
+	router.Post("/sse", sseHandler.HandleLongSSE)
+	router.Post("/new", sessionActionHandler.HandleNewChat)
+	promptRouter.Post("/chat", promptHandler.HandlePrompt)
+	router.Post("/session/delete", sessionActionHandler.HandleDeleteSession)
+	router.Post("/sessions/search", sessionActionHandler.HandleSearchSessions)
+	router.Post("/fileupload", fileHandler.HandleFileUpload)
+	router.Post("/fileupload/remove", fileHandler.HandleRemoveUploadedFile)
+	router.Post("/retry", promptHandler.HandleRetry)
+	router.Post("/image", fileHandler.HandleGetImage)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
