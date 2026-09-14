@@ -13,13 +13,23 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
-// Define the duration 365 days
-const SESSION_DURATION = 365 * 24 * time.Hour
+type AuthorizationService struct {
+	sessionDuration time.Duration
+	cookieName      string
+	userIdKey       string
+	dbService       *DBService
+}
 
-const COOKIE_NAME = "chat"
+func NewAuthorizationService(dbService *DBService) *AuthorizationService {
+	return &AuthorizationService{
+		sessionDuration: 365 * 24 * time.Hour,
+		cookieName:      "chat",
+		userIdKey:       os.Getenv("USER_ID_KEY"),
+		dbService:       dbService,
+	}
+}
 
-func generateUserIdCookie(uuidString string) (http.Cookie, error) {
-
+func (a *AuthorizationService) generateUserIdCookie(uuidString string) (http.Cookie, error) {
 	secure := true
 	if os.Getenv("ENV") == "Development" {
 		secure = false
@@ -42,24 +52,24 @@ func generateUserIdCookie(uuidString string) (http.Cookie, error) {
 	}
 
 	newSecureCookie := securecookie.New(hashKey, blockKey)
-	cookieValue, err := newSecureCookie.Encode(COOKIE_NAME, value)
+	cookieValue, err := newSecureCookie.Encode(a.cookieName, value)
 	if err != nil {
 		fmt.Printf("Error encoding cookie: %v\n", err)
 		return http.Cookie{}, err
 	}
 
 	cookie := http.Cookie{
-		Name:     COOKIE_NAME,
+		Name:     a.cookieName,
 		Value:    cookieValue,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   secure,
-		MaxAge:   int(SESSION_DURATION.Seconds()),
+		MaxAge:   int(a.sessionDuration.Seconds()),
 		SameSite: http.SameSiteLaxMode,
 	}
 	return cookie, nil
 }
-func getUserIdInCookie(r *http.Request) string {
+func (a *AuthorizationService) getUserIdInCookie(r *http.Request) string {
 	retVal := ""
 	hashKey, err := base64.StdEncoding.DecodeString(os.Getenv("COOKIE_HASH_KEY"))
 	if err != nil {
@@ -74,51 +84,48 @@ func getUserIdInCookie(r *http.Request) string {
 
 	newSecureCookie := securecookie.New(hashKey, blockKey)
 
-	if cookie, err := r.Cookie(COOKIE_NAME); err == nil {
+	if cookie, err := r.Cookie(a.cookieName); err == nil {
 		value := make(map[string]interface{})
 		// This  checks for tampering and expiration automatically
-		if err = newSecureCookie.Decode(COOKIE_NAME, cookie.Value, &value); err == nil {
-			if time.Now().Unix()-value["created"].(int64) < int64(SESSION_DURATION.Seconds()) {
+		if err = newSecureCookie.Decode(a.cookieName, cookie.Value, &value); err == nil {
+			if time.Now().Unix()-value["created"].(int64) < int64(a.sessionDuration.Seconds()) {
 				retVal = value["user_id"].(string)
 			}
 		}
 	}
 	return retVal
 }
-func AuthorizationMiddleware(dbService *DBService) func(next http.Handler) http.Handler {
-	userIdKey := os.Getenv("USER_ID_KEY")
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
-			if strings.HasPrefix(request.URL.Path, "/assets") {
-				next.ServeHTTP(responseWriter, request)
+func (a *AuthorizationService) AuthorizationMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(responseWriter http.ResponseWriter, request *http.Request) {
+		if strings.HasPrefix(request.URL.Path, "/assets") {
+			next.ServeHTTP(responseWriter, request)
+			return
+		}
+		userId := a.getUserIdInCookie(request)
+		if userId != "" {
+			userCheckChannel := make(chan bool)
+			go a.dbService.CheckUserExistsInTable(userId, userCheckChannel)
+			if !<-userCheckChannel {
+				userId = ""
+			}
+		}
+		if userId == "" {
+			if strings.ToUpper(request.Method) == "GET" && request.URL.Path == "/" {
+				userId = uuid.New().String()
+				cookie, err := a.generateUserIdCookie(userId)
+				if err == nil {
+					http.SetCookie(responseWriter, &cookie)
+				}
+				userChannel := make(chan int)
+				go a.dbService.InsertUser(userId, userChannel)
+				<-userChannel
+			} else {
+				http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
-			userId := getUserIdInCookie(request)
-			if userId != "" {
-				userCheckChannel := make(chan bool)
-				go dbService.CheckUserExistsInTable(userId, userCheckChannel)
-				if !<-userCheckChannel {
-					userId = ""
-				}
-			}
-			if userId == "" {
-				if strings.ToUpper(request.Method) == "GET" && request.URL.Path == "/" {
-					userId = uuid.New().String()
-					cookie, err := generateUserIdCookie(userId)
-					if err == nil {
-						http.SetCookie(responseWriter, &cookie)
-					}
-					userChannel := make(chan int)
-					go dbService.InsertUser(userId, userChannel)
-					<-userChannel
-				} else {
-					http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
-					return
-				}
-			}
-			ctx := context.WithValue(request.Context(), userIdKey, userId)
-			request = request.WithContext(ctx)
-			next.ServeHTTP(responseWriter, request)
-		})
-	}
+		}
+		ctx := context.WithValue(request.Context(), a.userIdKey, userId)
+		request = request.WithContext(ctx)
+		next.ServeHTTP(responseWriter, request)
+	})
 }

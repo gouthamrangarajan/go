@@ -47,7 +47,9 @@ func (r *Router) HttpHandler() http.Handler {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Compress(5))
-	router.Use(services.AuthorizationMiddleware(dbService))
+
+	authorizationService := services.NewAuthorizationService(dbService)
+	router.Use(authorizationService.AuthorizationMiddleware)
 
 	promptRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	promptRouter.Use(httprate.LimitBy(
