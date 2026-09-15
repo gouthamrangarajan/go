@@ -75,11 +75,13 @@ func (r *Router) HttpHandler() http.Handler {
 	var uiSidMap sync.Map
 
 	helperService := services.NewHelperService(dbService)
+	openRouterClient := services.NewOpenRouterClient()
+
 	mainHandler := handlers.NewMainHandler(&uiSidMap, helperService, dbService)
 	fileHandler := handlers.NewFileHandler(&uiSidMap, helperService, dbService)
 	sessionActionHandler := handlers.NewSessionActionHandler(&uiSidMap, helperService, dbService)
 	sseHandler := handlers.NewSSEHandler(&uiSidMap, helperService)
-	promptHandler := handlers.NewPromptHandler(&uiSidMap, helperService, dbService)
+	promptHandler := handlers.NewPromptHandler(&uiSidMap, helperService, dbService, openRouterClient)
 
 	router.Get("/", mainHandler.HandleMainPage)
 	router.Get("/{sessionId}", mainHandler.HandleMainPage)

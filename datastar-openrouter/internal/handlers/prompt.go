@@ -19,22 +19,24 @@ import (
 )
 
 type PromptHandler struct {
-	uisidMap      *sync.Map
-	userIdKey     string
-	imgRegex      *regexp.Regexp
-	pdfRegex      *regexp.Regexp
-	helperService *services.HelperService
-	dbService     *services.DBService
+	uisidMap         *sync.Map
+	userIdKey        string
+	imgRegex         *regexp.Regexp
+	pdfRegex         *regexp.Regexp
+	helperService    *services.HelperService
+	dbService        *services.DBService
+	openRouterClient *services.OpenRouterClient
 }
 
-func NewPromptHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService) *PromptHandler {
+func NewPromptHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService, openRouterClient *services.OpenRouterClient) *PromptHandler {
 	return &PromptHandler{
-		uisidMap:      uisidMap,
-		userIdKey:     os.Getenv("USER_ID_KEY"),
-		imgRegex:      regexp.MustCompile(os.Getenv("IMG_REGEX")),
-		pdfRegex:      regexp.MustCompile(os.Getenv("PDF_REGEX")),
-		helperService: helperService,
-		dbService:     dbService,
+		uisidMap:         uisidMap,
+		userIdKey:        os.Getenv("USER_ID_KEY"),
+		imgRegex:         regexp.MustCompile(os.Getenv("IMG_REGEX")),
+		pdfRegex:         regexp.MustCompile(os.Getenv("PDF_REGEX")),
+		helperService:    helperService,
+		dbService:        dbService,
+		openRouterClient: openRouterClient,
 	}
 }
 
@@ -293,7 +295,7 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 	openRouterChannel := make(chan models.OpenRouterModelIdAndDeltaString)
 	openRouterRequest, _ := p.helperService.GenerateOpenRouterRequest(userId, clientSignal)
 
-	go services.CallOpenRouter(openRouterRequest, openRouterChannel)
+	go p.openRouterClient.CreateChatCompletion(openRouterRequest, openRouterChannel)
 
 	updateTitleChannel := make(chan int)
 	embeddingChannel := make(chan models.VoyageEmbeddingResponse)

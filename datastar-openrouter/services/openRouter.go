@@ -12,9 +12,21 @@ import (
 	"strings"
 )
 
-func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.OpenRouterModelIdAndDeltaString) {
-	url := os.Getenv("OPEN_ROUTER_API_URL")
-	key := os.Getenv("OPEN_ROUTER_API_KEY")
+type OpenRouterClient struct {
+	url          string
+	key          string
+	embeddingUrl string
+}
+
+func NewOpenRouterClient() *OpenRouterClient {
+	return &OpenRouterClient{
+		url:          os.Getenv("OPEN_ROUTER_API_URL"),
+		key:          os.Getenv("OPEN_ROUTER_API_KEY"),
+		embeddingUrl: os.Getenv("OPEN_ROUTER_EMBEDDING_URL"),
+	}
+}
+
+func (c *OpenRouterClient) CreateChatCompletion(aiRequest models.OpenRouterRequest, channel chan<- models.OpenRouterModelIdAndDeltaString) {
 	defer close(channel)
 	defaultVal := models.OpenRouterModelIdAndDeltaString{DeltaContent: "Error"}
 	aiRequestBytes, err := json.Marshal(aiRequest)
@@ -25,13 +37,13 @@ func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.Op
 		return
 	}
 	client := &http.Client{}
-	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(aiRequestBytes))
+	httpRequest, err := http.NewRequest("POST", c.url, bytes.NewBuffer(aiRequestBytes))
 	if err != nil {
 		fmt.Printf("Error creating HTTP request: %v\n", err.Error())
 		channel <- defaultVal
 		return
 	}
-	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", key))
+	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.key))
 	httpRequest.Header.Set("Content-Type", "application/json")
 	response, err := client.Do(httpRequest)
 	if err != nil {
@@ -132,9 +144,8 @@ func CallOpenRouter(aiRequest models.OpenRouterRequest, channel chan<- models.Op
 	}
 }
 
-func CallOpenRouterEmbedding(embeddingRequest models.OpenRouterEmbeddingRequest, channel chan<- models.OpenRouterEmbeddingResponse) {
-	url := os.Getenv("OPEN_ROUTER_EMBEDDING_URL")
-	key := os.Getenv("OPEN_ROUTER_API_KEY")
+func (c *OpenRouterClient) CreateEmbedding(embeddingRequest models.OpenRouterEmbeddingRequest, channel chan<- models.OpenRouterEmbeddingResponse) {
+	defer close(channel)
 	returnVal := models.OpenRouterEmbeddingResponse{}
 
 	requestBytes, err := json.Marshal(embeddingRequest)
@@ -143,13 +154,13 @@ func CallOpenRouterEmbedding(embeddingRequest models.OpenRouterEmbeddingRequest,
 		channel <- returnVal
 		return
 	}
-	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBytes))
+	httpRequest, err := http.NewRequest("POST", c.embeddingUrl, bytes.NewBuffer(requestBytes))
 	if err != nil {
 		fmt.Printf("Error creating HTTP request for embedding: %v\n", err.Error())
 		channel <- returnVal
 		return
 	}
-	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", key))
+	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.key))
 	httpRequest.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	response, err := client.Do(httpRequest)
