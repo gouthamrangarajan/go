@@ -3,6 +3,8 @@ package services
 import (
 	"bytes"
 	"datastar-openrouter/internal/models"
+	openrouter "datastar-openrouter/services/open-router"
+	"datastar-openrouter/services/voyage"
 	"fmt"
 	"os"
 	"regexp"
@@ -24,10 +26,11 @@ type HelperService struct {
 	copySvg      string
 	systemPrompt string
 	dbService    *DBService
+	voyageClient *voyage.Client
 }
 type contextKey string
 
-func NewHelperService(dbService *DBService) *HelperService {
+func NewHelperService(dbService *DBService, voyageClient *voyage.Client) *HelperService {
 	imgRegex, err := regexp.Compile(os.Getenv("IMG_REGEX"))
 	if err != nil {
 		fmt.Printf("Error compiling IMG_REGEX: %v\n", err)
@@ -65,7 +68,8 @@ func NewHelperService(dbService *DBService) *HelperService {
 						5. CONTEXT: Always consider the previous chat history.
 
 						Current Date: %v`,
-		dbService: dbService,
+		dbService:    dbService,
+		voyageClient: voyageClient,
 	}
 }
 
@@ -86,7 +90,7 @@ func (h *HelperService) InsertChatSessionViaChannel(userId string, data models.C
 	return sessionId
 }
 
-func (h *HelperService) GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals) (models.OpenRouterRequest, string) {
+func (h *HelperService) GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals) (openrouter.Request, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	go h.dbService.GetChatConversations(userId, clientSignal.SessionId, conversationsChannel)
@@ -97,7 +101,7 @@ func (h *HelperService) GenerateOpenRouterRequest(userId string, clientSignal mo
 
 	clientSignal.ModelId += ":nitro"
 
-	openRouterRequest := models.OpenRouterRequest{
+	openRouterRequest := openrouter.Request{
 		Stream: true,
 		Model:  clientSignal.ModelId,
 	}
@@ -114,31 +118,31 @@ func (h *HelperService) GenerateOpenRouterRequest(userId string, clientSignal mo
 		}
 		openRouterRequest.Stream = false
 	}
-	openRouterRequest.Messages = make([]models.OpenRouterRequestMessage, 0, len(conversations)+2)
-	openRouterRequest.Messages = append(openRouterRequest.Messages, models.OpenRouterRequestMessage{
+	openRouterRequest.Messages = make([]openrouter.RequestMessage, 0, len(conversations)+2)
+	openRouterRequest.Messages = append(openRouterRequest.Messages, openrouter.RequestMessage{
 		Role:    "system",
 		Content: fmt.Sprintf(h.systemPrompt, time.Now().Format("January 2, 2006")),
 	})
 	for _, conversation := range conversations {
 		if strings.TrimSpace(conversation.FileData) != "" {
-			messageToAppend := models.OpenRouterRequestMessage{
+			messageToAppend := openrouter.RequestMessage{
 				Role: conversation.Role,
 			}
 			messageToAppend.ContentWithFileData = append(messageToAppend.ContentWithFileData,
-				models.OpenRouterRequestMessageContentWithFileData{
+				openrouter.RequestMessageContentWithFileData{
 					Type: "text",
 					Text: conversation.Content,
 				})
-			var contentWithFileData models.OpenRouterRequestMessageContentWithFileData
+			var contentWithFileData openrouter.RequestMessageContentWithFileData
 			if h.imgRegex.MatchString(conversation.FileData) {
-				contentWithFileData = models.OpenRouterRequestMessageContentWithFileData{
+				contentWithFileData = openrouter.RequestMessageContentWithFileData{
 					Type: "image_url",
 					ImageUrl: struct {
 						Url string `json:"url,omitempty"`
 					}{Url: conversation.FileData},
 				}
 			} else if h.pdfRegex.MatchString(conversation.FileData) {
-				contentWithFileData = models.OpenRouterRequestMessageContentWithFileData{
+				contentWithFileData = openrouter.RequestMessageContentWithFileData{
 					Type: "file",
 					File: struct {
 						Name string `json:"filename,omitempty"`
@@ -152,7 +156,7 @@ func (h *HelperService) GenerateOpenRouterRequest(userId string, clientSignal mo
 			messageToAppend.ContentWithFileData = append(messageToAppend.ContentWithFileData, contentWithFileData)
 			openRouterRequest.Messages = append(openRouterRequest.Messages, messageToAppend)
 		} else if strings.TrimSpace(conversation.Content) != "" {
-			openRouterRequest.Messages = append(openRouterRequest.Messages, models.OpenRouterRequestMessage{
+			openRouterRequest.Messages = append(openRouterRequest.Messages, openrouter.RequestMessage{
 				Role:    conversation.Role,
 				Content: conversation.Content,
 			})
@@ -172,13 +176,12 @@ func (h *HelperService) SendErrorMessageToUI(sse *datastar.ServerSentEventGenera
 func (h *HelperService) SearchSessionsViaChannel(data models.SearchSessionViaChannelRequest) []models.ChatSession {
 	retVal := []models.ChatSession{}
 	searchSessionsChannel := make(chan []models.ChatSession)
-	embeddingsChannel := make(chan models.VoyageEmbeddingResponse)
-	defer close(embeddingsChannel)
+	embeddingsChannel := make(chan voyage.Response)
 
-	embeddingRequest := models.VoyageEmbeddingRequest{
+	embeddingRequest := voyage.Request{
 		Input: []string{data.SearchTerm},
 	}
-	go CallVoyageEmbedding(embeddingRequest, embeddingsChannel)
+	go h.voyageClient.CreateEmbedding(embeddingRequest, embeddingsChannel)
 	embeddingResponse := <-embeddingsChannel
 	if len(embeddingResponse.Data) > 0 {
 		go h.dbService.SearchChatSessions(data.UserId, embeddingResponse.Data[0].Embedding, searchSessionsChannel)

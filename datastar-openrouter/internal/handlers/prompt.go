@@ -6,6 +6,8 @@ import (
 	"datastar-openrouter/internal/models"
 	"datastar-openrouter/internal/views/components"
 	"datastar-openrouter/services"
+	openrouter "datastar-openrouter/services/open-router"
+	"datastar-openrouter/services/voyage"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -25,10 +27,12 @@ type PromptHandler struct {
 	pdfRegex         *regexp.Regexp
 	helperService    *services.HelperService
 	dbService        *services.DBService
-	openRouterClient *services.OpenRouterClient
+	openRouterClient *openrouter.Client
+	voyageClient     *voyage.Client
 }
 
-func NewPromptHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService, openRouterClient *services.OpenRouterClient) *PromptHandler {
+func NewPromptHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService,
+	openRouterClient *openrouter.Client, voyageClient *voyage.Client) *PromptHandler {
 	return &PromptHandler{
 		uisidMap:         uisidMap,
 		userIdKey:        os.Getenv("USER_ID_KEY"),
@@ -37,6 +41,7 @@ func NewPromptHandler(uisidMap *sync.Map, helperService *services.HelperService,
 		helperService:    helperService,
 		dbService:        dbService,
 		openRouterClient: openRouterClient,
+		voyageClient:     voyageClient,
 	}
 }
 
@@ -298,8 +303,7 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 	go p.openRouterClient.CreateChatCompletion(openRouterRequest, openRouterChannel)
 
 	updateTitleChannel := make(chan int)
-	embeddingChannel := make(chan models.VoyageEmbeddingResponse)
-	defer close(embeddingChannel)
+	embeddingChannel := make(chan voyage.Response)
 	updateTitleCalled := false
 	titleToUpdate := clientSignal.Prompt
 
@@ -314,10 +318,10 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 		go p.dbService.UpdateChatSessionTitle(userId, models.ChatSession{Id: clientSignal.SessionId, Title: titleToUpdate}, updateTitleChannel)
 		updateTitleCalled = true
 
-		embeddingRequest := models.VoyageEmbeddingRequest{
+		embeddingRequest := voyage.Request{
 			Input: []string{titleToVectorize},
 		}
-		go services.CallVoyageEmbedding(embeddingRequest, embeddingChannel)
+		go p.voyageClient.CreateEmbedding(embeddingRequest, embeddingChannel)
 	}
 
 	updateWebSearchChannel := make(chan int)

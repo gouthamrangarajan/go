@@ -3,6 +3,8 @@ package server
 import (
 	"datastar-openrouter/internal/handlers"
 	"datastar-openrouter/services"
+	openrouter "datastar-openrouter/services/open-router"
+	"datastar-openrouter/services/voyage"
 	"fmt"
 	"net/http"
 	"os"
@@ -74,14 +76,15 @@ func (r *Router) HttpHandler() http.Handler {
 	)) // 10 request in 5 seconds
 	var uiSidMap sync.Map
 
-	helperService := services.NewHelperService(dbService)
-	openRouterClient := services.NewOpenRouterClient()
+	voyageClient := voyage.NewClient()
+	helperService := services.NewHelperService(dbService, voyageClient)
+	openRouterClient := openrouter.NewClient()
 
 	mainHandler := handlers.NewMainHandler(&uiSidMap, helperService, dbService)
 	fileHandler := handlers.NewFileHandler(&uiSidMap, helperService, dbService)
-	sessionActionHandler := handlers.NewSessionActionHandler(&uiSidMap, helperService, dbService)
+	sessionActionHandler := handlers.NewSessionActionHandler(&uiSidMap, helperService, dbService, voyageClient)
 	sseHandler := handlers.NewSSEHandler(&uiSidMap, helperService)
-	promptHandler := handlers.NewPromptHandler(&uiSidMap, helperService, dbService, openRouterClient)
+	promptHandler := handlers.NewPromptHandler(&uiSidMap, helperService, dbService, openRouterClient, voyageClient)
 
 	router.Get("/", mainHandler.HandleMainPage)
 	router.Get("/{sessionId}", mainHandler.HandleMainPage)

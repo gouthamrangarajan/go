@@ -1,8 +1,7 @@
-package services
+package voyage
 
 import (
 	"bytes"
-	"datastar-openrouter/internal/models"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,10 +9,25 @@ import (
 	"os"
 )
 
-func CallVoyageEmbedding(request models.VoyageEmbeddingRequest, channel chan<- models.VoyageEmbeddingResponse) {
-	output := models.VoyageEmbeddingResponse{}
-	url := os.Getenv("VOYAGE_EMBEDDINGS_URL")
-	request.Model = os.Getenv("VOYAGE_EMBEDDINGS_MODEL")
+type Client struct {
+	url   string
+	key   string
+	model string
+}
+
+func NewClient() *Client {
+	return &Client{
+		url:   os.Getenv("VOYAGE_EMBEDDINGS_URL"),
+		key:   os.Getenv("VOYAGE_API_KEY"),
+		model: os.Getenv("VOYAGE_EMBEDDINGS_MODEL"),
+	}
+}
+
+func (c *Client) CreateEmbedding(request Request, channel chan<- Response) {
+	defer close(channel)
+	output := Response{}
+	url := c.url
+	request.Model = c.model
 
 	jsonData, err := json.Marshal(request)
 	if err != nil {
@@ -27,7 +41,7 @@ func CallVoyageEmbedding(request models.VoyageEmbeddingRequest, channel chan<- m
 		channel <- output
 		return
 	}
-	httpRequest.Header.Add("Authorization", `Bearer `+os.Getenv("VOYAGE_API_KEY"))
+	httpRequest.Header.Add("Authorization", `Bearer `+c.key)
 	httpRequest.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{}

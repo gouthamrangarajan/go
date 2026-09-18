@@ -6,6 +6,7 @@ import (
 	"datastar-openrouter/internal/models"
 	"datastar-openrouter/internal/views/components"
 	"datastar-openrouter/services"
+	"datastar-openrouter/services/voyage"
 	"net/http"
 	"os"
 	"strconv"
@@ -21,14 +22,17 @@ type SessionActionHandler struct {
 	userIdKey     string
 	helperService *services.HelperService
 	dbService     *services.DBService
+	voyageClient  *voyage.Client
 }
 
-func NewSessionActionHandler(uisidMap *sync.Map, helperService *services.HelperService, dbService *services.DBService) *SessionActionHandler {
+func NewSessionActionHandler(uisidMap *sync.Map, helperService *services.HelperService,
+	dbService *services.DBService, voyageClient *voyage.Client) *SessionActionHandler {
 	return &SessionActionHandler{
 		uisidMap:      uisidMap,
 		userIdKey:     os.Getenv("USER_ID_KEY"),
 		helperService: helperService,
 		dbService:     dbService,
+		voyageClient:  voyageClient,
 	}
 }
 
@@ -92,12 +96,11 @@ func (s *SessionActionHandler) HandleNewChat(responseWriter http.ResponseWriter,
 		}
 	}
 	if newSession.Id != 0 {
-		embeddingChannel := make(chan models.VoyageEmbeddingResponse)
-		defer close(embeddingChannel)
-		embeddingRequest := models.VoyageEmbeddingRequest{
+		embeddingChannel := make(chan voyage.Response)
+		embeddingRequest := voyage.Request{
 			Input: []string{newSession.Title},
 		}
-		go services.CallVoyageEmbedding(embeddingRequest, embeddingChannel)
+		go s.voyageClient.CreateEmbedding(embeddingRequest, embeddingChannel)
 		embeddingResponse := <-embeddingChannel
 		if len(embeddingResponse.Data) > 0 {
 			updateTitleVectorChannel := make(chan int)

@@ -3,6 +3,7 @@ package main
 import (
 	"datastar-openrouter/internal/models"
 	"datastar-openrouter/services"
+	"datastar-openrouter/services/voyage"
 	"fmt"
 	"os"
 	"strconv"
@@ -20,6 +21,7 @@ func main() {
 		fmt.Println("Success loaded .env file")
 	}
 	dbService := services.NewDBService()
+	voyageClient := voyage.NewClient()
 	fmt.Printf("Starting the session title vector job %v\n...", time.Now())
 	getAllChatSessionsChannel := make(chan []models.ChatSession)
 	go dbService.GetAllChatSessionsForJob(getAllChatSessionsChannel)
@@ -44,17 +46,17 @@ func main() {
 			endIdx = len(allSessions)
 		}
 		sessionsToUpdateTitleVector := allSessions[startIdx:endIdx]
-		go workerCallVoyageAPIAndUpdateDb(sessionsToUpdateTitleVector, &waitGroup, dbService)
+		go workerCallVoyageAPIAndUpdateDb(sessionsToUpdateTitleVector, &waitGroup, dbService, voyageClient)
 	}
 	waitGroup.Wait()
 	fmt.Printf("Completed the session title vector job %v\n...", time.Now())
 }
 
-func workerCallVoyageAPIAndUpdateDb(dbData []models.ChatSession, wg *sync.WaitGroup, dbService *services.DBService) {
+func workerCallVoyageAPIAndUpdateDb(dbData []models.ChatSession, wg *sync.WaitGroup,
+	dbService *services.DBService, voyageClient *voyage.Client) {
 	defer wg.Done()
-	voyageRequestChannel := make(chan models.VoyageEmbeddingResponse)
-	defer close(voyageRequestChannel)
-	voyageAPIRequest := models.VoyageEmbeddingRequest{
+	voyageRequestChannel := make(chan voyage.Response)
+	voyageAPIRequest := voyage.Request{
 		Input: []string{},
 	}
 	for _, session := range dbData {
@@ -64,7 +66,7 @@ func workerCallVoyageAPIAndUpdateDb(dbData []models.ChatSession, wg *sync.WaitGr
 		}
 		voyageAPIRequest.Input = append(voyageAPIRequest.Input, titleToVectorize)
 	}
-	go services.CallVoyageEmbedding(voyageAPIRequest, voyageRequestChannel)
+	go voyageClient.CreateEmbedding(voyageAPIRequest, voyageRequestChannel)
 	voyageAPIResponse := <-voyageRequestChannel
 	if len(voyageAPIResponse.Data) > 0 {
 		dbUpdateChannels := make([]chan int, len(voyageAPIResponse.Data))

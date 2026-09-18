@@ -1,4 +1,4 @@
-package services
+package openrouter
 
 import (
 	"bufio"
@@ -12,21 +12,21 @@ import (
 	"strings"
 )
 
-type OpenRouterClient struct {
+type Client struct {
 	url          string
 	key          string
 	embeddingUrl string
 }
 
-func NewOpenRouterClient() *OpenRouterClient {
-	return &OpenRouterClient{
+func NewClient() *Client {
+	return &Client{
 		url:          os.Getenv("OPEN_ROUTER_API_URL"),
 		key:          os.Getenv("OPEN_ROUTER_API_KEY"),
 		embeddingUrl: os.Getenv("OPEN_ROUTER_EMBEDDING_URL"),
 	}
 }
 
-func (c *OpenRouterClient) CreateChatCompletion(aiRequest models.OpenRouterRequest, channel chan<- models.OpenRouterModelIdAndDeltaString) {
+func (c *Client) CreateChatCompletion(aiRequest Request, channel chan<- models.OpenRouterModelIdAndDeltaString) {
 	defer close(channel)
 	defaultVal := models.OpenRouterModelIdAndDeltaString{DeltaContent: "Error"}
 	aiRequestBytes, err := json.Marshal(aiRequest)
@@ -69,7 +69,7 @@ func (c *OpenRouterClient) CreateChatCompletion(aiRequest models.OpenRouterReque
 			channel <- defaultVal
 			return
 		}
-		var nonStreamResponse models.OpenRouterResponse
+		var nonStreamResponse Response
 		err = json.Unmarshal(respBody, &nonStreamResponse)
 		if err != nil {
 			fmt.Printf("Error unmarshaling non-streaming response OpenRouter API call: %v\n", err.Error())
@@ -114,7 +114,7 @@ func (c *OpenRouterClient) CreateChatCompletion(aiRequest models.OpenRouterReque
 			if line == "[DONE]" {
 				break
 			}
-			var streamResponse models.OpenRouterStreamResponse
+			var streamResponse StreamResponse
 			err = json.Unmarshal([]byte(line), &streamResponse)
 			if err != nil {
 				fmt.Printf("Error unmarshaling stream response: %v\n", err.Error())
@@ -144,9 +144,9 @@ func (c *OpenRouterClient) CreateChatCompletion(aiRequest models.OpenRouterReque
 	}
 }
 
-func (c *OpenRouterClient) CreateEmbedding(embeddingRequest models.OpenRouterEmbeddingRequest, channel chan<- models.OpenRouterEmbeddingResponse) {
+func (c *Client) CreateEmbedding(embeddingRequest EmbeddingRequest, channel chan<- EmbeddingResponse) {
 	defer close(channel)
-	returnVal := models.OpenRouterEmbeddingResponse{}
+	returnVal := EmbeddingResponse{}
 
 	requestBytes, err := json.Marshal(embeddingRequest)
 	if err != nil {
