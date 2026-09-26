@@ -18,6 +18,7 @@ type AuthorizationService struct {
 	cookieName      string
 	userIdKey       string
 	dbService       *DBService
+	env             string
 }
 
 func NewAuthorizationService(dbService *DBService) *AuthorizationService {
@@ -26,12 +27,13 @@ func NewAuthorizationService(dbService *DBService) *AuthorizationService {
 		cookieName:      "chat",
 		userIdKey:       os.Getenv("USER_ID_KEY"),
 		dbService:       dbService,
+		env:             os.Getenv("ENV"),
 	}
 }
 
-func (a *AuthorizationService) generateUserIdCookie(uuidString string) (http.Cookie, error) {
+func (a *AuthorizationService) GenerateUserIdCookie(uuidString string) (http.Cookie, error) {
 	secure := true
-	if os.Getenv("ENV") == "Development" {
+	if a.env == "Development" {
 		secure = false
 	}
 
@@ -112,7 +114,7 @@ func (a *AuthorizationService) AuthorizationMiddleware(next http.Handler) http.H
 		if userId == "" {
 			if strings.ToUpper(request.Method) == "GET" && request.URL.Path == "/" {
 				userId = uuid.New().String()
-				cookie, err := a.generateUserIdCookie(userId)
+				cookie, err := a.GenerateUserIdCookie(userId)
 				if err == nil {
 					http.SetCookie(responseWriter, &cookie)
 				}
@@ -120,6 +122,7 @@ func (a *AuthorizationService) AuthorizationMiddleware(next http.Handler) http.H
 				go a.dbService.InsertUser(userId, userChannel)
 				<-userChannel
 			} else {
+				// fmt.Printf("Unauthorized from middleware\n")
 				http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 				return
 			}

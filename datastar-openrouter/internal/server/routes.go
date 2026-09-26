@@ -75,6 +75,7 @@ func (r *Router) HttpHandler() http.Handler {
 		}),
 	)) // 10 request in 5 seconds
 	var uiSidMap sync.Map
+	var syncDeviceUserIdCodeMap sync.Map
 
 	voyageClient := voyage.NewClient()
 	helperService := services.NewHelperService(dbService, voyageClient)
@@ -85,6 +86,7 @@ func (r *Router) HttpHandler() http.Handler {
 	sessionActionHandler := handlers.NewSessionActionHandler(&uiSidMap, helperService, dbService, voyageClient)
 	sseHandler := handlers.NewSSEHandler(&uiSidMap, helperService)
 	promptHandler := handlers.NewPromptHandler(&uiSidMap, helperService, dbService, openRouterClient, voyageClient)
+	syncHandler := handlers.NewSyncHandler(&uiSidMap, helperService, &syncDeviceUserIdCodeMap, authorizationService, dbService)
 
 	router.Get("/", mainHandler.HandleMainPage)
 	router.Get("/{sessionId}", mainHandler.HandleMainPage)
@@ -97,6 +99,10 @@ func (r *Router) HttpHandler() http.Handler {
 	router.Post("/fileupload/remove", fileHandler.HandleRemoveUploadedFile)
 	router.Post("/retry", promptHandler.HandleRetry)
 	router.Post("/image", fileHandler.HandleGetImage)
+	router.Post("/sync/init", syncHandler.HandleInitSync)
+	router.Post("/sync/generate", syncHandler.HandleGenerateSyncCode)
+	router.Post("/sync/enter", syncHandler.HandleEntersyncForm)
+	router.Post("/sync/verify", syncHandler.HandleVerifySyncCode)
 
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)

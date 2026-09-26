@@ -448,4 +448,8 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 			IsError: true,
 		}
 	}
+
+	updateSessionUpdatedAtChannel := make(chan int)
+	go p.dbService.UpdateChatSessionUpdatedAt(userId, clientSignal.SessionId, updateSessionUpdatedAtChannel)
+	<-updateSessionUpdatedAtChannel
 }

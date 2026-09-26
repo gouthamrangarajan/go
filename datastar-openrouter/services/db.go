@@ -138,7 +138,7 @@ func (d *DBService) GetChatSessions(userId string, channel chan<- []models.ChatS
 	defer close(channel)
 	var data []models.ChatSession = []models.ChatSession{}
 
-	rows, err := d.dbPool.Query("SELECT session_id,title,allow_web_search,img_generation FROM chat_sessions WHERE user_id = ? ORDER BY session_id", userId)
+	rows, err := d.dbPool.Query("SELECT session_id,title,allow_web_search,img_generation FROM chat_sessions WHERE user_id = ? ORDER BY updated_at desc", userId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in GetChatSessions: %v\n", err.Error())
 		channel <- data
@@ -303,6 +303,22 @@ func (d *DBService) UpdateChatSessionImageGeneration(userId string, sessionId in
 	}
 	channel <- int(rowsAffected)
 }
+func (d *DBService) UpdateChatSessionUpdatedAt(userId string, sessionId int, channel chan<- int) {
+	defer close(channel)
+	result, err := d.dbPool.Exec("UPDATE chat_sessions SET updated_at = ? WHERE session_id = ? AND  user_id = ?", time.Now().Unix(), sessionId, userId)
+	if err != nil {
+		fmt.Printf("Failed to execute query in UpdateChatSessionUpdatedAt: %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	rowsAffected, errUpdate := result.RowsAffected()
+	if errUpdate != nil {
+		fmt.Printf("Error updating updated_at in UpdateChatSessionUpdatedAt: %v\n", errUpdate.Error())
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
 func (d *DBService) DeleteChatSession(userId string, sessionId int, channel chan<- int) {
 	defer close(channel)
 	result, err := d.dbPool.Exec("DELETE FROM chat_sessions WHERE session_id = ? AND  user_id = ?", sessionId, userId)
@@ -314,6 +330,22 @@ func (d *DBService) DeleteChatSession(userId string, sessionId int, channel chan
 	rowsAffected, errUpdate := result.RowsAffected()
 	if errUpdate != nil {
 		fmt.Printf("Error deleting Chat Session in DeleteChatSession : %v\n", errUpdate.Error())
+		channel <- 0
+		return
+	}
+	channel <- int(rowsAffected)
+}
+func (d *DBService) UpdateChatSessionsUserId(fromUserId string, toUserId string, channel chan<- int) {
+	defer close(channel)
+	result, err := d.dbPool.Exec("UPDATE chat_sessions SET user_id = ?  WHERE  user_id = ?", toUserId, fromUserId)
+	if err != nil {
+		fmt.Printf("Failed to execute query in UpdateChatSessionsUserId: %v\n", err.Error())
+		channel <- 0
+		return
+	}
+	rowsAffected, errUpdate := result.RowsAffected()
+	if errUpdate != nil {
+		fmt.Printf("Error updating user ID in UpdateChatSessionsUserId: %v\n", errUpdate.Error())
 		channel <- 0
 		return
 	}

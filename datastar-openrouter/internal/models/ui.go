@@ -16,6 +16,7 @@ type ClientSignals struct {
 	SearchMenu            string `json:"searchMenu"`
 	UiSid                 string `json:"uiSid"`
 	MessageIdToFetchImage int    `json:"messageIdToFetchImage"`
+	SyncCode              string `json:"syncCode"`
 }
 type FileDataDisplay struct {
 	FileName string

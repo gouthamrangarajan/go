@@ -1,7 +1,6 @@
+package modals
 
-package components
-
-templ deleteModal() {
+templ DeleteModal() {
 	<div
 		class="absolute top-0 left-0 w-full h-full bg-white/40 z-10 flex items-center justify-center"
 		data-show="$showDeleteModal"
@@ -12,7 +11,7 @@ templ deleteModal() {
 			class="w-11/12 mx-auto animate-modal shadow-2xl border border-gray-300 bg-light dark:bg-dark py-4 px-6 rounded flex flex-col md:w-7/12 lg:w-5/12 xl:w-4/12"
 			id="deleteModal"
 			style="view-transition-name:delete-dialog"
-			data-effect="$showDeleteModal?$_deleteModalFocusAbortController=focusTrap('dialog[open]'):$_deleteModalFocusAbortController.abort()"
+			data-effect="$showDeleteModal?$_deleteModalFocusAbortController=focusTrap('#deleteModal'):$_deleteModalFocusAbortController.abort()"
 		>
 			<h1 class="text-xl font-semibold dark:text-light">Delete Chat Session</h1>
 			<p class="my-4 dark:text-light">
@@ -25,9 +24,9 @@ templ deleteModal() {
 					data-indicator="_deletingSession"
 					data-attr:disabled="$_deletingSession"
 					style="view-transition-name:delete-session-btn"
+					data-text="$_deletingSession?'Deleting...':'Delete'"
 				>
-					<span data-show="!$_deletingSession">Delete</span>
-					<span data-show="$_deletingSession">Deleting...</span>
+					Delete	
 				</button>
 				<button
 					class="appearance-none outline-none cursor-pointer py-2 px-4 rounded transition duration-300 bg-gray-600  text-white  hover:opacity-90 focus:ring-2 focus:ring-offset-2 focus:ring-gray-600  focus:ring-offset-white dark:focus:ring-offset-dark"

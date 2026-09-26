@@ -2,9 +2,11 @@ package services
 
 import (
 	"bytes"
+	"crypto/rand"
 	"datastar-openrouter/internal/models"
 	openrouter "datastar-openrouter/services/open-router"
 	"datastar-openrouter/services/voyage"
+	"encoding/binary"
 	"fmt"
 	"os"
 	"regexp"
@@ -286,5 +288,38 @@ func (h *HelperService) ConvertConversationMarkdownsToHtml(conversations []model
 													</button>
 													</pre></div>`)
 		channel <- models.ChatConversationMarkdownToHtml{Html: "<div id='markdownToHtml_" + strconv.Itoa(conversation.Id) + "' class='prose dark:prose-invert'>" + mkdwn + "</div>", ConversationId: conversation.Id}
+	}
+}
+
+// randomBytes fills n bytes with cryptographically secure randomness.
+func (h *HelperService) randomBytes(n int) ([]byte, error) {
+	b := make([]byte, n)
+	if _, err := rand.Read(b); err != nil {
+		return nil, fmt.Errorf("rand read: %w", err)
+	}
+	return b, nil
+}
+
+// generateManualCode returns an N-digit code with no leading bias.
+// It rejects values above the largest multiple of 10^N that fits in uint32
+// to avoid modulo bias.
+func (h *HelperService) GenerateManualCode(digits int) (string, error) {
+	max := uint32(1)
+	for i := 0; i < digits; i++ {
+		max *= 10
+	}
+	// Largest multiple of max that fits in uint32 range.
+	limit := (^uint32(0) / max) * max
+
+	for {
+		b, err := h.randomBytes(4)
+		if err != nil {
+			return "", err
+		}
+		n := binary.BigEndian.Uint32(b)
+		if n >= limit {
+			continue // reject to avoid bias
+		}
+		return fmt.Sprintf("%0*d", digits, n%max), nil
 	}
 }

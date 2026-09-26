@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"context"
 	"datastar-openrouter/internal/models"
-	"datastar-openrouter/internal/views/components"
+	"datastar-openrouter/internal/views/pages"
 	"datastar-openrouter/services"
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -57,6 +58,7 @@ func (h *MainHandler) HandleMainPage(responseWriter http.ResponseWriter, request
 		}
 	}
 	if selectedSession.Id == 0 && sessionId != 0 {
+		fmt.Printf("Unauthorized from main handlers userId:%v \n", userId)
 		http.Error(responseWriter, "UnAuthorized", http.StatusUnauthorized)
 		return
 	}
@@ -87,7 +89,7 @@ func (h *MainHandler) HandleMainPage(responseWriter http.ResponseWriter, request
 	}
 	aiModels := <-aiModelsChannel
 
-	components.Main(
+	pages.Main(
 		models.UIMainModel{
 			Messages:         chatConversations,
 			Sessions:         sessions,
@@ -106,7 +108,7 @@ func (h *MainHandler) handleSessionChange(request *http.Request, data models.Ses
 	userSessionKey := h.helperService.GenerateUserSessionKey(data.UserId, clientSignal.UiSid)
 	if userSession, userSessionExists := h.uisidMap.Load(userSessionKey); userSessionExists {
 		dataBuffer := new(bytes.Buffer)
-		components.Section(data.ChatConversations).Render(context.Background(), dataBuffer)
+		pages.MainSection(data.ChatConversations).Render(context.Background(), dataBuffer)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           dataBuffer.String(),
 			UseViewTransition: false,

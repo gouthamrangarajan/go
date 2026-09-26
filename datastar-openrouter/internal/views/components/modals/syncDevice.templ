@@ -1,0 +1,96 @@
+
+package modals
+
+templ SyncDeviceModal() {
+	<div
+		class="absolute top-0 left-0 w-full h-full bg-white/40 z-10 flex items-center justify-center"
+		data-show="$showSyncDeviceModal"
+		data-signals="{_syncDeviceModalFocusAbortController:new AbortController()}"
+	>
+		<dialog
+			open
+			class="w-11/12 mx-auto animate-modal shadow-2xl border border-gray-300 bg-light dark:bg-dark py-4 px-6 rounded flex flex-col md:w-7/12 lg:w-5/12 xl:w-4/12"
+			id="syncDeviceModal"
+			style="view-transition-name:sync-device-dialog"
+			data-effect="$showSyncDeviceModal?$_syncDeviceModalFocusAbortController=focusTrap('#syncDeviceModal'):$_syncDeviceModalFocusAbortController.abort()"
+		>
+			<h1 class="text-xl font-semibold dark:text-light">Sync your chats across devices</h1>
+			<h2 class="mt-4 opacity-90 dark:text-light">Connect another device to access your conversations.</h2>
+			@SyncDeviceModalDefaultActions()
+		</dialog>
+	</div>
+}
+
+templ SyncDeviceModalDefaultActions() {
+	<div class="mt-8 mb-4 flex items-center justify-end gap-2" id="syncDeviceModalAction">
+		<button
+			class="appearance-none outline-none transition duration-300 py-2 px-4 rounded cursor-pointer bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
+			data-on:click="@post('/sync/generate')"
+			data-indicator="_generatingSyncCode"
+			data-attr:disabled="$_generatingSyncCode"
+			data-text="$_generatingSyncCode?'Generating':'Generate a code'"		
+		>Generate a code</button>
+		<button
+			class="appearance-none outline-none transition duration-300 py-2 px-4 rounded cursor-pointer bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
+			data-on:click="@post('/sync/enter')"
+			data-indicator="_visitingEnterSyncCode"
+			data-attr:disabled="$_visitingEnterSyncCode"
+			data-text="$_visitingEnterSyncCode?'Loading...':'Enter a code'"
+		>Enter a code</button>
+		<button
+			class="appearance-none outline-none transition duration-300 py-2 px-4 rounded cursor-pointer bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
+			data-on:click__viewtransition=" $showSyncDeviceModal=false;"
+		>Cancel</button>
+	</div>
+}
+
+templ SyncDeviceModalDisplayCode(value string){
+    <div class="mt-8 mb-4 flex flex-col gap-2" id="syncDeviceModalAction">
+        <label class="text-xl dark:text-light">
+            {value}
+        </label>
+        <div class="mb-4 flex items-center justify-end gap-2">
+            <button
+                    class="appearance-none outline-none transition duration-300 py-2 px-4 rounded cursor-pointer bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
+                    data-on:click__viewtransition=" $showSyncDeviceModal=false;"
+            >Cancel</button>
+        </div>
+    </div>
+}
+
+templ SyncDeviceModalEnterCode(){
+    <form class="mt-8 flex flex-col gap-3" id="syncDeviceModalAction"
+            data-on:submit__prevent={ `
+                    if(!$_syncing){ 
+                        @post('/sync/verify');
+                    }
+                ` }
+            data-indicator="_syncing"
+        >
+        <label class="text-lg flex flex-col gap-2 dark:text-light" for="txtSyncCode">
+            Enter the code from your other device
+            <input
+                class="appearance-none outline-none cursor-pointer py-2 px-4 rounded transition duration-300 border border-dark dark:border-light bg-light dark:bg-dark text-dark dark:text-light focus:ring-2 focus:ring-offset-2 focus:ring-dark dark:focus:ring-light focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
+                id="txtSyncCode"
+                required
+                type="text"
+                minlength="6"
+                name="syncCode"
+                data-bind="syncCode"
+            />
+        </label>
+        <div class="mb-4 flex items-center justify-end gap-2">
+            <button
+                class="appearance-none outline-none transition duration-300 py-2 px-4 rounded cursor-pointer bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
+                type="submit"  
+                data-attr:disabled="$_syncing" 
+                data-text="$_syncing?'Syncing...':'Submit'"
+            >Submit</button>
+            <button
+                class="appearance-none outline-none transition duration-300 py-2 px-4 rounded cursor-pointer bg-dark dark:bg-light text-light dark:text-dark  focus:ring-2 focus:ring-dark dark:focus:ring-light  focus:ring-offset-2 focus:ring-offset-light dark:focus:ring-offset-dark disabled:cursor-not-allowed disabled:opacity-80"
+                type="button"
+                data-on:click__viewtransition=" $showSyncDeviceModal=false;"
+            >Cancel</button>
+        </div>
+    </form>
+}

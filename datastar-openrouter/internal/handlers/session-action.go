@@ -5,6 +5,7 @@ import (
 	"context"
 	"datastar-openrouter/internal/models"
 	"datastar-openrouter/internal/views/components"
+	"datastar-openrouter/internal/views/pages"
 	"datastar-openrouter/services"
 	"datastar-openrouter/services/voyage"
 	"net/http"
@@ -67,7 +68,7 @@ func (s *SessionActionHandler) HandleNewChat(responseWriter http.ResponseWriter,
 			UseViewTransition: true,
 		}
 		sectionComponentBuffer := new(bytes.Buffer)
-		components.Section([]models.ChatConversation{}).Render(context.Background(), sectionComponentBuffer)
+		pages.MainSection([]models.ChatConversation{}).Render(context.Background(), sectionComponentBuffer)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
 			Content:           sectionComponentBuffer.String(),
 			Selector:          "section",
@@ -152,7 +153,7 @@ func (s *SessionActionHandler) HandleDeleteSession(responseWriter http.ResponseW
 	if userSessionExists {
 		if clientSignal.SessionIdToDelete == clientSignal.SessionId {
 			componentBuffer := new(bytes.Buffer)
-			components.Section([]models.ChatConversation{}).Render(context.Background(), componentBuffer)
+			pages.MainSection([]models.ChatConversation{}).Render(context.Background(), componentBuffer)
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:           componentBuffer.String(),
 				Selector:          "section",

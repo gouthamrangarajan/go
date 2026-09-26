@@ -4,7 +4,6 @@ import (
 	"datastar-openrouter/internal/models"
 	"datastar-openrouter/internal/views/components"
 	"datastar-openrouter/services"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -65,8 +64,6 @@ func (s *SSEHandler) HandleLongSSE(responseWriter http.ResponseWriter, request *
 				return
 			}
 			switch {
-			case data.SendHeartBeat:
-				sse.Send(datastar.EventType("heartbeat"), []string{fmt.Sprintf(": heartbeat %d\n\n", time.Now().Unix())})
 			case data.IsError:
 				s.helperService.SendErrorMessageToUI(sse, data.Content)
 			case data.IsScript:
