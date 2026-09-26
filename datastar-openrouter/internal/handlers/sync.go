@@ -153,7 +153,7 @@ func (s *SyncHandler) HandleVerifySyncCode(responseWriter http.ResponseWriter, r
 		}
 		// flush everything to browser so that window.location.reload works properly
 		if f, ok := responseWriter.(http.Flusher); ok {
-			fmt.Printf("reached here\n")
+			// fmt.Printf("reached here\n")
 			responseWriter.WriteHeader(http.StatusOK)
 			f.Flush()
 		}
