@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/starfederation/datastar-go/datastar"
@@ -104,7 +105,7 @@ func (s *SyncHandler) HandleVerifySyncCode(responseWriter http.ResponseWriter, r
 	userSessionKey := s.helperService.GenerateUserSessionKey(userIdInRequest, clientSignal.UiSid)
 
 	// fmt.Printf("userId and synccode %v:%v\n", userIdInRequest, clientSignal.SyncCode)
-
+	clientSignal.SyncCode = strings.TrimSpace(clientSignal.SyncCode)
 	userIdWhoGeneratedCode := ""
 	s.userIdCodeMap.Range(func(userIdInMap, value any) bool {
 		if value.(string) == clientSignal.SyncCode {
@@ -114,14 +115,20 @@ func (s *SyncHandler) HandleVerifySyncCode(responseWriter http.ResponseWriter, r
 		return true
 	})
 
-	if userIdWhoGeneratedCode == "" || clientSignal.SyncCode == "" {
+	if clientSignal.SyncCode == "" {
 		http.Error(responseWriter, "Invalid Request.", http.StatusBadRequest)
 		return
 	}
+	if userSession, userSessionExists := s.uisidMap.Load(userSessionKey); userSessionExists {
+		if userIdWhoGeneratedCode == "" {
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content: "Code not found. Please verify & correct the code.",
+				IsError: true,
+			}
+		}
 
-	// fmt.Printf("from userId and to userId %v:%v\n", userIdInRequest, userIdWhoGeneratedCode)
-	if userIdWhoGeneratedCode == userIdInRequest {
-		if userSession, userSessionExists := s.uisidMap.Load(userSessionKey); userSessionExists {
+		// fmt.Printf("from userId and to userId %v:%v\n", userIdInRequest, userIdWhoGeneratedCode)
+		if userIdWhoGeneratedCode == userIdInRequest {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: "You cannot sync with the same device.",
 				IsError: true,
