@@ -244,9 +244,6 @@
   .right-4 {
     right: calc(var(--spacing) * 4);
   }
-  .right-14 {
-    right: calc(var(--spacing) * 14);
-  }
   .-bottom-3 {
     bottom: calc(var(--spacing) * -3);
   }
@@ -902,11 +899,17 @@
   .flex-col {
     flex-direction: column;
   }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
   .items-center {
     align-items: center;
   }
   .items-start {
     align-items: flex-start;
+  }
+  .justify-between {
+    justify-content: space-between;
   }
   .justify-center {
     justify-content: center;
