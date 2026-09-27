@@ -125,6 +125,7 @@ func (s *SyncHandler) HandleVerifySyncCode(responseWriter http.ResponseWriter, r
 				Content: "Code not found. Please verify & correct the code.",
 				IsError: true,
 			}
+			return
 		}
 
 		// fmt.Printf("from userId and to userId %v:%v\n", userIdInRequest, userIdWhoGeneratedCode)
@@ -133,8 +134,9 @@ func (s *SyncHandler) HandleVerifySyncCode(responseWriter http.ResponseWriter, r
 				Content: "You cannot sync with the same device.",
 				IsError: true,
 			}
+			return
 		}
-		return
+
 	}
 
 	userIdUpdateChannel := make(chan int)
