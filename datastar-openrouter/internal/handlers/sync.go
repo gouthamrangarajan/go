@@ -139,6 +139,8 @@ func (s *SyncHandler) HandleVerifySyncCode(responseWriter http.ResponseWriter, r
 
 	}
 
+	s.userIdCodeMap.Delete(userIdWhoGeneratedCode)
+
 	userIdUpdateChannel := make(chan int)
 	go s.dbService.UpdateChatSessionsUserId(userIdInRequest, userIdWhoGeneratedCode, userIdUpdateChannel)
 	updatedRecords := <-userIdUpdateChannel
