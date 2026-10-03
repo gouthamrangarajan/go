@@ -4,6 +4,7 @@ import (
 	"context"
 	"datastar-web-learnings/internal/models"
 	"datastar-web-learnings/services"
+	voyage "datastar-web-learnings/services/voyage"
 	"fmt"
 	"time"
 
@@ -19,6 +20,7 @@ func main() {
 		fmt.Println("Loaded .env file successfully")
 	}
 	helperService := services.NewHelperSerice()
+	voyageClient := voyage.NewClient()
 
 	getAllVideosChannel := make(chan []models.VideoResponse)
 	go services.GetAllVideos(context.Background(), getAllVideosChannel)
@@ -29,7 +31,7 @@ func main() {
 	fmt.Printf("Total Records to Vectorize: %v\n", len(dbData))
 
 	videoIdToDbDataMap := make(map[string]models.VideoResponse, len(dbData))
-	voyageAPIChannels := make([]chan models.VoyageEmbeddingResponse, len(dbData))
+	voyageAPIChannels := make([]chan voyage.Response, len(dbData))
 	pineconeUpsertChannels := make([]chan int, len(dbData))
 
 	ytAPIDescriptionsChannel := make(chan models.YTAPIVideoIdAndDescription, len(dbData))
@@ -49,8 +51,8 @@ func main() {
 				break
 			}
 		}
-		voyageAPIChannels[dbDataIndex] = make(chan models.VoyageEmbeddingResponse)
-		go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{structInLoop.TextToVectorize}}, voyageAPIChannels[dbDataIndex])
+		voyageAPIChannels[dbDataIndex] = make(chan voyage.Response)
+		go voyageClient.CallEmbedding(voyage.Request{Input: []string{structInLoop.TextToVectorize}}, voyageAPIChannels[dbDataIndex])
 
 		ytDescriptionDataReceivedCount += 1
 		if ytDescriptionDataReceivedCount == len(dbData) {
@@ -60,7 +62,6 @@ func main() {
 	close(ytAPIDescriptionsChannel)
 	for idx := range dbData {
 		vectorResponse := <-voyageAPIChannels[idx]
-		close(voyageAPIChannels[idx])
 		pineconeUpsertChannels[idx] = make(chan int)
 		go services.UpsertPineconeDb(dbData[idx].VideoId, vectorResponse.Data[0].Embedding, pineconeUpsertChannels[idx])
 	}

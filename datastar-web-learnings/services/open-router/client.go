@@ -198,10 +198,11 @@ Respond strictly in JSON matching this schema:
 }
 
 func (c *Client) VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query string, channel chan<- string) {
-	responseVal := models.OpenRouterResponse{}
-	aiRequestBytes, err := json.Marshal(models.OpenRouterRequest{
+	defer close(channel)
+	responseVal := Response{}
+	aiRequestBytes, err := json.Marshal(Request{
 		Model: c.modelIdForTechnologySearchCheck,
-		Messages: []models.OpenRouterRequestMessage{
+		Messages: []RequestMessage{
 			{
 				Role:    "user",
 				Content: fmt.Sprintf(c.PROMPT2_TO_CHECK_TECH_RELATED_SEARCH, query),
@@ -267,12 +268,13 @@ func (c *Client) VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(que
 	channel <- ""
 }
 
-func (c *Client) GenerateQuizUsingOpenRouter(inputData models.UISignals, channel chan<- models.QuizResponse) {
-	retVal := models.QuizResponse{}
-	responseVal := models.OpenRouterResponse{}
-	aiRequestBytes, err := json.Marshal(models.OpenRouterRequest{
+func (c *Client) GenerateQuizUsingOpenRouter(inputData models.UISignals, channel chan<- QuizResponse) {
+	defer close(channel)
+	retVal := QuizResponse{}
+	responseVal := Response{}
+	aiRequestBytes, err := json.Marshal(Request{
 		Model: c.defaultModelId,
-		Messages: []models.OpenRouterRequestMessage{
+		Messages: []RequestMessage{
 			{
 				Role:    "user",
 				Content: fmt.Sprintf(c.PROMPT_TO_GENERATE_QUIZ, inputData.QuizVideoTitle, inputData.Transcript),
@@ -350,13 +352,15 @@ func (c *Client) GenerateQuizUsingOpenRouter(inputData models.UISignals, channel
 // 	channel <- retVal
 // }
 
-func (c *Client) VerifyQuizAnswerUsingOpenRouter(userAnswer string, quizResponse models.QuizResponse, quizIndex int, channel chan<- models.AnswerEvaluation) {
-	retVal := models.AnswerEvaluation{}
-	responseVal := models.OpenRouterResponse{}
+func (c *Client) VerifyQuizAnswerUsingOpenRouter(userAnswer string, quizResponse QuizResponse,
+	quizIndex int, channel chan<- AnswerEvaluationResponse) {
+	defer close(channel)
+	retVal := AnswerEvaluationResponse{}
+	responseVal := Response{}
 	quizInIndex := quizResponse.Questions[quizIndex]
-	aiRequestBytes, err := json.Marshal(models.OpenRouterRequest{
+	aiRequestBytes, err := json.Marshal(Request{
 		Model: c.defaultModelId,
-		Messages: []models.OpenRouterRequestMessage{
+		Messages: []RequestMessage{
 			{
 				Role: "user",
 				Content: fmt.Sprintf(c.PROMPT_TO_EVALUATE_ANSWER, quizInIndex.Question, quizInIndex.ShortAnswer, quizInIndex.SpeakingAnswer,

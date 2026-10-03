@@ -1,22 +1,12 @@
-package models
+package openrouter
 
-type OpenRouterResponse struct {
+type Response struct {
 	Model   string `json:"model"`
 	Choices []struct {
 		Message struct {
 			Content string `json:"content"`
 		} `json:"message"`
 	} `json:"choices"`
-}
-
-type OpenRouterRequest struct {
-	Model    string                     `json:"model"`
-	Messages []OpenRouterRequestMessage `json:"messages"`
-}
-
-type OpenRouterRequestMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
 }
 
 type QuizResponse struct {
@@ -39,7 +29,7 @@ type QuizResponse struct {
 	} `json:"questions"`
 }
 
-type AnswerEvaluation struct {
+type AnswerEvaluationResponse struct {
 	IsTechnicallyCorrect bool     `json:"is_technically_correct"`
 	AccuracyScore        float32  `json:"accuracy_score"`
 	FluencyScore         float32  `json:"fluency_score"`

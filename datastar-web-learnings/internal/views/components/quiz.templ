@@ -2,6 +2,7 @@ package components
 
 import (
 	"datastar-web-learnings/internal/models"
+	openRouter "datastar-web-learnings/services/open-router"
 	"slices"
 	"strconv"
 )
@@ -139,7 +140,7 @@ templ QuizGenerating() {
 	</div>
 }
 
-templ QuizQuestion(data models.QuizResponse, index int) {
+templ QuizQuestion(data openRouter.QuizResponse, index int) {
 	<div class="flex items-center justify-between">
 		<h2 class="text-xl text-secondary font-semibold">Question { strconv.Itoa(index + 1) } of { strconv.Itoa(len(data.Questions)) }</h2>
 		<button
@@ -280,7 +281,7 @@ templ verifyAnswerButton(btnText string) {
 	</button>
 }
 
-templ ResultAndPrevNextQuestion(quizAnswer models.AnswerEvaluation, quizData models.QuizResponse, index int) {
+templ ResultAndPrevNextQuestion(quizAnswer models.EvaluationAnswer, quizData openRouter.QuizResponse, index int) {
 	{{ cardClass := "border-green-300" }}
 	if quizAnswer.AccuracyScore < 0.5 || quizAnswer.FluencyScore < 0.5 {
 		{{ cardClass = "border-red-300" }}
@@ -374,7 +375,7 @@ templ QuizGenerationError() {
 	</div>
 }
 
-templ AnswerEvaluationError(index int, quizData models.QuizResponse) {
+templ AnswerEvaluationError(index int, quizData openRouter.QuizResponse) {
 	<div class="flex w-full flex-col gap-2" id="quizResultAndAction" data-signals="{_showReferenceAnswer:false}">
 		<h3 class="text-lg text-red-300 font-semibold" data-show="!$_submitting">Couldn't evaluate your answer right now.</h3>
 		<a

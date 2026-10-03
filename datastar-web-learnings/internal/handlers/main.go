@@ -14,6 +14,7 @@ import (
 	"time"
 
 	openRouter "datastar-web-learnings/services/open-router"
+	voyage "datastar-web-learnings/services/voyage"
 
 	"github.com/starfederation/datastar-go/datastar"
 )
@@ -26,10 +27,11 @@ type MainHandler struct {
 	helperService    *services.HelperSevice
 	noOfDbItems      int
 	openRouterClient *openRouter.Client
+	voyageClient     *voyage.Client
 }
 
 func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map,
-	helperService *services.HelperSevice, openRouterclient *openRouter.Client) *MainHandler {
+	helperService *services.HelperSevice, openRouterclient *openRouter.Client, voyageClient *voyage.Client) *MainHandler {
 	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
 	noOfItems, err := strconv.Atoi(noOfItemsStr)
 	if err != nil {
@@ -43,6 +45,7 @@ func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map,
 		helperService:    helperService,
 		noOfDbItems:      noOfItems,
 		openRouterClient: openRouterclient,
+		voyageClient:     voyageClient,
 	}
 }
 
@@ -214,16 +217,14 @@ func (m *MainHandler) searchUIForFirstSetData(sse *datastar.ServerSentEventGener
 	aIResponseChannel := make(chan string)
 	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query, aIResponseChannel)
 	aIResponse := <-aIResponseChannel
-	close(aIResponseChannel)
 	if aIResponse == "" {
 		fmt.Printf("Query not related to technology topics: %v\n", query)
 		m.invalidSearchUI(sse)
 		return
 	}
-	vectorChannel := make(chan models.VoyageEmbeddingResponse)
-	go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{aIResponse}}, vectorChannel)
+	vectorChannel := make(chan voyage.Response)
+	go m.voyageClient.CallEmbedding(voyage.Request{Input: []string{aIResponse}}, vectorChannel)
 	vectorResponse := <-vectorChannel
-	close(vectorChannel)
 	if len(vectorResponse.Data) == 0 || len(vectorResponse.Data[0].Embedding) == 0 {
 		fmt.Printf("No embedding vector received from ai for %v\n", query)
 		m.noDataFoundUI(sse)
@@ -289,7 +290,6 @@ func (m *MainHandler) removeLoadMoreUI(sse *datastar.ServerSentEventGenerator) {
 func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Context) {
 	// fmt.Printf("searching for '%v' \n", data.SearchTxt)
 	aIResponseChannel := make(chan string)
-	defer close(aIResponseChannel)
 	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(data.SearchTxt, aIResponseChannel)
 	aIResponse := <-aIResponseChannel
 	// fmt.Printf("response for verifyTechnology%v\n", aIResponse)
@@ -302,9 +302,8 @@ func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ct
 		}
 		return
 	}
-	vectorChannel := make(chan models.VoyageEmbeddingResponse)
-	defer close(vectorChannel)
-	go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{aIResponse}}, vectorChannel)
+	vectorChannel := make(chan voyage.Response)
+	go m.voyageClient.CallEmbedding(voyage.Request{Input: []string{aIResponse}}, vectorChannel)
 	vectorResponse := <-vectorChannel
 	if len(vectorResponse.Data) == 0 || len(vectorResponse.Data[0].Embedding) == 0 {
 		fmt.Printf("No embedding vector received from ai for %v\n", data.SearchTxt)
@@ -480,9 +479,8 @@ func (m *MainHandler) HandleAddVideo(responseWriter http.ResponseWriter, request
 					Transcript: uiSignals.Transcript,
 				}
 				dataToVectorize = m.helperService.ConstructTextToVectorize(dataToVectorize, ytResponse.Items[0].Snippet.Description)
-				vectorChannel := make(chan models.VoyageEmbeddingResponse)
-				defer close(vectorChannel)
-				go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{dataToVectorize.TextToVectorize}}, vectorChannel)
+				vectorChannel := make(chan voyage.Response)
+				go m.voyageClient.CallEmbedding(voyage.Request{Input: []string{dataToVectorize.TextToVectorize}}, vectorChannel)
 				vectorData := <-vectorChannel
 				if len(vectorData.Data) != 0 && len(vectorData.Data[0].Embedding) != 0 {
 					upsertPineconeChannel := make(chan int)
@@ -625,20 +623,19 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 	}
 	// fmt.Printf("Transcript %v\n",transcript)
 	if quizMapItem, quizMapExists := m.quizMap.Load(uiSignals.Sid); quizMapExists {
-		quizResponse := quizMapItem.(models.QuizResponse)
+		quizResponse := quizMapItem.(openRouter.QuizResponse)
 		if quizResponse.VideoId == uiSignals.QuizVideoId {
 			if uiSignals.QuizIndex < 0 || uiSignals.QuizIndex >= len(quizResponse.Questions) {
 				http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 				return
 			}
-			var evaluationAnswer models.AnswerEvaluation
+			var evaluationAnswer openRouter.AnswerEvaluationResponse
 			if uiSignals.VerifyAnswer {
 				if len(strings.TrimSpace(uiSignals.Answer)) < 25 {
 					http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 					return
 				} else {
-					answerEvaluationChannel := make(chan models.AnswerEvaluation)
-					defer close(answerEvaluationChannel)
+					answerEvaluationChannel := make(chan openRouter.AnswerEvaluationResponse)
 					go m.openRouterClient.VerifyQuizAnswerUsingOpenRouter(uiSignals.Answer, quizResponse, uiSignals.QuizIndex, answerEvaluationChannel)
 					evaluationAnswer = <-answerEvaluationChannel
 				}
@@ -657,7 +654,15 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 						FunctionalityVal: models.QUIZ_VERIFY_ANSWER_FUNCTIONALITY,
 						QuizIndex:        uiSignals.QuizIndex,
 						Sid:              uiSignals.Sid,
-						Answer:           evaluationAnswer,
+						Answer: models.EvaluationAnswer{
+							FluencyScore:         evaluationAnswer.FluencyScore,
+							AccuracyScore:        evaluationAnswer.AccuracyScore,
+							FeedbackTip:          evaluationAnswer.FeedbackTip,
+							ImprovedSpokenAnswer: evaluationAnswer.ImprovedSpokenAnswer,
+							UsedKeywords:         evaluationAnswer.UsedKeywords,
+							MissingKeywords:      evaluationAnswer.MissingKeywords,
+							IsTechnicallyCorrect: evaluationAnswer.IsTechnicallyCorrect,
+						},
 					}
 				default:
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
@@ -675,8 +680,7 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 			FunctionalityVal: models.QUIZ_GENERATING_FUNCTIONALITY,
 		}
 	}
-	openRouterChannel := make(chan models.QuizResponse)
-	defer close(openRouterChannel)
+	openRouterChannel := make(chan openRouter.QuizResponse)
 	go m.openRouterClient.GenerateQuizUsingOpenRouter(uiSignals, openRouterChannel)
 
 	updateTranscriptChannel := make(chan bool)
@@ -707,13 +711,13 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 
 func (m *MainHandler) quizQuestionUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	quizResponse, _ := m.quizMap.Load(sseData.Sid)
-	sse.PatchElementTempl(components.QuizQuestion(quizResponse.(models.QuizResponse), sseData.QuizIndex),
+	sse.PatchElementTempl(components.QuizQuestion(quizResponse.(openRouter.QuizResponse), sseData.QuizIndex),
 		datastar.WithSelector("#quizDialog"),
 		datastar.WithModeInner())
 }
 func (m *MainHandler) quizAnswerVerificationUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	quizResponse, _ := m.quizMap.Load(sseData.Sid)
-	sse.PatchElementTempl(components.ResultAndPrevNextQuestion(sseData.Answer, quizResponse.(models.QuizResponse), sseData.QuizIndex),
+	sse.PatchElementTempl(components.ResultAndPrevNextQuestion(sseData.Answer, quizResponse.(openRouter.QuizResponse), sseData.QuizIndex),
 		datastar.WithModeOuter())
 	sse.PatchSignals([]byte(`{verifyAnswer:false}`))
 }
@@ -725,6 +729,6 @@ func (m *MainHandler) quizGenerationErrorUI(sse *datastar.ServerSentEventGenerat
 
 func (m *MainHandler) quizAnswerVerificationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	quizResponse, _ := m.quizMap.Load(sseData.Sid)
-	sse.PatchElementTempl(components.AnswerEvaluationError(sseData.QuizIndex, quizResponse.(models.QuizResponse)),
+	sse.PatchElementTempl(components.AnswerEvaluationError(sseData.QuizIndex, quizResponse.(openRouter.QuizResponse)),
 		datastar.WithModeOuter())
 }

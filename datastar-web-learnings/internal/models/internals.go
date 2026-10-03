@@ -1,5 +1,8 @@
 package models
 
+// import openRouter "datastar-web-learnings/services/open-router"
+// Consider moving the relevant types or functions to a new package to avoid the cycle.
+
 type Functionality int
 
 const (
@@ -38,5 +41,15 @@ type LongSSEData struct {
 	QuizVideoId           string
 	QuizIndex             int
 	Sid                   string
-	Answer                AnswerEvaluation
+	Answer                EvaluationAnswer
+}
+
+type EvaluationAnswer struct {
+	IsTechnicallyCorrect bool
+	AccuracyScore        float32
+	FluencyScore         float32
+	UsedKeywords         []string
+	MissingKeywords      []string
+	FeedbackTip          string
+	ImprovedSpokenAnswer string
 }
