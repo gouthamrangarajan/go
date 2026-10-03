@@ -14,6 +14,7 @@ import (
 	"time"
 
 	openRouter "datastar-web-learnings/services/open-router"
+	"datastar-web-learnings/services/pinecone"
 	voyage "datastar-web-learnings/services/voyage"
 
 	"github.com/starfederation/datastar-go/datastar"
@@ -28,10 +29,12 @@ type MainHandler struct {
 	noOfDbItems      int
 	openRouterClient *openRouter.Client
 	voyageClient     *voyage.Client
+	pineconeClient   *pinecone.Client
 }
 
-func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map,
-	helperService *services.HelperSevice, openRouterclient *openRouter.Client, voyageClient *voyage.Client) *MainHandler {
+func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map, helperService *services.HelperSevice,
+	openRouterclient *openRouter.Client, voyageClient *voyage.Client, pineconeClient *pinecone.Client) *MainHandler {
+
 	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
 	noOfItems, err := strconv.Atoi(noOfItemsStr)
 	if err != nil {
@@ -46,6 +49,7 @@ func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map,
 		noOfDbItems:      noOfItems,
 		openRouterClient: openRouterclient,
 		voyageClient:     voyageClient,
+		pineconeClient:   pineconeClient,
 	}
 }
 
@@ -215,7 +219,7 @@ func (m *MainHandler) addAppendLoadMoreUI(sse *datastar.ServerSentEventGenerator
 }
 func (m *MainHandler) searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query string) {
 	aIResponseChannel := make(chan string)
-	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query, aIResponseChannel)
+	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQuery(query, aIResponseChannel)
 	aIResponse := <-aIResponseChannel
 	if aIResponse == "" {
 		fmt.Printf("Query not related to technology topics: %v\n", query)
@@ -231,9 +235,8 @@ func (m *MainHandler) searchUIForFirstSetData(sse *datastar.ServerSentEventGener
 		return
 	}
 	pineconeChannel := make(chan []string)
-	go services.QueryPineconeDb(vectorResponse.Data[0].Embedding, pineconeChannel)
+	go m.pineconeClient.Query(vectorResponse.Data[0].Embedding, pineconeChannel)
 	videoIds := <-pineconeChannel
-	close(pineconeChannel)
 	if len(videoIds) == 0 {
 		m.noDataFoundUI(sse)
 		return
@@ -290,7 +293,7 @@ func (m *MainHandler) removeLoadMoreUI(sse *datastar.ServerSentEventGenerator) {
 func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Context) {
 	// fmt.Printf("searching for '%v' \n", data.SearchTxt)
 	aIResponseChannel := make(chan string)
-	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(data.SearchTxt, aIResponseChannel)
+	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQuery(data.SearchTxt, aIResponseChannel)
 	aIResponse := <-aIResponseChannel
 	// fmt.Printf("response for verifyTechnology%v\n", aIResponse)
 	if aIResponse == "" {
@@ -315,8 +318,7 @@ func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ct
 		return
 	}
 	pineconeChannel := make(chan []string)
-	defer close(pineconeChannel)
-	go services.QueryPineconeDb(vectorResponse.Data[0].Embedding, pineconeChannel)
+	go m.pineconeClient.Query(vectorResponse.Data[0].Embedding, pineconeChannel)
 	videoIds := <-pineconeChannel
 	if len(videoIds) == 0 {
 		if sessionSseChannel, sidExists := m.sidMap.Load(data.Sid); sidExists {
@@ -484,8 +486,7 @@ func (m *MainHandler) HandleAddVideo(responseWriter http.ResponseWriter, request
 				vectorData := <-vectorChannel
 				if len(vectorData.Data) != 0 && len(vectorData.Data[0].Embedding) != 0 {
 					upsertPineconeChannel := make(chan int)
-					defer close(upsertPineconeChannel)
-					go services.UpsertPineconeDb(uiSignals.VideoId, vectorData.Data[0].Embedding, upsertPineconeChannel)
+					go m.pineconeClient.Upsert(uiSignals.VideoId, vectorData.Data[0].Embedding, upsertPineconeChannel)
 					<-upsertPineconeChannel
 					// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", dataToVectorize.TextToVectorize)
 				}
@@ -555,8 +556,7 @@ func (m *MainHandler) HandleDeleteVideo(responseWriter http.ResponseWriter, requ
 					}
 				}
 				deletePineconeRecordChannel := make(chan bool)
-				defer close(deletePineconeRecordChannel)
-				go services.DeleteRecordPineconeDb(uiSignals.VideoToDelete, deletePineconeRecordChannel)
+				go m.pineconeClient.DeleteRecord(uiSignals.VideoToDelete, deletePineconeRecordChannel)
 				<-deletePineconeRecordChannel
 			} else if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
@@ -636,7 +636,7 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 					return
 				} else {
 					answerEvaluationChannel := make(chan openRouter.AnswerEvaluationResponse)
-					go m.openRouterClient.VerifyQuizAnswerUsingOpenRouter(uiSignals.Answer, quizResponse, uiSignals.QuizIndex, answerEvaluationChannel)
+					go m.openRouterClient.VerifyQuizAnswer(uiSignals.Answer, quizResponse, uiSignals.QuizIndex, answerEvaluationChannel)
 					evaluationAnswer = <-answerEvaluationChannel
 				}
 			}
@@ -681,7 +681,7 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 		}
 	}
 	openRouterChannel := make(chan openRouter.QuizResponse)
-	go m.openRouterClient.GenerateQuizUsingOpenRouter(uiSignals, openRouterChannel)
+	go m.openRouterClient.GenerateQuiz(uiSignals, openRouterChannel)
 
 	updateTranscriptChannel := make(chan bool)
 	defer close(updateTranscriptChannel)

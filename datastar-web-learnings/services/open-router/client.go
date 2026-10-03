@@ -197,7 +197,7 @@ Respond strictly in JSON matching this schema:
 	}
 }
 
-func (c *Client) VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query string, channel chan<- string) {
+func (c *Client) VerifyTechnologyTopicsSearchAndOptimizeQuery(query string, channel chan<- string) {
 	defer close(channel)
 	responseVal := Response{}
 	aiRequestBytes, err := json.Marshal(Request{
@@ -268,7 +268,7 @@ func (c *Client) VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(que
 	channel <- ""
 }
 
-func (c *Client) GenerateQuizUsingOpenRouter(inputData models.UISignals, channel chan<- QuizResponse) {
+func (c *Client) GenerateQuiz(inputData models.UISignals, channel chan<- QuizResponse) {
 	defer close(channel)
 	retVal := QuizResponse{}
 	responseVal := Response{}
@@ -352,7 +352,7 @@ func (c *Client) GenerateQuizUsingOpenRouter(inputData models.UISignals, channel
 // 	channel <- retVal
 // }
 
-func (c *Client) VerifyQuizAnswerUsingOpenRouter(userAnswer string, quizResponse QuizResponse,
+func (c *Client) VerifyQuizAnswer(userAnswer string, quizResponse QuizResponse,
 	quizIndex int, channel chan<- AnswerEvaluationResponse) {
 	defer close(channel)
 	retVal := AnswerEvaluationResponse{}

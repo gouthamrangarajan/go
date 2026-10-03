@@ -1,8 +1,7 @@
-package services
+package pinecone
 
 import (
 	"bytes"
-	"datastar-web-learnings/internal/models"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,20 +11,37 @@ import (
 	"strconv"
 )
 
-func QueryPineconeDb(vector []float32, channel chan<- []string) {
-	resp := []string{}
-	key := os.Getenv("PINECONE_API_KEY")
-	hostUrl := os.Getenv("PINECONE_HOST_URL")
-	url := fmt.Sprintf("%v/query", hostUrl)
+type Client struct {
+	key        string
+	hostUrl    string
+	topK       int
+	apiVersion string
+}
+
+func NewClient() *Client {
 	topKStr := os.Getenv("PINECONE_TOPK")
 	topK, err := strconv.Atoi(topKStr)
 	if err != nil {
 		topK = 12
 	}
-	apiVersion := os.Getenv("PINECONE_API_VERSION")
-	pineConeRequestBody := models.PineconeQueryRequest{
+	return &Client{
+		key:        os.Getenv("PINECONE_API_KEY"),
+		hostUrl:    os.Getenv("PINECONE_HOST_URL"),
+		topK:       topK,
+		apiVersion: os.Getenv("PINECONE_API_VERSION"),
+	}
+}
+
+func (c *Client) Query(vector []float32, channel chan<- []string) {
+	defer close(channel)
+	resp := []string{}
+
+	hostUrl := c.hostUrl
+	url := fmt.Sprintf("%v/query", hostUrl)
+
+	pineConeRequestBody := QueryRequest{
 		Vector:          vector,
-		TopK:            topK,
+		TopK:            c.topK,
 		IncludeValues:   false,
 		IncludeMetadata: true,
 	}
@@ -42,8 +58,8 @@ func QueryPineconeDb(vector []float32, channel chan<- []string) {
 		return
 	}
 	httpRequest.Header.Set("Content-Type", "application/json")
-	httpRequest.Header.Set("Api-Key", key)
-	httpRequest.Header.Set("X-Pinecone-API-Version", apiVersion)
+	httpRequest.Header.Set("Api-Key", c.key)
+	httpRequest.Header.Set("X-Pinecone-API-Version", c.apiVersion)
 	client := &http.Client{}
 	response, err := client.Do(httpRequest)
 	if err != nil {
@@ -64,7 +80,7 @@ func QueryPineconeDb(vector []float32, channel chan<- []string) {
 		channel <- resp
 		return
 	}
-	var pineconeResponse models.PineconeQueryResponse
+	var pineconeResponse QueryResponse
 	err = json.Unmarshal(responseBodyRaw, &pineconeResponse)
 	if err != nil {
 		fmt.Printf("Error unmarshalling response body for Pinecone query request: %v\n", err)
@@ -88,14 +104,12 @@ func QueryPineconeDb(vector []float32, channel chan<- []string) {
 	channel <- resp
 }
 
-func UpsertPineconeDb(videoId string, vector []float32, channel chan<- int) {
+func (c *Client) Upsert(videoId string, vector []float32, channel chan<- int) {
+	defer close(channel)
 	resp := 0
-	key := os.Getenv("PINECONE_API_KEY")
-	hostUrl := os.Getenv("PINECONE_HOST_URL")
-	url := fmt.Sprintf("%v/vectors/upsert", hostUrl)
+	url := fmt.Sprintf("%v/vectors/upsert", c.hostUrl)
 
-	apiVersion := os.Getenv("PINECONE_API_VERSION")
-	pineConeRequestBody := models.PineconeUpsertRequest{
+	pineConeRequestBody := UpsertRequest{
 		Vectors: []struct {
 			Id     string    `json:"id"`
 			Values []float32 `json:"values"`
@@ -116,8 +130,8 @@ func UpsertPineconeDb(videoId string, vector []float32, channel chan<- int) {
 		return
 	}
 	httpRequest.Header.Set("Content-Type", "application/json")
-	httpRequest.Header.Set("Api-Key", key)
-	httpRequest.Header.Set("X-Pinecone-API-Version", apiVersion)
+	httpRequest.Header.Set("Api-Key", c.key)
+	httpRequest.Header.Set("X-Pinecone-API-Version", c.apiVersion)
 	client := &http.Client{}
 	response, err := client.Do(httpRequest)
 	if err != nil {
@@ -138,7 +152,7 @@ func UpsertPineconeDb(videoId string, vector []float32, channel chan<- int) {
 		channel <- resp
 		return
 	}
-	var pineconeResponse models.PineconeUpsertResponse
+	var pineconeResponse UpsertResponse
 	err = json.Unmarshal(responseBodyRaw, &pineconeResponse)
 	if err != nil {
 		fmt.Printf("Error unmarshalling response body for Pinecone upsert request: %v\n", err)
@@ -154,13 +168,10 @@ func UpsertPineconeDb(videoId string, vector []float32, channel chan<- int) {
 	// fmt.Printf("Pinecone response : %v\n", string(responseBodyRaw))
 	channel <- pineconeResponse.UpsertedCount
 }
-func DeleteRecordPineconeDb(videoId string, channel chan<- bool) {
+func (c *Client) DeleteRecord(videoId string, channel chan<- bool) {
+	defer close(channel)
+	url := fmt.Sprintf("%v/vectors/delete", c.hostUrl)
 
-	key := os.Getenv("PINECONE_API_KEY")
-	hostUrl := os.Getenv("PINECONE_HOST_URL")
-	url := fmt.Sprintf("%v/vectors/delete", hostUrl)
-
-	apiVersion := os.Getenv("PINECONE_API_VERSION")
 	pineConeRequestBody := map[string]interface{}{
 		"ids": []string{videoId + "-1"},
 	}
@@ -177,8 +188,8 @@ func DeleteRecordPineconeDb(videoId string, channel chan<- bool) {
 		return
 	}
 	httpRequest.Header.Set("Content-Type", "application/json")
-	httpRequest.Header.Set("Api-Key", key)
-	httpRequest.Header.Set("X-Pinecone-API-Version", apiVersion)
+	httpRequest.Header.Set("Api-Key", c.key)
+	httpRequest.Header.Set("X-Pinecone-API-Version", c.apiVersion)
 	client := &http.Client{}
 	response, err := client.Do(httpRequest)
 	if err != nil {

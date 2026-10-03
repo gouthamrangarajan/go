@@ -4,6 +4,7 @@ import (
 	"context"
 	"datastar-web-learnings/internal/models"
 	"datastar-web-learnings/services"
+	"datastar-web-learnings/services/pinecone"
 	voyage "datastar-web-learnings/services/voyage"
 	"fmt"
 	"time"
@@ -21,6 +22,7 @@ func main() {
 	}
 	helperService := services.NewHelperSerice()
 	voyageClient := voyage.NewClient()
+	pineconeClient := pinecone.NewClient()
 
 	getAllVideosChannel := make(chan []models.VideoResponse)
 	go services.GetAllVideos(context.Background(), getAllVideosChannel)
@@ -63,11 +65,10 @@ func main() {
 	for idx := range dbData {
 		vectorResponse := <-voyageAPIChannels[idx]
 		pineconeUpsertChannels[idx] = make(chan int)
-		go services.UpsertPineconeDb(dbData[idx].VideoId, vectorResponse.Data[0].Embedding, pineconeUpsertChannels[idx])
+		go pineconeClient.Upsert(dbData[idx].VideoId, vectorResponse.Data[0].Embedding, pineconeUpsertChannels[idx])
 	}
 	for idx := range dbData {
 		<-pineconeUpsertChannels[idx]
-		close(pineconeUpsertChannels[idx])
 	}
 	fmt.Printf("Finished Vectorizing videos...%v\n", time.Now())
 }
