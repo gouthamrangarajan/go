@@ -1,9 +1,9 @@
-package main
+package handlers
 
 import (
 	"context"
-	"datastar-web-learnings/components"
-	"datastar-web-learnings/models"
+	"datastar-web-learnings/internal/models"
+	"datastar-web-learnings/internal/views/components"
 	"datastar-web-learnings/services"
 	"fmt"
 	"net/http"
@@ -13,16 +13,43 @@ import (
 	"sync"
 	"time"
 
+	openRouter "datastar-web-learnings/services/open-router"
+
 	"github.com/starfederation/datastar-go/datastar"
 )
 
-var sidMap = sync.Map{}
-var quizMap = sync.Map{}
+type MainHandler struct {
+	sidMap           *sync.Map
+	quizMap          *sync.Map
+	apiKey           string
+	domain           string
+	helperService    *services.HelperSevice
+	noOfDbItems      int
+	openRouterClient *openRouter.Client
+}
 
-func landingPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map,
+	helperService *services.HelperSevice, openRouterclient *openRouter.Client) *MainHandler {
+	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
+	noOfItems, err := strconv.Atoi(noOfItemsStr)
+	if err != nil {
+		noOfItems = 12
+	}
+	return &MainHandler{
+		sidMap:           sidMap,
+		quizMap:          quizMap,
+		apiKey:           os.Getenv("FIREBASE_API_KEY"),
+		domain:           os.Getenv("FIREBASE_AUTH_DOMAIN"),
+		helperService:    helperService,
+		noOfDbItems:      noOfItems,
+		openRouterClient: openRouterclient,
+	}
+}
+
+func (m *MainHandler) HandleLandingPage(responseWriter http.ResponseWriter, request *http.Request) {
 	firebaseConfig := models.FirebaseAuthConfig{
-		ApiKey: os.Getenv("FIREBASE_API_KEY"),
-		Domain: os.Getenv("FIREBASE_AUTH_DOMAIN"),
+		ApiKey: m.apiKey,
+		Domain: m.domain,
 	}
 	if request.Header.Get("Datastar-Request") == "true" {
 		var clientSignal models.UISignals
@@ -30,9 +57,9 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 		datastar.ReadSignals(request, &clientSignal)
 		var videos []models.VideoResponse
 		if strings.TrimSpace(clientSignal.SearchTxt) == "" {
-			videos = services.GetFirstSetOfVideos(request.Context())
+			videos = m.helperService.GetFirstSetOfVideos(request.Context())
 		}
-		if sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
+		if sessionSseChannel, sidExists := m.sidMap.Load(clientSignal.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.LANDING_PAGE_UI,
 				SearchTxt:        clientSignal.SearchTxt,
@@ -40,14 +67,14 @@ func landingPageHandler(responseWriter http.ResponseWriter, request *http.Reques
 			}
 		}
 		if strings.TrimSpace(clientSignal.SearchTxt) != "" {
-			searchVideosAndSendDataToChannel(clientSignal, request.Context())
+			m.searchVideosAndSendDataToChannel(clientSignal, request.Context())
 		}
 		return
 	}
 	components.Landing(firebaseConfig).Render(request.Context(), responseWriter)
 }
 
-func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleSSE(responseWriter http.ResponseWriter, request *http.Request) {
 	var clientSignal models.UISignals
 	datastar.ReadSignals(request, &clientSignal)
 
@@ -57,8 +84,8 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	sessionSseChannel := make(chan models.LongSSEData, 16)
-	sidMap.Store(clientSignal.Sid, sessionSseChannel)
-	defer sidMap.CompareAndDelete(clientSignal.Sid, sessionSseChannel)
+	m.sidMap.Store(clientSignal.Sid, sessionSseChannel)
+	defer m.sidMap.CompareAndDelete(clientSignal.Sid, sessionSseChannel)
 
 	responseWriter.Header().Set("Content-Type", "text/event-stream")
 	responseWriter.Header().Set("Cache-Control", "no-cache")
@@ -70,10 +97,10 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 
 	var videos []models.VideoResponse
 	if strings.TrimSpace(clientSignal.SearchTxt) == "" {
-		videos = services.GetFirstSetOfVideos(sse.Context())
-		loadVideosWithOffsetUI(models.LongSSEData{Data: videos, OffsetVal: 0}, false, sse)
+		videos = m.helperService.GetFirstSetOfVideos(sse.Context())
+		m.loadVideosWithOffsetUI(models.LongSSEData{Data: videos, OffsetVal: 0}, false, sse)
 	} else {
-		searchUIForFirstSetData(sse, strings.TrimSpace(clientSignal.SearchTxt))
+		m.searchUIForFirstSetData(sse, strings.TrimSpace(clientSignal.SearchTxt))
 	}
 
 	heartBeatTicker := time.NewTicker(5 * time.Second)
@@ -84,54 +111,54 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		case <-request.Context().Done():
 			return
 		case sseData := <-sessionSseChannel:
-			if channelInMap, ok := sidMap.Load(clientSignal.Sid); !ok || channelInMap != sessionSseChannel {
+			if channelInMap, ok := m.sidMap.Load(clientSignal.Sid); !ok || channelInMap != sessionSseChannel {
 				return
 			}
 			switch sseData.FunctionalityVal {
 			case models.LANDING_PAGE_UI:
-				landingPageUI(sse, sseData)
+				m.landingPageUI(sse, sseData)
 			case models.LOAD_MORE_FUNCTIONALITY:
-				loadVideosWithOffsetUI(sseData, true, sse)
+				m.loadVideosWithOffsetUI(sseData, true, sse)
 			case models.SEARCH_FUNCTIONALITY:
-				loadVideosWithOffsetUI(sseData, false, sse)
-				removeLoadMoreUI(sse)
+				m.loadVideosWithOffsetUI(sseData, false, sse)
+				m.removeLoadMoreUI(sse)
 			case models.CLEAR_SEARCH_FUNCTIONALITY:
-				loadVideosWithOffsetUI(sseData, false, sse)
+				m.loadVideosWithOffsetUI(sseData, false, sse)
 			case models.INVALID_SEARCH_FUNCTIONALITY:
-				invalidSearchUI(sse)
-				removeLoadMoreUI(sse)
+				m.invalidSearchUI(sse)
+				m.removeLoadMoreUI(sse)
 			case models.NO_DATA_FOUND_FUNCTIONALITY:
-				noDataFoundUI(sse)
-				removeLoadMoreUI(sse)
+				m.noDataFoundUI(sse)
+				m.removeLoadMoreUI(sse)
 			case models.ADD_PAGE_UI:
-				addPageUi(sse)
+				m.addPageUi(sse)
 			case models.TAGS_UI:
-				tagsUI(sse, sseData)
+				m.tagsUI(sse, sseData)
 			case models.ADD_VIDEO_VALIDATION_ERROR_FUNCTIONALITY:
-				addVideoValidationErrorUI(sse, sseData)
+				m.addVideoValidationErrorUI(sse, sseData)
 			case models.ADD_VIDEO_SUCCESS_FUNCTIONALITY:
-				addVideoSuccessUI(sse, sseData)
+				m.addVideoSuccessUI(sse, sseData)
 			case models.ADD_VIDEO_ERROR_FUNCTIONALITY:
-				addVideoErrorUI(sse, sseData)
+				m.addVideoErrorUI(sse, sseData)
 			case models.DELETE_VIDEO_SUCCESS_FUNCTIONALITY:
-				deleteVideoSuccessUI(sse, sseData)
+				m.deleteVideoSuccessUI(sse, sseData)
 			case models.DELETE_VIDEO_ERROR_FUNCTIONALITY:
-				deleteVideoErrorUI(sse)
+				m.deleteVideoErrorUI(sse)
 			case models.LOAD_QUIZ_UI_FUNCTIONALITY:
-				loadQuizUI(sse, sseData)
+				m.loadQuizUI(sse, sseData)
 			case models.QUIZ_GENERATING_FUNCTIONALITY:
-				quizGeneratingUI(sse)
+				m.quizGeneratingUI(sse)
 			case models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY:
-				quizGenerationErrorUI(sse)
+				m.quizGenerationErrorUI(sse)
 			case models.QUIZ_VERIFY_ANSWER_FUNCTIONALITY:
-				quizAnswerVerificationUI(sse, sseData)
+				m.quizAnswerVerificationUI(sse, sseData)
 			case models.QUIZ_VERIFY_ANSWER_ERROR:
-				quizAnswerVerificationErrorUI(sse, sseData)
+				m.quizAnswerVerificationErrorUI(sse, sseData)
 			case models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY:
-				quizQuestionUI(sse, sseData)
+				m.quizQuestionUI(sse, sseData)
 			}
 		case <-heartBeatTicker.C:
-			if channelInMap, ok := sidMap.Load(clientSignal.Sid); !ok || channelInMap != sessionSseChannel {
+			if channelInMap, ok := m.sidMap.Load(clientSignal.Sid); !ok || channelInMap != sessionSseChannel {
 				return
 			}
 			sse.Send(datastar.EventType("heartbeat"), []string{fmt.Sprintf(": heartbeat %d\n\n", time.Now().Unix())})
@@ -139,7 +166,7 @@ func sseHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func loadMoreHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleLoadMore(responseWriter http.ResponseWriter, request *http.Request) {
 	var clientSignal models.UISignals
 	datastar.ReadSignals(request, &clientSignal)
 
@@ -152,7 +179,7 @@ func loadMoreHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	defer close(channel)
 	go services.GetVideos(request.Context(), models.GetVideosRequest{Limit: noOfItems, Offset: clientSignal.Offset}, channel)
 	videos := <-channel
-	if sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
+	if sessionSseChannel, sidExists := m.sidMap.Load(clientSignal.Sid); sidExists {
 		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 			FunctionalityVal: models.LOAD_MORE_FUNCTIONALITY,
 			OffsetVal:        clientSignal.Offset,
@@ -161,12 +188,7 @@ func loadMoreHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	}
 
 }
-func loadVideosWithOffsetUI(sseData models.LongSSEData, append bool, sse *datastar.ServerSentEventGenerator) {
-	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
-	noOfItems, err := strconv.Atoi(noOfItemsStr)
-	if err != nil {
-		noOfItems = 12
-	}
+func (m *MainHandler) loadVideosWithOffsetUI(sseData models.LongSSEData, append bool, sse *datastar.ServerSentEventGenerator) {
 
 	if append {
 		sse.PatchElementTempl(components.PlayerList(sseData.Data, sseData.SearchTxt), datastar.WithSelector("section"), datastar.WithModeAppend())
@@ -174,33 +196,28 @@ func loadVideosWithOffsetUI(sseData models.LongSSEData, append bool, sse *datast
 		sse.PatchElementTempl(components.PlayerList(sseData.Data, sseData.SearchTxt), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 	}
 
-	if len(sseData.Data) < noOfItems {
-		removeLoadMoreUI(sse)
+	if len(sseData.Data) < m.noOfDbItems {
+		m.removeLoadMoreUI(sse)
 		return
 	}
-	addAppendLoadMoreUI(sse, sseData.OffsetVal)
+	m.addAppendLoadMoreUI(sse, sseData.OffsetVal)
 }
-func addAppendLoadMoreUI(sse *datastar.ServerSentEventGenerator, offset int) {
-	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
-	noOfItems, err := strconv.Atoi(noOfItemsStr)
-	if err != nil {
-		noOfItems = 12
-	}
+func (m *MainHandler) addAppendLoadMoreUI(sse *datastar.ServerSentEventGenerator, offset int) {
 	if offset == 0 {
-		removeLoadMoreUI(sse)
-		sse.PatchElementTempl(components.LoadMore(noOfItems), datastar.WithSelector("main"), datastar.WithModeAppend())
+		m.removeLoadMoreUI(sse)
+		sse.PatchElementTempl(components.LoadMore(m.noOfDbItems), datastar.WithSelector("main"), datastar.WithModeAppend())
 	} else {
-		sse.PatchElementTempl(components.LoadMore(noOfItems + offset))
+		sse.PatchElementTempl(components.LoadMore(m.noOfDbItems + offset))
 	}
 }
-func searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query string) {
+func (m *MainHandler) searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query string) {
 	aIResponseChannel := make(chan string)
-	go services.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query, aIResponseChannel)
+	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(query, aIResponseChannel)
 	aIResponse := <-aIResponseChannel
 	close(aIResponseChannel)
 	if aIResponse == "" {
 		fmt.Printf("Query not related to technology topics: %v\n", query)
-		invalidSearchUI(sse)
+		m.invalidSearchUI(sse)
 		return
 	}
 	vectorChannel := make(chan models.VoyageEmbeddingResponse)
@@ -209,7 +226,7 @@ func searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query strin
 	close(vectorChannel)
 	if len(vectorResponse.Data) == 0 || len(vectorResponse.Data[0].Embedding) == 0 {
 		fmt.Printf("No embedding vector received from ai for %v\n", query)
-		noDataFoundUI(sse)
+		m.noDataFoundUI(sse)
 		return
 	}
 	pineconeChannel := make(chan []string)
@@ -217,7 +234,7 @@ func searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query strin
 	videoIds := <-pineconeChannel
 	close(pineconeChannel)
 	if len(videoIds) == 0 {
-		noDataFoundUI(sse)
+		m.noDataFoundUI(sse)
 		return
 	}
 	dbChannel := make(chan []models.VideoResponse)
@@ -225,29 +242,29 @@ func searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query strin
 	videos := <-dbChannel
 	close(dbChannel)
 	if len(videos) == 0 {
-		noDataFoundUI(sse)
+		m.noDataFoundUI(sse)
 		return
 	}
-	loadVideosWithOffsetUI(models.LongSSEData{Data: videos, OffsetVal: 0, SearchTxt: query}, false, sse)
-	removeLoadMoreUI(sse)
+	m.loadVideosWithOffsetUI(models.LongSSEData{Data: videos, OffsetVal: 0, SearchTxt: query}, false, sse)
+	m.removeLoadMoreUI(sse)
 }
-func landingPageUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+func (m *MainHandler) landingPageUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	sse.PatchElementTempl(components.LandingMainWithoutLoad(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
 	sse.PatchElementTempl(components.AddVideoButton(), datastar.WithUseViewTransitions(true))
 
-	loadVideosWithOffsetUI(models.LongSSEData{Data: sseData.Data, OffsetVal: 0}, false, sse)
+	m.loadVideosWithOffsetUI(models.LongSSEData{Data: sseData.Data, OffsetVal: 0}, false, sse)
 	if strings.TrimSpace(sseData.SearchTxt) != "" {
-		removeLoadMoreUI(sse)
+		m.removeLoadMoreUI(sse)
 	}
 }
-func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleSearch(responseWriter http.ResponseWriter, request *http.Request) {
 	var clientSignal models.UISignals
 	datastar.ReadSignals(request, &clientSignal)
 	query := strings.TrimSpace(clientSignal.SearchTxt)
 	// fmt.Printf("Search query received: %v\n", query)
 	if query == "" {
-		videos := services.GetFirstSetOfVideos(request.Context())
-		if sessionSseChannel, sidExists := sidMap.Load(clientSignal.Sid); sidExists {
+		videos := m.helperService.GetFirstSetOfVideos(request.Context())
+		if sessionSseChannel, sidExists := m.sidMap.Load(clientSignal.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.CLEAR_SEARCH_FUNCTIONALITY,
 				Data:             videos,
@@ -255,28 +272,30 @@ func searchHandler(responseWriter http.ResponseWriter, request *http.Request) {
 			return
 		}
 	}
-	searchVideosAndSendDataToChannel(clientSignal, request.Context())
+	m.searchVideosAndSendDataToChannel(clientSignal, request.Context())
 
 }
 
-func noDataFoundUI(sse *datastar.ServerSentEventGenerator) {
+func (m *MainHandler) noDataFoundUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.NoDataFound("No technology videos found matching your search."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 }
-func invalidSearchUI(sse *datastar.ServerSentEventGenerator) {
+func (m *MainHandler) invalidSearchUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.NoDataFound("Looks like your search isn’t technology-related. Please try a tech-related query."), datastar.WithSelector("section"), datastar.WithModeInner(), datastar.WithUseViewTransitions(true))
 }
 
-func removeLoadMoreUI(sse *datastar.ServerSentEventGenerator) {
+func (m *MainHandler) removeLoadMoreUI(sse *datastar.ServerSentEventGenerator) {
 	sse.ExecuteScript("document.getElementById('loadMore')?.remove();", datastar.WithExecuteScriptAutoRemove(true))
 }
-func searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Context) {
+func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Context) {
+	// fmt.Printf("searching for '%v' \n", data.SearchTxt)
 	aIResponseChannel := make(chan string)
 	defer close(aIResponseChannel)
-	go services.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(data.SearchTxt, aIResponseChannel)
+	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQueryUsingOpenRouter(data.SearchTxt, aIResponseChannel)
 	aIResponse := <-aIResponseChannel
+	// fmt.Printf("response for verifyTechnology%v\n", aIResponse)
 	if aIResponse == "" {
 		fmt.Printf("Query not related to technology topics: %v\n", data.SearchTxt)
-		if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+		if sessionSseChannel, sidExists := m.sidMap.Load(data.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.INVALID_SEARCH_FUNCTIONALITY,
 			}
@@ -289,7 +308,7 @@ func searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Contex
 	vectorResponse := <-vectorChannel
 	if len(vectorResponse.Data) == 0 || len(vectorResponse.Data[0].Embedding) == 0 {
 		fmt.Printf("No embedding vector received from ai for %v\n", data.SearchTxt)
-		if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+		if sessionSseChannel, sidExists := m.sidMap.Load(data.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
 			}
@@ -301,7 +320,7 @@ func searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Contex
 	go services.QueryPineconeDb(vectorResponse.Data[0].Embedding, pineconeChannel)
 	videoIds := <-pineconeChannel
 	if len(videoIds) == 0 {
-		if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+		if sessionSseChannel, sidExists := m.sidMap.Load(data.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
 			}
@@ -313,14 +332,14 @@ func searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Contex
 	go services.FilterVideos(ctxt, videoIds, dbChannel)
 	videos := <-dbChannel
 	if len(videos) == 0 {
-		if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+		if sessionSseChannel, sidExists := m.sidMap.Load(data.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.NO_DATA_FOUND_FUNCTIONALITY,
 			}
 		}
 		return
 	}
-	if sessionSseChannel, sidExists := sidMap.Load(data.Sid); sidExists {
+	if sessionSseChannel, sidExists := m.sidMap.Load(data.Sid); sidExists {
 		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 			FunctionalityVal: models.SEARCH_FUNCTIONALITY,
 			SearchTxt:        data.SearchTxt,
@@ -329,7 +348,7 @@ func searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Contex
 	}
 }
 
-func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleAddPage(responseWriter http.ResponseWriter, request *http.Request) {
 	var uiSignals models.UISignals
 	datastar.ReadSignals(request, &uiSignals)
 	if uiSignals.IdToken != "" {
@@ -338,7 +357,7 @@ func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, channel)
 		isValidToken := <-channel
 		if isValidToken {
-			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+			if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 					FunctionalityVal: models.ADD_PAGE_UI,
 				}
@@ -348,15 +367,15 @@ func addPageHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 }
-func addPageUi(sse *datastar.ServerSentEventGenerator) {
+func (m *MainHandler) addPageUi(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.AddVideo(), datastar.WithSelector("main"), datastar.WithModeOuter(), datastar.WithUseViewTransitions(true))
 	sse.PatchElementTempl(components.HomeButton(), datastar.WithUseViewTransitions(true))
 }
-func tagsHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleTags(responseWriter http.ResponseWriter, request *http.Request) {
 	userAgent := request.Header.Get("User-Agent")
 	var uiSignals models.UISignals
 	datastar.ReadSignals(request, &uiSignals)
-	if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+	if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 			FunctionalityVal: models.TAGS_UI,
 			Tags:             uiSignals.Tags,
@@ -364,7 +383,7 @@ func tagsHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 	}
 }
-func tagsUI(sse *datastar.ServerSentEventGenerator, data models.LongSSEData) {
+func (m *MainHandler) tagsUI(sse *datastar.ServerSentEventGenerator, data models.LongSSEData) {
 	useViewTransition := true
 	if strings.Contains(strings.ToLower(data.UserAgent), "mobile") {
 		useViewTransition = false
@@ -372,7 +391,7 @@ func tagsUI(sse *datastar.ServerSentEventGenerator, data models.LongSSEData) {
 	sse.PatchElementTempl(components.TagsList(data.Tags), datastar.WithUseViewTransitions(useViewTransition))
 }
 
-func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleAddVideo(responseWriter http.ResponseWriter, request *http.Request) {
 	userAgent := request.Header.Get("User-Agent")
 	var uiSignals models.UISignals
 	datastar.ReadSignals(request, &uiSignals)
@@ -426,7 +445,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 			}
 			// sse := datastar.NewSSE(responseWriter, request)
 			if len(errorMessages) > 0 {
-				if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+				if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal:      models.ADD_VIDEO_VALIDATION_ERROR_FUNCTIONALITY,
 						AddVideoErrorMessages: errorMessages,
@@ -442,7 +461,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 			go services.UpsertVideo(uiSignals, saveToDbChannel)
 			success := <-saveToDbChannel
 			if success {
-				if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+				if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal:      models.ADD_VIDEO_SUCCESS_FUNCTIONALITY,
 						AddVideoErrorMessages: []string{},
@@ -460,7 +479,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					Tags:       trimmedTags,
 					Transcript: uiSignals.Transcript,
 				}
-				dataToVectorize = services.ConstructTextToVectorize(dataToVectorize, ytResponse.Items[0].Snippet.Description)
+				dataToVectorize = m.helperService.ConstructTextToVectorize(dataToVectorize, ytResponse.Items[0].Snippet.Description)
 				vectorChannel := make(chan models.VoyageEmbeddingResponse)
 				defer close(vectorChannel)
 				go services.CallVoyageEmbedding(models.VoyageEmbeddingRequest{Input: []string{dataToVectorize.TextToVectorize}}, vectorChannel)
@@ -473,7 +492,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 					// fmt.Printf("Text vectorized and upserted to Pinecone: %v\n", dataToVectorize.TextToVectorize)
 				}
 				<-deleteDocIdAndVideoIdNotMatchChannel
-			} else if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+			} else if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 					FunctionalityVal:      models.ADD_VIDEO_ERROR_FUNCTIONALITY,
 					AddVideoErrorMessages: []string{},
@@ -487,7 +506,7 @@ func addVideoHandler(responseWriter http.ResponseWriter, request *http.Request) 
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 }
 
-func addVideoValidationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+func (m *MainHandler) addVideoValidationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	useViewTransition := true
 	if strings.Contains(strings.ToLower(sseData.UserAgent), "mobile") {
 		useViewTransition = false
@@ -495,7 +514,7 @@ func addVideoValidationErrorUI(sse *datastar.ServerSentEventGenerator, sseData m
 	sse.PatchElementTempl(components.AddVideoValidationError(sseData.AddVideoErrorMessages), datastar.WithUseViewTransitions(useViewTransition))
 	sse.PatchSignals([]byte(`{` + sseData.AddVideoErrorsignals + `}`))
 }
-func addVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+func (m *MainHandler) addVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	useViewTransition := true
 	if strings.Contains(strings.ToLower(sseData.UserAgent), "mobile") {
 		useViewTransition = false
@@ -504,7 +523,7 @@ func addVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models.Lo
 	sse.PatchSignals([]byte(`{videoId:'',title:'',subtitle:'',tags:[],rank:1,transcript:''}`))
 	sse.PatchElementTempl(components.TagsList([]string{}), datastar.WithUseViewTransitions(useViewTransition))
 }
-func addVideoErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+func (m *MainHandler) addVideoErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	useViewTransition := true
 	if strings.Contains(strings.ToLower(sseData.UserAgent), "mobile") {
 		useViewTransition = false
@@ -512,7 +531,7 @@ func addVideoErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.Long
 	sse.PatchElementTempl(components.AddVideoErrorResult(), datastar.WithUseViewTransitions(useViewTransition))
 
 }
-func deleteVideoHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleDeleteVideo(responseWriter http.ResponseWriter, request *http.Request) {
 	var uiSignals models.UISignals
 	datastar.ReadSignals(request, &uiSignals)
 	if uiSignals.IdToken != "" {
@@ -530,7 +549,7 @@ func deleteVideoHandler(responseWriter http.ResponseWriter, request *http.Reques
 			go services.DeleteVideo(uiSignals.VideoToDelete, deleteVideoChannel)
 			success := <-deleteVideoChannel
 			if success {
-				if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+				if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal: models.DELETE_VIDEO_SUCCESS_FUNCTIONALITY,
 						SearchTxt:        uiSignals.SearchTxt,
@@ -541,7 +560,7 @@ func deleteVideoHandler(responseWriter http.ResponseWriter, request *http.Reques
 				defer close(deletePineconeRecordChannel)
 				go services.DeleteRecordPineconeDb(uiSignals.VideoToDelete, deletePineconeRecordChannel)
 				<-deletePineconeRecordChannel
-			} else if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+			} else if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 				sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 					FunctionalityVal: models.DELETE_VIDEO_ERROR_FUNCTIONALITY,
 					SearchTxt:        uiSignals.SearchTxt,
@@ -554,31 +573,31 @@ func deleteVideoHandler(responseWriter http.ResponseWriter, request *http.Reques
 	http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 }
 
-func deleteVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+func (m *MainHandler) deleteVideoSuccessUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	sse.PatchElementTempl(components.EmptyDeleteVideoResult(), datastar.WithUseViewTransitions(true))
 	sse.PatchSignals([]byte(`{videoToDelete:'',showDeleteConfirm:false}`))
 	time.Sleep(200 * time.Millisecond) //wait for UI animation
 	sse.RemoveElement("#playerContainer_"+sseData.VideoDeleted+"_"+sseData.SearchTxt, datastar.WithUseViewTransitions(true))
 }
 
-func deleteVideoErrorUI(sse *datastar.ServerSentEventGenerator) {
+func (m *MainHandler) deleteVideoErrorUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.DeleteVideoErrorResult(), datastar.WithUseViewTransitions(false))
 }
-func loadQuizHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleLoadQuiz(responseWriter http.ResponseWriter, request *http.Request) {
 	var uiSignals models.UISignals
 	datastar.ReadSignals(request, &uiSignals)
 	if strings.TrimSpace(uiSignals.QuizVideoId) == "" {
 		http.Error(responseWriter, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+	if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 			FunctionalityVal: models.LOAD_QUIZ_UI_FUNCTIONALITY,
 			QuizVideoId:      uiSignals.QuizVideoId,
 		}
 	}
 }
-func loadQuizUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+func (m *MainHandler) loadQuizUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	sse.PatchSignals([]byte(`{_loadingQuiz:false,_showQuiz:true}`))
 	dbChannel := make(chan []models.VideoResponse)
 	defer close(dbChannel)
@@ -593,10 +612,10 @@ func loadQuizUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEDa
 		datastar.WithModeInner(), datastar.WithSelector("#quizDialog"))
 	sse.PatchSignals([]byte(`{transcript:'` + transcript + `'}`))
 }
-func quizGeneratingUI(sse *datastar.ServerSentEventGenerator) {
+func (m *MainHandler) quizGeneratingUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.QuizGenerating(), datastar.WithSelector("#quizDialog"), datastar.WithModeInner())
 }
-func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWriter, request *http.Request) {
+func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter http.ResponseWriter, request *http.Request) {
 	var uiSignals models.UISignals
 	datastar.ReadSignals(request, &uiSignals)
 	transcript := strings.TrimSpace(uiSignals.Transcript)
@@ -605,7 +624,7 @@ func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWrite
 		return
 	}
 	// fmt.Printf("Transcript %v\n",transcript)
-	if quizMapItem, quizMapExists := quizMap.Load(uiSignals.Sid); quizMapExists {
+	if quizMapItem, quizMapExists := m.quizMap.Load(uiSignals.Sid); quizMapExists {
 		quizResponse := quizMapItem.(models.QuizResponse)
 		if quizResponse.VideoId == uiSignals.QuizVideoId {
 			if uiSignals.QuizIndex < 0 || uiSignals.QuizIndex >= len(quizResponse.Questions) {
@@ -620,11 +639,11 @@ func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWrite
 				} else {
 					answerEvaluationChannel := make(chan models.AnswerEvaluation)
 					defer close(answerEvaluationChannel)
-					go services.VerifyQuizAnswerUsingOpenRouter(uiSignals.Answer, quizResponse, uiSignals.QuizIndex, answerEvaluationChannel)
+					go m.openRouterClient.VerifyQuizAnswerUsingOpenRouter(uiSignals.Answer, quizResponse, uiSignals.QuizIndex, answerEvaluationChannel)
 					evaluationAnswer = <-answerEvaluationChannel
 				}
 			}
-			if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+			if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 				switch {
 				case uiSignals.VerifyAnswer && evaluationAnswer.FluencyScore == 0 && evaluationAnswer.AccuracyScore == 0:
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
@@ -651,14 +670,14 @@ func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWrite
 			return
 		}
 	}
-	if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+	if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 			FunctionalityVal: models.QUIZ_GENERATING_FUNCTIONALITY,
 		}
 	}
 	openRouterChannel := make(chan models.QuizResponse)
 	defer close(openRouterChannel)
-	go services.GenerateQuizUsingOpenRouter(uiSignals, openRouterChannel)
+	go m.openRouterClient.GenerateQuizUsingOpenRouter(uiSignals, openRouterChannel)
 
 	updateTranscriptChannel := make(chan bool)
 	defer close(updateTranscriptChannel)
@@ -667,9 +686,9 @@ func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWrite
 	quizResponse := <-openRouterChannel
 	if len(quizResponse.Questions) > 0 {
 		quizResponse.VideoId = uiSignals.QuizVideoId
-		quizMap.Store(uiSignals.Sid, quizResponse)
+		m.quizMap.Store(uiSignals.Sid, quizResponse)
 
-		if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+		if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
 				QuizIndex:        0,
@@ -677,7 +696,7 @@ func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWrite
 			}
 		}
 	} else {
-		if sessionSseChannel, sidExists := sidMap.Load(uiSignals.Sid); sidExists {
+		if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 				FunctionalityVal: models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY,
 			}
@@ -686,26 +705,26 @@ func quizGenerationVerifyAnswerPrevNextHandler(responseWriter http.ResponseWrite
 	<-updateTranscriptChannel
 }
 
-func quizQuestionUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
-	quizResponse, _ := quizMap.Load(sseData.Sid)
+func (m *MainHandler) quizQuestionUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	quizResponse, _ := m.quizMap.Load(sseData.Sid)
 	sse.PatchElementTempl(components.QuizQuestion(quizResponse.(models.QuizResponse), sseData.QuizIndex),
 		datastar.WithSelector("#quizDialog"),
 		datastar.WithModeInner())
 }
-func quizAnswerVerificationUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
-	quizResponse, _ := quizMap.Load(sseData.Sid)
+func (m *MainHandler) quizAnswerVerificationUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	quizResponse, _ := m.quizMap.Load(sseData.Sid)
 	sse.PatchElementTempl(components.ResultAndPrevNextQuestion(sseData.Answer, quizResponse.(models.QuizResponse), sseData.QuizIndex),
 		datastar.WithModeOuter())
 	sse.PatchSignals([]byte(`{verifyAnswer:false}`))
 }
-func quizGenerationErrorUI(sse *datastar.ServerSentEventGenerator) {
+func (m *MainHandler) quizGenerationErrorUI(sse *datastar.ServerSentEventGenerator) {
 	sse.PatchElementTempl(components.QuizGenerationError(),
 		datastar.WithSelector("#quizDialog"),
 		datastar.WithModeInner())
 }
 
-func quizAnswerVerificationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
-	quizResponse, _ := quizMap.Load(sseData.Sid)
+func (m *MainHandler) quizAnswerVerificationErrorUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
+	quizResponse, _ := m.quizMap.Load(sseData.Sid)
 	sse.PatchElementTempl(components.AnswerEvaluationError(sseData.QuizIndex, quizResponse.(models.QuizResponse)),
 		datastar.WithModeOuter())
 }

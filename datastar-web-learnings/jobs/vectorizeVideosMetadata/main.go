@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"datastar-web-learnings/models"
+	"datastar-web-learnings/internal/models"
 	"datastar-web-learnings/services"
 	"fmt"
 	"time"
@@ -18,6 +18,8 @@ func main() {
 	} else {
 		fmt.Println("Loaded .env file successfully")
 	}
+	helperService := services.NewHelperSerice()
+
 	getAllVideosChannel := make(chan []models.VideoResponse)
 	go services.GetAllVideos(context.Background(), getAllVideosChannel)
 	dbData := <-getAllVideosChannel
@@ -38,7 +40,7 @@ func main() {
 	ytDescriptionDataReceivedCount := 0
 	for ytAPIChannelData := range ytAPIDescriptionsChannel {
 		structInLoop := videoIdToDbDataMap[ytAPIChannelData.VideoId]
-		structInLoop = services.ConstructTextToVectorize(structInLoop, ytAPIChannelData.Description)
+		structInLoop = helperService.ConstructTextToVectorize(structInLoop, ytAPIChannelData.Description)
 		videoIdToDbDataMap[ytAPIChannelData.VideoId] = structInLoop
 		dbDataIndex := 0
 		for idx, data := range dbData {

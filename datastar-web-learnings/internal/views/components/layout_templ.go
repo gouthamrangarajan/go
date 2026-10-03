@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "datastar-web-learnings/models"
+import "datastar-web-learnings/internal/models"
 
 func layout(config models.FirebaseAuthConfig) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -31,7 +31,7 @@ func layout(config models.FirebaseAuthConfig) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Discover technology videos using AI semantic search and test your knowledge with voice-interactive AI quizzes.\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/x-icon\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/tech-tube.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"><script type=\"module\" src=\"/assets/scripts/firebase.js\"></script></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-hidden\" data-signals=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"w-full h-full\"><head><title>Tech Tube</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Discover technology videos using AI semantic search and test your knowledge with voice-interactive AI quizzes.\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap\" rel=\"stylesheet\"><link rel=\"icon\" type=\"image/x-icon\" href=\"/assets/images/favicon.svg\"><link href=\"/assets/css/tech-tube.css\" rel=\"stylesheet\"><link href=\"/assets/css/open-props.min.css\" rel=\"stylesheet\"><script type=\"module\" src=\"/assets/js/firebase.js\"></script></head><body class=\"w-full h-full font-roboto bg-background text-primary relative overflow-hidden\" data-signals=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -40,7 +40,7 @@ func layout(config models.FirebaseAuthConfig) templ.Component {
 					  idToken:'',_firebaseApiKey:'` + config.ApiKey + `',_firebaseAuthDomain:'` + config.Domain + `',
 					  sid:crypto.randomUUID()}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 25, Col: 32}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/layout.templ`, Line: 25, Col: 32}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -56,7 +56,7 @@ func layout(config models.FirebaseAuthConfig) templ.Component {
 									:
 								null`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/layout.templ`, Line: 29, Col: 13}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/layout.templ`, Line: 29, Col: 13}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -70,7 +70,7 @@ func layout(config models.FirebaseAuthConfig) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script type=\"module\" src=\"/assets/scripts/data-star.min.js\"></script><script type=\"text/javascript\" src=\"/assets/scripts/ytPlayer.js\"></script><script type=\"text/javascript\" src=\"/assets/scripts/focusTrap.js\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<script type=\"module\" src=\"/assets/js/data-star.min.js\"></script><script type=\"text/javascript\" src=\"/assets/js/ytPlayer.js\"></script><script type=\"text/javascript\" src=\"/assets/js/focusTrap.js\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

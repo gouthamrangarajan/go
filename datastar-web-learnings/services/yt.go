@@ -1,7 +1,7 @@
 package services
 
 import (
-	"datastar-web-learnings/models"
+	"datastar-web-learnings/internal/models"
 	"encoding/json"
 	"fmt"
 	"io"

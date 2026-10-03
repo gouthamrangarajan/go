@@ -1,32 +1,27 @@
-package main
+package server
 
 import (
+	"datastar-web-learnings/internal/handlers"
+	"datastar-web-learnings/services"
+	openrouter "datastar-web-learnings/services/open-router"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
-	"github.com/joho/godotenv"
 )
 
-func main() {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-	} else {
-		fmt.Println("Loaded .env file successfully")
-	}
-	router := chi.NewRouter()
-	dataRouter := chi.NewRouter()
+type Router struct {
+	rateLimitSeconds  int
+	rateLimitRequests int
+}
 
-	router.Use(middleware.Logger)
-	router.Use(middleware.Compress(5))
-	router.Use(middleware.Recoverer)
-
+func NewRouter() *Router {
 	rateLimitSecondsStr := os.Getenv("RATE_LIMIT_SECONDS")
 	rateLimitRequestsStr := os.Getenv("RATE_LIMIT_REQUESTS")
 
@@ -39,10 +34,24 @@ func main() {
 		rateLimitRequests = 10
 	}
 
+	return &Router{
+		rateLimitSeconds:  rateLimitSeconds,
+		rateLimitRequests: rateLimitRequests,
+	}
+}
+
+func (r *Router) HttpHandler() http.Handler {
+	router := chi.NewRouter()
+	dataRouter := chi.NewRouter()
+
+	router.Use(middleware.Logger)
+	router.Use(middleware.Compress(5))
+	router.Use(middleware.Recoverer)
+
 	dataRouter.Use(middleware.ClientIPFromXFFTrustedProxies(1))
 	dataRouter.Use(httprate.LimitBy(
-		rateLimitRequests,
-		time.Duration(rateLimitSeconds)*time.Second,
+		r.rateLimitRequests,
+		time.Duration(r.rateLimitSeconds)*time.Second,
 		func(request *http.Request) (string, error) {
 			// Get the IP that middleware.RealIP has already verified
 			ip := middleware.GetClientIP(request.Context())
@@ -64,17 +73,24 @@ func main() {
 	router.Get("/assets/*", func(responseWriter http.ResponseWriter, request *http.Request) {
 		http.StripPrefix("/assets/", http.FileServer(http.Dir("assets/"))).ServeHTTP(responseWriter, request)
 	})
-	router.Get("/", landingPageHandler)
-	router.Get("/add", addPageHandler)
-	router.Post("/add", addVideoHandler)
-	router.Post("/tags/ui", tagsHandler)
-	router.Post("/delete", deleteVideoHandler)
-	router.Get("/quiz", loadQuizHandler)
 
-	dataRouter.Get("/sse", sseHandler)
-	dataRouter.Get("/data", loadMoreHandler)
-	dataRouter.Get("/search", searchHandler)
-	dataRouter.Post("/quiz", quizGenerationVerifyAnswerPrevNextHandler)
+	var sidMap = sync.Map{}
+	var quizMap = sync.Map{}
+	helperService := services.NewHelperSerice()
+	openRouterClient := openrouter.NewClient(helperService)
+	mainHandler := handlers.NewMainHandler(&sidMap, &quizMap, helperService, openRouterClient)
+
+	router.Get("/", mainHandler.HandleLandingPage)
+	router.Get("/add", mainHandler.HandleAddPage)
+	router.Post("/add", mainHandler.HandleAddVideo)
+	router.Post("/tags/ui", mainHandler.HandleTags)
+	router.Post("/delete", mainHandler.HandleDeleteVideo)
+	router.Get("/quiz", mainHandler.HandleLoadQuiz)
+
+	dataRouter.Get("/sse", mainHandler.HandleSSE)
+	dataRouter.Get("/data", mainHandler.HandleLoadMore)
+	dataRouter.Get("/search", mainHandler.HandleSearch)
+	dataRouter.Post("/quiz", mainHandler.HandleQuizGenerationVerifyAnswerAndPrevNext)
 	router.Mount("/", dataRouter)
-	http.ListenAndServe(":3000", router)
+	return router
 }

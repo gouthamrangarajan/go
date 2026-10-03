@@ -9,7 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"datastar-web-learnings/models"
+	"datastar-web-learnings/internal/models"
 	"strconv"
 	"strings"
 )
@@ -148,7 +148,7 @@ func loginButton() templ.Component {
 													},1) : 
 													$_showLoginButton = true`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 49, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 49, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -194,7 +194,7 @@ func AddVideoButton() templ.Component {
 							AUTH.currentUser.getIdToken().then(result=>{$idToken=result;@get('/add');});
 						},1)`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 68, Col: 11}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 68, Col: 11}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
@@ -238,7 +238,7 @@ func LandingMain() templ.Component {
 						  _dockedPlayerVideoId:'',_dockedPlayer:null,isDockedPlayerActive:false,
 						  _dockedPlayerDurationToStart:0,offset:0,_loadingQuiz:false,_showQuiz:false,quizVideoId:'',quizVideoTitle:''}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 83, Col: 117}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 83, Col: 117}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
@@ -318,7 +318,7 @@ func LandingMainWithoutLoad() templ.Component {
 						  _dockedPlayerVideoId:'',_dockedPlayer:null,isDockedPlayerActive:false,
 						  _dockedPlayerDurationToStart:0,offset:0,_loadingQuiz:false,_showQuiz:false,quizVideoId:'',quizVideoTitle:''}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 106, Col: 117}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 106, Col: 117}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 		if templ_7745c5c3_Err != nil {
@@ -405,7 +405,7 @@ func searchInput() templ.Component {
 							@get('/search',{openWhenHidden: true});
 						}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 137, Col: 8}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 137, Col: 8}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 		if templ_7745c5c3_Err != nil {
@@ -433,7 +433,7 @@ func searchInput() templ.Component {
 					}
 				`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 159, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 159, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 		if templ_7745c5c3_Err != nil {
@@ -446,7 +446,7 @@ func searchInput() templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue("$_showClearButton=$searchTxt.trim()!=''")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 162, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 162, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 		if templ_7745c5c3_Err != nil {
@@ -488,7 +488,7 @@ func LoadMore(offset int) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue("$offset=" + strconv.Itoa(offset) + ";@get('/data')")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 186, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 186, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 		if templ_7745c5c3_Err != nil {
@@ -530,7 +530,7 @@ func loader(dataShowSignal string, bgColorClass string) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue(dataShowSignal)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 191, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 191, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 		if templ_7745c5c3_Err != nil {
@@ -552,7 +552,7 @@ func loader(dataShowSignal string, bgColorClass string) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var20).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 1, Col: 0}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 1, Col: 0}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 		if templ_7745c5c3_Err != nil {
@@ -574,7 +574,7 @@ func loader(dataShowSignal string, bgColorClass string) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var22).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 1, Col: 0}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 1, Col: 0}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 		if templ_7745c5c3_Err != nil {
@@ -596,7 +596,7 @@ func loader(dataShowSignal string, bgColorClass string) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.CSSClasses(templ_7745c5c3_Var24).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 1, Col: 0}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 1, Col: 0}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 		if templ_7745c5c3_Err != nil {
@@ -638,7 +638,7 @@ func NoDataFound(message string) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/main.templ`, Line: 212, Col: 11}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/main.templ`, Line: 212, Col: 11}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
