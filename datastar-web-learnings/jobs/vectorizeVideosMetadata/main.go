@@ -20,7 +20,7 @@ func main() {
 	} else {
 		fmt.Println("Loaded .env file successfully")
 	}
-	helperService := services.NewHelperSerice()
+	helperService := services.NewHelperService()
 	voyageClient := voyage.NewClient()
 	pineconeClient := pinecone.NewClient()
 

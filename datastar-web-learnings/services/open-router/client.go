@@ -14,23 +14,28 @@ import (
 
 type Client struct {
 	url                                  string
+	urlForDecisionMaking                 string
 	key                                  string
+	PROMPT_TO_CHECK_TECH_RELATED_SEARCH  string
 	PROMPT2_TO_CHECK_TECH_RELATED_SEARCH string
 	PROMPT_TO_GENERATE_QUIZ              string
 	PROMPT_TO_EVALUATE_ANSWER            string
-	helperService                        *services.HelperSevice
+	helperService                        *services.HelperService
 	defaultModelId                       string
 	modelIdForTechnologySearchCheck      string
+	modelIdForDecisionMaking             string
 }
 
-func NewClient(helperService *services.HelperSevice) *Client {
+func NewClient(helperService *services.HelperService) *Client {
 	return &Client{
 		helperService:                   helperService,
 		url:                             os.Getenv("OPENROUTER_API_URL"),
+		urlForDecisionMaking:            os.Getenv("OPENROUTER_API_URL_FOR_DECISION"),
 		key:                             os.Getenv("OPENROUTER_API_KEY"),
 		defaultModelId:                  os.Getenv("OPENROUTER_API_MODEL"),
 		modelIdForTechnologySearchCheck: os.Getenv("OPENROUTER_API_MODEL_FOR_TECHNOLOGY_SEARCH_CHECK"),
-		PROMPT2_TO_CHECK_TECH_RELATED_SEARCH: `You are an intelligent search query optimizer for a technology video library.
+		modelIdForDecisionMaking:        os.Getenv("OPENROUTER_API_DECISION_MODEL"),
+		PROMPT_TO_CHECK_TECH_RELATED_SEARCH: `You are an intelligent search query optimizer for a technology video library.
 Your primary task is to assess a user's search query.
 
 **Part 1: Technology Relevance Check**
@@ -107,6 +112,55 @@ Linus Torvalds open source Linux contributions
 
 Query: "cloud security best practices"
 TECHNOLOGY
+cloud computing security best practices implementation guide
+
+Query: "%v"`,
+		PROMPT2_TO_CHECK_TECH_RELATED_SEARCH: `You are an intelligent search query optimizer for a technology video library.
+Your primary task is to assess a user's search query & optimize it for technology-related searches.
+
+If the query is technology-related, suggest an optimized version of the query for vector similarity search. The optimized query should be:
+- More descriptive and comprehensive.
+- Include relevant keywords or concepts that clarify the user's intent.
+- Avoid conversational filler words.
+- Expand abbreviations if commonly understood (e.g., "AI" -> "Artificial Intelligence").
+- **Crucially, if the original query is a person's name (e.g., "Evan You", "Linus Torvalds"), expand it to something like "videos by Evan You" or "contributions of Linus Torvalds" to better capture intent for video search.**
+
+If the query is NOT technology-related, the optimized query should be an empty string.
+
+**Output Format:**
+Respond with a line.
+Line 1: The optimized search query (or an empty string if NOT_TECHNOLOGY)
+
+Examples:
+
+Query: "how to build a website"
+web development tutorial website creation from scratch
+
+Query: "machine learning explained"
+explain machine learning concepts and applications
+
+Query: "by Elon Musk"
+videos by Elon Musk interviews presentations
+
+Query: "latest iPhone release"
+latest Apple iPhone model review features
+
+Query: "Vue.js tutorial"
+Vue JavaScript framework tutorial guide
+
+Query: "Evan You"
+videos by Evan You Vue.js creator
+
+Query: "what is blockchain"
+explain blockchain technology concepts decentralized ledger
+
+Query: "Nvidia GPU review"
+Nvidia graphics card GPU review performance
+
+Query: "Linus Torvalds contributions"
+Linus Torvalds open source Linux contributions
+
+Query: "cloud security best practices"
 cloud computing security best practices implementation guide
 
 Query: "%v"`,
@@ -197,7 +251,7 @@ Respond strictly in JSON matching this schema:
 	}
 }
 
-func (c *Client) VerifyTechnologyTopicsSearchAndOptimizeQuery(query string, channel chan<- string) {
+func (c *Client) OptimizeQueryForSearch(query string, channel chan<- string) {
 	defer close(channel)
 	responseVal := Response{}
 	aiRequestBytes, err := json.Marshal(Request{
@@ -256,12 +310,10 @@ func (c *Client) VerifyTechnologyTopicsSearchAndOptimizeQuery(query string, chan
 	}
 	if len(responseVal.Choices) > 0 {
 		content := responseVal.Choices[0].Message.Content
-		contents := strings.SplitN(content, "\n", 2)
-		if len(contents) > 1 {
-			// fmt.Printf("Sending message to channel: %v\n", contents[1])
-			channel <- strings.TrimSpace(contents[1])
-			return
-		}
+		// fmt.Printf("Sending message to channel: %v\n", content)
+		channel <- strings.TrimSpace(content)
+		return
+
 	} else {
 		fmt.Printf("Verify Technology Topic,No choices in response OpenRouter API call\n")
 	}
@@ -424,6 +476,91 @@ func (c *Client) VerifyQuizAnswer(userAnswer string, quizResponse QuizResponse,
 		}
 	} else {
 		fmt.Printf("Verify Quiz Answer,No choices in response OpenRouter API call\n")
+	}
+	channel <- retVal
+}
+
+func (c *Client) VerifyTechnologyTopicSearch(query string, channel chan<- bool) {
+	defer close(channel)
+	decisionRequest := DecisionRequest{
+		Model: c.modelIdForDecisionMaking,
+		State: map[string]string{
+			"query": query,
+		},
+		Questions: map[string]DecisionRequestQuestion{
+			"is_tech": {
+				Type: "noul",
+				Instructions: `Is this query primarily about technology — programming, software, hardware, AI, data, security, cloud,
+				 tech products, tech companies, or prominent technology figures/creators?`,
+				Criteria: map[string]string{
+					"true":  "Yes, this query is primarily about technology.",
+					"false": "No, this query is not primarily about technology.",
+				},
+			},
+			"query_shape": {
+				Type:         "choice",
+				Instructions: "What kind of query is this?",
+				Criteria: map[string]string{
+					"person_name":          "A person's name, especially a tech figure or creator.",
+					"product_name":         "A specific product, brand, framework, or company.",
+					"concept_explain":      "Asks what something is or how it works.",
+					"how_to":               "Asks how to do or build something.",
+					"comparison_or_review": "Evaluating, comparing, or reviewing options.",
+					"not_technology":       "Nothing to do with technology.",
+				},
+			},
+		},
+	}
+	aiRequestBytes, err := json.Marshal(decisionRequest)
+	// fmt.Printf("OpenRouter Request:%v\n", string(aiRequestBytes))
+	retVal := false
+	if err != nil {
+		fmt.Printf("VerifyTechnologyTopicSearch,Error marshaling request: %v\n", err.Error())
+		channel <- retVal
+		return
+	}
+	client := &http.Client{}
+	httpRequest, err := http.NewRequest("POST", c.urlForDecisionMaking, bytes.NewBuffer(aiRequestBytes))
+	if err != nil {
+		fmt.Printf("VerifyTechnologyTopicSearch,Error creating HTTP request: %v\n", err.Error())
+		channel <- retVal
+		return
+	}
+	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.key))
+	httpRequest.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		fmt.Printf("VerifyTechnologyTopicSearch,Error making HTTP request: %v\n", err.Error())
+		channel <- retVal
+		return
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		fmt.Printf("VerifyTechnologyTopicSearch,Error in making openrouter message api call: received status code %d\n", response.StatusCode)
+		respBody, err := io.ReadAll(response.Body)
+		if err == nil {
+			fmt.Printf("VerifyTechnologyTopicSearch,Error in making openrouter message api call %v\n", string(respBody))
+		}
+		channel <- retVal
+		return
+	}
+
+	respBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("VerifyTechnologyTopicSearch,Error reading response body OpenRouter API call: %v\n", err.Error())
+		channel <- retVal
+		return
+	}
+	var responseVal DecisionsResponse
+	// fmt.Printf("VerifyTechnologyTopicSearch,Response body OpenRouter API call: %v\n", string(respBody))
+	err = json.Unmarshal(respBody, &responseVal)
+	if err != nil {
+		fmt.Printf("Verify Technology Topic Search,Error unmarshaling response OpenRouter API call: %v\n", err.Error())
+		channel <- retVal
+		return
+	}
+	if responseVal.Answers != nil && responseVal.Answers["is_tech"].Noul != nil {
+		retVal = *responseVal.Answers["is_tech"].Noul > 0.5
 	}
 	channel <- retVal
 }

@@ -78,7 +78,7 @@ func (r *Router) HttpHandler() http.Handler {
 
 	var sidMap = sync.Map{}
 	var quizMap = sync.Map{}
-	helperService := services.NewHelperSerice()
+	helperService := services.NewHelperService()
 	openRouterClient := openrouter.NewClient(helperService)
 	voyageClient := voyage.NewClient()
 	pineconeClient := pinecone.NewClient()

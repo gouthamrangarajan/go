@@ -25,14 +25,14 @@ type MainHandler struct {
 	quizMap          *sync.Map
 	apiKey           string
 	domain           string
-	helperService    *services.HelperSevice
+	helperService    *services.HelperService
 	noOfDbItems      int
 	openRouterClient *openRouter.Client
 	voyageClient     *voyage.Client
 	pineconeClient   *pinecone.Client
 }
 
-func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map, helperService *services.HelperSevice,
+func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map, helperService *services.HelperService,
 	openRouterclient *openRouter.Client, voyageClient *voyage.Client, pineconeClient *pinecone.Client) *MainHandler {
 
 	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
@@ -218,14 +218,17 @@ func (m *MainHandler) addAppendLoadMoreUI(sse *datastar.ServerSentEventGenerator
 	}
 }
 func (m *MainHandler) searchUIForFirstSetData(sse *datastar.ServerSentEventGenerator, query string) {
-	aIResponseChannel := make(chan string)
-	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQuery(query, aIResponseChannel)
-	aIResponse := <-aIResponseChannel
-	if aIResponse == "" {
+	decisionChannel := make(chan bool)
+	go m.openRouterClient.VerifyTechnologyTopicSearch(query, decisionChannel)
+	isTechnology := <-decisionChannel
+	if !isTechnology {
 		fmt.Printf("Query not related to technology topics: %v\n", query)
 		m.invalidSearchUI(sse)
 		return
 	}
+	aIResponseChannel := make(chan string)
+	go m.openRouterClient.OptimizeQueryForSearch(query, aIResponseChannel)
+	aIResponse := <-aIResponseChannel
 	vectorChannel := make(chan voyage.Response)
 	go m.voyageClient.CallEmbedding(voyage.Request{Input: []string{aIResponse}}, vectorChannel)
 	vectorResponse := <-vectorChannel
@@ -292,11 +295,11 @@ func (m *MainHandler) removeLoadMoreUI(sse *datastar.ServerSentEventGenerator) {
 }
 func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ctxt context.Context) {
 	// fmt.Printf("searching for '%v' \n", data.SearchTxt)
-	aIResponseChannel := make(chan string)
-	go m.openRouterClient.VerifyTechnologyTopicsSearchAndOptimizeQuery(data.SearchTxt, aIResponseChannel)
-	aIResponse := <-aIResponseChannel
-	// fmt.Printf("response for verifyTechnology%v\n", aIResponse)
-	if aIResponse == "" {
+	decisionChannel := make(chan bool)
+	go m.openRouterClient.VerifyTechnologyTopicSearch(data.SearchTxt, decisionChannel)
+	isTechnology := <-decisionChannel
+
+	if !isTechnology {
 		fmt.Printf("Query not related to technology topics: %v\n", data.SearchTxt)
 		if sessionSseChannel, sidExists := m.sidMap.Load(data.Sid); sidExists {
 			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
@@ -305,6 +308,10 @@ func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ct
 		}
 		return
 	}
+	aIResponseChannel := make(chan string)
+	go m.openRouterClient.OptimizeQueryForSearch(data.SearchTxt, aIResponseChannel)
+	aIResponse := <-aIResponseChannel
+	// fmt.Printf("response for optimizequery %v\n", aIResponse)
 	vectorChannel := make(chan voyage.Response)
 	go m.voyageClient.CallEmbedding(voyage.Request{Input: []string{aIResponse}}, vectorChannel)
 	vectorResponse := <-vectorChannel

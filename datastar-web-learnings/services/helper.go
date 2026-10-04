@@ -9,19 +9,19 @@ import (
 	"strings"
 )
 
-type HelperSevice struct {
+type HelperService struct {
 	VECTOR_DATA_TEMPLATE_WITH_TRANSCRIPT string
 	VECTOR_DATA_TEMPLATE                 string
 	noOfDbItems                          int
 }
 
-func NewHelperSerice() *HelperSevice {
+func NewHelperService() *HelperService {
 	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
 	noOfItems, err := strconv.Atoi(noOfItemsStr)
 	if err != nil {
 		noOfItems = 12
 	}
-	return &HelperSevice{
+	return &HelperService{
 		noOfDbItems: noOfItems,
 		VECTOR_DATA_TEMPLATE_WITH_TRANSCRIPT: `Title: %v
 Subtitle: %v
@@ -36,7 +36,7 @@ Description: %v`,
 	}
 }
 
-func (h *HelperSevice) ConstructTextToVectorize(data models.VideoResponse, description string) models.VideoResponse {
+func (h *HelperService) ConstructTextToVectorize(data models.VideoResponse, description string) models.VideoResponse {
 	if strings.TrimSpace(data.Transcript) != "" {
 		data.TextToVectorize = fmt.Sprintf(h.VECTOR_DATA_TEMPLATE_WITH_TRANSCRIPT, data.Title, data.Subtitle, strings.Join(data.Tags, ", "), description, data.Transcript)
 	} else {
@@ -45,7 +45,7 @@ func (h *HelperSevice) ConstructTextToVectorize(data models.VideoResponse, descr
 	data.DescriptionFromYTAPI = description
 	return data
 }
-func (h *HelperSevice) GetFirstSetOfVideos(ctxt context.Context) []models.VideoResponse {
+func (h *HelperService) GetFirstSetOfVideos(ctxt context.Context) []models.VideoResponse {
 	channel := make(chan []models.VideoResponse)
 	go GetVideos(ctxt, models.GetVideosRequest{Limit: h.noOfDbItems, Offset: 0}, channel)
 	defer close(channel)
@@ -53,7 +53,7 @@ func (h *HelperSevice) GetFirstSetOfVideos(ctxt context.Context) []models.VideoR
 	return videos
 }
 
-func (h *HelperSevice) RemoveJSONCodeFence(input string) string {
+func (h *HelperService) RemoveJSONCodeFence(input string) string {
 	output := strings.TrimSpace(input)
 	output, _ = strings.CutPrefix(output, "```json")
 	output, _ = strings.CutPrefix(output, "```JSON")
