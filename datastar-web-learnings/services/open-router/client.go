@@ -251,6 +251,77 @@ Respond strictly in JSON matching this schema:
 	}
 }
 
+func (c *Client) VerifyTechnologyTopicsSearchAndOptimizeQuery(query string, channel chan<- string) {
+	defer close(channel)
+	responseVal := Response{}
+	aiRequestBytes, err := json.Marshal(Request{
+		Model: c.modelIdForTechnologySearchCheck,
+		Messages: []RequestMessage{
+			{
+				Role:    "user",
+				Content: fmt.Sprintf(c.PROMPT_TO_CHECK_TECH_RELATED_SEARCH, query),
+			},
+		},
+	})
+	// fmt.Printf("OpenRouter Request:%v\n", string(aiRequestBytes))
+	if err != nil {
+		fmt.Printf("Verify Technology Topic and optimize query, Error marshaling request: %v\n", err.Error())
+		channel <- ""
+		return
+	}
+	client := &http.Client{}
+	httpRequest, err := http.NewRequest("POST", c.url, bytes.NewBuffer(aiRequestBytes))
+	if err != nil {
+		fmt.Printf("Verify Technology Topic and optimize query,Error creating HTTP request: %v\n", err.Error())
+		channel <- ""
+		return
+	}
+	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.key))
+	httpRequest.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		fmt.Printf("Verify Technology Topic and optimize query,Error making HTTP request: %v\n", err.Error())
+		channel <- ""
+		return
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		fmt.Printf("Verify Technology Topic and optimize query,Error in making openrouter message api call: received status code %d\n", response.StatusCode)
+		respBody, err := io.ReadAll(response.Body)
+		if err == nil {
+			fmt.Printf("Verify Technology Topic and optimize query,Error in making openrouter message api call %v\n", string(respBody))
+		}
+		channel <- ""
+		return
+	}
+
+	respBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("Verify Technology Topic and optimize query,Error reading response body OpenRouter API call: %v\n", err.Error())
+		channel <- ""
+		return
+	}
+
+	err = json.Unmarshal(respBody, &responseVal)
+	if err != nil {
+		fmt.Printf("Verify Technology Topic and optimize query,Error unmarshaling response OpenRouter API call: %v\n", err.Error())
+		channel <- ""
+		return
+	}
+	if len(responseVal.Choices) > 0 {
+		content := responseVal.Choices[0].Message.Content
+		contents := strings.SplitN(content, "\n", 2)
+		if len(contents) > 1 {
+			// fmt.Printf("Sending message to channel: %v\n", contents[1])
+			channel <- strings.TrimSpace(contents[1])
+			return
+		}
+	} else {
+		fmt.Printf("Verify Technology Topic,No choices in response OpenRouter API call\n")
+	}
+	channel <- ""
+}
+
 func (c *Client) OptimizeQueryForSearch(query string, channel chan<- string) {
 	defer close(channel)
 	responseVal := Response{}

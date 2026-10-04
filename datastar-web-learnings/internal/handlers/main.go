@@ -229,6 +229,9 @@ func (m *MainHandler) searchUIForFirstSetData(sse *datastar.ServerSentEventGener
 	aIResponseChannel := make(chan string)
 	go m.openRouterClient.OptimizeQueryForSearch(query, aIResponseChannel)
 	aIResponse := <-aIResponseChannel
+	if strings.TrimSpace(aIResponse) == "" {
+		aIResponse = query
+	}
 	vectorChannel := make(chan voyage.Response)
 	go m.voyageClient.CallEmbedding(voyage.Request{Input: []string{aIResponse}}, vectorChannel)
 	vectorResponse := <-vectorChannel
@@ -311,6 +314,9 @@ func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ct
 	aIResponseChannel := make(chan string)
 	go m.openRouterClient.OptimizeQueryForSearch(data.SearchTxt, aIResponseChannel)
 	aIResponse := <-aIResponseChannel
+	if strings.TrimSpace(aIResponse) == "" {
+		aIResponse = data.SearchTxt
+	}
 	// fmt.Printf("response for optimizequery %v\n", aIResponse)
 	vectorChannel := make(chan voyage.Response)
 	go m.voyageClient.CallEmbedding(voyage.Request{Input: []string{aIResponse}}, vectorChannel)
