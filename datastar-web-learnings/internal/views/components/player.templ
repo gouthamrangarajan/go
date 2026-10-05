@@ -49,7 +49,7 @@ templ Player(video models.VideoResponse, idx int, searchQuery string) {
 				class="appearance-none outline-none cursor-pointer p-1 rounded-full text-primary transition duration-300 focus:ring-1 focus:ring-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none"
 				data-show={ "!$_video_" + videoIdReplaced + "_showTags" }
 				aria-label="Open Quiz"
-				data-on:click={ `$quizVideoId='` + video.VideoId + `';$quizVideoTitle='` + video.Title + `';$_loadingQuiz=true;@get('/quiz')` }
+				data-on:click={ `$quizVideoId='` + video.VideoId + `';$quizVideoTitle='` + strings.ReplaceAll(video.Title, "'", "\\'") + `';$_loadingQuiz=true;@get('/quiz')` }
 				data-attr:disabled="$_loadingQuiz"
 			>
 				<svg

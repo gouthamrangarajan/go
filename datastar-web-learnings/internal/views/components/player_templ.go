@@ -257,9 +257,9 @@ func Player(video models.VideoResponse, idx int, searchQuery string) templ.Compo
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var17 string
-		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(`$quizVideoId='` + video.VideoId + `';$quizVideoTitle='` + video.Title + `';$_loadingQuiz=true;@get('/quiz')`)
+		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(`$quizVideoId='` + video.VideoId + `';$quizVideoTitle='` + strings.ReplaceAll(video.Title, "'", "\\'") + `';$_loadingQuiz=true;@get('/quiz')`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/player.templ`, Line: 52, Col: 129}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/player.templ`, Line: 52, Col: 161}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 		if templ_7745c5c3_Err != nil {
