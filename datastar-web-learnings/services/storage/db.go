@@ -1,4 +1,4 @@
-package services
+package storage
 
 import (
 	"context"
@@ -13,7 +13,13 @@ import (
 	"google.golang.org/api/option"
 )
 
-func getFirebaseConfigJson() ([]byte, error) {
+type DbService struct {
+	firebaseConfig      models.FirebaseConfig
+	firebaseConfigJson  []byte
+	firebaseConfigError error
+}
+
+func NewDbService() *DbService {
 	firebaseConfig := models.FirebaseConfig{
 		Type:                    os.Getenv("FIREBASE_TYPE"),
 		ProjectID:               os.Getenv("FIREBASE_PROJECT_ID"),
@@ -27,20 +33,25 @@ func getFirebaseConfigJson() ([]byte, error) {
 		ClientX509CertURL:       os.Getenv("FIREBASE_CLIENT_X509_CERT_URL"),
 		UniverseDomain:          os.Getenv("FIREBASE_UNIVERSE_DOMAIN"),
 	}
-	firebaseConfigJson, firebaseConfigErr := json.Marshal(firebaseConfig)
-	return firebaseConfigJson, firebaseConfigErr
+	firebaseConfigJson, firebaseConfigError := json.Marshal(firebaseConfig)
+	return &DbService{
+		firebaseConfig:      firebaseConfig,
+		firebaseConfigJson:  firebaseConfigJson,
+		firebaseConfigError: firebaseConfigError,
+	}
 }
 
-func GetAllVideos(ctx context.Context, channel chan<- []models.VideoResponse) {
+func (d *DbService) GetAllVideos(ctx context.Context, channel chan<- []models.VideoResponse) {
+	defer close(channel)
 	var videos []models.VideoResponse
-	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
-	if firebaseConfigErr != nil {
-		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+	// d.firebaseConfigJson, d.firebaseConfigError := getFirebaseConfigJson()
+	if d.firebaseConfigError != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", d.firebaseConfigError)
 		channel <- videos
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
-		firebaseConfigJson,
+		d.firebaseConfigJson,
 	))
 
 	if appErr != nil {
@@ -71,16 +82,16 @@ func GetAllVideos(ctx context.Context, channel chan<- []models.VideoResponse) {
 	channel <- videos
 }
 
-func GetVideos(ctx context.Context, request models.GetVideosRequest, channel chan<- []models.VideoResponse) {
+func (d *DbService) GetVideos(ctx context.Context, request models.GetVideosRequest, channel chan<- []models.VideoResponse) {
+	defer close(channel)
 	var videos []models.VideoResponse
-	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
-	if firebaseConfigErr != nil {
-		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+	if d.firebaseConfigError != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", d.firebaseConfigError)
 		channel <- videos
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
-		firebaseConfigJson,
+		d.firebaseConfigJson,
 	))
 
 	if appErr != nil {
@@ -111,16 +122,16 @@ func GetVideos(ctx context.Context, request models.GetVideosRequest, channel cha
 	channel <- videos
 }
 
-func FilterVideos(ctx context.Context, videoIds []string, channel chan<- []models.VideoResponse) {
+func (d *DbService) FilterVideos(ctx context.Context, videoIds []string, channel chan<- []models.VideoResponse) {
+	defer close(channel)
 	var videos []models.VideoResponse
-	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
-	if firebaseConfigErr != nil {
-		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+	if d.firebaseConfigError != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", d.firebaseConfigError)
 		channel <- videos
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
-		firebaseConfigJson,
+		d.firebaseConfigJson,
 	))
 
 	if appErr != nil {
@@ -151,15 +162,15 @@ func FilterVideos(ctx context.Context, videoIds []string, channel chan<- []model
 	channel <- videos
 }
 
-func VerifyIdToken(ctx context.Context, idToken string, channel chan<- bool) {
-	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
-	if firebaseConfigErr != nil {
-		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+func (d *DbService) VerifyIdToken(ctx context.Context, idToken string, channel chan<- bool) {
+	defer close(channel)
+	if d.firebaseConfigError != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", d.firebaseConfigError)
 		channel <- false
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
-		firebaseConfigJson,
+		d.firebaseConfigJson,
 	))
 
 	if appErr != nil {
@@ -181,15 +192,15 @@ func VerifyIdToken(ctx context.Context, idToken string, channel chan<- bool) {
 	}
 	channel <- true
 }
-func UpsertVideo(request models.UISignals, channel chan<- bool) {
-	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
-	if firebaseConfigErr != nil {
-		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+func (d *DbService) UpsertVideo(request models.UISignals, channel chan<- bool) {
+	defer close(channel)
+	if d.firebaseConfigError != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", d.firebaseConfigError)
 		channel <- false
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
-		firebaseConfigJson,
+		d.firebaseConfigJson,
 	))
 
 	if appErr != nil {
@@ -222,15 +233,15 @@ func UpsertVideo(request models.UISignals, channel chan<- bool) {
 	}
 	channel <- true
 }
-func CheckAndDeleteIfDocIdAndVideoIdAreNotSame(videoId string, channel chan<- bool) {
-	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
-	if firebaseConfigErr != nil {
-		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+func (d *DbService) CheckAndDeleteIfDocIdAndVideoIdAreNotSame(videoId string, channel chan<- bool) {
+	defer close(channel)
+	if d.firebaseConfigError != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", d.firebaseConfigError)
 		channel <- false
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
-		firebaseConfigJson,
+		d.firebaseConfigJson,
 	))
 
 	if appErr != nil {
@@ -265,15 +276,15 @@ func CheckAndDeleteIfDocIdAndVideoIdAreNotSame(videoId string, channel chan<- bo
 	}
 	channel <- true
 }
-func DeleteVideo(videoId string, channel chan<- bool) {
-	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
-	if firebaseConfigErr != nil {
-		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+func (d *DbService) DeleteVideo(videoId string, channel chan<- bool) {
+	defer close(channel)
+	if d.firebaseConfigError != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", d.firebaseConfigError)
 		channel <- false
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
-		firebaseConfigJson,
+		d.firebaseConfigJson,
 	))
 
 	if appErr != nil {
@@ -310,15 +321,15 @@ func DeleteVideo(videoId string, channel chan<- bool) {
 	}
 	channel <- true
 }
-func UpdateTranscriptForQuiz(request models.UISignals, channel chan<- bool) {
-	firebaseConfigJson, firebaseConfigErr := getFirebaseConfigJson()
-	if firebaseConfigErr != nil {
-		fmt.Printf("Error marshalling FirebaseConfig:%v\n", firebaseConfigErr)
+func (d *DbService) UpdateTranscriptForQuiz(request models.UISignals, channel chan<- bool) {
+	defer close(channel)
+	if d.firebaseConfigError != nil {
+		fmt.Printf("Error marshalling FirebaseConfig:%v\n", d.firebaseConfigError)
 		channel <- false
 		return
 	}
 	app, appErr := firebase.NewApp(context.Background(), nil, option.WithCredentialsJSON(
-		firebaseConfigJson,
+		d.firebaseConfigJson,
 	))
 
 	if appErr != nil {

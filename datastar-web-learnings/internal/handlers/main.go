@@ -15,6 +15,7 @@ import (
 
 	openRouter "datastar-web-learnings/services/open-router"
 	"datastar-web-learnings/services/pinecone"
+	"datastar-web-learnings/services/storage"
 	voyage "datastar-web-learnings/services/voyage"
 
 	"github.com/starfederation/datastar-go/datastar"
@@ -30,10 +31,13 @@ type MainHandler struct {
 	openRouterClient *openRouter.Client
 	voyageClient     *voyage.Client
 	pineconeClient   *pinecone.Client
+	dbService        *storage.DbService
+	yTService        *services.YTService
 }
 
 func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map, helperService *services.HelperService,
-	openRouterclient *openRouter.Client, voyageClient *voyage.Client, pineconeClient *pinecone.Client) *MainHandler {
+	openRouterclient *openRouter.Client, voyageClient *voyage.Client, pineconeClient *pinecone.Client,
+	dbService *storage.DbService, ytService *services.YTService) *MainHandler {
 
 	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
 	noOfItems, err := strconv.Atoi(noOfItemsStr)
@@ -50,6 +54,8 @@ func NewMainHandler(sidMap *sync.Map, quizMap *sync.Map, helperService *services
 		openRouterClient: openRouterclient,
 		voyageClient:     voyageClient,
 		pineconeClient:   pineconeClient,
+		dbService:        dbService,
+		yTService:        ytService,
 	}
 }
 
@@ -183,8 +189,7 @@ func (m *MainHandler) HandleLoadMore(responseWriter http.ResponseWriter, request
 		noOfItems = 12
 	}
 	channel := make(chan []models.VideoResponse)
-	defer close(channel)
-	go services.GetVideos(request.Context(), models.GetVideosRequest{Limit: noOfItems, Offset: clientSignal.Offset}, channel)
+	go m.dbService.GetVideos(request.Context(), models.GetVideosRequest{Limit: noOfItems, Offset: clientSignal.Offset}, channel)
 	videos := <-channel
 	if sessionSseChannel, sidExists := m.sidMap.Load(clientSignal.Sid); sidExists {
 		sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
@@ -248,9 +253,9 @@ func (m *MainHandler) searchUIForFirstSetData(sse *datastar.ServerSentEventGener
 		return
 	}
 	dbChannel := make(chan []models.VideoResponse)
-	go services.FilterVideos(sse.Context(), videoIds, dbChannel)
+	go m.dbService.FilterVideos(sse.Context(), videoIds, dbChannel)
 	videos := <-dbChannel
-	close(dbChannel)
+
 	if len(videos) == 0 {
 		m.noDataFoundUI(sse)
 		return
@@ -342,8 +347,7 @@ func (m *MainHandler) searchVideosAndSendDataToChannel(data models.UISignals, ct
 		return
 	}
 	dbChannel := make(chan []models.VideoResponse)
-	defer close(dbChannel)
-	go services.FilterVideos(ctxt, videoIds, dbChannel)
+	go m.dbService.FilterVideos(ctxt, videoIds, dbChannel)
 	videos := <-dbChannel
 	if len(videos) == 0 {
 		if sessionSseChannel, sidExists := m.sidMap.Load(data.Sid); sidExists {
@@ -367,8 +371,7 @@ func (m *MainHandler) HandleAddPage(responseWriter http.ResponseWriter, request 
 	datastar.ReadSignals(request, &uiSignals)
 	if uiSignals.IdToken != "" {
 		channel := make(chan bool)
-		defer close(channel)
-		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, channel)
+		go m.dbService.VerifyIdToken(request.Context(), uiSignals.IdToken, channel)
 		isValidToken := <-channel
 		if isValidToken {
 			if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
@@ -416,8 +419,7 @@ func (m *MainHandler) HandleAddVideo(responseWriter http.ResponseWriter, request
 
 	if uiSignals.IdToken != "" {
 		verifyTokenChannel := make(chan bool)
-		defer close(verifyTokenChannel)
-		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
+		go m.dbService.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
 		isValidToken := <-verifyTokenChannel
 		if isValidToken {
 			// fmt.Printf("received add video request: %v\n", uiSignals)
@@ -449,8 +451,7 @@ func (m *MainHandler) HandleAddVideo(responseWriter http.ResponseWriter, request
 			var ytResponse models.YoutubeVideoSearchResponse
 			if len(errorMessages) == 0 {
 				ytVideoSearchChannel := make(chan models.YoutubeVideoSearchResponse)
-				defer close(ytVideoSearchChannel)
-				go services.GetYTVideoResponse(uiSignals.VideoId, ytVideoSearchChannel)
+				go m.yTService.GetYTVideoResponse(uiSignals.VideoId, ytVideoSearchChannel)
 				ytResponse = <-ytVideoSearchChannel
 				if len(ytResponse.Items) == 0 || ytResponse.Items[0].Id == "" {
 					errorMessages = append(errorMessages, "Please enter a valid YouTube video ID.")
@@ -471,8 +472,7 @@ func (m *MainHandler) HandleAddVideo(responseWriter http.ResponseWriter, request
 			}
 
 			saveToDbChannel := make(chan bool)
-			defer close(saveToDbChannel)
-			go services.UpsertVideo(uiSignals, saveToDbChannel)
+			go m.dbService.UpsertVideo(uiSignals, saveToDbChannel)
 			success := <-saveToDbChannel
 			if success {
 				if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
@@ -484,8 +484,7 @@ func (m *MainHandler) HandleAddVideo(responseWriter http.ResponseWriter, request
 					}
 				}
 				deleteDocIdAndVideoIdNotMatchChannel := make(chan bool)
-				defer close(deleteDocIdAndVideoIdNotMatchChannel)
-				go services.CheckAndDeleteIfDocIdAndVideoIdAreNotSame(uiSignals.VideoId, deleteDocIdAndVideoIdNotMatchChannel)
+				go m.dbService.CheckAndDeleteIfDocIdAndVideoIdAreNotSame(uiSignals.VideoId, deleteDocIdAndVideoIdNotMatchChannel)
 
 				dataToVectorize := models.VideoResponse{
 					Title:      uiSignals.Title,
@@ -548,8 +547,7 @@ func (m *MainHandler) HandleDeleteVideo(responseWriter http.ResponseWriter, requ
 	datastar.ReadSignals(request, &uiSignals)
 	if uiSignals.IdToken != "" {
 		verifyTokenChannel := make(chan bool)
-		defer close(verifyTokenChannel)
-		go services.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
+		go m.dbService.VerifyIdToken(request.Context(), uiSignals.IdToken, verifyTokenChannel)
 		isValidToken := <-verifyTokenChannel
 		if isValidToken {
 			if uiSignals.VideoToDelete == "" {
@@ -557,8 +555,7 @@ func (m *MainHandler) HandleDeleteVideo(responseWriter http.ResponseWriter, requ
 				return
 			}
 			deleteVideoChannel := make(chan bool)
-			defer close(deleteVideoChannel)
-			go services.DeleteVideo(uiSignals.VideoToDelete, deleteVideoChannel)
+			go m.dbService.DeleteVideo(uiSignals.VideoToDelete, deleteVideoChannel)
 			success := <-deleteVideoChannel
 			if success {
 				if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
@@ -611,8 +608,7 @@ func (m *MainHandler) HandleLoadQuiz(responseWriter http.ResponseWriter, request
 func (m *MainHandler) loadQuizUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {
 	sse.PatchSignals([]byte(`{_loadingQuiz:false,_showQuiz:true}`))
 	dbChannel := make(chan []models.VideoResponse)
-	defer close(dbChannel)
-	go services.FilterVideos(sse.Context(), []string{sseData.QuizVideoId}, dbChannel)
+	go m.dbService.FilterVideos(sse.Context(), []string{sseData.QuizVideoId}, dbChannel)
 	quizVideos := <-dbChannel
 	transcript := ""
 	if len(quizVideos) > 0 && strings.TrimSpace(quizVideos[0].Transcript) != "" {
@@ -697,8 +693,7 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 	go m.openRouterClient.GenerateQuiz(uiSignals, openRouterChannel)
 
 	updateTranscriptChannel := make(chan bool)
-	defer close(updateTranscriptChannel)
-	go services.UpdateTranscriptForQuiz(uiSignals, updateTranscriptChannel)
+	go m.dbService.UpdateTranscriptForQuiz(uiSignals, updateTranscriptChannel)
 
 	quizResponse := <-openRouterChannel
 	if len(quizResponse.Questions) > 0 {

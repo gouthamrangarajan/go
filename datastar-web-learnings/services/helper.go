@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"datastar-web-learnings/internal/models"
+	"datastar-web-learnings/services/storage"
 	"fmt"
 	"os"
 	"strconv"
@@ -13,15 +14,17 @@ type HelperService struct {
 	VECTOR_DATA_TEMPLATE_WITH_TRANSCRIPT string
 	VECTOR_DATA_TEMPLATE                 string
 	noOfDbItems                          int
+	dbService                            *storage.DbService
 }
 
-func NewHelperService() *HelperService {
+func NewHelperService(dbService *storage.DbService) *HelperService {
 	noOfItemsStr := os.Getenv("ITEMS_PER_PAGE")
 	noOfItems, err := strconv.Atoi(noOfItemsStr)
 	if err != nil {
 		noOfItems = 12
 	}
 	return &HelperService{
+		dbService:   dbService,
 		noOfDbItems: noOfItems,
 		VECTOR_DATA_TEMPLATE_WITH_TRANSCRIPT: `Title: %v
 Subtitle: %v
@@ -47,8 +50,7 @@ func (h *HelperService) ConstructTextToVectorize(data models.VideoResponse, desc
 }
 func (h *HelperService) GetFirstSetOfVideos(ctxt context.Context) []models.VideoResponse {
 	channel := make(chan []models.VideoResponse)
-	go GetVideos(ctxt, models.GetVideosRequest{Limit: h.noOfDbItems, Offset: 0}, channel)
-	defer close(channel)
+	go h.dbService.GetVideos(ctxt, models.GetVideosRequest{Limit: h.noOfDbItems, Offset: 0}, channel)
 	videos := <-channel
 	return videos
 }

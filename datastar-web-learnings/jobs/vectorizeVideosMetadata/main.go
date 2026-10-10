@@ -5,6 +5,7 @@ import (
 	"datastar-web-learnings/internal/models"
 	"datastar-web-learnings/services"
 	"datastar-web-learnings/services/pinecone"
+	"datastar-web-learnings/services/storage"
 	voyage "datastar-web-learnings/services/voyage"
 	"fmt"
 	"time"
@@ -20,14 +21,15 @@ func main() {
 	} else {
 		fmt.Println("Loaded .env file successfully")
 	}
-	helperService := services.NewHelperService()
+	dbService := storage.NewDbService()
+	yTService := services.NewYTService()
+	helperService := services.NewHelperService(dbService)
 	voyageClient := voyage.NewClient()
 	pineconeClient := pinecone.NewClient()
 
 	getAllVideosChannel := make(chan []models.VideoResponse)
-	go services.GetAllVideos(context.Background(), getAllVideosChannel)
+	go dbService.GetAllVideos(context.Background(), getAllVideosChannel)
 	dbData := <-getAllVideosChannel
-	close(getAllVideosChannel)
 
 	// dbData = dbData[:5] // Limiting to 5 videos for testing
 	fmt.Printf("Total Records to Vectorize: %v\n", len(dbData))
@@ -39,7 +41,7 @@ func main() {
 	ytAPIDescriptionsChannel := make(chan models.YTAPIVideoIdAndDescription, len(dbData))
 	for _, videoData := range dbData {
 		videoIdToDbDataMap[videoData.VideoId] = videoData
-		go callYTAPI(videoData.VideoId, ytAPIDescriptionsChannel)
+		go callYTAPI(videoData.VideoId, yTService, ytAPIDescriptionsChannel)
 	}
 	ytDescriptionDataReceivedCount := 0
 	for ytAPIChannelData := range ytAPIDescriptionsChannel {
@@ -61,7 +63,6 @@ func main() {
 			break
 		}
 	}
-	close(ytAPIDescriptionsChannel)
 	for idx := range dbData {
 		vectorResponse := <-voyageAPIChannels[idx]
 		pineconeUpsertChannels[idx] = make(chan int)
@@ -73,10 +74,9 @@ func main() {
 	fmt.Printf("Finished Vectorizing videos...%v\n", time.Now())
 }
 
-func callYTAPI(videoId string, ytAPIChannel chan models.YTAPIVideoIdAndDescription) {
+func callYTAPI(videoId string, yTService *services.YTService, ytAPIChannel chan models.YTAPIVideoIdAndDescription) {
 	ytResponseChannel := make(chan models.YoutubeVideoSearchResponse)
-	defer close(ytResponseChannel)
-	go services.GetYTVideoResponse(videoId, ytResponseChannel)
+	go yTService.GetYTVideoResponse(videoId, ytResponseChannel)
 	ytResponse := <-ytResponseChannel
 	ytAPIChannel <- models.YTAPIVideoIdAndDescription{
 		VideoId:     videoId,

@@ -107,10 +107,14 @@ templ CreateQuizForm() {
 			</button>
 			<button
 				type="submit"
-				class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none"
+				class={ ` appearance-none outline-none flex items-center gap-2 cursor-pointer text-slate-700 
+					py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300
+					focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 
+					disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none` }
 				data-attr:disabled="$_submitting"
 			>
-				Generate quiz
+				<span>Generate quiz</span>
+				@loader("$_submitting", "bg-slate-700")
 			</button>
 		</div>
 	</form>
@@ -132,7 +136,7 @@ templ QuizGenerating() {
 	<div
 		class="mt-4 flex flex-col gap-3 w-full"
 	>
-		<p>Analyzing the transcript and generating <br/> questions grounded in the video.</p>
+		<p>Analyzing the transcript and generating questions grounded in the video.</p>
 		<span>This usually takes 10-30 seconds.</span>
 	</div>
 	<div class="w-full flex justify-center mt-4 h-[30vh]">
@@ -189,48 +193,12 @@ templ QuizQuestion(data openRouter.QuizResponse, index int) {
 							disabled:cursor-not-allowed disabled:opacity-80` }
 					data-attr:disabled="$_submitting"
 					data-signals="{_speechRecog:''}"
-					data-on:user-speech__window={ `$answer=evt.detail.value;` }
+					data-on:speech-result__window={ `$answer=evt.detail.value;` }
+					data-on:speech-end__window={ `$_speechRecog='';` }
+					data-on:speech-error__window={ `$_speechRecog='';` }
 					data-on:click={ `
-						let finalTranscript = '';
-						if  ($_speechRecog) {	
-							$_speechRecog.stop();
-							return;
-						}
-					
-						const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-						if (!SpeechRecognition) {
-							console.log('Speech recognition is not supported in this browser.');
-							return;
-						}
-						const recog=new SpeechRecognition();
-						recog.continuous = true;
-						recog.interimResults = true;
-						recog.lang = 'en-US';	
-						recog.onerror = (event) => {
-							console.error('Speech recognition error:', event.error);
-							$_speechRecog = '';
-						};
-						recog.onend = () => {
-							$_speechRecog = '';
-							finalTranscript='';
-						};
-						recog.onresult = (event) => {	
-							let interimTranscript = '';
-							for (let idx = event.resultIndex; idx < event.results.length; idx++) {
-								const result = event.results[idx];							
-								if (result.isFinal) {			
-									finalTranscript +=  result[0].transcript.trim()+' ';
-								} else {
-									interimTranscript += result[0].transcript.trim()+' ';
-								}
-								window.dispatchEvent(new CustomEvent('user-speech', { detail: 
-																						{ value: finalTranscript+' '+interimTranscript }
-																					  }
-																	));
-							}
-						};
-						recog.start();
-						$_speechRecog = recog;						
+						$_speechRecog=toggleSpeechRecognition($_speechRecog);
+											
 					` }
 				>
 					<svg
@@ -333,12 +301,16 @@ templ previousQuestionBtn() {
 	<div class="flex-1 flex items-start">
 		<button
 			type="submit"
-			class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none"
+			class={ `appearance-none outline-none flex items-center gap-2 cursor-pointer text-slate-700 
+				py-2 px-4 rounded bg-teal-300 transition duration-300
+				focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2
+				hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none` }
 			data-attr:disabled="$_submitting || $_fetchingPrevious || $_fetchingNext"
 			data-on:click__prevent={ `if(!$_submitting && !$_fetchingPrevious && !$_fetchingNext){$verifyAnswer=false;$quizIndex--;@post('/quiz');}` }
 			data-indicator="_fetchingPrevious"
 		>
-			Prev Question
+			<span>Prev Question</span>
+			@loader("$_fetchingPrevious", "bg-slate-700")
 		</button>
 	</div>
 }
@@ -346,12 +318,16 @@ templ previousQuestionBtn() {
 templ nextQuestionBtn() {
 	<button
 		type="submit"
-		class=" appearance-none outline-none cursor-pointer text-slate-700  py-2 px-4 rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2 focus:ring-offset-background-2 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none"
+		class={ `appearance-none outline-none cursor-pointer flex items-center gap-2 text-slate-700  py-2 px-4 
+				rounded bg-teal-300 transition duration-300 focus:ring-2 focus:ring-teal-300 focus:ring-offset-2
+			  focus:ring-offset-background-2 hover:opacity-90 
+			  disabled:cursor-not-allowed disabled:opacity-80 disabled:pointer-events-none` }
 		data-attr:disabled="$_submitting || $_fetchingPrevious || $_fetchingNext"
 		data-on:click__prevent={ `if(!$_submitting && !$_fetchingPrevious && !$_fetchingNext){$verifyAnswer=false;$quizIndex++;@post('/quiz');}` }
 		data-indicator="_fetchingNext"
 	>
-		Next Question
+		<span>Next Question</span>
+		@loader("$_fetchingNext", "bg-slate-700")
 	</button>
 }
 

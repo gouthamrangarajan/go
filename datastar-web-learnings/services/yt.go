@@ -9,10 +9,22 @@ import (
 	"os"
 )
 
-func GetYTVideoResponse(videoId string, channel chan<- models.YoutubeVideoSearchResponse) {
+type YTService struct {
+	apiUrl string
+	apiKey string
+}
+
+func NewYTService() *YTService {
+	return &YTService{
+		apiUrl: os.Getenv("YT_API_URL"),
+		apiKey: os.Getenv("YT_API_KEY"),
+	}
+}
+func (y *YTService) GetYTVideoResponse(videoId string, channel chan<- models.YoutubeVideoSearchResponse) {
+	defer close(channel)
 	var ytResponse models.YoutubeVideoSearchResponse
 	client := &http.Client{}
-	resp, err := client.Get(os.Getenv("YT_API_URL") + `/videos?part=snippet&id=` + videoId + `&key=` + os.Getenv("YT_API_KEY"))
+	resp, err := client.Get(y.apiUrl + `/videos?part=snippet&id=` + videoId + `&key=` + y.apiKey)
 	if err != nil {
 		fmt.Printf("Error making HTTP request to YT API: %v\n", err)
 		channel <- ytResponse

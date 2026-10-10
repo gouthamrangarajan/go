@@ -5,6 +5,7 @@ import (
 	"datastar-web-learnings/services"
 	openrouter "datastar-web-learnings/services/open-router"
 	"datastar-web-learnings/services/pinecone"
+	"datastar-web-learnings/services/storage"
 	"datastar-web-learnings/services/voyage"
 	"fmt"
 	"net/http"
@@ -78,12 +79,15 @@ func (r *Router) HttpHandler() http.Handler {
 
 	var sidMap = sync.Map{}
 	var quizMap = sync.Map{}
-	helperService := services.NewHelperService()
+	dbService := storage.NewDbService()
+	yTService := services.NewYTService()
+	helperService := services.NewHelperService(dbService)
 	openRouterClient := openrouter.NewClient(helperService)
 	voyageClient := voyage.NewClient()
 	pineconeClient := pinecone.NewClient()
 
-	mainHandler := handlers.NewMainHandler(&sidMap, &quizMap, helperService, openRouterClient, voyageClient, pineconeClient)
+	mainHandler := handlers.NewMainHandler(&sidMap, &quizMap, helperService, openRouterClient, voyageClient,
+		pineconeClient, dbService, yTService)
 
 	router.Get("/", mainHandler.HandleLandingPage)
 	router.Get("/add", mainHandler.HandleAddPage)
