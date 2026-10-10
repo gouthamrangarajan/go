@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type Request struct {
+type CompletionsRequest struct {
 	Model      string              `json:"model"`
 	Messages   []RequestMessage    `json:"messages"`
 	Stream     bool                `json:"stream"`
@@ -65,4 +65,16 @@ func (requestMessage RequestMessage) MarshalJSON() ([]byte, error) {
 type EmbeddingRequest struct {
 	Model string   `json:"model"`
 	Input []string `json:"input"`
+}
+
+type ImageGenerationRequest struct {
+	Model          string `json:"model"`
+	Prompt         string `json:"prompt"`
+	Stream         bool   `json:"stream"`
+	InputReference []struct {
+		Type     string `json:"type"`
+		ImageUrl struct {
+			Url string `json:"url"`
+		} `json:"image_url"`
+	} `json:"input_reference,omitempty"`
 }

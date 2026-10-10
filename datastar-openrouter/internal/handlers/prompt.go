@@ -298,16 +298,24 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 		}
 	}
 	openRouterChannel := make(chan models.OpenRouterModelIdAndDeltaString)
-	openRouterRequest, _ := p.helperService.GenerateOpenRouterRequest(userId, clientSignal)
+	lenOfMessages := 0
 
-	go p.openRouterClient.CreateChatCompletion(openRouterRequest, openRouterChannel)
+	if clientSignal.ImageGeneration && clientSignal.ModelId != "openrouter/auto" {
+		openRouterImgGenerationRequest, _ := p.helperService.GenerateOpenRouterImageGenerationRequest(userId, clientSignal)
+		lenOfMessages = len(openRouterImgGenerationRequest.InputReference)
+		go p.openRouterClient.CreateImageGeneration(openRouterImgGenerationRequest, openRouterChannel)
+	} else {
+		openRouterRequest, _ := p.helperService.GenerateOpenRouterCompletionsRequest(userId, clientSignal)
+		lenOfMessages = len(openRouterRequest.Messages)
+		go p.openRouterClient.CreateChatCompletion(openRouterRequest, openRouterChannel)
+	}
 
 	updateTitleChannel := make(chan int)
 	embeddingChannel := make(chan voyage.Response)
 	updateTitleCalled := false
 	titleToUpdate := clientSignal.Prompt
 
-	if len(openRouterRequest.Messages) == 2 {
+	if lenOfMessages <= 2 {
 		if strings.TrimSpace(selectedSession.Title) != "New Chat" && strings.TrimSpace(selectedSession.Title) != "" {
 			titleToUpdate = selectedSession.Title
 		}

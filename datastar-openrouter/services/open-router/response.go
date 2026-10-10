@@ -1,6 +1,6 @@
 package openrouter
 
-type StreamResponse struct {
+type CompletionsStreamResponse struct {
 	Model   string `json:"model"`
 	Choices []struct {
 		Delta struct {
@@ -14,7 +14,7 @@ type StreamResponse struct {
 		} `json:"delta"`
 	} `json:"choices"`
 }
-type Response struct {
+type CompletionsResponse struct {
 	Model   string `json:"model"`
 	Choices []struct {
 		Message struct {
@@ -34,4 +34,19 @@ type EmbeddingResponse struct {
 		Embedding []float32 `json:"embedding"`
 		Index     int       `json:"index"`
 	} `json:"data"`
+}
+
+type ImageGenerationResponse struct {
+	Created int64 `json:"created"`
+	Data    []struct {
+		B64Json   string `json:"b64_json"`
+		MediaType string `json:"media_type"`
+	} `json:"data"`
+}
+
+type ImageGenerationStreamingResponse struct {
+	Created   int64  `json:"created"`
+	Type      string `json:"type"`
+	B64Json   string `json:"b64_json"`
+	MediaType string `json:"media_type"`
 }

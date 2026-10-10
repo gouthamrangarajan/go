@@ -23,12 +23,13 @@ import (
 )
 
 type HelperService struct {
-	imgRegex     *regexp.Regexp
-	pdfRegex     *regexp.Regexp
-	copySvg      string
-	systemPrompt string
-	dbService    *DBService
-	voyageClient *voyage.Client
+	imgRegex       *regexp.Regexp
+	pdfRegex       *regexp.Regexp
+	copySvg        string
+	systemPrompt   string
+	dbService      *DBService
+	voyageClient   *voyage.Client
+	defaultModelId string
 }
 type contextKey string
 
@@ -42,8 +43,9 @@ func NewHelperService(dbService *DBService, voyageClient *voyage.Client) *Helper
 		fmt.Printf("Error compiling PDF_REGEX: %v\n", err)
 	}
 	return &HelperService{
-		imgRegex: imgRegex,
-		pdfRegex: pdfRegex,
+		defaultModelId: os.Getenv("DEFAULT_MODEL_ID"),
+		imgRegex:       imgRegex,
+		pdfRegex:       pdfRegex,
 		copySvg: `<svg
 					xmlns="http://www.w3.org/2000/svg"
 					viewBox="0 0 24 24"
@@ -92,18 +94,18 @@ func (h *HelperService) InsertChatSessionViaChannel(userId string, data models.C
 	return sessionId
 }
 
-func (h *HelperService) GenerateOpenRouterRequest(userId string, clientSignal models.ClientSignals) (openrouter.Request, string) {
+func (h *HelperService) GenerateOpenRouterCompletionsRequest(userId string, clientSignal models.ClientSignals) (openrouter.CompletionsRequest, string) {
 	errToRet := ""
 	conversationsChannel := make(chan []models.ChatConversation)
 	go h.dbService.GetChatConversations(userId, clientSignal.SessionId, conversationsChannel)
 	conversations := <-conversationsChannel
 	if strings.TrimSpace(clientSignal.ModelId) == "" {
-		clientSignal.ModelId = os.Getenv("DEFAULT_MODEL_ID")
+		clientSignal.ModelId = h.defaultModelId
 	}
 
 	clientSignal.ModelId += ":nitro"
 
-	openRouterRequest := openrouter.Request{
+	openRouterRequest := openrouter.CompletionsRequest{
 		Stream: true,
 		Model:  clientSignal.ModelId,
 	}
@@ -322,4 +324,39 @@ func (h *HelperService) GenerateManualCode(digits int) (string, error) {
 		}
 		return fmt.Sprintf("%0*d", digits, n%max), nil
 	}
+}
+func (h *HelperService) GenerateOpenRouterImageGenerationRequest(userId string, clientSignal models.ClientSignals) (openrouter.ImageGenerationRequest, string) {
+	errToRet := ""
+	conversationsChannel := make(chan []models.ChatConversation)
+	go h.dbService.GetChatConversations(userId, clientSignal.SessionId, conversationsChannel)
+	conversations := <-conversationsChannel
+
+	openRouterRequest := openrouter.ImageGenerationRequest{
+		Prompt: clientSignal.Prompt,
+		Stream: false,
+		Model:  clientSignal.ModelId,
+	}
+	// fmt.Printf("Enter here conversations %v\n ", conversations)
+	if len(conversations) <= 2 && strings.TrimSpace(clientSignal.Prompt) == "" { //Retry
+		openRouterRequest.Prompt = conversations[0].Content
+	} else {
+		for _, conversation := range conversations {
+			if strings.TrimSpace(conversation.FileData) != "" {
+				openRouterRequest.InputReference = append(openRouterRequest.InputReference, struct {
+					Type     string `json:"type"`
+					ImageUrl struct {
+						Url string `json:"url"`
+					} `json:"image_url"`
+				}{
+					Type: "image_url",
+					ImageUrl: struct {
+						Url string `json:"url"`
+					}{Url: conversation.FileData},
+				})
+			}
+		}
+	}
+
+	// fmt.Printf("Generated OpenRouter Request: %+v\n", openRouterRequest)
+	return openRouterRequest, errToRet
 }

@@ -13,20 +13,22 @@ import (
 )
 
 type Client struct {
-	url          string
-	key          string
-	embeddingUrl string
+	url                string
+	key                string
+	embeddingUrl       string
+	imageGenerationUrl string
 }
 
 func NewClient() *Client {
 	return &Client{
-		url:          os.Getenv("OPEN_ROUTER_API_URL"),
-		key:          os.Getenv("OPEN_ROUTER_API_KEY"),
-		embeddingUrl: os.Getenv("OPEN_ROUTER_EMBEDDING_URL"),
+		url:                os.Getenv("OPEN_ROUTER_API_URL"),
+		key:                os.Getenv("OPEN_ROUTER_API_KEY"),
+		embeddingUrl:       os.Getenv("OPEN_ROUTER_EMBEDDING_URL"),
+		imageGenerationUrl: os.Getenv("OPEN_ROUTER_IMAGE_GENERATION_URL"),
 	}
 }
 
-func (c *Client) CreateChatCompletion(aiRequest Request, channel chan<- models.OpenRouterModelIdAndDeltaString) {
+func (c *Client) CreateChatCompletion(aiRequest CompletionsRequest, channel chan<- models.OpenRouterModelIdAndDeltaString) {
 	defer close(channel)
 	defaultVal := models.OpenRouterModelIdAndDeltaString{DeltaContent: "Error"}
 	aiRequestBytes, err := json.Marshal(aiRequest)
@@ -69,7 +71,7 @@ func (c *Client) CreateChatCompletion(aiRequest Request, channel chan<- models.O
 			channel <- defaultVal
 			return
 		}
-		var nonStreamResponse Response
+		var nonStreamResponse CompletionsResponse
 		err = json.Unmarshal(respBody, &nonStreamResponse)
 		if err != nil {
 			fmt.Printf("Error unmarshaling non-streaming response OpenRouter API call: %v\n", err.Error())
@@ -114,7 +116,7 @@ func (c *Client) CreateChatCompletion(aiRequest Request, channel chan<- models.O
 			if line == "[DONE]" {
 				break
 			}
-			var streamResponse StreamResponse
+			var streamResponse CompletionsStreamResponse
 			err = json.Unmarshal([]byte(line), &streamResponse)
 			if err != nil {
 				fmt.Printf("Error unmarshaling stream response: %v\n", err.Error())
@@ -188,4 +190,118 @@ func (c *Client) CreateEmbedding(embeddingRequest EmbeddingRequest, channel chan
 	}
 	channel <- returnVal
 
+}
+
+func (c *Client) CreateImageGeneration(aiRequest ImageGenerationRequest, channel chan<- models.OpenRouterModelIdAndDeltaString) {
+	defer close(channel)
+	defaultVal := models.OpenRouterModelIdAndDeltaString{DeltaContent: "Error"}
+	aiRequestBytes, err := json.Marshal(aiRequest)
+	// fmt.Printf("OpenRouter Request:%v\n", string(aiRequestBytes))
+	if err != nil {
+		fmt.Printf("Error marshaling request: %v\n", err.Error())
+		channel <- defaultVal
+		return
+	}
+	client := &http.Client{}
+	httpRequest, err := http.NewRequest("POST", c.imageGenerationUrl, bytes.NewBuffer(aiRequestBytes))
+	if err != nil {
+		fmt.Printf("Error creating HTTP request: %v\n", err.Error())
+		channel <- defaultVal
+		return
+	}
+	httpRequest.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.key))
+	httpRequest.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		fmt.Printf("Error making HTTP request: %v\n", err.Error())
+		channel <- defaultVal
+		return
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		fmt.Printf("Error in making openrouter image generation api call: received status code %d\n", response.StatusCode)
+		respBody, err := io.ReadAll(response.Body)
+		if err == nil {
+			fmt.Printf("Error in making openrouter image generation api call %v\n", string(respBody))
+		}
+		channel <- defaultVal
+		return
+	}
+	// fmt.Printf("number of previous image data %v\n", len(aiRequest.InputReference))
+	if aiRequest.Stream == false {
+		respBody, err := io.ReadAll(response.Body)
+		// fmt.Printf("Non-streaming response body OpenRouter image generation API call: %s\n", string(respBody[0:500]))
+		if err != nil {
+			fmt.Printf("Error reading non-streaming response body OpenRouter image generation API call: %v\n", err.Error())
+			channel <- defaultVal
+			return
+		}
+		var nonStreamResponse ImageGenerationResponse
+		err = json.Unmarshal(respBody, &nonStreamResponse)
+		if err != nil {
+			fmt.Printf("Error unmarshaling non-streaming response OpenRouter image generation API call: %v\n", err.Error())
+			channel <- defaultVal
+			return
+		}
+		if len(nonStreamResponse.Data) > 0 {
+			if strings.TrimSpace(nonStreamResponse.Data[0].MediaType) == "" {
+				nonStreamResponse.Data[0].MediaType = "image/png"
+			}
+			channel <- models.OpenRouterModelIdAndDeltaString{DeltaContent: "", ModelId: aiRequest.Model,
+				DeltaImage: "data:" + nonStreamResponse.Data[0].MediaType + ";base64," + nonStreamResponse.Data[0].B64Json}
+			return
+		} else {
+			fmt.Printf("No data in non-streaming response OpenRouter image generation API call\n")
+			channel <- defaultVal
+			return
+		}
+	}
+	scanner := bufio.NewScanner(response.Body)
+	line := ""
+
+	for scanner.Scan() {
+		// fmt.Printf("Received line from stream: %s\n", scanner.Text())
+		if strings.TrimSpace(scanner.Text()) == ": OPENROUTER PROCESSING" {
+			continue
+		}
+
+		line += scanner.Text()
+		// if len(line) > 500 {
+		// 	fmt.Printf("read line substring %v\n", line[500:])
+		// } else {
+		// 	fmt.Printf("read line %v\n", line)
+		// }
+		line = strings.TrimSuffix(line, "\n")
+		line = strings.TrimSpace(line)
+
+		if strings.HasPrefix(line, "data: ") {
+			line = strings.TrimPrefix(line, "data: ")
+			if line == "[DONE]" {
+				break
+			}
+			var streamResponse ImageGenerationStreamingResponse
+			err = json.Unmarshal([]byte(line), &streamResponse)
+			if err != nil {
+				fmt.Printf("Error unmarshaling stream response: %v\n", err.Error())
+				// channel <- "Error"
+				// return
+			} else {
+				if streamResponse.B64Json != "" {
+					// fmt.Println("Sending content to channel:", content)
+					if strings.TrimSpace(streamResponse.MediaType) == "" {
+						streamResponse.MediaType = "image/png"
+					}
+					channel <- models.OpenRouterModelIdAndDeltaString{DeltaContent: "", ModelId: aiRequest.Model,
+						DeltaImage: "data:" + streamResponse.MediaType + ";base64," + streamResponse.B64Json}
+				}
+
+				line = ""
+			}
+		}
+	}
+	// Check for errors after the loop
+	if err := scanner.Err(); err != nil {
+		fmt.Printf("Error reading streaming response: %v\n", err.Error())
+		channel <- defaultVal
+	}
 }
