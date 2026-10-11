@@ -178,7 +178,7 @@ func toolsAndSubmitButton(aiModels []models.AIModel) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"flex flex-col items-start w-full gap-1 lg:flex-row lg:justify-between lg:items-center\"><div class=\"ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-800 focus-within:bg-gray-200 dark:focus-within:bg-slate-800 focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-light\"><select class=\"appearance-none outline-none flex-1 cursor-pointer py-1 px-3\" data-bind=\"modelId\" name=\"modelId\" aria-label=\"Select AI Model\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"flex flex-col items-start w-full gap-1 lg:flex-row lg:justify-between lg:items-center\"><div class=\"ml-3 cursor-pointer flex items-center transition duration-300 rounded-lg bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-800 focus-within:bg-gray-200 dark:focus-within:bg-slate-800 focus-within:ring-1 focus-within:ring-dark dark:focus-within:ring-light\"><select class=\"appearance-none outline-none cursor-pointer py-1 px-3 w-80\" data-bind=\"modelId\" name=\"modelId\" aria-label=\"Select AI Model\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

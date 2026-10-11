@@ -851,6 +851,9 @@
   .w-11\/12 {
     width: calc(11/12 * 100%);
   }
+  .w-80 {
+    width: calc(var(--spacing) * 80);
+  }
   .w-auto {
     width: auto;
   }
