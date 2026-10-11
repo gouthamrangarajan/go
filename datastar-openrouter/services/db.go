@@ -337,15 +337,17 @@ func (d *DBService) DeleteChatSession(userId string, sessionId int, channel chan
 }
 func (d *DBService) UpdateChatSessionsUserId(fromUserId string, toUserId string, channel chan<- int) {
 	defer close(channel)
-	result, err := d.dbPool.Exec("UPDATE chat_sessions SET user_id = ?  WHERE  user_id = ?", toUserId, fromUserId)
+	// fmt.Printf("Updating chat sessions from userId: %s to userId: %s\n", fromUserId, toUserId)
+	result, err := d.dbPool.Exec("UPDATE chat_sessions SET user_id = ? WHERE user_id = ? ", toUserId, fromUserId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in UpdateChatSessionsUserId: %v\n", err.Error())
 		channel <- 0
 		return
 	}
 	rowsAffected, errUpdate := result.RowsAffected()
+	// fmt.Printf("Rows affected in UpdateChatSessionsUserId: %d\n", rowsAffected)
 	if errUpdate != nil {
-		fmt.Printf("Error updating user ID in UpdateChatSessionsUserId: %v\n", errUpdate.Error())
+		// fmt.Printf("Error updating user ID in UpdateChatSessionsUserId: %v\n", errUpdate.Error())
 		channel <- 0
 		return
 	}

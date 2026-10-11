@@ -6,7 +6,6 @@ import (
 	"datastar-openrouter/internal/models"
 	"datastar-openrouter/internal/views/components/modals"
 	"datastar-openrouter/services"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -65,10 +64,11 @@ func (s *SyncHandler) HandleGenerateSyncCode(responseWriter http.ResponseWriter,
 	if val, err = s.helperService.GenerateManualCode(8); err != nil {
 		val = "12345768"
 	}
-	_, loaded := s.userIdCodeMap.LoadOrStore(userId, val)
-	if !loaded {
-		fmt.Printf("Unable to store Generated new sync code for user %s:\n", userId)
-	}
+	s.userIdCodeMap.Store(userId, val)
+	// fmt.Printf("Generated new sync code for user %s: %s\n", userId, val)
+	// if !loaded {
+	// 	fmt.Printf("Unable to store Generated new sync code for user %s:\n", userId)
+	// }
 	modals.SyncDeviceModalDisplayCode(val).Render(context.Background(), bytesBuffer)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
@@ -108,6 +108,7 @@ func (s *SyncHandler) HandleVerifySyncCode(responseWriter http.ResponseWriter, r
 	clientSignal.SyncCode = strings.TrimSpace(clientSignal.SyncCode)
 	userIdWhoGeneratedCode := ""
 	s.userIdCodeMap.Range(func(userIdInMap, value any) bool {
+		// fmt.Printf("checking userId and synccode in map %v:%v\n", userIdInMap.(string), value.(string))
 		if value.(string) == clientSignal.SyncCode {
 			userIdWhoGeneratedCode = userIdInMap.(string)
 			return false
