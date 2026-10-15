@@ -161,6 +161,12 @@ func (m *MainHandler) HandleSSE(responseWriter http.ResponseWriter, request *htt
 				m.loadQuizUI(sse, sseData)
 			case models.QUIZ_GENERATING_FUNCTIONALITY:
 				m.quizGeneratingUI(sse)
+			case models.QUIZ_GENERATING_MESSAGE_2:
+				m.quizGeneratingMessage2UI(sse)
+			case models.QUIZ_GENERATING_MESSAGE_3:
+				m.quizGeneratingMessage3UI(sse)
+			case models.QUIZ_GENERATING_MESSAGE_4:
+				m.quizGeneratingMessage4UI(sse)
 			case models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY:
 				m.quizGenerationErrorUI(sse)
 			case models.QUIZ_VERIFY_ANSWER_FUNCTIONALITY:
@@ -620,7 +626,16 @@ func (m *MainHandler) loadQuizUI(sse *datastar.ServerSentEventGenerator, sseData
 	sse.PatchSignals([]byte(`{transcript:'` + transcript + `'}`))
 }
 func (m *MainHandler) quizGeneratingUI(sse *datastar.ServerSentEventGenerator) {
-	sse.PatchElementTempl(components.QuizGenerating(), datastar.WithSelector("#quizDialog"), datastar.WithModeInner())
+	sse.PatchElementTempl(components.QuizGeneratingLoaderAndMessage(), datastar.WithSelector("#quizDialog"), datastar.WithModeInner())
+}
+func (m *MainHandler) quizGeneratingMessage2UI(sse *datastar.ServerSentEventGenerator) {
+	sse.PatchElementTempl(components.QuizGeneratingMessage2(), datastar.WithModeOuter())
+}
+func (m *MainHandler) quizGeneratingMessage3UI(sse *datastar.ServerSentEventGenerator) {
+	sse.PatchElementTempl(components.QuizGeneratingMessage3(), datastar.WithModeOuter())
+}
+func (m *MainHandler) quizGeneratingMessage4UI(sse *datastar.ServerSentEventGenerator) {
+	sse.PatchElementTempl(components.QuizGeneratingMessage4(), datastar.WithModeOuter())
 }
 func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter http.ResponseWriter, request *http.Request) {
 	var uiSignals models.UISignals
@@ -694,27 +709,59 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 
 	updateTranscriptChannel := make(chan bool)
 	go m.dbService.UpdateTranscriptForQuiz(uiSignals, updateTranscriptChannel)
+	<-updateTranscriptChannel
+	start := time.Now()
+	tick := time.NewTicker(5 * time.Second)
+	defer tick.Stop()
+	lastSentElapsed := 0
 
-	quizResponse := <-openRouterChannel
-	if len(quizResponse.Questions) > 0 {
-		quizResponse.VideoId = uiSignals.QuizVideoId
-		m.quizMap.Store(uiSignals.Sid, quizResponse)
+	for {
+		select {
+		case quizResponse := <-openRouterChannel:
+			if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
+				if len(quizResponse.Questions) > 0 {
+					quizResponse.VideoId = uiSignals.QuizVideoId
+					m.quizMap.Store(uiSignals.Sid, quizResponse)
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
+						QuizIndex:        0,
+						Sid:              uiSignals.Sid,
+					}
+				} else {
 
-		if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
-			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-				FunctionalityVal: models.QUIZ_AND_PREV_NEXT_FUNCTIONALITY,
-				QuizIndex:        0,
-				Sid:              uiSignals.Sid,
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY,
+					}
+				}
 			}
-		}
-	} else {
-		if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
-			sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
-				FunctionalityVal: models.QUIZ_GENERATION_ERROR_FUNCTIONALTIY,
+			return
+
+		case <-tick.C:
+			elapsed := int(time.Since(start).Seconds())
+			if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
+				switch {
+				case elapsed > 60 && lastSentElapsed < 60:
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.QUIZ_GENERATING_MESSAGE_4,
+					}
+					lastSentElapsed = 60
+				case elapsed > 30 && lastSentElapsed < 30:
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.QUIZ_GENERATING_MESSAGE_3,
+					}
+					lastSentElapsed = 30
+				case elapsed > 15 && lastSentElapsed < 15:
+					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
+						FunctionalityVal: models.QUIZ_GENERATING_MESSAGE_2,
+					}
+					lastSentElapsed = 15
+
+				}
+			} else {
+				return
 			}
 		}
 	}
-	<-updateTranscriptChannel
 }
 
 func (m *MainHandler) quizQuestionUI(sse *datastar.ServerSentEventGenerator, sseData models.LongSSEData) {

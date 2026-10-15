@@ -120,7 +120,7 @@ templ CreateQuizForm() {
 	</form>
 }
 
-templ QuizGenerating() {
+templ QuizGeneratingLoaderAndMessage() {
 	<div class="flex items-center justify-between">
 		<h2 class="text-xl text-secondary font-semibold">Creating your quiz...</h2>
 		<button
@@ -133,15 +133,26 @@ templ QuizGenerating() {
 			</svg>
 		</button>
 	</div>
-	<div
-		class="mt-4 flex flex-col gap-3 w-full"
-	>
-		<p>Analyzing the transcript and generating questions grounded in the video.</p>
-		<span>This usually takes 10-30 seconds.</span>
-	</div>
-	<div class="w-full flex justify-center mt-4 h-[30vh]">
+	<div class="w-full flex flex-col items-center gap-2 justify-center mt-6 h-[30vh]">
+		@quizGeneratingMessage1()
 		@loader("true", "bg-secondary")
 	</div>
+}
+
+templ quizGeneratingMessage1() {
+	<p id="generatingMessage" class="text-lg">Reading transcript...</p>
+}
+
+templ QuizGeneratingMessage2() {
+	<p id="generatingMessage" class="text-lg">Identifying key concept...</p>
+}
+
+templ QuizGeneratingMessage3() {
+	<p id="generatingMessage" class="text-lg">Writing questions...</p>
+}
+
+templ QuizGeneratingMessage4() {
+	<p id="generatingMessage" class="text-lg">Validating excerpt...</p>
 }
 
 templ QuizQuestion(data openRouter.QuizResponse, index int) {
@@ -244,7 +255,8 @@ templ verifyAnswerButton(btnText string) {
 		data-attr:disabled="$_submitting"
 		data-on:click={ `$verifyAnswer = true` }
 	>
-		<span>{ btnText }</span>
+		<span data-show="!$_submitting">{ btnText }</span>
+		<span data-show="$_submitting">Evaluating..</span>
 		@loader("$_submitting", "bg-slate-700")
 	</button>
 }
