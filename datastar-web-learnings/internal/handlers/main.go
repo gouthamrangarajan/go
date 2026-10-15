@@ -740,16 +740,16 @@ func (m *MainHandler) HandleQuizGenerationVerifyAnswerAndPrevNext(responseWriter
 			elapsed := int(time.Since(start).Seconds())
 			if sessionSseChannel, sidExists := m.sidMap.Load(uiSignals.Sid); sidExists {
 				switch {
-				case elapsed > 60 && lastSentElapsed < 60:
+				case elapsed > 75 && lastSentElapsed < 75:
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal: models.QUIZ_GENERATING_MESSAGE_4,
 					}
-					lastSentElapsed = 60
-				case elapsed > 30 && lastSentElapsed < 30:
+					lastSentElapsed = 75
+				case elapsed > 45 && lastSentElapsed < 45:
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal: models.QUIZ_GENERATING_MESSAGE_3,
 					}
-					lastSentElapsed = 30
+					lastSentElapsed = 45
 				case elapsed > 15 && lastSentElapsed < 15:
 					sessionSseChannel.(chan models.LongSSEData) <- models.LongSSEData{
 						FunctionalityVal: models.QUIZ_GENERATING_MESSAGE_2,
