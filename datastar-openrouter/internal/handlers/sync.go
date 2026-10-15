@@ -147,7 +147,7 @@ func (s *SyncHandler) HandleVerifySyncCode(responseWriter http.ResponseWriter, r
 	updatedRecords := <-userIdUpdateChannel
 
 	if userSession, userSessionExists := s.uisidMap.Load(userSessionKey); userSessionExists {
-		if updatedRecords == 0 {
+		if updatedRecords == -1 {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: "Error Syncing. Pleasse try again later",
 				IsError: true,

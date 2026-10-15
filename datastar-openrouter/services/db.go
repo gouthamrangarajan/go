@@ -341,14 +341,14 @@ func (d *DBService) UpdateChatSessionsUserId(fromUserId string, toUserId string,
 	result, err := d.dbPool.Exec("UPDATE chat_sessions SET user_id = ? WHERE user_id = ? ", toUserId, fromUserId)
 	if err != nil {
 		fmt.Printf("Failed to execute query in UpdateChatSessionsUserId: %v\n", err.Error())
-		channel <- 0
+		channel <- -1
 		return
 	}
 	rowsAffected, errUpdate := result.RowsAffected()
 	// fmt.Printf("Rows affected in UpdateChatSessionsUserId: %d\n", rowsAffected)
 	if errUpdate != nil {
 		// fmt.Printf("Error updating user ID in UpdateChatSessionsUserId: %v\n", errUpdate.Error())
-		channel <- 0
+		channel <- -1
 		return
 	}
 	channel <- int(rowsAffected)
