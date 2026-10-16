@@ -256,7 +256,7 @@ templ verifyAnswerButton(btnText string) {
 		data-on:click={ `$verifyAnswer = true` }
 	>
 		<span data-show="!$_submitting">{ btnText }</span>
-		<span data-show="$_submitting">Evaluating..</span>
+		<span data-show="$_submitting">Evaluating</span>
 		@loader("$_submitting", "bg-slate-700")
 	</button>
 }
