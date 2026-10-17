@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <!-- Core Gradient -->
+    <radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="40%" stop-color="#818cf8" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#4f46e5" stop-opacity="1"/>
+    </radialGradient>
+    
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100" height="100" rx="22" fill="url(#bgGrad)"/>
+
+  <!-- Dynamic Routing Lines -->
+  <g stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7">
+    <line x1="25" y1="25" x2="50" y2="50" stroke="#34d399" />
+    <line x1="75" y1="25" x2="50" y2="50" stroke="#60a5fa" />
+    <line x1="25" y1="75" x2="50" y2="50" stroke="#fbbf24" />
+    <line x1="75" y1="75" x2="50" y2="50" stroke="#f472b6" />
+  </g>
+
+  <!-- Provider Nodes -->
+  <circle cx="25" cy="25" r="7" fill="#34d399" />
+  <circle cx="75" cy="25" r="7" fill="#60a5fa" />
+  <circle cx="25" cy="75" r="7" fill="#fbbf24" />
+  <circle cx="75" cy="75" r="7" fill="#f472b6" />
+
+  <!-- Central AI Core (Auto Mode / Unified Interface) -->
+  <circle cx="50" cy="50" r="18" fill="url(#coreGrad)" />
+  <circle cx="50" cy="50" r="7" fill="#ffffff" opacity="0.9"/>
+</svg>
