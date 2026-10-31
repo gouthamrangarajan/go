@@ -407,7 +407,7 @@ func ModelList(aiModelsGrouped []models.AIModelsProviderGrouped) templ.Component
 			templ_7745c5c3_Var17 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var18 = []any{`flex flex-col gap-1 h-58 pb-2 overflow-y overflow-y-auto scrollbar-thin 
+		var templ_7745c5c3_Var18 = []any{`flex flex-col gap-1 h-52 pb-2 overflow-y overflow-y-auto scrollbar-thin 
 			scrollbar-thumb-dark dark:scrollbar-thumb-light scrollbar-track-transparent lg:h-74`}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var18...)
 		if templ_7745c5c3_Err != nil {
