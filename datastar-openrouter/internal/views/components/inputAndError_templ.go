@@ -216,7 +216,7 @@ func toolsAndSubmitButton(aiModelsGrouped []models.AIModelsProviderGrouped) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><div class=\"w-80 absolute bottom-18 left-1 rounded-lg border-2 border-gray-300 dark:border-gray-600 lg:bottom-10 lg:w-88\" style=\"display:none;\" data-show=\"$_showAiModelsComboBox\"><div class=\"h-7 w-full rounded-t-lg bg-light-secondary dark:bg-dark-secondary\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><div class=\"w-80 absolute bottom-18 left-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 lg:left-1 lg:bottom-10 lg:w-88\" style=\"display:none;\" data-show=\"$_showAiModelsComboBox\"><div class=\"h-7 w-full rounded-t-lg bg-light-secondary dark:bg-dark-secondary\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
