@@ -17,6 +17,7 @@ type ClientSignals struct {
 	UiSid                 string `json:"uiSid"`
 	MessageIdToFetchImage int    `json:"messageIdToFetchImage"`
 	SyncCode              string `json:"syncCode"`
+	SearchAiModel         string `json:"searchAiModel"`
 }
 type FileDataDisplay struct {
 	FileName string
@@ -27,15 +28,19 @@ type UICookie struct {
 	Name  string
 	Value string
 }
+type AIModelsProviderGrouped struct {
+	Provider string
+	Models   []AIModel
+}
 
 type UIMainModel struct {
-	Messages         []ChatConversation
-	Sessions         []ChatSession
-	AIModels         []AIModel
-	AllowWebSearch   bool
-	ImageGeneration  bool
-	CurrentSessionId int
-	MenuSearchTerm   string
+	Messages             []ChatConversation
+	Sessions             []ChatSession
+	AIModelsWithProvider []AIModelsProviderGrouped
+	AllowWebSearch       bool
+	ImageGeneration      bool
+	CurrentSessionId     int
+	MenuSearchTerm       string
 }
 
 type UIToolTipModel struct {

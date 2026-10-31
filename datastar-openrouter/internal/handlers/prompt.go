@@ -347,6 +347,11 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 		updateImageGeneratioCalled = true
 	}
 	userSession, userSessionExists := p.uisidMap.Load(userSessionKey)
+
+	aiModelsChannel := make(chan []models.AIModel)
+	go p.dbService.GetAiModels(aiModelsChannel)
+	allAiModels := <-aiModelsChannel
+
 	for msg := range openRouterChannel {
 		if msg.DeltaContent == "Error" {
 			fmt.Printf("Error in getting response from OpenRouter\n")
@@ -358,6 +363,14 @@ func (p *PromptHandler) createModelMessageChatCallOpenRouterUpdateSessionMetadat
 		modelMessageChat.ModelId = msg.ModelId
 		if !userSessionExists {
 			continue
+		}
+		for _, model := range allAiModels {
+			if model.ModelId == msg.ModelId {
+				modelMessageChat.ModelId = model.DisplayName
+			}
+		}
+		if strings.Contains(modelMessageChat.ModelId, "/") {
+			modelMessageChat.ModelId = strings.Split(modelMessageChat.ModelId, "/")[1]
 		}
 		// sse.PatchElementTempl(components.ChatMessage(modelMessageChat, true))
 		markdownToHtmlChannel := make(chan models.ChatConversationMarkdownToHtml)

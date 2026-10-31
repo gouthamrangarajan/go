@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"datastar-openrouter/internal/models"
+	"datastar-openrouter/internal/views/components"
 	"datastar-openrouter/internal/views/pages"
 	"datastar-openrouter/services"
 	"fmt"
@@ -78,29 +79,50 @@ func (h *MainHandler) HandleMainPage(responseWriter http.ResponseWriter, request
 		return
 	}
 
-	aiModelsChannel := make(chan []models.AIModel)
-	go h.dbService.GetAiModels(aiModelsChannel)
-
 	if searchMenuTxt != "" {
 		sessions = h.helperService.SearchSessionsViaChannel(models.SearchSessionViaChannelRequest{
 			UserId:     userId,
 			SearchTerm: searchMenuTxt,
 		})
 	}
-	aiModels := <-aiModelsChannel
-
+	aiModelsGroupedWithProvider := h.getAndTransformAIModels("")
 	pages.Main(
 		models.UIMainModel{
-			Messages:         chatConversations,
-			Sessions:         sessions,
-			AIModels:         aiModels,
-			AllowWebSearch:   selectedSession.AllowWebSearch,
-			ImageGeneration:  selectedSession.ImageGeneration,
-			CurrentSessionId: sessionId,
-			MenuSearchTerm:   searchMenuTxt,
+			Messages:             chatConversations,
+			Sessions:             sessions,
+			AIModelsWithProvider: aiModelsGroupedWithProvider,
+			AllowWebSearch:       selectedSession.AllowWebSearch,
+			ImageGeneration:      selectedSession.ImageGeneration,
+			CurrentSessionId:     sessionId,
+			MenuSearchTerm:       searchMenuTxt,
 		}).Render(request.Context(), responseWriter)
 }
+func (h *MainHandler) getAndTransformAIModels(srchTxt string) []models.AIModelsProviderGrouped {
+	srchTxt = strings.TrimSpace(strings.ToLower(srchTxt))
+	aiModelsChannel := make(chan []models.AIModel)
+	go h.dbService.GetAiModels(aiModelsChannel)
+	aiModels := <-aiModelsChannel
+	aiModelsGroupedWithProvider := []models.AIModelsProviderGrouped{}
+	aiModelsGroupedWithProviderIndexMap := map[string]int{}
 
+	for _, model := range aiModels {
+		if srchTxt == "" || strings.Contains(strings.ToLower(model.DisplayName), srchTxt) ||
+			strings.Contains(strings.ToLower(model.ModelId), srchTxt) {
+			provider := strings.ToTitle(strings.Split(model.ModelId, "/")[0])
+			index, ok := aiModelsGroupedWithProviderIndexMap[provider]
+			if ok {
+				aiModelsGroupedWithProvider[index].Models = append(aiModelsGroupedWithProvider[index].Models, model)
+			} else {
+				aiModelsGroupedWithProvider = append(aiModelsGroupedWithProvider, models.AIModelsProviderGrouped{
+					Provider: provider,
+					Models:   []models.AIModel{model},
+				})
+				aiModelsGroupedWithProviderIndexMap[provider] = len(aiModelsGroupedWithProvider) - 1
+			}
+		}
+	}
+	return aiModelsGroupedWithProvider
+}
 func (h *MainHandler) handleSessionChange(request *http.Request, data models.SessionChangeData) {
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
@@ -140,4 +162,27 @@ func (h *MainHandler) handleSessionChange(request *http.Request, data models.Ses
 
 	}
 	go h.helperService.ConvertConversationMarkdownToHtmlAndSendToUserSessionChannel(h.uisidMap, clientSignal, data.UserId)
+}
+func (h *MainHandler) HandleModelsSearch(responseWriter http.ResponseWriter, request *http.Request) {
+	userId := request.Context().Value(h.userIdKey).(string)
+	userExistsChannel := make(chan bool)
+	go h.dbService.CheckUserExistsInTable(userId, userExistsChannel)
+	if !<-userExistsChannel {
+		http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	var clientSignal models.ClientSignals
+	datastar.ReadSignals(request, &clientSignal)
+
+	aiModelsGroupedWithProvider := h.getAndTransformAIModels(clientSignal.SearchAiModel)
+	userSessionKey := h.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
+	if userSession, userSessionExists := h.uisidMap.Load(userSessionKey); userSessionExists {
+		dataBuffer := new(bytes.Buffer)
+		components.ModelList(aiModelsGroupedWithProvider).Render(context.Background(), dataBuffer)
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:           dataBuffer.String(),
+			UseViewTransition: true,
+			Mode:              datastar.WithModeOuter(),
+		}
+	}
 }

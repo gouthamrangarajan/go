@@ -111,7 +111,7 @@ func (d *DBService) GetAiModels(channel chan<- []models.AIModel) {
 	defer close(channel)
 	var data []models.AIModel = []models.AIModel{}
 
-	rows, err := d.dbPool.Query("SELECT model_id,model_display_name,is_default FROM models WHERE is_active=1 ORDER BY sort_order")
+	rows, err := d.dbPool.Query("SELECT model_id,model_display_name,is_default,is_vision,is_image_generation FROM models WHERE is_active=1 ORDER BY sort_order")
 	if err != nil {
 		fmt.Printf("Failed to execute query in GetAllModels: %v\n", err.Error())
 		channel <- data
@@ -122,7 +122,7 @@ func (d *DBService) GetAiModels(channel chan<- []models.AIModel) {
 	for rows.Next() {
 		var item models.AIModel
 
-		if err := rows.Scan(&item.ModelId, &item.DisplayName, &item.IsDefault); err != nil {
+		if err := rows.Scan(&item.ModelId, &item.DisplayName, &item.IsDefault, &item.IsVision, &item.IsImageGeneration); err != nil {
 			fmt.Printf("Error scanning row in GetAllModels:%v\n", err.Error())
 		} else {
 			data = append(data, item)

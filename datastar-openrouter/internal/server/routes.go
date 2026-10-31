@@ -90,6 +90,7 @@ func (r *Router) HttpHandler() http.Handler {
 
 	router.Get("/", mainHandler.HandleMainPage)
 	router.Get("/{sessionId}", mainHandler.HandleMainPage)
+	router.Post("/models/search", mainHandler.HandleModelsSearch)
 	router.Post("/sse", sseHandler.HandleLongSSE)
 	router.Post("/new", sessionActionHandler.HandleNewChat)
 	promptRouter.Post("/chat", promptHandler.HandlePrompt)
