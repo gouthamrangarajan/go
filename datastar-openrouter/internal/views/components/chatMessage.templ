@@ -61,36 +61,36 @@ templ ChatMessage(message models.ChatConversation, stream bool) {
 
 templ ChatMessageRoleLogo(id int, role string) {
 	if role=="assistant" {
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="size-10 shrink-0 -ml-2 -z-10"
-    		 id={ "logoSvg_" + strconv.Itoa(id) }>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 100 100"
+			class="size-9 shrink-0 -ml-2 -z-10"
+			id={ "logoSvg_" + strconv.Itoa(id) }
+		>
 			<defs>
 				<radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">
-					<stop offset="0%"  stop-color="#ffffff"/>
-					<stop offset="40%" stop-color="#818cf8"/>
-					<stop offset="100%" stop-color="#4f46e5"/>
+					<stop offset="0%" stop-color="#ffffff"></stop>
+					<stop offset="40%" stop-color="#818cf8"></stop>
+					<stop offset="100%" stop-color="#4f46e5"></stop>
 				</radialGradient>
 				<linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
-					<stop offset="0%"   stop-color="#0f172a"/>
-					<stop offset="100%" stop-color="#1e293b"/>
+					<stop offset="0%" stop-color="#0f172a"></stop>
+					<stop offset="100%" stop-color="#1e293b"></stop>
 				</linearGradient>
 			</defs>
-
-			<rect width="100" height="100" rx="22" fill="url(#bgGrad)"/>
-
+			<rect width="100" height="100" rx="22" fill="url(#bgGrad)"></rect>
 			<g stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7">
-				<line x1="25" y1="25" x2="50" y2="50" stroke="#34d399"/>
-				<line x1="75" y1="25" x2="50" y2="50" stroke="#60a5fa"/>
-				<line x1="25" y1="75" x2="50" y2="50" stroke="#fbbf24"/>
-				<line x1="75" y1="75" x2="50" y2="50" stroke="#f472b6"/>
+				<line x1="25" y1="25" x2="50" y2="50" stroke="#34d399"></line>
+				<line x1="75" y1="25" x2="50" y2="50" stroke="#60a5fa"></line>
+				<line x1="25" y1="75" x2="50" y2="50" stroke="#fbbf24"></line>
+				<line x1="75" y1="75" x2="50" y2="50" stroke="#f472b6"></line>
 			</g>
-
-			<circle cx="25" cy="25" r="7" fill="#34d399"/>
-			<circle cx="75" cy="25" r="7" fill="#60a5fa"/>
-			<circle cx="25" cy="75" r="7" fill="#fbbf24"/>
-			<circle cx="75" cy="75" r="7" fill="#f472b6"/>
-
-			<circle cx="50" cy="50" r="18" fill="url(#coreGrad)"/>
-			<circle cx="50" cy="50" r="7"  fill="#ffffff" opacity="0.9"/>
+			<circle cx="25" cy="25" r="7" fill="#34d399"></circle>
+			<circle cx="75" cy="25" r="7" fill="#60a5fa"></circle>
+			<circle cx="25" cy="75" r="7" fill="#fbbf24"></circle>
+			<circle cx="75" cy="75" r="7" fill="#f472b6"></circle>
+			<circle cx="50" cy="50" r="18" fill="url(#coreGrad)"></circle>
+			<circle cx="50" cy="50" r="7" fill="#ffffff" opacity="0.9"></circle>
 		</svg>
 	} else {
 		<svg
