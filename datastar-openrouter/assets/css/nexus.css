@@ -816,10 +816,6 @@
     width: calc(var(--spacing) * 1);
     height: calc(var(--spacing) * 1);
   }
-  .size-3 {
-    width: calc(var(--spacing) * 3);
-    height: calc(var(--spacing) * 3);
-  }
   .size-4 {
     width: calc(var(--spacing) * 4);
     height: calc(var(--spacing) * 4);
@@ -845,12 +841,6 @@
   .h-2 {
     height: calc(var(--spacing) * 2);
   }
-  .h-4 {
-    height: calc(var(--spacing) * 4);
-  }
-  .h-6 {
-    height: calc(var(--spacing) * 6);
-  }
   .h-7 {
     height: calc(var(--spacing) * 7);
   }
@@ -860,14 +850,11 @@
   .h-40 {
     height: calc(var(--spacing) * 40);
   }
+  .h-58 {
+    height: calc(var(--spacing) * 58);
+  }
   .h-66 {
     height: calc(var(--spacing) * 66);
-  }
-  .h-74 {
-    height: calc(var(--spacing) * 74);
-  }
-  .h-80 {
-    height: calc(var(--spacing) * 80);
   }
   .h-84 {
     height: calc(var(--spacing) * 84);
@@ -913,9 +900,6 @@
   }
   .w-80 {
     width: calc(var(--spacing) * 80);
-  }
-  .w-88 {
-    width: calc(var(--spacing) * 88);
   }
   .w-auto {
     width: auto;
@@ -1033,9 +1017,6 @@
   .rounded-lg {
     border-radius: var(--radius-lg);
   }
-  .rounded-xl {
-    border-radius: var(--radius-xl);
-  }
   .rounded-t-lg {
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
@@ -1142,9 +1123,6 @@
   .py-4 {
     padding-block: calc(var(--spacing) * 4);
   }
-  .pt-4 {
-    padding-top: calc(var(--spacing) * 4);
-  }
   .pr-2 {
     padding-right: calc(var(--spacing) * 2);
   }
@@ -1153,9 +1131,6 @@
   }
   .pb-2 {
     padding-bottom: calc(var(--spacing) * 2);
-  }
-  .pb-10 {
-    padding-bottom: calc(var(--spacing) * 10);
   }
   .pb-64 {
     padding-bottom: calc(var(--spacing) * 64);
@@ -1550,11 +1525,6 @@
       bottom: calc(var(--spacing) * 10);
     }
   }
-  .lg\:bottom-12 {
-    @media (width >= 64rem) {
-      bottom: calc(var(--spacing) * 12);
-    }
-  }
   .lg\:left-104 {
     @media (width >= 64rem) {
       left: calc(var(--spacing) * 104);
@@ -1578,11 +1548,6 @@
   .lg\:w-88 {
     @media (width >= 64rem) {
       width: calc(var(--spacing) * 88);
-    }
-  }
-  .lg\:w-92 {
-    @media (width >= 64rem) {
-      width: calc(var(--spacing) * 92);
     }
   }
   .lg\:flex-row {

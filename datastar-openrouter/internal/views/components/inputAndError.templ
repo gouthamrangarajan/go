@@ -238,7 +238,7 @@ templ toolsAndSubmitButton(aiModelsGrouped []models.AIModelsProviderGrouped) {
 }
 
 templ ModelList(aiModelsGrouped []models.AIModelsProviderGrouped){
-	<ul class={`flex flex-col gap-1 h-66 pb-2 overflow-y overflow-y-auto scrollbar-thin 
+	<ul class={`flex flex-col gap-1 h-58 pb-2 overflow-y overflow-y-auto scrollbar-thin 
 			scrollbar-thumb-dark dark:scrollbar-thumb-light scrollbar-track-transparent lg:h-74`} id="modelList"
 			tabindex="-1">
 		for _,group := range aiModelsGrouped {
