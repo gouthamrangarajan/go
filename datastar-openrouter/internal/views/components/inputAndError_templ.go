@@ -186,13 +186,13 @@ func toolsAndSubmitButton(aiModelsGrouped []models.AIModelsProviderGrouped) temp
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(`{searchAiModel:'',modelId:'` + aiModelsGrouped[0].Models[0].ModelId + `',
 						_modelName:'` + aiModelsGrouped[0].Models[0].DisplayName + `'}`)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 80, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 81, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" data-on:click__outside__viewtransition=\"$_showAiModelsComboBox=false\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -364,7 +364,7 @@ func toolsAndSubmitButton(aiModelsGrouped []models.AIModelsProviderGrouped) temp
                     @post("/chat",{openWhenHidden: true});
                 `)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 220, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 234, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 		if templ_7745c5c3_Err != nil {
@@ -438,7 +438,7 @@ func ModelList(aiModelsGrouped []models.AIModelsProviderGrouped) templ.Component
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(group.Provider)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 245, Col: 100}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 262, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -477,7 +477,7 @@ func ModelList(aiModelsGrouped []models.AIModelsProviderGrouped) templ.Component
 								$_modelName='` + model.DisplayName + `';
 								$_showAiModelsComboBox=false`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 251, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 270, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 				if templ_7745c5c3_Err != nil {
@@ -492,7 +492,7 @@ func ModelList(aiModelsGrouped []models.AIModelsProviderGrouped) templ.Component
 								$_modelName='` + model.DisplayName + `';
 								$_showAiModelsComboBox=false}`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 254, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 273, Col: 38}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
 				if templ_7745c5c3_Err != nil {
@@ -505,7 +505,7 @@ func ModelList(aiModelsGrouped []models.AIModelsProviderGrouped) templ.Component
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(model.DisplayName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 256, Col: 100}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 275, Col: 101}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 				if templ_7745c5c3_Err != nil {
@@ -518,7 +518,7 @@ func ModelList(aiModelsGrouped []models.AIModelsProviderGrouped) templ.Component
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue(model.IsImageGeneration)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 258, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 281, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
 				if templ_7745c5c3_Err != nil {
@@ -531,7 +531,7 @@ func ModelList(aiModelsGrouped []models.AIModelsProviderGrouped) templ.Component
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.ResolveAttributeValue(` $modelId=='` + model.ModelId + `'`)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 262, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 289, Col: 54}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var27)
 				if templ_7745c5c3_Err != nil {
@@ -590,7 +590,7 @@ func FileAttachmentDisplay(fileName string) templ.Component {
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fileNameToDisplay)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 288, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/inputAndError.templ`, Line: 316, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
