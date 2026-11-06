@@ -141,6 +141,7 @@ templ ChatMessageFileData(message models.ChatConversation, stream bool) {
 										$messageIdToFetchImage=` + messageIdStr + `;@post('/image');}
 									 else{$showImage_` + messageIdStr + `=true;}` }
 					data-on:mouseleave__viewtransition={ `$showImage_` + messageIdStr + `=false` }
+					data-on:click__outside__viewtransition={ `$showImage_` + messageIdStr + `=false` }
 					data-indicator={ `_fetchingImage_` + messageIdStr }
 					data-class={ `{'animate-pulse cursor-wait':$_fetchingImage_` + messageIdStr + `,'cursor-pointer':!$_fetchingImage_` + messageIdStr + `}` }
 				>
