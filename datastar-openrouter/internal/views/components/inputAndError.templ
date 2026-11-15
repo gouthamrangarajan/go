@@ -7,22 +7,14 @@ import (
 	"time"
 )
 
-templ GoToLastMessagePromptInputsAndError(aiModelsGrouped []models.AIModelsProviderGrouped) {
+templ GoToLastMessageButtonPromptInputsAndErrorUI(aiModelsGrouped []models.AIModelsProviderGrouped) {
 	<div class="absolute bottom-0 left-0 w-full flex flex-col items-center gap-1" data-signals="{_showAiModelsComboBox:false}">
-		<button class={`appearance-none outline-none rounded-full p-2 shadow transition duration-300 cursor-pointer
-						bg-light-secondary dark:bg-dark-secondary text-dark dark:text-light focus:ring-2
-						focus:ring-light-secondary dark:focus:ring-dark-secondary focus:ring-offset-2 focus:ring-offset-dark-secondary
-						dark:focus:ring-offset-light-secondary
-					`}
-		   data-show="$_showGoToLastMessage"
-		   data-on:click="document.querySelector('main').scrollTo(0, document.querySelector('main').scrollHeight);$_showGoToLastMessage=false;">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-					<path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v16.19l6.22-6.22a.75.75 0 1 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 1 1 1.06-1.06l6.22 6.22V3a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-				</svg>
-		</button>
-		<div class={`w-11/12 flex flex-col items-start pr-2 pb-2 transition duration-300 mx-auto bg-light dark:bg-dark rounded-tl-lg 
+		@goToLastMessageButton()
+		<div
+			class={ `w-11/12 flex flex-col items-start pr-2 pb-2 transition duration-300 mx-auto bg-light dark:bg-dark rounded-tl-lg 
 					rounded-tr-lg inset-shadow-sm inset-shadow-slate-600/70 dark:inset-shadow-slate-300/70 focus-within:inset-shadow-slate-600
-					dark:focus-within:inset-shadow-slate-300 xl:w-10/12`}>
+					dark:focus-within:inset-shadow-slate-300 xl:w-10/12` }
+		>
 			<textarea
 				name="prompt"
 				data-bind="prompt"
@@ -75,16 +67,20 @@ templ GoToLastMessagePromptInputsAndError(aiModelsGrouped []models.AIModelsProvi
 	</div>
 }
 
-templ LiveIndicator() {
-	<p
-		id="liveIndicator"
-		data-signals={ `{` + fmt.Sprintf(`_time:new Date(%d).toLocaleTimeString()`, time.Now().UnixMilli()) + `}` }
-		class="absolute bottom-3 left-8 md:left-12 flex items-center gap-2 lg:left-104 xl:left-144"
-		data-show="!$showErrorMessage || (!$errorMessage.includes('Reconnecting') && !$errorMessage.includes('Failed to connect'))"
+templ goToLastMessageButton() {
+	<button
+		class={ `appearance-none outline-none rounded-full p-2 shadow transition duration-300 cursor-pointer
+						bg-light-secondary dark:bg-dark-secondary text-dark dark:text-light focus:ring-2
+						focus:ring-light-secondary dark:focus:ring-dark-secondary focus:ring-offset-2 focus:ring-offset-dark-secondary
+						dark:focus:ring-offset-light-secondary
+					` }
+		data-show="$_showGoToLastMessage"
+		data-on:click="document.querySelector('main').scrollTo(0, document.querySelector('main').scrollHeight);$_showGoToLastMessage=false;"
 	>
-		<span class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-200"></span>
-		<span class="text-xs">Live: <span data-text="$_time"></span></span>
-	</p>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+			<path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v16.19l6.22-6.22a.75.75 0 1 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 1 1 1.06-1.06l6.22 6.22V3a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path>
+		</svg>
+	</button>
 }
 
 templ toolsAndSubmitButton(aiModelsGrouped []models.AIModelsProviderGrouped) {
@@ -342,4 +338,16 @@ templ FileAttachmentDisplay(fileName string) {
 	} else {
 		<span id="fileName"></span>
 	}
+}
+
+templ LiveIndicator() {
+	<p
+		id="liveIndicator"
+		data-signals={ `{` + fmt.Sprintf(`_time:new Date(%d).toLocaleTimeString()`, time.Now().UnixMilli()) + `}` }
+		class="absolute bottom-3 left-8 md:left-12 flex items-center gap-2 lg:left-104 xl:left-144"
+		data-show="!$showErrorMessage || (!$errorMessage.includes('Reconnecting') && !$errorMessage.includes('Failed to connect'))"
+	>
+		<span class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-200"></span>
+		<span class="text-xs">Live: <span data-text="$_time"></span></span>
+	</p>
 }

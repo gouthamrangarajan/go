@@ -120,7 +120,7 @@ templ ChatMessageFileData(message models.ChatConversation, stream bool) {
 				</p>
 			case message.FileData!="":
 				<img
-					src= { templ.SafeURL(message.FileData) }
+					src={ templ.SafeURL(message.FileData) }
 					id={ "image_" + messageIdStr }
 					alt={ ` image for ` + messageIdStr }
 					class="w-full h-full"
@@ -183,4 +183,13 @@ templ ChatMessageModelIdDisplay(message models.ChatConversation) {
 			id={ "model_" + strconv.Itoa(message.Id) }
 		></span>
 	}
+}
+
+templ IntersectionObserverDiv() {
+	<div
+		id="intersectionObserverDiv"
+		class="h-2"
+		data-on-intersect="$_showGoToLastMessage=false"
+		data-on-intersect__exit__throttle.500ms="$_showGoToLastMessage=true"
+	></div>
 }
