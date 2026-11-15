@@ -139,7 +139,7 @@ func MainSection(messages []models.ChatConversation) templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<section class=\"w-11/12 ml-6 pb-64 flex flex-col gap-5 lg:gap-3 lg:pt-4 lg:mx-auto xl:w-10/12\" id=\"mainSection\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<section class=\"w-11/12 ml-6 flex flex-col gap-5 lg:gap-3 lg:pt-4 lg:mx-auto xl:w-10/12\" id=\"mainSection\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
