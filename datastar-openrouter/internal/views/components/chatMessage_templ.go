@@ -607,7 +607,7 @@ func IntersectionObserverDiv() templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<div id=\"intersectionObserverDiv\" class=\"h-2\" data-on-intersect=\"$_showGoToLastMessage=false\" data-on-intersect__exit__throttle.500ms=\"$_showGoToLastMessage=true\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<div id=\"intersectionObserverDiv\" class=\"h-2\" data-on-intersect__half=\"$_showGoToLastMessage=false\" data-on-intersect__exit__throttle.500ms=\"$_showGoToLastMessage=true\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
