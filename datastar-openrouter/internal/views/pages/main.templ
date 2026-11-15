@@ -19,7 +19,7 @@ templ Main(model models.UIMainModel) {
                             showDeleteModal:false,showSyncDeviceModal:false,sessionIdToDelete:0,
                             webSearch:`+strconv.FormatBool(model.AllowWebSearch)+`,
                             imageGeneration:`+strconv.FormatBool(model.ImageGeneration)+`,
-							fileUploading:false,messageIdToFetchImage:0 }` }
+							fileUploading:false,messageIdToFetchImage:0,_showGoToLastMessage:false }` }
 			data-init="@post('/sse',{openWhenHidden:true});"
 			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 		>
@@ -45,7 +45,10 @@ templ MainSection(messages []models.ChatConversation) {
 		for _,message := range messages {
 			@components.ChatMessage(message, false)
 		}
-		if len(messages)==0 {
+		if len(messages)>0{
+			<div id="intersectionObserverDiv" class="h-2" data-on-intersect__viewtransition="$_showGoToLastMessage=false"
+				data-on-intersect__exit__viewtransition="$_showGoToLastMessage=true"></div>
+		} else {
 			<div
 				class="w-full h-[50vh] flex items-center justify-center"
 				id="hint"

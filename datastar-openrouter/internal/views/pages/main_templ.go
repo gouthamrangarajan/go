@@ -56,9 +56,9 @@ func Main(model models.UIMainModel) templ.Component {
                             showDeleteModal:false,showSyncDeviceModal:false,sessionIdToDelete:0,
                             webSearch:` + strconv.FormatBool(model.AllowWebSearch) + `,
                             imageGeneration:` + strconv.FormatBool(model.ImageGeneration) + `,
-							fileUploading:false,messageIdToFetchImage:0 }`).Resolve(ctx)
+							fileUploading:false,messageIdToFetchImage:0,_showGoToLastMessage:false }`).Resolve(ctx)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/main.templ`, Line: 22, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/main.templ`, Line: 22, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {
@@ -145,13 +145,18 @@ func MainSection(messages []models.ChatConversation) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if len(messages) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"w-full h-[50vh] flex items-center justify-center\" id=\"hint\" data-signals=\"{_retrying:false}\"><p class=\"text-lg\">Unified chat with the world's smartest models.</p></div>")
+		if len(messages) > 0 {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div id=\"intersectionObserverDiv\" class=\"h-2\" data-on-intersect__viewtransition=\"$_showGoToLastMessage=false\" data-on-intersect__exit__viewtransition=\"$_showGoToLastMessage=true\"></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-full h-[50vh] flex items-center justify-center\" id=\"hint\" data-signals=\"{_retrying:false}\"><p class=\"text-lg\">Unified chat with the world's smartest models.</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -176,7 +181,7 @@ func toggleThemeButton() templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-80 text-dark dark:text-light focus:ring-2 focus:ring-dark dark:focus:ring-light disabled:cursor-not-allowed disabled:opacity-80\" aria-label=\"Toggle Theme\" data-on:click__viewtransition=\"$_dark=!$_dark; localStorage.setItem('theme', $_dark?'dark':'light');\"><svg data-show=\"$_dark\" style=\"view-transition-name:theme-toggle\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z\"></path></svg> <svg data-show=\"!$_dark\" style=\"view-transition-name:theme-toggle\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z\"></path></svg></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-80 text-dark dark:text-light focus:ring-2 focus:ring-dark dark:focus:ring-light disabled:cursor-not-allowed disabled:opacity-80\" aria-label=\"Toggle Theme\" data-on:click__viewtransition=\"$_dark=!$_dark; localStorage.setItem('theme', $_dark?'dark':'light');\"><svg data-show=\"$_dark\" style=\"view-transition-name:theme-toggle\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z\"></path></svg> <svg data-show=\"!$_dark\" style=\"view-transition-name:theme-toggle\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"size-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z\"></path></svg></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -201,7 +206,7 @@ func syncDeviceButton() templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-80 text-dark dark:text-light focus:ring-2 focus:ring-dark dark:focus:ring-light disabled:cursor-not-allowed disabled:opacity-80\" aria-label=\"Sync Device\" data-on:click__viewtransition=\"$showSyncDeviceModal=true;@post('/sync/init')\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-monitor-smartphone preview-icon\"><path d=\"M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8\"></path> <path d=\"M10 19v-3.96 3.15\"></path><path d=\"M7 19h5\"></path><rect width=\"6\" height=\"10\" x=\"16\" y=\"12\" rx=\"2\"></rect></svg></button>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<button class=\"appearance-none outline-none cursor-pointer transition duration-300 rounded-full p-1 hover:opacity-80 text-dark dark:text-light focus:ring-2 focus:ring-dark dark:focus:ring-light disabled:cursor-not-allowed disabled:opacity-80\" aria-label=\"Sync Device\" data-on:click__viewtransition=\"$showSyncDeviceModal=true;@post('/sync/init')\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-monitor-smartphone preview-icon\"><path d=\"M18 8V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h8\"></path> <path d=\"M10 19v-3.96 3.15\"></path><path d=\"M7 19h5\"></path><rect width=\"6\" height=\"10\" x=\"16\" y=\"12\" rx=\"2\"></rect></svg></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

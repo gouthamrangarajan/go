@@ -8,7 +8,18 @@ import (
 )
 
 templ InputsAndError(aiModelsGrouped []models.AIModelsProviderGrouped) {
-	<div class="absolute bottom-0 left-0 w-full" data-signals="{_showAiModelsComboBox:false}">
+	<div class="absolute bottom-0 left-0 w-full flex flex-col items-center gap-1" data-signals="{_showAiModelsComboBox:false}">
+		<button class={`appearance-none outline-none rounded-full p-2 shadow transition duration-300 cursor-pointer
+						bg-light-secondary dark:bg-dark-secondary text-dark dark:text-light focus:ring-2
+						focus:ring-light-secondary dark:focus:ring-dark-secondary focus:ring-offset-2 focus:ring-offset-dark-secondary
+						dark:focus:ring-offset-light-secondary
+					`}
+		   data-show="$_showGoToLastMessage"
+		   data-on:click="document.querySelector('main').scrollTo(0, document.querySelector('main').scrollHeight);">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+					<path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v16.19l6.22-6.22a.75.75 0 1 1 1.06 1.06l-7.5 7.5a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 1 1 1.06-1.06l6.22 6.22V3a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+				</svg>
+		</button>
 		<div class="w-11/12 flex flex-col items-start pr-2 pb-2 transition duration-300 mx-auto bg-light dark:bg-dark rounded-tl-lg rounded-tr-lg inset-shadow-sm inset-shadow-slate-600/70 dark:inset-shadow-slate-300/70 focus-within:inset-shadow-slate-600 dark:focus-within:inset-shadow-slate-300 xl:w-10/12">
 			<textarea
 				name="prompt"
