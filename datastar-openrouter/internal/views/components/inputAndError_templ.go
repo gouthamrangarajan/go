@@ -63,7 +63,7 @@ func GoToLastMessagePromptInputsAndError(aiModelsGrouped []models.AIModelsProvid
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" data-show=\"$_showGoToLastMessage\" data-on:click=\"document.querySelector('main').scrollTo(0, document.querySelector('main').scrollHeight);\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" data-show=\"$_showGoToLastMessage\" data-on:click=\"document.querySelector('main').scrollTo(0, document.querySelector('main').scrollHeight);$_showGoToLastMessage=false;\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
