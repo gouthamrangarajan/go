@@ -47,7 +47,7 @@ templ MainSection(messages []models.ChatConversation) {
 		}
 		if len(messages)>0{
 			<div id="intersectionObserverDiv" class="h-2" data-on-intersect__viewtransition="$_showGoToLastMessage=false"
-				data-on-intersect__exit__viewtransition="$_showGoToLastMessage=true"></div>
+				data-on-intersect__exit__throttle.500ms__viewtransition="$_showGoToLastMessage=true"></div>
 		} else {
 			<div
 				class="w-full h-[50vh] flex items-center justify-center"
