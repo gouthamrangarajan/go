@@ -82,9 +82,9 @@ templ LandingMain() {
 						  _dockedPlayerVideoId:'',_dockedPlayer:null,isDockedPlayerActive:false,
 						  _dockedPlayerDurationToStart:0,offset:0,_loadingQuiz:false,_showQuiz:false,quizVideoId:'',quizVideoTitle:''}` }
 		data-init="$searchTxt=new URLSearchParams(window.location.search).get('search');@get('/sse',{openWhenHidden:true})"
-		data-on:inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
-		data-on:docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';"
-		data-on:docked-video-stopped="$_isDockedPlayerActive=false;"
+		data-on:inline-video-playing__window="$_activeInlinePlayerVideoId=evt.detail.videoId;"
+		data-on:docked-video-playing__window="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';"
+		data-on:docked-video-stopped__window="$_isDockedPlayerActive=false;"
 	>
 		@searchInput()
 		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>
@@ -104,9 +104,9 @@ templ LandingMainWithoutLoad() {
 		data-signals={ `{ _activeInlinePlayerVideoId:'',videoToDelete:'',showDeleteConfirm:false,
 						  _dockedPlayerVideoId:'',_dockedPlayer:null,isDockedPlayerActive:false,
 						  _dockedPlayerDurationToStart:0,offset:0,_loadingQuiz:false,_showQuiz:false,quizVideoId:'',quizVideoTitle:''}` }
-		data-on:inline-video-playing="$_activeInlinePlayerVideoId=evt.detail.videoId;"
-		data-on:docked-video-playing="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';"
-		data-on:docked-video-stopped="$_isDockedPlayerActive=false;"
+		data-on:inline-video-playing__window="$_activeInlinePlayerVideoId=evt.detail.videoId;"
+		data-on:docked-video-playing__window="$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';"
+		data-on:docked-video-stopped__window="$_isDockedPlayerActive=false;"
 	>
 		@searchInput()
 		<section class="w-full grid grid-cols-1 gap-3 justify-normal md:grid-cols-2 xl:grid-cols-3"></section>

@@ -221,7 +221,7 @@ func LandingMain() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" data-init=\"$searchTxt=new URLSearchParams(window.location.search).get('search');@get('/sse',{openWhenHidden:true})\" data-on:inline-video-playing=\"$_activeInlinePlayerVideoId=evt.detail.videoId;\" data-on:docked-video-playing=\"$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';\" data-on:docked-video-stopped=\"$_isDockedPlayerActive=false;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" data-init=\"$searchTxt=new URLSearchParams(window.location.search).get('search');@get('/sse',{openWhenHidden:true})\" data-on:inline-video-playing__window=\"$_activeInlinePlayerVideoId=evt.detail.videoId;\" data-on:docked-video-playing__window=\"$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';\" data-on:docked-video-stopped__window=\"$_isDockedPlayerActive=false;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -297,7 +297,7 @@ func LandingMainWithoutLoad() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" data-on:inline-video-playing=\"$_activeInlinePlayerVideoId=evt.detail.videoId;\" data-on:docked-video-playing=\"$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';\" data-on:docked-video-stopped=\"$_isDockedPlayerActive=false;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" data-on:inline-video-playing__window=\"$_activeInlinePlayerVideoId=evt.detail.videoId;\" data-on:docked-video-playing__window=\"$_isDockedPlayerActive=true;$_activeInlinePlayerVideoId='';\" data-on:docked-video-stopped__window=\"$_isDockedPlayerActive=false;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

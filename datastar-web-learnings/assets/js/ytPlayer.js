@@ -31,7 +31,7 @@ async function initYTPlayer(vId, retryIdx) {
       },
       onStateChange: function (event) {
         if (event.data == YT.PlayerState.PLAYING) {
-          player.g.dispatchEvent(
+          window.dispatchEvent(
             new CustomEvent("inline-video-playing", {
               bubbles: true,
               detail: { videoId: vId },
@@ -39,7 +39,7 @@ async function initYTPlayer(vId, retryIdx) {
           );
         }
         // else if(event.data == YT.PlayerState.ENDED || event.data == YT.PlayerState.PAUSED){
-        //     player.g.dispatchEvent(new CustomEvent('inline-video-stopped',{bubbles:true,detail:{videoId:vId}}));
+        //     window.dispatchEvent(new CustomEvent('inline-video-stopped',{bubbles:true,detail:{videoId:vId}}));
         // }
       },
     },
@@ -76,7 +76,7 @@ function initDockedYTPlayer(vId, dockedPlayerSignal, durationToPlaySignal) {
       },
       onStateChange: function (event) {
         if (event.data == YT.PlayerState.PLAYING) {
-          player.g.dispatchEvent(
+          window.dispatchEvent(
             new CustomEvent("docked-video-playing", {
               bubbles: true,
               detail: { videoId: vId },
@@ -86,7 +86,7 @@ function initDockedYTPlayer(vId, dockedPlayerSignal, durationToPlaySignal) {
           event.data == YT.PlayerState.ENDED ||
           event.data == YT.PlayerState.PAUSED
         ) {
-          player.g.dispatchEvent(
+          window.dispatchEvent(
             new CustomEvent("docked-video-stopped", {
               bubbles: true,
               detail: { videoId: vId },
