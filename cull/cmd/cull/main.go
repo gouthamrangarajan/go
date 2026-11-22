@@ -31,7 +31,7 @@ func main() {
 	noOfItems := flag.Int("num-items", 50, "number of recent items to fetch")
 	flag.Parse()
 
-	slog.Info("info", "apply:", *apply, "max_actions:", *maxActions)
+	slog.Info("info", "apply", *apply, "max_actions", *maxActions)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -96,7 +96,7 @@ func main() {
 		case cfg.UseAI && rulesVerdict == aiVerdict:
 			a = act.Plan(record, aiVerdict, oneClick)
 		case cfg.UseAI && rulesVerdict != aiVerdict && aiConfidence >= 0.7:
-			slog.Info("info", "uid", record.UID, "subject", record.Subject, "RulesVerdict:", rulesVerdict, "AIVerdict:", aiVerdict, "Confidence:", strconv.FormatFloat(aiConfidence, 'f', -1, 64))
+			slog.Info("info", "uid", record.UID, "subject", record.Subject, "RulesVerdict", rulesVerdict, "AIVerdict", aiVerdict, "Confidence", strconv.FormatFloat(aiConfidence, 'f', -1, 64))
 			a = act.Plan(record, aiVerdict, oneClick)
 		default:
 			a = act.Plan(record, rulesVerdict, oneClick)
