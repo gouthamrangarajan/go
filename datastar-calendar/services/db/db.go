@@ -1,7 +1,8 @@
 package db
 
 import (
-	"datastar-calendar/models"
+	"datastar-calendar/internal/models"
+	"datastar-calendar/services"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -9,6 +10,13 @@ import (
 	"github.com/supabase-community/postgrest-go"
 	"github.com/supabase-community/supabase-go"
 )
+
+type DBService struct {
+}
+
+func NewDBSerice() *DBService {
+	return &DBService{}
+}
 
 type LoginRequest struct {
 	Email    string `json:"email"`
@@ -21,8 +29,9 @@ type LoginResponse struct {
 	ErrorCode   string `json:"error_code"`
 }
 
-func Login(request LoginRequest, channel chan<- LoginResponse) {
+func (d *DBService) Login(request LoginRequest, channel chan<- LoginResponse) {
 	response := LoginResponse{}
+	defer close(channel)
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{})
@@ -44,10 +53,11 @@ func Login(request LoginRequest, channel chan<- LoginResponse) {
 	channel <- response
 }
 
-func GetData(accessToken string, dateRange []string, channel chan<- []models.EventData) {
+func (d *DBService) GetData(accessToken string, dateRange []string, channel chan<- []models.EventData) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	response := []models.EventData{}
+	defer close(channel)
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
 		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
 	})
@@ -68,13 +78,14 @@ func GetData(accessToken string, dateRange []string, channel chan<- []models.Eve
 	channel <- response
 }
 
-func GetDataById(request struct {
+func (d *DBService) GetDataById(request struct {
 	AccessToken string
 	Id          string
 }, channel chan<- models.EventData) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	response := models.EventData{}
+	defer close(channel)
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
 		Headers: map[string]string{"Authorization": "Bearer " + request.AccessToken},
 	})
@@ -95,10 +106,11 @@ func GetDataById(request struct {
 	channel <- response
 }
 
-func AddData(accessToken string, data models.EventData, channel chan<- models.EventData) {
+func (d *DBService) AddData(accessToken string, data models.EventData, channel chan<- models.EventData) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	var emptyData models.EventData
+	defer close(channel)
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
 		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
 	})
@@ -124,10 +136,11 @@ func AddData(accessToken string, data models.EventData, channel chan<- models.Ev
 	}
 	channel <- emptyData
 }
-func UpdateData(accessToken string, data models.EventData, channel chan<- models.EventData) {
+func (d *DBService) UpdateData(accessToken string, data models.EventData, channel chan<- models.EventData) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	var emptyData models.EventData
+	defer close(channel)
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
 		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
 	})
@@ -154,12 +167,13 @@ func UpdateData(accessToken string, data models.EventData, channel chan<- models
 	channel <- emptyData
 }
 
-func DeleteEvent(data models.DeleteEvent, channel chan<- bool) {
+func (d *DBService) DeleteEvent(data models.DeleteEvent, channel chan<- bool) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
 		Headers: map[string]string{"Authorization": "Bearer " + data.AccessToken},
 	})
+	defer close(channel)
 	if err != nil {
 		fmt.Printf("Error connecting to supabase %v\n", err.Error())
 		channel <- false
@@ -177,4 +191,29 @@ func DeleteEvent(data models.DeleteEvent, channel chan<- bool) {
 		return
 	}
 	channel <- true
+}
+
+func (d *DBService) GetAllNotOnlyOnceFrequencyData(accessToken string, channel chan<- []models.EventData) {
+	anonKey := os.Getenv("SUPABASE_ANON_KEY")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	response := []models.EventData{}
+	defer close(channel)
+	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
+		Headers: map[string]string{"Authorization": "Bearer " + accessToken},
+	})
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- response
+		return
+	}
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).In("frequency", services.AllowedFrequencies[1:]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- response
+		return
+	}
+	if err := json.Unmarshal(data, &response); err != nil {
+		fmt.Printf("Error unmarshalling results %v\n", err.Error())
+	}
+	channel <- response
 }

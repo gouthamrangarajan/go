@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"datastar-calendar/components"
+	"datastar-calendar/internal/views/pages"
 	"datastar-calendar/services"
 	"net/http"
 	"os"
@@ -43,7 +43,7 @@ func Authorization(next http.Handler) http.Handler {
 		case unAuthorized && request.Method == http.MethodGet:
 			path := request.URL.Path
 			query := request.URL.RawQuery
-			components.LoginPage(path, query).Render(request.Context(), responseWriter)
+			pages.LoginPage(path, query).Render(request.Context(), responseWriter)
 		case unAuthorized && request.Method == http.MethodPost:
 			http.Error(responseWriter, "Unauthorized", http.StatusUnauthorized)
 		case !unAuthorized && strings.Contains(request.URL.Path, "/login"):

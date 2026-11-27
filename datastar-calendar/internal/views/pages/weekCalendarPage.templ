@@ -1,0 +1,47 @@
+package pages
+
+import (
+	"datastar-calendar/internal/views/components"
+	"datastar-calendar/internal/views/components/shared"
+	"datastar-calendar/internal/models"
+	"strconv"
+	"time"
+)
+
+templ WeekCalendarPage(data models.WeekCalendarData) {
+	@components.Layout() {
+		<main
+			class="h-dvh w-dvw overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-300 scrollbar-thumb-purple-600"
+			id="main"
+			data-init="@get('/sse',{openWhenHidden:true})"
+			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
+		>
+			@WeekCalendar(data)
+		</main>
+	}
+}
+
+templ WeekCalendar(data models.WeekCalendarData) {
+	<section
+		class="w-full h-full flex flex-col gap-1"
+		style="view-transition-name:mainSection"
+		id="section"
+	>
+		@weekCalendarheader(data.CurrentMonthAndYear, data.From, data.Week)
+		@components.WeekCalendarTable(data)
+	</section>
+}
+
+templ weekCalendarheader(currentMonthAndYear time.Time, from string, week int) {
+	<div class="w-full flex justify-between items-center gap-7 py-2 px-4">
+		<div class="flex items-center gap-3">
+			<span class="text-xl text-slate-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
+			@components.PrevWeekLink(week, currentMonthAndYear)
+			@components.NextWeekLink(week, currentMonthAndYear)
+		</div>
+		<div class="flex items-center">
+			@shared.MonthViewLink(currentMonthAndYear, false)
+			@shared.WeekViewLink(currentMonthAndYear, true)
+		</div>
+	</div>
+}
