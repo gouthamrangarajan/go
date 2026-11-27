@@ -36,13 +36,30 @@ type WeekCalendarData struct {
 	From                string
 	Week                int
 }
+
+type ManagerPageFilters string
+
+const (
+	ALL_STATUS      ManagerPageFilters = "all"
+	ACTIVE_STATUS   ManagerPageFilters = "active"
+	INACTIVE_STATUS ManagerPageFilters = "inactive"
+)
+
 type ClientSignals struct {
-	UiSid       string `json:"uiSid"`
-	EventId     string `json:"eventId"`
-	Task        string `json:"task"`
-	Frequency   string `json:"frequency"`
-	StopAfter   string `json:"stopAfter"`
-	Date        string `json:"date"`
-	DateChanged bool   `json:"dateChanged"`
-	Exact       string `json:"exact"`
+	UiSid            string             `json:"uiSid"`
+	EventId          string             `json:"eventId"`
+	Task             string             `json:"task"`
+	Frequency        string             `json:"frequency"`
+	StopAfter        string             `json:"stopAfter"`
+	Date             string             `json:"date"`
+	DateChanged      bool               `json:"dateChanged"`
+	Exact            string             `json:"exact"`
+	IsActive         bool               `json:"isActive"`
+	ManagePageFilter ManagerPageFilters `json:"managePageFilter"`
+}
+
+type ManageEventsPageData struct {
+	EventsData        []EventData
+	ActiveDataCount   int
+	InactiveDataCount int
 }

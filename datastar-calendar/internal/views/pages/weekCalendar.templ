@@ -1,9 +1,8 @@
 package pages
 
 import (
-	"datastar-calendar/internal/views/components"
-	"datastar-calendar/internal/views/components/shared"
 	"datastar-calendar/internal/models"
+	"datastar-calendar/internal/views/components"
 	"strconv"
 	"time"
 )
@@ -17,6 +16,7 @@ templ WeekCalendarPage(data models.WeekCalendarData) {
 			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 		>
 			@WeekCalendar(data)
+			@components.ErrorMessage()
 		</main>
 	}
 }
@@ -40,8 +40,8 @@ templ weekCalendarheader(currentMonthAndYear time.Time, from string, week int) {
 			@components.NextWeekLink(week, currentMonthAndYear)
 		</div>
 		<div class="flex items-center">
-			@shared.MonthViewLink(currentMonthAndYear, false)
-			@shared.WeekViewLink(currentMonthAndYear, true)
+			@components.MonthViewLink(currentMonthAndYear, false)
+			@components.WeekViewLink(currentMonthAndYear, true)
 		</div>
 	</div>
 }

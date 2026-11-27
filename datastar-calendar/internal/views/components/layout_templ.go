@@ -49,7 +49,7 @@ func Layout() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"absolute top-0 right-0 w-1/3 h-full mx-auto -z-10 rounded-full bg-[url(/assets/images/background.png)] bg-no-repeat bg-[top_right] bg-auto bg-fixed hidden lg:block\" style=\"corner-shape:Scoop;display:none;\" data-show=\"$showRightBackground\"></div><div class=\"absolute top-0 left-0 animate-page-loader h-1.5 w-full bg-orange-600\" style=\"display:none\" data-show=\"$pageLoading\"></div><script type=\"text/javascript\" src=\"/assets/js/focus-trap.js\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"absolute top-0 right-0 w-1/3 h-full mx-auto -z-10 rounded-full bg-[url(/assets/images/background.png)] bg-no-repeat bg-position-[top_right] bg-auto bg-fixed hidden lg:block\" style=\"corner-shape:Scoop;display:none;\" data-show=\"$showRightBackground\"></div><div class=\"absolute top-0 left-0 animate-page-loader h-1.5 w-full bg-orange-600\" style=\"display:none\" data-show=\"$pageLoading\"></div><script type=\"text/javascript\" src=\"/assets/js/focus-trap.js\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

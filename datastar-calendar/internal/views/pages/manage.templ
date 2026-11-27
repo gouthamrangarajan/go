@@ -1,0 +1,48 @@
+package pages
+
+import (
+	"datastar-calendar/internal/models"
+	"datastar-calendar/internal/views/components"
+)
+
+templ ManageEvents(data models.ManageEventsPageData) {
+	@components.Layout() {
+		<main
+			class="h-dvh w-dvw relative overflow-x-hidden overflow-y-auto scroll-smooth 
+                    scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600"
+			id="main"
+			data-signals="{eventId:'',isActive:false,managePageFilter:'all'}"
+			data-init="@get('/sse',{openWhenHidden:true})"
+			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
+		>
+			<header
+				class="w-full flex justify-between items-center py-2 px-4 bg-white
+                 border-b border-slate-300"
+			>
+				<span class="text-xl font-semibold">Recurring Reminder</span>
+			</header>
+			<section
+				class="py-2 px-4 flex flex-col gap-7 mt-7 w-full lg:py-4 lg:px-6 xl:px-8"
+				id="section"
+			>
+				<div class="flex flex-col gap-1 w-full">
+					<p class="text-2xl font-semibold">All Items</p>
+					<span class="text-slate-600">Every reminder regardless of date.Oldest first</span>
+				</div>
+				<div class="flex flex-wrap gap-3 items-center">
+					@components.FilterAllEventsButton(len(data.EventsData))
+					@components.FilterActiveEventsButton(data.ActiveDataCount)
+					@components.FilterInactiveEventsButton(data.InactiveDataCount)
+				</div>
+				<div
+					class="w-full shadow rounded-lg border border-slate-300 
+                        overflow-x-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200
+                         scrollbar-thumb-purple-600 lg:overflow-x-hidden"
+				>
+					@components.ManageEventsTable(data.EventsData)
+				</div>
+			</section>
+		</main>
+		@components.ErrorMessage()
+	}
+}

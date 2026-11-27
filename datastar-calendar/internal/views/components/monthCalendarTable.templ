@@ -1,7 +1,6 @@
 package components
 
 import (
-	"datastar-calendar/internal/views/components/shared"
 	"datastar-calendar/internal/models"
 	"strings"
 	"time"
@@ -38,7 +37,7 @@ templ MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventD
 							<div
 								class="p-1 flex flex-col w-full h-full justify-start items-start gap-1"
 							>
-								@shared.AddEventLink(calendarData[row][col], active)
+								@AddEventLink(calendarData[row][col], active)
 								<div
 									class={ generateEventsContainerHeightClass(len(calendarData)) + 
 										` w-full overflow-x-hidden overflow-y-auto  scrollbar-thin scrollbar-track-orange-200
@@ -51,7 +50,7 @@ templ MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventD
 									>
 										if len(events) > 0 {
 											for _,event := range events {
-												@shared.CalendarTableEventItem(event)
+												@CalendarTableEventItem(event)
 											}
 										}
 									</div>

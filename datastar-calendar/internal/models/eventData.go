@@ -8,4 +8,5 @@ type EventData struct {
 	UserId    string `json:"user_id"`
 	StopAfter string `json:"stopAfter"`
 	Exact     string `json:"exact"`
+	IsActive  bool   `json:"is_active"`
 }

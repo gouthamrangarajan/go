@@ -11,7 +11,6 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"datastar-calendar/internal/models"
-	"datastar-calendar/internal/views/components/shared"
 	"strings"
 )
 
@@ -83,7 +82,7 @@ func WeekCalendarTable(data models.WeekCalendarData) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(day)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/weekCalendarTable.templ`, Line: 19, Col: 12}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/weekCalendarTable.templ`, Line: 18, Col: 12}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -140,7 +139,7 @@ func WeekCalendarTable(data models.WeekCalendarData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.AddEventLink(data.CalendarData[0][idx], active).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = AddEventLink(data.CalendarData[0][idx], active).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -218,7 +217,7 @@ func WeekCalendarTable(data models.WeekCalendarData) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression("eventsContainer-" + data.CalendarData[0][idx].Format("2006-01-02")).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/weekCalendarTable.templ`, Line: 38, Col: 79}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/weekCalendarTable.templ`, Line: 37, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 				if templ_7745c5c3_Err != nil {
@@ -243,7 +242,7 @@ func WeekCalendarTable(data models.WeekCalendarData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, event := range filterDateEvents(data.EventsData, data.CalendarData[0][idx]) {
-				templ_7745c5c3_Err = shared.CalendarTableEventItem(event).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = CalendarTableEventItem(event).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

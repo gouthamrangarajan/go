@@ -1,13 +1,14 @@
 package models
 
-type DnD struct {
-	Id   string `json:"id"`
-	Date string `json:"date"`
-}
-
 type DeleteEvent struct {
 	Id          string
 	AccessToken string
+}
+
+type UpdateIsActiveEvent struct {
+	Id          string
+	AccessToken string
+	IsActive    bool
 }
 
 type MonthYearDayWeekString struct {

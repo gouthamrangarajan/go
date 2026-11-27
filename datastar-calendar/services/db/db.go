@@ -66,7 +66,7 @@ func (d *DBService) GetData(accessToken string, dateRange []string, channel chan
 		channel <- response
 		return
 	}
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).In("date", dateRange).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).In("date", dateRange).Eq("is_active", "true").Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- response
@@ -82,6 +82,7 @@ func (d *DBService) GetDataById(request struct {
 	AccessToken string
 	Id          string
 }, channel chan<- models.EventData) {
+	// fmt.Printf("Get Data by Id AccessToken: %v\n", request.AccessToken)
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	response := models.EventData{}
@@ -137,6 +138,7 @@ func (d *DBService) AddData(accessToken string, data models.EventData, channel c
 	channel <- emptyData
 }
 func (d *DBService) UpdateData(accessToken string, data models.EventData, channel chan<- models.EventData) {
+	// fmt.Printf("%v\n", data)
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
 	var emptyData models.EventData
@@ -193,6 +195,33 @@ func (d *DBService) DeleteEvent(data models.DeleteEvent, channel chan<- bool) {
 	channel <- true
 }
 
+func (d *DBService) UpdateIsActive(data models.UpdateIsActiveEvent, channel chan<- bool) {
+	// fmt.Printf("%v\n", data)
+	anonKey := os.Getenv("SUPABASE_ANON_KEY")
+	apiUrl := os.Getenv("SUPABASE_API_URL")
+	client, err := supabase.NewClient(apiUrl, anonKey, &supabase.ClientOptions{
+		Headers: map[string]string{"Authorization": "Bearer " + data.AccessToken},
+	})
+	defer close(channel)
+	if err != nil {
+		fmt.Printf("Error connecting to supabase %v\n", err.Error())
+		channel <- false
+		return
+	}
+	_, count, err := client.From("calendar").Update(map[string]bool{"is_active": data.IsActive}, "", "exact").Eq("id", data.Id).Execute()
+	if err != nil {
+		fmt.Printf("Error executing query %v\n", err.Error())
+		channel <- false
+		return
+	}
+	if count == 0 {
+		fmt.Printf("No records affected\n")
+		channel <- false
+		return
+	}
+	channel <- true
+}
+
 func (d *DBService) GetAllNotOnlyOnceFrequencyData(accessToken string, channel chan<- []models.EventData) {
 	anonKey := os.Getenv("SUPABASE_ANON_KEY")
 	apiUrl := os.Getenv("SUPABASE_API_URL")
@@ -206,7 +235,7 @@ func (d *DBService) GetAllNotOnlyOnceFrequencyData(accessToken string, channel c
 		channel <- response
 		return
 	}
-	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact", "exact", false).In("frequency", services.AllowedFrequencies[1:]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
+	data, _, err := client.From("calendar").Select("id, task, frequency, date, stopAfter, exact,is_active", "exact", false).In("frequency", services.AllowedFrequencies[1:]).Order("created_at", &postgrest.OrderOpts{Ascending: true}).Execute()
 	if err != nil {
 		fmt.Printf("Error executing query %v\n", err.Error())
 		channel <- response
@@ -215,5 +244,6 @@ func (d *DBService) GetAllNotOnlyOnceFrequencyData(accessToken string, channel c
 	if err := json.Unmarshal(data, &response); err != nil {
 		fmt.Printf("Error unmarshalling results %v\n", err.Error())
 	}
+	// fmt.Printf("%v\n", response)
 	channel <- response
 }

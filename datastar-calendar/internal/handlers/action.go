@@ -5,7 +5,6 @@ import (
 	"context"
 	"datastar-calendar/internal/models"
 	"datastar-calendar/internal/views/components"
-	"datastar-calendar/internal/views/components/shared"
 	"datastar-calendar/services"
 	"datastar-calendar/services/db"
 	"fmt"
@@ -108,7 +107,7 @@ func (a *ActionHandler) Save(responseWriter http.ResponseWriter, request *http.R
 		if clientSignals.EventId != "" {
 			dataShowAttr = "!$_savingTask"
 		}
-		shared.SaveEventValidationError(errors, dataShowAttr).Render(context.Background(), dataBuffer)
+		components.SaveEventValidationError(errors, dataShowAttr).Render(context.Background(), dataBuffer)
 		if userSession, userSessionExists := a.uiSidMap.Load(key); userSessionExists {
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content: dataBuffer.String(),
@@ -182,7 +181,7 @@ func (a *ActionHandler) Save(responseWriter http.ResponseWriter, request *http.R
 		}
 		if !functionalityErrored {
 			eventTableDataUIBuffer := new(bytes.Buffer)
-			shared.CalendarTableEventItem(dataFromDbSave).Render(context.Background(), eventTableDataUIBuffer)
+			components.CalendarTableEventItem(dataFromDbSave).Render(context.Background(), eventTableDataUIBuffer)
 			switch {
 			case clientSignals.EventId == "":
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
@@ -249,6 +248,97 @@ func (a *ActionHandler) Delete(responseWriter http.ResponseWriter, request *http
 			}
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
 				Content:   "{showDeleteConfirm:false}",
+				IsSignals: true,
+			}
+		}
+	}
+
+}
+
+func (a *ActionHandler) UpdateStatus(responseWriter http.ResponseWriter, request *http.Request) {
+	if strings.ToUpper(request.Method) != "POST" {
+		responseWriter.WriteHeader(405)
+		return
+	}
+
+	token := request.Context().Value(services.TokenKey).(string)
+	var clientSignals models.ClientSignals
+	datastar.ReadSignals(request, &clientSignals)
+	clientSignals.EventId = strings.TrimSpace(clientSignals.EventId)
+	if clientSignals.EventId == "" {
+		responseWriter.WriteHeader(400)
+		return
+	}
+	// fmt.Println("Received signals: ", ClientSignals)
+	key := services.GenerateUserSessionKey(token, clientSignals.UiSid)
+
+	updateChannel := make(chan bool)
+	go a.dbService.UpdateIsActive(models.UpdateIsActiveEvent{
+		Id:          clientSignals.EventId,
+		IsActive:    clientSignals.IsActive,
+		AccessToken: token,
+	}, updateChannel)
+
+	success := <-updateChannel
+	var manageEventsPageData models.ManageEventsPageData
+	if success {
+		getDataChannel := make(chan []models.EventData)
+		go a.dbService.GetAllNotOnlyOnceFrequencyData(token, getDataChannel)
+		eventsData := <-getDataChannel
+		manageEventsPageData = services.ConstructManageEventsPageData(eventsData, clientSignals.ManagePageFilter)
+	}
+	if userSession, userSessionExists := a.uiSidMap.Load(key); userSessionExists {
+		switch success {
+		case true:
+			toggleButtonBuffer := new(bytes.Buffer)
+			components.ToggleEventStatusButton(clientSignals.EventId, clientSignals.IsActive).Render(context.Background(), toggleButtonBuffer)
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:           toggleButtonBuffer.String(),
+				Mode:              datastar.WithModeOuter(),
+				UseViewTransition: true,
+			}
+			filterActiveEventsButtonBuffer := new(bytes.Buffer)
+			filterInactiveEventsButtonBuffer := new(bytes.Buffer)
+			components.FilterActiveEventsButton(manageEventsPageData.ActiveDataCount).Render(context.Background(), filterActiveEventsButtonBuffer)
+			components.FilterInactiveEventsButton(manageEventsPageData.InactiveDataCount).Render(context.Background(), filterInactiveEventsButtonBuffer)
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content: filterActiveEventsButtonBuffer.String(),
+				Mode:    datastar.WithModeOuter(),
+				// UseViewTransition: true,
+			}
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content: filterInactiveEventsButtonBuffer.String(),
+				Mode:    datastar.WithModeOuter(),
+				// UseViewTransition: true,
+			}
+			if (clientSignals.IsActive && clientSignals.ManagePageFilter == models.INACTIVE_STATUS) ||
+				(!clientSignals.IsActive && clientSignals.ManagePageFilter == models.ACTIVE_STATUS) {
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					IsRemove:          true,
+					Selector:          "#tr-" + clientSignals.EventId,
+					UseViewTransition: true,
+				}
+				tableFooterBuffer := new(bytes.Buffer)
+				switch clientSignals.ManagePageFilter {
+				case models.INACTIVE_STATUS:
+					components.ManageEventsTableFooter(manageEventsPageData.InactiveDataCount).Render(context.Background(), tableFooterBuffer)
+				case models.ACTIVE_STATUS:
+					components.ManageEventsTableFooter(manageEventsPageData.ActiveDataCount).Render(context.Background(), tableFooterBuffer)
+				}
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					Content:           tableFooterBuffer.String(),
+					Mode:              datastar.WithModeOuter(),
+					UseViewTransition: true,
+				}
+			}
+		case false:
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:   "{showErrorMessage:true,errorMessage:'Couldn\\'t update the reminder. Please try again.'}",
+				IsSignals: true,
+			}
+			time.Sleep(3 * time.Second)
+			userSession.(chan models.LongSSEData) <- models.LongSSEData{
+				Content:   "{showErrorMessage:false}",
 				IsSignals: true,
 			}
 		}

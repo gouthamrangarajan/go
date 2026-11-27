@@ -1,7 +1,6 @@
 package components
 
 import (
-	"datastar-calendar/internal/views/components/shared"
 	"datastar-calendar/internal/models"
 	"strings"
 )
@@ -27,7 +26,7 @@ templ WeekCalendarTable(data models.WeekCalendarData) {
 				{{ active, activeClass := getActiveFlagAndActiveClassMonthTd(data.CalendarData[0][idx], data.CurrentMonthAndYear) }}
 				<td class={ getTdClass(idx, data.From) } style="view-transition-name:none">
 					<div class="pt-4 xl:pt-10">
-						@shared.AddEventLink(data.CalendarData[0][idx], active)
+						@AddEventLink(data.CalendarData[0][idx], active)
 					</div>
 					<div
 						class={ `w-full h-full  overflow-x-hidden overflow-y-auto shadow p-1 
@@ -38,7 +37,7 @@ templ WeekCalendarTable(data models.WeekCalendarData) {
 							id={ "eventsContainer-" + data.CalendarData[0][idx].Format("2006-01-02") }
 						>
 							for _,event := range filterDateEvents(data.EventsData,data.CalendarData[0][idx]) {
-								@shared.CalendarTableEventItem(event)
+								@CalendarTableEventItem(event)
 							}
 						</div>
 					</div>

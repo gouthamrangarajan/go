@@ -11,7 +11,6 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"datastar-calendar/internal/models"
-	"datastar-calendar/internal/views/components/shared"
 	"strings"
 	"time"
 )
@@ -90,7 +89,7 @@ func MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:headerDay-" + day)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 22, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 21, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -103,7 +102,7 @@ func MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(day)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 23, Col: 11}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 22, Col: 11}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -135,7 +134,7 @@ func MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templruntime.NewAttributeExpression("td-" + calendarData[row][col].Format("2006-01-02")).Resolve(ctx)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 32, Col: 63}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 31, Col: 63}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 					if templ_7745c5c3_Err != nil {
@@ -183,7 +182,7 @@ func MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = shared.AddEventLink(calendarData[row][col], active).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = AddEventLink(calendarData[row][col], active).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -258,7 +257,7 @@ func MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues("view-transition-name:none")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 49, Col: 45}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 48, Col: 45}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -271,7 +270,7 @@ func MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templruntime.NewAttributeExpression("eventsContainer-" + calendarData[row][col].Format("2006-01-02")).Resolve(ctx)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 50, Col: 79}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarTable.templ`, Line: 49, Col: 79}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 					if templ_7745c5c3_Err != nil {
@@ -297,7 +296,7 @@ func MonthCalendarTable(calendarData [][7]time.Time, eventsData []models.EventDa
 				}
 				if len(events) > 0 {
 					for _, event := range events {
-						templ_7745c5c3_Err = shared.CalendarTableEventItem(event).Render(ctx, templ_7745c5c3_Buffer)
+						templ_7745c5c3_Err = CalendarTableEventItem(event).Render(ctx, templ_7745c5c3_Buffer)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

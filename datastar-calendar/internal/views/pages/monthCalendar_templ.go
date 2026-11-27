@@ -12,7 +12,6 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"datastar-calendar/internal/models"
 	"datastar-calendar/internal/views/components"
-	"datastar-calendar/internal/views/components/shared"
 	"strconv"
 	"time"
 )
@@ -54,7 +53,11 @@ func MonthCalendarPage(data models.MonthCalendarData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<p class=\"absolute bottom-2 right-2 py-2 px-4 rounded animate-slide-left shadow text-white\" data-class=\"{'bg-orange-600':$errorMessage.includes('Reconnecting'), 'bg-red-600':$errorMessage.includes('Failed')}\" data-show=\"$showErrorMessage\" style=\"view-transition-name:error-message;display:none;\" data-text=\"$errorMessage\"></p></main>")
+			templ_7745c5c3_Err = components.ErrorMessage().Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -133,7 +136,7 @@ func monthCalendarheader(currentMonthAndYear time.Time) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendarPage.templ`, Line: 58, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendar.templ`, Line: 51, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -146,7 +149,7 @@ func monthCalendarheader(currentMonthAndYear time.Time) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`$_showYears=true;`).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendarPage.templ`, Line: 62, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendar.templ`, Line: 55, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
@@ -159,7 +162,7 @@ func monthCalendarheader(currentMonthAndYear time.Time) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(currentMonthAndYear.Year()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendarPage.templ`, Line: 63, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendar.templ`, Line: 56, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -182,7 +185,7 @@ func monthCalendarheader(currentMonthAndYear time.Time) templ.Component {
 					}
 				`).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendarPage.templ`, Line: 78, Col: 5}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendar.templ`, Line: 71, Col: 5}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 		if templ_7745c5c3_Err != nil {
@@ -218,11 +221,11 @@ func monthCalendarheader(currentMonthAndYear time.Time) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.MonthViewLink(currentMonthAndYear, true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.MonthViewLink(currentMonthAndYear, true).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.WeekViewLink(currentMonthAndYear, false).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.WeekViewLink(currentMonthAndYear, false).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

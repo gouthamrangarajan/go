@@ -1,6 +1,9 @@
 package services
 
-import "time"
+import (
+	"datastar-calendar/internal/models"
+	"time"
+)
 
 type contextKey string
 
@@ -24,4 +27,26 @@ func GenerateAllDatesStringFromStartToEnd(start time.Time, end time.Time) []stri
 		ret = append(ret, loopDt.Format("2006-01-02"))
 	}
 	return ret
+}
+
+func ConstructManageEventsPageData(dbEventsData []models.EventData,
+	managePageFilter models.ManagerPageFilters) models.ManageEventsPageData {
+	var pageData models.ManageEventsPageData
+	for _, item := range dbEventsData {
+		if item.IsActive {
+			pageData.ActiveDataCount++
+		} else {
+			pageData.InactiveDataCount++
+		}
+		switch {
+		case managePageFilter == models.ACTIVE_STATUS && item.IsActive:
+			pageData.EventsData = append(pageData.EventsData, item)
+		case managePageFilter == models.INACTIVE_STATUS && !item.IsActive:
+			pageData.EventsData = append(pageData.EventsData, item)
+		case managePageFilter == models.ALL_STATUS:
+			pageData.EventsData = append(pageData.EventsData, item)
+		}
+	}
+
+	return pageData
 }

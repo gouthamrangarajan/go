@@ -33,6 +33,7 @@ func (r *Router) HttpHandler() http.Handler {
 	sseHandler := handlers.NewSSEHandler(dbService, &uidSidMap)
 	addUIHandler := handlers.NewAddUIHandler(dbService, &uidSidMap)
 	editUIHandler := handlers.NewEditUIHandler(dbService, &uidSidMap)
+	manageEventsHandler := handlers.NewManageEventsHandler(dbService, &uidSidMap)
 
 	router.Get("/", monthHandler.Handle)
 	router.Get("/sse", sseHandler.Handle)
@@ -45,6 +46,9 @@ func (r *Router) HttpHandler() http.Handler {
 	router.Get("/wk", weekHandler.Handle)
 	router.Post("/login", loginHandler.Handle)
 	router.Post("/delete", actionHandler.Delete)
+	router.Get("/manage", manageEventsHandler.Handle)
+	router.Post("/manage/filter", manageEventsHandler.Filter)
+	router.Post("/events/{id}/status", actionHandler.UpdateStatus)
 	router.Get("/assets/*", func(response http.ResponseWriter, request *http.Request) {
 		fileServer := http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))
 		fileServer.ServeHTTP(response, request)

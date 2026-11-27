@@ -1,0 +1,66 @@
+package components
+
+import (
+	"datastar-calendar/internal/models"
+	"strconv"
+)
+
+templ ManageEventsTable(data []models.EventData) {
+	<table class="w-full border-collapse " id="tblManageEvents">
+		<thead class="bg-gray-100">
+			<tr>
+				<th
+					class="appearance-none py-2 px-4 border-b border-slate-300
+                            font-normal text-sm text-left uppercase tracking-widest"
+				>Title</th>
+				<th
+					class="appearance-none py-2 px-4 border-b border-slate-300 
+                        font-normal text-sm text-left uppercase tracking-widest"
+				>Frequency</th>
+				<th
+					class="appearance-none py-2 px-4 border-b border-slate-300 
+                        font-normal text-sm text-left uppercase tracking-widest"
+				>Date</th>
+				<th
+					class="appearance-none py-2 px-4 border-b border-slate-300 
+                        font-normal text-sm text-left uppercase tracking-widest"
+				>Stop After</th>
+				<th
+					class="appearance-none py-2 px-4 border-b border-slate-300 
+                        font-normal text-sm text-left uppercase tracking-widest"
+				>Status</th>
+			</tr>
+		</thead>
+		<tbody class="bg-white">
+			for _,item := range data {
+				<tr id={"tr-"+item.Id}
+					style={"view-transition-name:tr-"+item.Id}>
+					<td class="py-2 px-4 border-b border-slate-300">{ item.Task }</td>
+					<td class="py-2 px-4 border-b border-slate-300">{ item.Frequency }</td>
+					<td class="py-2 px-4 border-b border-slate-300">{ item.Date }</td>
+					<td class="py-2 px-4 border-b border-slate-300">{ item.StopAfter }</td>
+					<td class="py-2 px-4 border-b border-slate-300">
+						@ToggleEventStatusButton(item.Id, item.IsActive)
+					</td>
+				</tr>
+			}
+		</tbody>
+		@ManageEventsTableFooter(len(data))
+	</table>
+}
+
+templ ManageEventsTableFooter(count int){
+	<tfoot class="bg-white" id="tblManageEventsTFoot">
+		<tr>
+			if count>0{
+			<td class="py-2 px-4 text-end" colspan="5">
+				Showing 1-{ strconv.Itoa(count) } of { strconv.Itoa(count) }
+			</td>
+			}else {
+				<td class="py-2 px-4 text-end text-red-600" colspan="5">
+					No records found...
+				</td>
+			}
+		</tr>
+	</tfoot>
+}

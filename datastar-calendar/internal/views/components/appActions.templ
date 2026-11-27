@@ -1,4 +1,4 @@
-package shared
+package components
 
 import (
 	"strconv"
@@ -12,7 +12,7 @@ templ MonthViewLink(currentMonthAndYear time.Time, activeMenu bool) {
 		{{ activeClass = "bg-teal-600" }}
 	}
 	<a
-		class={ "appearance-none outline-none text-white transition duration-300 py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10",activeClass }
+		class={ "appearance-none outline-none rounded-l-full text-white transition duration-300 py-1 px-3 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10",activeClass }
 		href={ templ.SafeURL(url) }
 		style="view-transition-name:monthViewLink"
 	>
@@ -27,7 +27,7 @@ templ WeekViewLink(currentMonthAndYear time.Time, activeMenu bool) {
 		{{ activeClass = "bg-teal-600" }}
 	}
 	<a
-		class={ "appearance-none outline-none text-white transition duration-300  py-1 px-2 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
+		class={ "appearance-none outline-none rounded-r-full text-white transition duration-300 py-1 px-3 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
 		href={ templ.SafeURL(url) }
 		style="view-transition-name:weekViewLink"
 	>
