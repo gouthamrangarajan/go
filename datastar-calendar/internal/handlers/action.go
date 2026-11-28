@@ -281,11 +281,13 @@ func (a *ActionHandler) UpdateStatus(responseWriter http.ResponseWriter, request
 
 	success := <-updateChannel
 	var manageEventsPageData models.ManageEventsPageData
+	var totalRecords int
 	if success {
 		getDataChannel := make(chan []models.EventData)
 		go a.dbService.GetAllNotOnlyOnceFrequencyData(token, getDataChannel)
 		eventsData := <-getDataChannel
-		manageEventsPageData = services.ConstructManageEventsPageData(eventsData, clientSignals.ManagePageFilter)
+		manageEventsPageData, totalRecords = services.ConstructManageEventsPageData(eventsData,
+			clientSignals.ManagePageFilter, clientSignals.ManagePageNumber)
 	}
 	if userSession, userSessionExists := a.uiSidMap.Load(key); userSessionExists {
 		switch success {
@@ -302,14 +304,14 @@ func (a *ActionHandler) UpdateStatus(responseWriter http.ResponseWriter, request
 			components.FilterActiveEventsButton(manageEventsPageData.ActiveDataCount).Render(context.Background(), filterActiveEventsButtonBuffer)
 			components.FilterInactiveEventsButton(manageEventsPageData.InactiveDataCount).Render(context.Background(), filterInactiveEventsButtonBuffer)
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				Content: filterActiveEventsButtonBuffer.String(),
-				Mode:    datastar.WithModeOuter(),
-				// UseViewTransition: true,
+				Content:           filterActiveEventsButtonBuffer.String(),
+				Mode:              datastar.WithModeOuter(),
+				UseViewTransition: true,
 			}
 			userSession.(chan models.LongSSEData) <- models.LongSSEData{
-				Content: filterInactiveEventsButtonBuffer.String(),
-				Mode:    datastar.WithModeOuter(),
-				// UseViewTransition: true,
+				Content:           filterInactiveEventsButtonBuffer.String(),
+				Mode:              datastar.WithModeOuter(),
+				UseViewTransition: true,
 			}
 			if (clientSignals.IsActive && clientSignals.ManagePageFilter == models.INACTIVE_STATUS) ||
 				(!clientSignals.IsActive && clientSignals.ManagePageFilter == models.ACTIVE_STATUS) {
@@ -319,12 +321,8 @@ func (a *ActionHandler) UpdateStatus(responseWriter http.ResponseWriter, request
 					UseViewTransition: true,
 				}
 				tableFooterBuffer := new(bytes.Buffer)
-				switch clientSignals.ManagePageFilter {
-				case models.INACTIVE_STATUS:
-					components.ManageEventsTableFooter(manageEventsPageData.InactiveDataCount).Render(context.Background(), tableFooterBuffer)
-				case models.ACTIVE_STATUS:
-					components.ManageEventsTableFooter(manageEventsPageData.ActiveDataCount).Render(context.Background(), tableFooterBuffer)
-				}
+				components.ManageEventsTableFooter(models.EventsTableFooterData{TotalRecords: totalRecords,
+					NoOfRecordsPerPage: models.NO_OF_RECORDS_PER_PAGE, NoOfRecordsCurrPage: len(manageEventsPageData.EventsData)}).Render(context.Background(), tableFooterBuffer)
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					Content:           tableFooterBuffer.String(),
 					Mode:              datastar.WithModeOuter(),

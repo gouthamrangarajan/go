@@ -30,7 +30,7 @@ func GenerateAllDatesStringFromStartToEnd(start time.Time, end time.Time) []stri
 }
 
 func ConstructManageEventsPageData(dbEventsData []models.EventData,
-	managePageFilter models.ManagerPageFilters) models.ManageEventsPageData {
+	managePageFilter models.ManagerPageFilters, pageNumber int) (models.ManageEventsPageData, int) {
 	var pageData models.ManageEventsPageData
 	for _, item := range dbEventsData {
 		if item.IsActive {
@@ -47,6 +47,20 @@ func ConstructManageEventsPageData(dbEventsData []models.EventData,
 			pageData.EventsData = append(pageData.EventsData, item)
 		}
 	}
+	totalRecords := len(pageData.EventsData)
 
-	return pageData
+	// fmt.Printf("%v\n", totalRecords)
+	if len(pageData.EventsData) > 0 {
+		startNum := (pageNumber - 1) * models.NO_OF_RECORDS_PER_PAGE
+		if startNum >= len(pageData.EventsData) {
+			startNum = len(pageData.EventsData) - 1
+		}
+		endNum := startNum + models.NO_OF_RECORDS_PER_PAGE
+		if endNum > len(pageData.EventsData) {
+			endNum = len(pageData.EventsData)
+		}
+		// fmt.Printf("%v,%v\n", startNum, endNum)
+		pageData.EventsData = pageData.EventsData[startNum:endNum]
+	}
+	return pageData, totalRecords
 }

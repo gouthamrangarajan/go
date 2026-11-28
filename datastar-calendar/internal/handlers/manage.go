@@ -32,8 +32,8 @@ func (m *ManageEventsHandler) Handle(responseWriter http.ResponseWriter, request
 	channel := make(chan []models.EventData)
 	go m.dbService.GetAllNotOnlyOnceFrequencyData(token, channel)
 	eventsData := <-channel
-	pageData := services.ConstructManageEventsPageData(eventsData, models.ALL_STATUS)
-	pages.ManageEvents(pageData).Render(request.Context(), responseWriter)
+	pageData, totalRecords := services.ConstructManageEventsPageData(eventsData, models.ALL_STATUS, 1)
+	pages.ManageEvents(pageData, totalRecords).Render(request.Context(), responseWriter)
 }
 
 func (m *ManageEventsHandler) Filter(responseWriter http.ResponseWriter, request *http.Request) {
@@ -50,15 +50,16 @@ func (m *ManageEventsHandler) Filter(responseWriter http.ResponseWriter, request
 	channel := make(chan []models.EventData)
 	go m.dbService.GetAllNotOnlyOnceFrequencyData(token, channel)
 	eventsData := <-channel
-	pageData := services.ConstructManageEventsPageData(eventsData, clientSignals.ManagePageFilter)
+	pageData, totalRecords := services.ConstructManageEventsPageData(eventsData, clientSignals.ManagePageFilter,
+		clientSignals.ManagePageNumber)
 
 	if userSession, userSessionExists := m.uiSidMap.Load(key); userSessionExists {
 		tableBytesBuffer := new(bytes.Buffer)
-		components.ManageEventsTable(pageData.EventsData).Render(context.Background(), tableBytesBuffer)
+		components.ManageEventsTable(pageData.EventsData, totalRecords).Render(context.Background(), tableBytesBuffer)
 		userSession.(chan models.LongSSEData) <- models.LongSSEData{
-			Content: tableBytesBuffer.String(),
-			Mode:    datastar.WithModeOuter(),
-			// UseViewTransition: true,
+			Content:           tableBytesBuffer.String(),
+			Mode:              datastar.WithModeOuter(),
+			UseViewTransition: true,
 		}
 	}
 

@@ -44,6 +44,7 @@ const (
 	ACTIVE_STATUS   ManagerPageFilters = "active"
 	INACTIVE_STATUS ManagerPageFilters = "inactive"
 )
+const NO_OF_RECORDS_PER_PAGE = 10
 
 type ClientSignals struct {
 	UiSid            string             `json:"uiSid"`
@@ -56,10 +57,17 @@ type ClientSignals struct {
 	Exact            string             `json:"exact"`
 	IsActive         bool               `json:"isActive"`
 	ManagePageFilter ManagerPageFilters `json:"managePageFilter"`
+	ManagePageNumber int                `json:"managePageNumber"`
 }
 
 type ManageEventsPageData struct {
 	EventsData        []EventData
 	ActiveDataCount   int
 	InactiveDataCount int
+}
+
+type EventsTableFooterData struct {
+	NoOfRecordsPerPage  int
+	NoOfRecordsCurrPage int
+	TotalRecords        int
 }

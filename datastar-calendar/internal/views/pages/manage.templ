@@ -5,13 +5,13 @@ import (
 	"datastar-calendar/internal/views/components"
 )
 
-templ ManageEvents(data models.ManageEventsPageData) {
+templ ManageEvents(data models.ManageEventsPageData, totalRecords int) {
 	@components.Layout() {
 		<main
 			class="h-dvh w-dvw relative overflow-x-hidden overflow-y-auto scroll-smooth 
                     scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600"
 			id="main"
-			data-signals="{eventId:'',isActive:false,managePageFilter:'all'}"
+			data-signals="{eventId:'',isActive:false,managePageFilter:'all',managePageNumber:1}"
 			data-init="@get('/sse',{openWhenHidden:true})"
 			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 		>
@@ -30,7 +30,7 @@ templ ManageEvents(data models.ManageEventsPageData) {
 					<span class="text-slate-600">Every reminder regardless of date.Oldest first</span>
 				</div>
 				<div class="flex flex-wrap gap-3 items-center">
-					@components.FilterAllEventsButton(len(data.EventsData))
+					@components.FilterAllEventsButton(totalRecords)
 					@components.FilterActiveEventsButton(data.ActiveDataCount)
 					@components.FilterInactiveEventsButton(data.InactiveDataCount)
 				</div>
@@ -39,7 +39,7 @@ templ ManageEvents(data models.ManageEventsPageData) {
                         overflow-x-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200
                          scrollbar-thumb-purple-600 lg:overflow-x-hidden"
 				>
-					@components.ManageEventsTable(data.EventsData)
+					@components.ManageEventsTable(data.EventsData, totalRecords)
 				</div>
 			</section>
 		</main>

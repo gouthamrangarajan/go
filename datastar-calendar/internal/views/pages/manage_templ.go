@@ -14,7 +14,7 @@ import (
 	"datastar-calendar/internal/views/components"
 )
 
-func ManageEvents(data models.ManageEventsPageData) templ.Component {
+func ManageEvents(data models.ManageEventsPageData, totalRecords int) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -43,11 +43,11 @@ func ManageEvents(data models.ManageEventsPageData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw relative overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600\" id=\"main\" data-signals=\"{eventId:'',isActive:false,managePageFilter:'all'}\" data-init=\"@get('/sse',{openWhenHidden:true})\" data-on:datastar-fetch=\"if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}\"><header class=\"w-full flex justify-between items-center py-2 px-4 bg-white border-b border-slate-300\"><span class=\"text-xl font-semibold\">Recurring Reminder</span></header><section class=\"py-2 px-4 flex flex-col gap-7 mt-7 w-full lg:py-4 lg:px-6 xl:px-8\" id=\"section\"><div class=\"flex flex-col gap-1 w-full\"><p class=\"text-2xl font-semibold\">All Items</p><span class=\"text-slate-600\">Every reminder regardless of date.Oldest first</span></div><div class=\"flex flex-wrap gap-3 items-center\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw relative overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600\" id=\"main\" data-signals=\"{eventId:'',isActive:false,managePageFilter:'all',managePageNumber:1}\" data-init=\"@get('/sse',{openWhenHidden:true})\" data-on:datastar-fetch=\"if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}\"><header class=\"w-full flex justify-between items-center py-2 px-4 bg-white border-b border-slate-300\"><span class=\"text-xl font-semibold\">Recurring Reminder</span></header><section class=\"py-2 px-4 flex flex-col gap-7 mt-7 w-full lg:py-4 lg:px-6 xl:px-8\" id=\"section\"><div class=\"flex flex-col gap-1 w-full\"><p class=\"text-2xl font-semibold\">All Items</p><span class=\"text-slate-600\">Every reminder regardless of date.Oldest first</span></div><div class=\"flex flex-wrap gap-3 items-center\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.FilterAllEventsButton(len(data.EventsData)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.FilterAllEventsButton(totalRecords).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -63,7 +63,7 @@ func ManageEvents(data models.ManageEventsPageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.ManageEventsTable(data.EventsData).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.ManageEventsTable(data.EventsData, totalRecords).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

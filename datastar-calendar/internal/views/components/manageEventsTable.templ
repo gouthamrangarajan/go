@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-templ ManageEventsTable(data []models.EventData) {
+templ ManageEventsTable(data []models.EventData, totalRecords int) {
 	<table class="w-full border-collapse " id="tblManageEvents">
 		<thead class="bg-gray-100">
 			<tr>
@@ -33,8 +33,10 @@ templ ManageEventsTable(data []models.EventData) {
 		</thead>
 		<tbody class="bg-white">
 			for _,item := range data {
-				<tr id={"tr-"+item.Id}
-					style={"view-transition-name:tr-"+item.Id}>
+				<tr
+					id={ "tr-" + item.Id }
+					style={ "view-transition-name:tr-" + item.Id }
+				>
 					<td class="py-2 px-4 border-b border-slate-300">{ item.Task }</td>
 					<td class="py-2 px-4 border-b border-slate-300">{ item.Frequency }</td>
 					<td class="py-2 px-4 border-b border-slate-300">{ item.Date }</td>
@@ -45,19 +47,61 @@ templ ManageEventsTable(data []models.EventData) {
 				</tr>
 			}
 		</tbody>
-		@ManageEventsTableFooter(len(data))
+		@ManageEventsTableFooter(models.EventsTableFooterData{
+			TotalRecords:        totalRecords,
+			NoOfRecordsPerPage:  models.NO_OF_RECORDS_PER_PAGE,
+			NoOfRecordsCurrPage: len(data),
+		})
 	</table>
 }
 
-templ ManageEventsTableFooter(count int){
+templ ManageEventsTableFooter(data models.EventsTableFooterData) {
 	<tfoot class="bg-white" id="tblManageEventsTFoot">
 		<tr>
-			if count>0{
-			<td class="py-2 px-4 text-end" colspan="5">
-				Showing 1-{ strconv.Itoa(count) } of { strconv.Itoa(count) }
-			</td>
-			}else {
-				<td class="py-2 px-4 text-end text-red-600" colspan="5">
+			if data.NoOfRecordsCurrPage>0 {
+				<td class="py-2 px-4 text-end" colspan="4">
+					<span>
+						Showing
+					</span>
+					<span data-text="($managePageNumber+(-1))*10+1"></span>
+					<span>- </span>
+					<span
+						data-text={ `$managePageNumber*`+strconv.Itoa(data.NoOfRecordsPerPage)+
+                                    `>`+strconv.Itoa(data.TotalRecords)+`?`+ strconv.Itoa(data.TotalRecords)+
+                                    `:$managePageNumber*` + strconv.Itoa(data.NoOfRecordsCurrPage) }
+					></span>
+					<span>of { strconv.Itoa(data.TotalRecords) }</span>
+				</td>
+				<td class="py-2 px-4">
+					<div class="flex items-center gap-1">
+						<button
+							class="appearance-none outline-none text-slate-700 transition duration-300
+                                 focus:ring-1 focus:ring-slate-700 rounded-full cursor-pointer
+                                 disabled:cursor-not-allowed disabled:text-slate-400"
+							aria-label="Prev Page"
+							data-attr:disabled="$managePageNumber==1"
+							data-on:click="$managePageNumber--;@post('/manage/filter')"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+								<path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path>
+							</svg>
+						</button>
+						<button
+							class="appearance-none outline-none text-slate-700 transition duration-300
+                                 focus:ring-1 focus:ring-slate-700 rounded-full cursor-pointer
+                                 disabled:cursor-not-allowed disabled:text-slate-400"
+							aria-label="Next Page"
+							data-on:click="$managePageNumber++;@post('/manage/filter')"
+							data-attr:disabled={ `$managePageNumber*` + strconv.Itoa(data.NoOfRecordsPerPage) + `>=` + strconv.Itoa(data.TotalRecords) }
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+								<path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"></path>
+							</svg>
+						</button>
+					</div>
+				</td>
+			} else {
+				<td class="py-2 px-4 text-center text-red-600" colspan="5">
 					No records found...
 				</td>
 			}
