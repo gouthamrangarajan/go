@@ -44,7 +44,7 @@ func MonthViewLink(currentMonthAndYear time.Time, activeMenu bool) templ.Compone
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 = []any{"appearance-none outline-none rounded-l-full text-white transition duration-300 py-1 px-3 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10", activeClass}
+			var templ_7745c5c3_Var2 = []any{"appearance-none outline-none rounded-l text-white transition duration-300 py-1 px-3 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50 focus:z-10", activeClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_ElementWriter, templ_7745c5c3_Var2...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -123,7 +123,7 @@ func WeekViewLink(currentMonthAndYear time.Time, activeMenu bool) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 = []any{"appearance-none outline-none rounded-r-full text-white transition duration-300 py-1 px-3 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50", activeClass}
+			var templ_7745c5c3_Var6 = []any{"appearance-none outline-none rounded-r text-white transition duration-300 py-1 px-3 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50", activeClass}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_ElementWriter, templ_7745c5c3_Var6...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

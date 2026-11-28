@@ -48,7 +48,7 @@ templ monthCalendarheader(currentMonthAndYear time.Time) {
 				class="text-xl text-slate-600 font-semibold text-center flex gap-1"
 				style="view-transition-name:monthAndYearName"
 			>
-				<span>{ currentMonthAndYear.Month().String() }</span>
+				<span>{ currentMonthAndYear.Format("Jan") }</span>
 				<a
 					href="#"
 					class="appearance-none outline-none px-1 cursor-pointer rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-slate-600"
@@ -56,7 +56,7 @@ templ monthCalendarheader(currentMonthAndYear time.Time) {
 				>{ strconv.Itoa(currentMonthAndYear.Year()) }</a>
 			</div>
 			<div
-				class="absolute top-8 left-11 z-10 w-64 border border-orange-300 bg-white rounded py-2 px-4 flex flex-col gap-2 "
+				class="absolute top-8 left-8 z-10 w-64 border border-orange-300 bg-white rounded py-2 px-4 flex flex-col gap-2 "
 				style="view-transition-name:year-selector;display:none;"
 				data-on:click__outside={ `
 					if($_showYears){

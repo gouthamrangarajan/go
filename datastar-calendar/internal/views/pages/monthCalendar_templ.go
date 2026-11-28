@@ -134,9 +134,9 @@ func monthCalendarheader(currentMonthAndYear time.Time) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Month().String())
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(currentMonthAndYear.Format("Jan"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendar.templ`, Line: 51, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/pages/monthCalendar.templ`, Line: 51, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -168,7 +168,7 @@ func monthCalendarheader(currentMonthAndYear time.Time) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</a></div><div class=\"absolute top-8 left-11 z-10 w-64 border border-orange-300 bg-white rounded py-2 px-4 flex flex-col gap-2\" style=\"view-transition-name:year-selector;display:none;\" data-on:click__outside=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</a></div><div class=\"absolute top-8 left-8 z-10 w-64 border border-orange-300 bg-white rounded py-2 px-4 flex flex-col gap-2\" style=\"view-transition-name:year-selector;display:none;\" data-on:click__outside=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -35,7 +35,9 @@ templ WeekCalendar(data models.WeekCalendarData) {
 templ weekCalendarheader(currentMonthAndYear time.Time, from string, week int) {
 	<div class="w-full flex justify-between items-center gap-7 py-2 px-4">
 		<div class="flex items-center gap-3">
-			<span class="text-xl text-slate-600 font-semibold text-center" style="view-transition-name:monthAndYearName">{ currentMonthAndYear.Month().String() } { strconv.Itoa(currentMonthAndYear.Year()) }</span>
+			<span class="text-xl text-slate-600 font-semibold text-center" style="view-transition-name:monthAndYearName">
+				{ currentMonthAndYear.Format("Jan") } { strconv.Itoa(currentMonthAndYear.Year()) }
+			</span>
 			@components.PrevWeekLink(week, currentMonthAndYear)
 			@components.NextWeekLink(week, currentMonthAndYear)
 		</div>
