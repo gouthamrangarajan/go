@@ -318,7 +318,12 @@ func (a *ActionHandler) UpdateStatus(responseWriter http.ResponseWriter, request
 				(!clientSignals.IsActive && clientSignals.ManagePageFilter == models.ACTIVE_STATUS) {
 				userSession.(chan models.LongSSEData) <- models.LongSSEData{
 					IsRemove:          true,
-					Selector:          "#tr-" + clientSignals.EventId,
+					Selector:          "#btnToggleStatus-" + clientSignals.EventId,
+					UseViewTransition: true,
+				}
+				userSession.(chan models.LongSSEData) <- models.LongSSEData{
+					IsScript:          true,
+					Content:           `document.querySelector('#tr-` + clientSignals.EventId + `').classList.add('bg-slate-100')`,
 					UseViewTransition: true,
 				}
 				tableFooterBuffer := new(bytes.Buffer)
