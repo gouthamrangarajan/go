@@ -10,7 +10,7 @@ import (
 templ Main(model models.UIMainModel) {
 	@layout() {
 		<main
-			class="w-full mx-auto h-full overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark dark:scrollbar-thumb-light scrollbar-track-gray-300 dark:scrollbar-track-slate-800 md:overflow-x-hidden"
+			class="w-full mx-auto h-full overflow-auto scroll-smooth scrollbar-thin scrollbar-thumb-dark dark:scrollbar-thumb-light scrollbar-track-gray-300 dark:scrollbar-track-slate-800"
 			style="display:none;"
 			data-show="true"
 			data-signals={ `{sessionId:` + strconv.Itoa(model.CurrentSessionId) + `,showMenu:false,
