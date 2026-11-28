@@ -971,6 +971,9 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .overflow-auto {
+    overflow: auto;
+  }
   .overflow-x-hidden {
     overflow-x: hidden;
   }
@@ -1478,11 +1481,6 @@
   .md\:max-w-full {
     @media (width >= 48rem) {
       max-width: 100%;
-    }
-  }
-  .md\:overflow-x-hidden {
-    @media (width >= 48rem) {
-      overflow-x: hidden;
     }
   }
   .md\:text-sm {

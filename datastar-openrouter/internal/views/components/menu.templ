@@ -2,8 +2,8 @@
 package components
 
 import (
-	"datastar-openrouter/internal/views/components/shared"
 	"datastar-openrouter/internal/models"
+	"datastar-openrouter/internal/views/components/shared"
 	"strconv"
 )
 
@@ -125,11 +125,7 @@ templ MenuItem(session models.ChatSession, searchTerm string) {
 	>
 		<a
 			href={ href }
-			data-on:click__prevent={ `	
-				$pageLoading=true;
-				$sessionId=` + strconv.Itoa(session.Id) + `;				
-				@get('` + href + `');
-				` }
+			data-on:click="$showMenu=false"
 			class="appearance-none outline-none truncate flex-1 py-2 px-4 transition duration-300 cursor-pointer"
 		>
 			{ session.Title }

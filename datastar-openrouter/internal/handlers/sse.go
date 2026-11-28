@@ -28,13 +28,14 @@ func NewSSEHandler(uisidMap *sync.Map, helperService *services.HelperService) *S
 	}
 }
 func (s *SSEHandler) HandleLongSSE(responseWriter http.ResponseWriter, request *http.Request) {
+
 	userId := request.Context().Value(s.userIdKey).(string)
 	var clientSignal models.ClientSignals
 	datastar.ReadSignals(request, &clientSignal)
 	// fmt.Printf("uisid from client %v\n", clientSignal.UiSid)
 
 	userSessionKey := s.helperService.GenerateUserSessionKey(userId, clientSignal.UiSid)
-
+	// fmt.Printf("reached here %v\n", clientSignal.SessionId)
 	userSessionChannel := make(chan models.LongSSEData, 16)
 	s.uisidMap.Store(userSessionKey, userSessionChannel)
 	defer s.uisidMap.CompareAndDelete(userSessionKey, userSessionChannel)

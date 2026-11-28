@@ -22,6 +22,7 @@ templ Main(model models.UIMainModel) {
 							fileUploading:false,messageIdToFetchImage:0,_showGoToLastMessage:false }` }
 			data-init="@post('/sse',{openWhenHidden:true});"
 			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
+			data-on:pageshow__window="evt.persisted && @post('/sse',{openWhenHidden:true})"
 		>
 			@components.Menu(model.Sessions, model.MenuSearchTerm)
 			@modals.DeleteModal()
