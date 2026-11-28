@@ -197,14 +197,15 @@ func ManageEventsTableFooter(data models.EventsTableFooterData) templ.Component 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span></td><td class=\"py-2 px-4\"><div class=\"flex items-center gap-1\"><button class=\"appearance-none outline-none text-slate-700 transition duration-300 focus:ring-1 focus:ring-slate-700 rounded-full cursor-pointer disabled:cursor-not-allowed disabled:text-slate-400\" aria-label=\"Prev Page\" data-attr:disabled=\"$managePageNumber==1\" data-on:click=\"$managePageNumber--;@post('/manage/filter')\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></button> <button class=\"appearance-none outline-none text-slate-700 transition duration-300 focus:ring-1 focus:ring-slate-700 rounded-full cursor-pointer disabled:cursor-not-allowed disabled:text-slate-400\" aria-label=\"Next Page\" data-on:click=\"$managePageNumber++;@post('/manage/filter')\" data-attr:disabled=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span></td><td class=\"py-2 px-4\"><div class=\"flex items-center gap-1\"><button class=\"appearance-none outline-none text-slate-700 transition duration-300 focus:ring-1 focus:ring-slate-700 rounded-full cursor-pointer disabled:cursor-not-allowed disabled:text-slate-400\" aria-label=\"Prev Page\" data-on:click=\"$managePageNumber--;@post('/manage/filter')\" data-indicator=\"_fetchingPrevPage\" data-attr:disabled=\"$managePageNumber==1 || $_fetchingNextPage || $_fetchingPrevPage\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z\" clip-rule=\"evenodd\"></path></svg></button> <button class=\"appearance-none outline-none text-slate-700 transition duration-300 focus:ring-1 focus:ring-slate-700 rounded-full cursor-pointer disabled:cursor-not-allowed disabled:text-slate-400\" aria-label=\"Next Page\" data-on:click=\"$managePageNumber++;@post('/manage/filter')\" data-indicator=\"_fetchingNextPage\" data-attr:disabled=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`$managePageNumber*` + strconv.Itoa(data.NoOfRecordsPerPage) + `>=` + strconv.Itoa(data.TotalRecords)).Resolve(ctx)
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`$managePageNumber*` + strconv.Itoa(data.NoOfRecordsPerPage) + `>=` +
+				strconv.Itoa(data.TotalRecords) + `|| $_fetchingNextPage || $_fetchingPrevPage`).Resolve(ctx)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/manageEventsTable.templ`, Line: 95, Col: 129}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/manageEventsTable.templ`, Line: 98, Col: 119}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 			if templ_7745c5c3_Err != nil {
