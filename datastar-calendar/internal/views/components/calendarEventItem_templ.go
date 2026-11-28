@@ -57,9 +57,9 @@ func CalendarTableEventItem(event models.EventData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`if(!$pageLoading){$pageLoading=true;@get('/` + event.Id + `');}`).Resolve(ctx)
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`if(!$pageLoading){$pageLoading=true;@get('/` + event.Id + `',{openWhenHidden:true});}`).Resolve(ctx)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/calendarEventItem.templ`, Line: 11, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/calendarEventItem.templ`, Line: 11, Col: 114}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 			if templ_7745c5c3_Err != nil {

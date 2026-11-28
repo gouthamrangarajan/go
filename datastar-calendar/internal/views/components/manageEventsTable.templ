@@ -79,7 +79,7 @@ templ ManageEventsTableFooter(data models.EventsTableFooterData) {
                                  focus:ring-1 focus:ring-slate-700 rounded-full cursor-pointer
                                  disabled:cursor-not-allowed disabled:text-slate-400"
 							aria-label="Prev Page"
-							data-on:click="$managePageNumber--;@post('/manage/filter')"
+							data-on:click="$managePageNumber--;@post('/manage/filter',{openWhenHidden:true})"
 							data-indicator="_fetchingPrevPage"
 							data-attr:disabled="$managePageNumber==1 || $_fetchingNextPage || $_fetchingPrevPage"
 						>
@@ -92,7 +92,7 @@ templ ManageEventsTableFooter(data models.EventsTableFooterData) {
                                  focus:ring-1 focus:ring-slate-700 rounded-full cursor-pointer
                                  disabled:cursor-not-allowed disabled:text-slate-400"
 							aria-label="Next Page"
-							data-on:click="$managePageNumber++;@post('/manage/filter')"
+							data-on:click="$managePageNumber++;@post('/manage/filter',{openWhenHidden:true})"
 							data-indicator="_fetchingNextPage"
 							data-attr:disabled={ `$managePageNumber*` + strconv.Itoa(data.NoOfRecordsPerPage) + `>=` + 
                                         strconv.Itoa(data.TotalRecords) + `|| $_fetchingNextPage || $_fetchingPrevPage` }

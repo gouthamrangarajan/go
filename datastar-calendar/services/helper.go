@@ -2,6 +2,7 @@ package services
 
 import (
 	"datastar-calendar/internal/models"
+	"strings"
 	"time"
 )
 
@@ -30,9 +31,16 @@ func GenerateAllDatesStringFromStartToEnd(start time.Time, end time.Time) []stri
 }
 
 func ConstructManageEventsPageData(dbEventsData []models.EventData,
-	managePageFilter models.ManagerPageFilters, pageNumber int) (models.ManageEventsPageData, int) {
+	managePageFilter models.ManagerPageFilters, pageNumber int,
+	srchText string) (models.ManageEventsPageData, int) {
+	srchText = strings.ToLower(strings.TrimSpace(srchText))
 	var pageData models.ManageEventsPageData
 	for _, item := range dbEventsData {
+		if srchText != "" {
+			if !strings.Contains(strings.ToLower(item.Task), srchText) {
+				continue
+			}
+		}
 		if item.IsActive {
 			pageData.ActiveDataCount++
 		} else {

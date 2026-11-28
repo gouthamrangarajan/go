@@ -32,7 +32,7 @@ func (m *ManageEventsHandler) Handle(responseWriter http.ResponseWriter, request
 	channel := make(chan []models.EventData)
 	go m.dbService.GetAllNotOnlyOnceFrequencyData(token, channel)
 	eventsData := <-channel
-	pageData, totalRecords := services.ConstructManageEventsPageData(eventsData, models.ALL_STATUS, 1)
+	pageData, totalRecords := services.ConstructManageEventsPageData(eventsData, models.ALL_STATUS, 1, "")
 	pages.ManageEvents(pageData, totalRecords).Render(request.Context(), responseWriter)
 }
 
@@ -50,8 +50,9 @@ func (m *ManageEventsHandler) Filter(responseWriter http.ResponseWriter, request
 	channel := make(chan []models.EventData)
 	go m.dbService.GetAllNotOnlyOnceFrequencyData(token, channel)
 	eventsData := <-channel
-	pageData, totalRecords := services.ConstructManageEventsPageData(eventsData, clientSignals.ManagePageFilter,
-		clientSignals.ManagePageNumber)
+	pageData, totalRecords := services.ConstructManageEventsPageData(eventsData,
+		clientSignals.ManagePageFilter, clientSignals.ManagePageNumber,
+		clientSignals.ManagePageSearchTxt)
 
 	if userSession, userSessionExists := m.uiSidMap.Load(key); userSessionExists {
 		tableBytesBuffer := new(bytes.Buffer)
@@ -61,6 +62,28 @@ func (m *ManageEventsHandler) Filter(responseWriter http.ResponseWriter, request
 			Mode:              datastar.WithModeOuter(),
 			UseViewTransition: true,
 		}
+		filterAllEventButtonBuffer := new(bytes.Buffer)
+		filterActiveEventsButtonBuffer := new(bytes.Buffer)
+		filterInactiveEventsButtonBuffer := new(bytes.Buffer)
+		components.FilterAllEventsButton(pageData.ActiveDataCount+pageData.InactiveDataCount).Render(context.Background(), filterAllEventButtonBuffer)
+		components.FilterActiveEventsButton(pageData.ActiveDataCount).Render(context.Background(), filterActiveEventsButtonBuffer)
+		components.FilterInactiveEventsButton(pageData.InactiveDataCount).Render(context.Background(), filterInactiveEventsButtonBuffer)
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:           filterAllEventButtonBuffer.String(),
+			Mode:              datastar.WithModeOuter(),
+			UseViewTransition: true,
+		}
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:           filterActiveEventsButtonBuffer.String(),
+			Mode:              datastar.WithModeOuter(),
+			UseViewTransition: true,
+		}
+		userSession.(chan models.LongSSEData) <- models.LongSSEData{
+			Content:           filterInactiveEventsButtonBuffer.String(),
+			Mode:              datastar.WithModeOuter(),
+			UseViewTransition: true,
+		}
+
 	}
 
 }

@@ -61,9 +61,9 @@ func ToggleEventStatusButton(id string, isActive bool) templ.Component {
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`$eventId='` + id + `';$isActive=` + strconv.FormatBool(!isActive) + `;
-                        @post('/events/` + id + `/status')`).Resolve(ctx)
+                        @post('/events/` + id + `/status',{openWhenHidden:true})`).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/manageEventsActions.templ`, Line: 15, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/manageEventsActions.templ`, Line: 15, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -160,7 +160,7 @@ func FilterAllEventsButton(count int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" aria-label=\"Filter All Events\" id=\"btnAllEvents\" style=\"view-transition-name:btn-all-events\" data-on:click=\"$managePageNumber=1;$managePageFilter='all';@post('/manage/filter')\" data-indicator=\"_fetchingAllStatusRecord\" data-attr:disabled=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" aria-label=\"Filter All Events\" id=\"btnAllEvents\" style=\"view-transition-name:btn-all-events\" data-on:click=\"$managePageNumber=1;$managePageFilter='all';@post('/manage/filter',{openWhenHidden:true})\" data-indicator=\"_fetchingAllStatusRecord\" data-attr:disabled=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -240,7 +240,7 @@ func FilterActiveEventsButton(count int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" aria-label=\"Filter Active Events only\" id=\"btnActiveeEvents\" style=\"view-transition-name:btn-active-events\" data-on:click=\"$managePageNumber=1;$managePageFilter='active';@post('/manage/filter')\" data-indicator=\"_fetchingActiveStatusRecord\" data-attr:disabled=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" aria-label=\"Filter Active Events only\" id=\"btnActiveeEvents\" style=\"view-transition-name:btn-active-events\" data-on:click=\"$managePageNumber=1;$managePageFilter='active';@post('/manage/filter',{openWhenHidden:true})\" data-indicator=\"_fetchingActiveStatusRecord\" data-attr:disabled=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -320,7 +320,7 @@ func FilterInactiveEventsButton(count int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" aria-label=\"Filter Inactive Events only\" id=\"btnActiveEvents\" style=\"view-transition-name:btn-inactive-events\" data-on:click=\"$managePageNumber=1;$managePageFilter='inactive';@post('/manage/filter')\" data-indicator=\"_fetchingInactiveStatusRecord\" data-attr:disabled=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" aria-label=\"Filter Inactive Events only\" id=\"btnActiveEvents\" style=\"view-transition-name:btn-inactive-events\" data-on:click=\"$managePageNumber=1;$managePageFilter='inactive';@post('/manage/filter',{openWhenHidden:true})\" data-indicator=\"_fetchingInactiveStatusRecord\" data-attr:disabled=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

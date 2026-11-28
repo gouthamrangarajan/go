@@ -47,17 +47,18 @@ const (
 const NO_OF_RECORDS_PER_PAGE = 10
 
 type ClientSignals struct {
-	UiSid            string             `json:"uiSid"`
-	EventId          string             `json:"eventId"`
-	Task             string             `json:"task"`
-	Frequency        string             `json:"frequency"`
-	StopAfter        string             `json:"stopAfter"`
-	Date             string             `json:"date"`
-	DateChanged      bool               `json:"dateChanged"`
-	Exact            string             `json:"exact"`
-	IsActive         bool               `json:"isActive"`
-	ManagePageFilter ManagerPageFilters `json:"managePageFilter"`
-	ManagePageNumber int                `json:"managePageNumber"`
+	UiSid               string             `json:"uiSid"`
+	EventId             string             `json:"eventId"`
+	Task                string             `json:"task"`
+	Frequency           string             `json:"frequency"`
+	StopAfter           string             `json:"stopAfter"`
+	Date                string             `json:"date"`
+	DateChanged         bool               `json:"dateChanged"`
+	Exact               string             `json:"exact"`
+	IsActive            bool               `json:"isActive"`
+	ManagePageFilter    ManagerPageFilters `json:"managePageFilter"`
+	ManagePageNumber    int                `json:"managePageNumber"`
+	ManagePageSearchTxt string             `json:"managePageSearchTxt"`
 }
 
 type ManageEventsPageData struct {

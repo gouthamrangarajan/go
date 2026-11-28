@@ -26,7 +26,7 @@ func EditEventDrawer() templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-0 left-0 bg-white/50 w-full h-full flex justify-end\" id=\"taskDetails\" data-signals=\"{_detailsModalAbortController:new AbortController()}\" data-init=\"$_detailsModalAbortController = focusTrap('#taskDetails')\"><div class=\"w-11/12 h-full py-2 px-4 border-l border-gray-300 animate-slide-left bg-white shadow flex flex-col gap-6 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600 md:w-9/12 lg:w-1/3 xl:w-1/4\" style=\"view-transition-name:details-modal\"><div class=\"flex w-full justify-between items-center\"><h2 class=\"text-2xl text-slate-700 font-semibold\">Edit Task</h2><button class=\"appearance-none outline-none cursor-pointer rounded-full p-1 bg-slate-100 text-slate-600 focus:ring-1 focus:ring-slate-600 transition duration-300 disabled:cursor-not-allowed disabled:opacity-80\" aria-label=\"close\" data-on:click=\"evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close');\" data-indicator=\"_closingDetails\" data-attr-disabled=\"$_closingDetails\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5 cursor-pointer\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div><p class=\"py-1 px-3 w-full\" style=\"view-transition-name:event-result\" id=\"eventResult\"></p><form data-on:submit=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"absolute top-0 left-0 bg-white/50 w-full h-full flex justify-end\" id=\"taskDetails\" data-signals=\"{_detailsModalAbortController:new AbortController()}\" data-init=\"$_detailsModalAbortController = focusTrap('#taskDetails')\"><div class=\"w-11/12 h-full py-2 px-4 border-l border-gray-300 animate-slide-left bg-white shadow flex flex-col gap-6 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600 md:w-9/12 lg:w-1/3 xl:w-1/4\" style=\"view-transition-name:details-modal\"><div class=\"flex w-full justify-between items-center\"><h2 class=\"text-2xl text-slate-700 font-semibold\">Edit Task</h2><button class=\"appearance-none outline-none cursor-pointer rounded-full p-1 bg-slate-100 text-slate-600 focus:ring-1 focus:ring-slate-600 transition duration-300 disabled:cursor-not-allowed disabled:opacity-80\" aria-label=\"close\" data-on:click=\"evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close',{openWhenHidden:true});\" data-indicator=\"_closingDetails\" data-attr-disabled=\"$_closingDetails\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-5 cursor-pointer\"><path fill-rule=\"evenodd\" d=\"M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z\" clip-rule=\"evenodd\"></path></svg></button></div><p class=\"py-1 px-3 w-full\" style=\"view-transition-name:event-result\" id=\"eventResult\"></p><form data-on:submit=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -34,9 +34,9 @@ func EditEventDrawer() templ.Component {
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`
 					evt.preventDefault();
 					if($_savingTask || $_deletingTask) return;					
-  					@post('/update') `).Resolve(ctx)
+  					@post('/update',{openWhenHidden:true}) `).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/editEvent.templ`, Line: 37, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/editEvent.templ`, Line: 37, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -125,7 +125,7 @@ func EditEventDrawer() templ.Component {
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`
 									evt.stopPropagation();
 									if($_savingTask || $_deletingTask) return;					
-									@post('/delete');								
+									@post('/delete',{openWhenHidden:true});								
 								`).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/editEvent.templ`, Line: 169, Col: 9}
@@ -134,7 +134,7 @@ func EditEventDrawer() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" data-indicator=\"_deletingTask\" data-attr:disabled=\"$_savingTask || $_deletingTask\">Confirm</button> <button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"$showDeleteConfirm=false\">Cancel</button></div></div><div class=\"flex-1 flex justify-end items-center gap-2\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-gray-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close');\" data-attr-disabled=\"$_closingDetails\">Cancel</button> <button data-attr:disabled=\"$_savingTask || $_deletingTask || $date < new Date()\" type=\"submit\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-700 text-white transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-700 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Save Task</button></div></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" data-indicator=\"_deletingTask\" data-attr:disabled=\"$_savingTask || $_deletingTask\">Confirm</button> <button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"$showDeleteConfirm=false\">Cancel</button></div></div><div class=\"flex-1 flex justify-end items-center gap-2\"><button class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-gray-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70\" type=\"button\" data-on:click=\"evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close',{openWhenHidden:true});\" data-attr-disabled=\"$_closingDetails\">Cancel</button> <button data-attr:disabled=\"$_savingTask || $_deletingTask || $date < new Date()\" type=\"submit\" class=\"appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-orange-700 text-white transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-orange-700 focus:ring-offset-2 focus:ring-offset-orange-50 disabled:cursor-not-allowed disabled:opacity-70\">Save Task</button></div></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -218,7 +218,7 @@ func DeleteEventResult(success bool) templ.Component {
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
 		if success {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded\" data-init=\"$_detailsModalAbortController.abort();@get('/detail/close');\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<p id=\"eventResult\" style=\"view-transition-name:event-result\" class=\"animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded\" data-init=\"$_detailsModalAbortController.abort();@get('/detail/close',{openWhenHidden:true});\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

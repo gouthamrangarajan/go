@@ -54,9 +54,9 @@ func PrevMonthLink(currentMonthAndYear time.Time) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`$pageLoading=true; @get('` + templ.SafeURL(url) + `')`).Resolve(ctx)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`$pageLoading=true; @get('` + templ.SafeURL(url) + `',{openWhenHidden:true})`).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarActions.templ`, Line: 18, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarActions.templ`, Line: 18, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -109,9 +109,9 @@ func NextMonthLink(currentMonthAndYear time.Time) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`$pageLoading=true; @get('` + templ.SafeURL(url) + `')`).Resolve(ctx)
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templruntime.NewAttributeExpression(`$pageLoading=true; @get('` + templ.SafeURL(url) + `',{openWhenHidden:true})`).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarActions.templ`, Line: 35, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/components/monthCalendarActions.templ`, Line: 35, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {

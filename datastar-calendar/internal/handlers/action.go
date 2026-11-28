@@ -287,7 +287,8 @@ func (a *ActionHandler) UpdateStatus(responseWriter http.ResponseWriter, request
 		go a.dbService.GetAllNotOnlyOnceFrequencyData(token, getDataChannel)
 		eventsData := <-getDataChannel
 		manageEventsPageData, totalRecords = services.ConstructManageEventsPageData(eventsData,
-			clientSignals.ManagePageFilter, clientSignals.ManagePageNumber)
+			clientSignals.ManagePageFilter, clientSignals.ManagePageNumber,
+			clientSignals.ManagePageSearchTxt)
 	}
 	if userSession, userSessionExists := a.uiSidMap.Load(key); userSessionExists {
 		switch success {

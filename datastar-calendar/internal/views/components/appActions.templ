@@ -41,7 +41,7 @@ templ AddEventLink(date time.Time, active bool) {
 		if active {
 			<span
 				class="text-slate-600 py-1 px-2"
-				data-on:dblclick={ `@get('` + templ.SafeURL(url) + `')` }
+				data-on:dblclick={ `@get('` + templ.SafeURL(url) + `',{openWhenHidden:true})` }
 			>{ strconv.Itoa(date.Day()) }</span>
 		} else {
 			<span class="text-slate-400 py-1 px-2">{ strconv.Itoa(date.Day()) }</span>

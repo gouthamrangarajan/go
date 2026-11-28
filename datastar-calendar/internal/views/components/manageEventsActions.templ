@@ -12,7 +12,7 @@ templ ToggleEventStatusButton(id string, isActive bool) {
 		data-class={ `{'bg-orange-600 ':` + strconv.FormatBool(isActive) + `==true,
                         'bg-gray-200 ':`+strconv.FormatBool(isActive) + `==false}` }
 		data-on:click={ `$eventId='`+id+`';$isActive=`+strconv.FormatBool(!isActive)+`;
-                        @post('/events/`+id+`/status')` }
+                        @post('/events/`+id+`/status',{openWhenHidden:true})` }
 		data-indicator={ "_updatingStatus-" + id }
 		data-attr:disabled={ "$_updatingStatus-" + id }
 	>
@@ -34,7 +34,7 @@ templ FilterAllEventsButton(count int) {
 		aria-label="Filter All Events"
 		id="btnAllEvents"
 		style="view-transition-name:btn-all-events"
-		data-on:click="$managePageNumber=1;$managePageFilter='all';@post('/manage/filter')"
+		data-on:click="$managePageNumber=1;$managePageFilter='all';@post('/manage/filter',{openWhenHidden:true})"
 		data-indicator="_fetchingAllStatusRecord"
 		data-attr:disabled={ `$_fetchingActiveStatusRecord || $_fetchingInactiveStatusRecord 
 					|| $_fetchingAllStatusRecord` }
@@ -58,7 +58,7 @@ templ FilterActiveEventsButton(count int) {
 		aria-label="Filter Active Events only"
 		id="btnActiveeEvents"
 		style="view-transition-name:btn-active-events"
-		data-on:click="$managePageNumber=1;$managePageFilter='active';@post('/manage/filter')"
+		data-on:click="$managePageNumber=1;$managePageFilter='active';@post('/manage/filter',{openWhenHidden:true})"
 		data-indicator="_fetchingActiveStatusRecord"
 		data-attr:disabled={ `$_fetchingActiveStatusRecord || $_fetchingInactiveStatusRecord 
 					|| $_fetchingAllStatusRecord` }
@@ -82,7 +82,7 @@ templ FilterInactiveEventsButton(count int) {
 		aria-label="Filter Inactive Events only"
 		id="btnActiveEvents"
 		style="view-transition-name:btn-inactive-events"
-		data-on:click="$managePageNumber=1;$managePageFilter='inactive';@post('/manage/filter')"
+		data-on:click="$managePageNumber=1;$managePageFilter='inactive';@post('/manage/filter',{openWhenHidden:true})"
 		data-indicator="_fetchingInactiveStatusRecord"
 		data-attr:disabled={ `$_fetchingActiveStatusRecord || $_fetchingInactiveStatusRecord 
 					|| $_fetchingAllStatusRecord` }

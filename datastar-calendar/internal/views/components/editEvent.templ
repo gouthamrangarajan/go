@@ -16,7 +16,7 @@ templ EditEventDrawer() {
 				<button
 					class="appearance-none outline-none cursor-pointer rounded-full p-1 bg-slate-100 text-slate-600 focus:ring-1 focus:ring-slate-600 transition duration-300 disabled:cursor-not-allowed disabled:opacity-80"
 					aria-label="close"
-					data-on:click="evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close');"
+					data-on:click="evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close',{openWhenHidden:true});"
 					data-indicator="_closingDetails"
 					data-attr-disabled="$_closingDetails"
 				>
@@ -34,7 +34,7 @@ templ EditEventDrawer() {
 				data-on:submit={ `
 					evt.preventDefault();
 					if($_savingTask || $_deletingTask) return;					
-  					@post('/update') ` }
+  					@post('/update',{openWhenHidden:true}) ` }
 				class="w-full flex flex-col gap-3 h-full"
 				data-indicator="_savingTask"
 			>
@@ -165,7 +165,7 @@ templ EditEventDrawer() {
 								data-on:click={ `
 									evt.stopPropagation();
 									if($_savingTask || $_deletingTask) return;					
-									@post('/delete');								
+									@post('/delete',{openWhenHidden:true});								
 								` }
 								data-indicator="_deletingTask"
 								data-attr:disabled="$_savingTask || $_deletingTask"
@@ -183,7 +183,7 @@ templ EditEventDrawer() {
 						<button
 							class="appearance-none outline-none cursor-pointer py-2 px-4 rounded bg-gray-200 transition duration-300 hover:opacity-80 focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-gray-50 disabled:cursor-not-allowed disabled:opacity-70"
 							type="button"
-							data-on:click="evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close');"
+							data-on:click="evt.stopPropagation();$_detailsModalAbortController.abort();@get('/detail/close',{openWhenHidden:true});"
 							data-attr-disabled="$_closingDetails"
 						>
 							Cancel
@@ -228,7 +228,7 @@ templ DeleteEventResult(success bool) {
 			id="eventResult"
 			style="view-transition-name:event-result"
 			class="animate-result py-1 px-3 w-full bg-teal-200 text-teal-600 font-semibold rounded"
-			data-init="$_detailsModalAbortController.abort();@get('/detail/close');"
+			data-init="$_detailsModalAbortController.abort();@get('/detail/close',{openWhenHidden:true});"
 		>
 			{ "Succesfully deleted task " }
 		</p>
