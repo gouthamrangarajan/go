@@ -28,7 +28,7 @@ templ FilterAllEventsButton(count int) {
 	<button
 		class="appearance-none outline-none rounded-full cursor-pointer py-1 px-2 transition duration-300
 				flex items-center gap-2 focus:ring-2 focus:ring-teal-700 focus:ring-offset-2
-				focus:ring-offset-teal-50"
+				focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:animate-pulse"
 		data-class={ `{'bg-teal-700 text-white':$managePageFilter=='all',
 						'border border-slate-300':$managePageFilter!='all'}` }
 		aria-label="Filter All Events"
@@ -76,7 +76,7 @@ templ FilterInactiveEventsButton(count int) {
 	<button
 		class="appearance-none outline-none rounded-full cursor-pointer py-1 px-2 transition duration-300
 				flex items-center gap-2 focus:ring-2 focus:ring-teal-700 focus:ring-offset-2
-				focus:ring-offset-teal-50"
+				focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:animate-pulse"
 		data-class={ `{'bg-teal-700 text-white':$managePageFilter=='inactive',
 						'border border-slate-300':$managePageFilter!='inactive'}` }
 		aria-label="Filter Inactive Events only"

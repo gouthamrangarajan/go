@@ -146,7 +146,7 @@ func FilterAllEventsButton(count int) templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<button class=\"appearance-none outline-none rounded-full cursor-pointer py-1 px-2 transition duration-300 flex items-center gap-2 focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 focus:ring-offset-teal-50\" data-class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<button class=\"appearance-none outline-none rounded-full cursor-pointer py-1 px-2 transition duration-300 flex items-center gap-2 focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:animate-pulse\" data-class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -306,7 +306,7 @@ func FilterInactiveEventsButton(count int) templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<button class=\"appearance-none outline-none rounded-full cursor-pointer py-1 px-2 transition duration-300 flex items-center gap-2 focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 focus:ring-offset-teal-50\" data-class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<button class=\"appearance-none outline-none rounded-full cursor-pointer py-1 px-2 transition duration-300 flex items-center gap-2 focus:ring-2 focus:ring-teal-700 focus:ring-offset-2 focus:ring-offset-teal-50 disabled:cursor-not-allowed disabled:animate-pulse\" data-class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -15,6 +15,7 @@ templ WeekCalendarPage(data models.WeekCalendarData) {
 			data-init="@get('/sse',{openWhenHidden:true})"
 			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 		>
+			@components.AppHeader(models.CALENDAR_MENU)
 			@WeekCalendar(data)
 			@components.ErrorMessage()
 		</main>
@@ -35,7 +36,7 @@ templ WeekCalendar(data models.WeekCalendarData) {
 templ weekCalendarheader(currentMonthAndYear time.Time, from string, week int) {
 	<div class="w-full flex justify-between items-center gap-7 py-2 px-4">
 		<div class="flex items-center gap-3">
-			<span class="text-xl text-slate-600 font-semibold text-center" style="view-transition-name:monthAndYearName">
+			<span class="text-xl text-slate-800 font-semibold text-center" style="view-transition-name:monthAndYearName">
 				{ currentMonthAndYear.Format("Jan") } { strconv.Itoa(currentMonthAndYear.Year()) }
 			</span>
 			@components.PrevWeekLink(week, currentMonthAndYear)

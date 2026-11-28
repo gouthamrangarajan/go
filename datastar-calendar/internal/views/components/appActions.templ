@@ -1,6 +1,7 @@
 package components
 
 import (
+	"datastar-calendar/internal/models"
 	"strconv"
 	"time"
 )
@@ -59,4 +60,58 @@ templ AddEventLink(date time.Time, active bool) {
 			</button>
 		}
 	</div>
+}
+
+templ AppHeader(activeMenu models.Menu) {
+	if activeMenu== models.CALENDAR_MENU {
+		<header
+			class="w-full flex justify-between items-center py-2 px-4 bg-white
+                 border-b border-slate-300"
+		>
+			<span class="text-xl font-semibold">My Calendar</span>
+			<div class="flex">
+				@CalendarPageLink(true)
+				@ManagePageLink(false)
+			</div>
+		</header>
+	} else {
+		<header
+			class="w-full flex justify-between items-center py-2 px-4 bg-white
+                 border-b border-slate-300"
+		>
+			<span class="text-xl font-semibold">My Calendar</span>
+			<div class="flex">
+				@CalendarPageLink(false)
+				@ManagePageLink(true)
+			</div>
+		</header>
+	}
+}
+
+templ CalendarPageLink(active bool) {
+	{{ activeClass := "bg-teal-700 text-white" }}
+	if !active {
+		{{ activeClass = "bg-gray-200" }}
+	}
+	<a
+		class={ "appearance-none outline-none rounded-l-full transition duration-300 py-1 px-3 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
+		href="/"
+		style="view-transition-name:month-page-link"
+	>
+		Calendar
+	</a>
+}
+
+templ ManagePageLink(active bool) {
+	{{ activeClass := "bg-teal-700 text-white" }}
+	if !active {
+		{{ activeClass = "bg-gray-200" }}
+	}
+	<a
+		class={ "appearance-none outline-none rounded-r-full transition duration-300 py-1 px-3 hover:opacity-80 focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-teal-50",activeClass }
+		href="/manage"
+		style="view-transition-name:manage-page-link"
+	>
+		Manage
+	</a>
 }

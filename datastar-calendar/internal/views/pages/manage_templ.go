@@ -43,7 +43,15 @@ func ManageEvents(data models.ManageEventsPageData, totalRecords int) templ.Comp
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw relative overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600\" id=\"main\" data-signals=\"{eventId:'',isActive:false,managePageFilter:'all',managePageNumber:1}\" data-init=\"@get('/sse',{openWhenHidden:true})\" data-on:datastar-fetch=\"if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}\"><header class=\"w-full flex justify-between items-center py-2 px-4 bg-white border-b border-slate-300\"><span class=\"text-xl font-semibold\">Recurring Reminder</span></header><section class=\"py-2 px-4 flex flex-col gap-7 mt-7 w-full lg:py-4 lg:px-6 xl:px-8\" id=\"section\"><div class=\"flex flex-col gap-2 w-full md:flex-row md:items-end md:justify-between\"><div class=\"flex flex-col gap-1\"><p class=\"text-2xl font-semibold\">All Items</p><span class=\"text-slate-600\">Every reminder regardless of date.Oldest first</span></div><div class=\"flex gap-2 items-center py-2 px-4 rounded-lg border border-slate-300 transition duration-300 bg-white focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:ring-offset-slate-50 md:w-72\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" class=\"appearance-none outline-none flex-1\" placeholder=\"Search Title...\" data-bind=\"managePageSearchTxt\" data-on:keyup__debounce.500ms=\"$managePageNumber=1;@post('/manage/filter',{openWhenHidden:true})\"></div></div><div class=\"flex flex-wrap gap-3 items-center\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"h-dvh w-dvw relative overflow-x-hidden overflow-y-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600\" id=\"main\" data-signals=\"{eventId:'',isActive:false,managePageFilter:'all',managePageNumber:1}\" data-init=\"@get('/sse',{openWhenHidden:true})\" data-on:datastar-fetch=\"if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.AppHeader(models.MANAGE_MENU).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<section class=\"py-2 px-4 flex flex-col gap-7 mt-7 w-full lg:py-4 lg:px-6 xl:px-8\" id=\"section\"><div class=\"flex flex-col gap-2 w-full md:flex-row md:items-end md:justify-between\"><div class=\"flex flex-col gap-1\"><p class=\"text-2xl font-semibold\">All Items</p><span class=\"text-slate-600\">Every reminder regardless of date.Oldest first</span></div><div class=\"flex gap-2 items-center py-2 px-4 rounded-lg border border-slate-300 transition duration-300 bg-white focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:ring-offset-slate-50 md:w-72\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"size-6\"><path fill-rule=\"evenodd\" d=\"M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z\" clip-rule=\"evenodd\"></path></svg> <input type=\"text\" class=\"appearance-none outline-none flex-1\" placeholder=\"Search Title...\" data-bind=\"managePageSearchTxt\" data-on:keyup__debounce.500ms=\"$managePageNumber=1;@post('/manage/filter',{openWhenHidden:true})\"></div></div><div class=\"flex flex-wrap gap-3 items-center\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -59,7 +67,7 @@ func ManageEvents(data models.ManageEventsPageData, totalRecords int) templ.Comp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"w-full shadow rounded-lg border border-slate-300 overflow-x-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600 lg:overflow-x-hidden\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"w-full shadow rounded-lg border border-slate-300 overflow-x-auto scroll-smooth scrollbar-thin scrollbar-track-purple-200 scrollbar-thumb-purple-600 lg:overflow-x-hidden\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -67,7 +75,7 @@ func ManageEvents(data models.ManageEventsPageData, totalRecords int) templ.Comp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></section></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></section></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

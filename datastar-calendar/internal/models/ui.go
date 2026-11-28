@@ -36,6 +36,12 @@ type WeekCalendarData struct {
 	From                string
 	Week                int
 }
+type Menu string
+
+const (
+	MANAGE_MENU   Menu = "manage"
+	CALENDAR_MENU Menu = "calendar"
+)
 
 type ManagerPageFilters string
 

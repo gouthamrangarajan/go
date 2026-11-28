@@ -15,6 +15,7 @@ templ MonthCalendarPage(data models.MonthCalendarData) {
 			data-init="@get('/sse',{openWhenHidden:true})"
 			data-on:datastar-fetch="if(evt.detail.type === 'retries-failed'){$errorMessage = 'Failed to connect... (Page refresh required)'; $showErrorMessage = true};if(evt.detail.type === 'retrying' || evt.detail.type === 'error'){$showErrorMessage = true;$errorMessage = 'Connection lost. Reconnecting...';}"
 		>
+			@components.AppHeader(models.CALENDAR_MENU)
 			@MonthCalendar(data)
 			@components.ErrorMessage()
 		</main>
@@ -45,7 +46,7 @@ templ monthCalendarheader(currentMonthAndYear time.Time) {
 			data-signals="{_showYears:false}"
 		>
 			<div
-				class="text-xl text-slate-600 font-semibold text-center flex gap-1"
+				class="text-xl text-slate-800 font-semibold text-center flex gap-1"
 				style="view-transition-name:monthAndYearName"
 			>
 				<span>{ currentMonthAndYear.Format("Jan") }</span>
